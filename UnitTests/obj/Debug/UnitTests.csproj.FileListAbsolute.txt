@@ -11,3 +11,11 @@ C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTe
 C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\obj\Debug\UnitTests.csproj.CoreCompileInputs.cache
 C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\obj\Debug\UnitTests.dll
 C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\obj\Debug\UnitTests.pdb
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\nunit.framework.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\nunit.framework.pdb
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\nunit.framework.xml
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\NUnit3.TestAdapter.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\NUnit3.TestAdapter.pdb
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\nunit.engine.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\nunit.engine.api.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Mono.Cecil.dll
