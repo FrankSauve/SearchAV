@@ -1,0 +1,13 @@
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\UnitTests.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\UnitTests.pdb
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\bin\Debug\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\obj\Debug\UnitTests.csprojResolveAssemblyReference.cache
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\obj\Debug\UnitTests.csproj.CoreCompileInputs.cache
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\obj\Debug\UnitTests.dll
+C:\Users\franc\Documents\Code\capstone\RadioCanada-SearchEngineAudioVideo\UnitTests\obj\Debug\UnitTests.pdb
