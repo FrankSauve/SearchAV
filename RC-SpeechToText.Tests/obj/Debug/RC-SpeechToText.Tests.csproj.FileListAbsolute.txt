@@ -1,0 +1,8 @@
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\bin\Debug\RC-SpeechToText.Tests.dll
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\bin\Debug\RC-SpeechToText.Tests.pdb
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\bin\Debug\nunit.framework.dll
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\bin\Debug\nunit.framework.xml
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\obj\Debug\RC-SpeechToText.Tests.csprojResolveAssemblyReference.cache
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\obj\Debug\RC-SpeechToText.Tests.csproj.CoreCompileInputs.cache
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\obj\Debug\RC-SpeechToText.Tests.dll
+C:\Users\franc\Documents\GitHub\RadioCanada-SearchEngineAudioVideo\RC-SpeechToText.Tests\obj\Debug\RC-SpeechToText.Tests.pdb

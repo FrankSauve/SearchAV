@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RC-SpeechToText", "RC-SpeechToText\RC-SpeechToText.csproj", "{7E4453CB-D304-47AD-8FB2-B25C4BBFB084}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{82A968DD-73E1-498B-A334-804D032CC577}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC-SpeechToText.Tests", "RC-SpeechToText.Tests\RC-SpeechToText.Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{7E4453CB-D304-47AD-8FB2-B25C4BBFB084}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E4453CB-D304-47AD-8FB2-B25C4BBFB084}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4453CB-D304-47AD-8FB2-B25C4BBFB084}.Release|Any CPU.Build.0 = Release|Any CPU
-		{82A968DD-73E1-498B-A334-804D032CC577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82A968DD-73E1-498B-A334-804D032CC577}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82A968DD-73E1-498B-A334-804D032CC577}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82A968DD-73E1-498B-A334-804D032CC577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EDF4429-251A-416D-BB68-93F227191BCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
