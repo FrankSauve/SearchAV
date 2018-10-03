@@ -8,3 +8,4 @@ script:
   - mono ./testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./RC-SpeechToText.Tests/bin/Release/RC-SpeechToText.Tests.dll
 notifications:
   email: false
+  slack: 490team:b4nkfaTtIVYWe3hO7l8SlStf
