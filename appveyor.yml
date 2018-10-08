@@ -4,6 +4,7 @@ configuration: Release
 # scripts to run before build
 before_build:
   - dotnet restore
+  - dotnet restore .\RC-SpeechToText.Tests\
 
 build_script:
   - dotnet build .\RC-SpeechToText.sln
