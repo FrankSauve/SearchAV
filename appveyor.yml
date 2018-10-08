@@ -1,0 +1,13 @@
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+# scripts to run before build
+before_build:
+  - dotnet restore
+  - nuget restore
+
+build_script:
+  - dotnet build .\RC-SpeechToText.sln
+
+test_script:
+  - dotnet test .\RC-SpeechToText.Tests\
