@@ -6,7 +6,7 @@ before_build:
   - dotnet restore
 
 build_script:
-  - dotnet build .\TheLog.sln
+  - dotnet build .\RC-SpeechToText.sln
 
 test_script:
-  - dotnet test .\TheLog.Tests\
+  - dotnet test .\RC-SpeechToText.Tests\
