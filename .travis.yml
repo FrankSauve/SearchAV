@@ -1,11 +1,10 @@
 language: csharp
-solution: RC-SpeechToText.sln
-install:
-  - nuget restore RC-SpeechToText.sln
-  - nuget install NUnit.ConsoleRunner -Version 3.9.0 -OutputDirectory testrunner
+mono: none
+dotnet: 2.0.0
 script:
-  - msbuild /p:Configuration=Release RC-SpeechToText.sln
-  - mono ./testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./RC-SpeechToText.Tests/bin/Release/RC-SpeechToText.Tests.dll
+  - dotnet restore
+  - dotnet build ./RC-SpeechToText/
+  - dotnet test ./RC-SpeechToText.Tests/
 notifications:
   email: false
   slack: 490team:b4nkfaTtIVYWe3hO7l8SlStf
