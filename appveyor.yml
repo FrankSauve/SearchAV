@@ -10,4 +10,4 @@ build_script:
   - dotnet build .\RC-SpeechToText.sln
 
 test_script:
-  - dotnet test
+  - dotnet test .\RC-SpeechToText.Tests\
