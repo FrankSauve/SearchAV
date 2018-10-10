@@ -4,9 +4,7 @@
 
 **Name and email address of contact:** Xavier K. Richard, Digital innovation coordinator. xavier.kronstrom.richard@radio-canada.ca
 
-**Elevator pitch description at a high level**
-
-Create a tool that will help journalists and editors working at Radio-Canada. The tool will be able to search through videos and audio files in a database, providing results with timestamps where a searched quote appeared.
+**Elevator pitch description at a high level:** Create a tool that will help journalists and editors working at Radio-Canada. The tool will be able to search through videos and audio files in a database, providing results with timestamps where a searched quote appeared.
 
 ## Team members 
 
