@@ -8,7 +8,7 @@
 
 ## Team members 
 
-Concordia Students that worked on the project:
+Concordia Students that are working on the project:
 
 Team members          | Email                         | Student Id   |Github Usernames
 ------------          | --------------------          | ------------ |----------------
