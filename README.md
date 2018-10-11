@@ -1,4 +1,5 @@
 # Radio Canada - Search Engine for Audio and Video Media
+[![Build status](https://ci.appveyor.com/api/projects/status/m79ks9bt96gxa5u2?svg=true)](https://ci.appveyor.com/project/FrankSauve/radiocanada-searchengineaudiovideo)
 
 [Project Description](https://docs.google.com/document/d/1BW1_ryxb9ybWWSz8yv0q_4uwVtmrzDudvvWG6gARVAk/edit)
 
