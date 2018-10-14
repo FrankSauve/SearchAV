@@ -8,19 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\Prototyping\**" />
+    <Content Remove="Controllers\Prototyping\**" />
+    <EmbeddedResource Remove="Controllers\Prototyping\**" />
+    <None Remove="Controllers\Prototyping\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Speech.V1" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\Prototyping\Google\" />
-    <Folder Include="Controllers\Prototyping\Amazon\" />
-    <Folder Include="Controllers\Prototyping\Azure\" />
-    <Folder Include="Controllers\Prototyping\Nuance\" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">

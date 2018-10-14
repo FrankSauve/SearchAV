@@ -1,5 +1,5 @@
-﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RC_SpeechToText.Controllers;
 
 namespace RC_SpeechToText.Tests
 {
@@ -9,7 +9,7 @@ namespace RC_SpeechToText.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Assert.IsTrue(1 + 1 == 2);
+            Assert.IsNull(null);
         }
     }
 }
