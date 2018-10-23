@@ -47,9 +47,9 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                 <h1>SearchAV</h1>
                 <a className="waves-effect waves-light btn red" onClick={this.getGoogleSample}>Google sample</a>
                 <br/>
-                
+                //test
                 {this.state.loading ? this.loadingCircle : null}
-                
+
                 <p>{this.state.googleResult}</p>
             </div>
         </div>;
