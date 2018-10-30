@@ -9,9 +9,13 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\Prototyping\**" />
+    <Compile Remove="Videos\**" />
     <Content Remove="Controllers\Prototyping\**" />
+    <Content Remove="Videos\**" />
     <EmbeddedResource Remove="Controllers\Prototyping\**" />
+    <EmbeddedResource Remove="Videos\**" />
     <None Remove="Controllers\Prototyping\**" />
+    <None Remove="Videos\**" />
   </ItemGroup>
 
   <ItemGroup>

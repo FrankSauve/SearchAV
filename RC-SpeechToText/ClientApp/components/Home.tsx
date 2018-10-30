@@ -3,7 +3,9 @@ import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
 
 interface State { 
-    googleResult :  string,
+    automatedTranscript :  string,
+    manualTranscript: string,
+    accuracy : number
     loading: boolean
  }
 
@@ -13,7 +15,9 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
         super(props);
 
         this.state = {
-            googleResult: '',
+            automatedTranscript: '',
+            manualTranscript: '',
+            accuracy: 0,
             loading: false
         }
         this.getGoogleSample = this.getGoogleSample.bind(this);
@@ -21,10 +25,12 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
 
     public getGoogleSample() {
         this.setState({'loading': true})
-        axios.get('/api/googletest/speechtotext')
+        axios.get('/api/sampletest/googlespeechtotext')
             .then(res => {
-                this.setState({'loading': false})
-                this.setState({'googleResult': JSON.stringify(res.data)})
+                this.setState({'loading': false});
+                this.setState({'automatedTranscript': res.data.googleResponse.alternatives[0].transcript});
+                this.setState({'manualTranscript': res.data.manualTranscript});
+                this.setState({'accuracy': res.data.accuracy});
             })
             .catch(err => console.log(err));
     }
@@ -47,9 +53,17 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                 <h1>SearchAV</h1>
                 <a className="waves-effect waves-light btn red" onClick={this.getGoogleSample}>Google sample</a>
                 <br/>
+            
                 {this.state.loading ? this.loadingCircle : null}
+                
+                <h3>{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
+                <p>{this.state.automatedTranscript}</p>
 
-                <p>{this.state.googleResult}</p>
+                <h3>{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
+                <p>{this.state.manualTranscript}</p>
+
+                <h3>{this.state.accuracy == 0 ? null : 'Accuracy'}</h3>
+                <p>{this.state.accuracy == 0 ? null : this.state.accuracy}</p>
             </div>
         </div>;
     }
