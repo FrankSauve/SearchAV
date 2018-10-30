@@ -1,5 +1,5 @@
 # Radio Canada - Search Engine for Audio and Video Media
-[![Build status](https://ci.appveyor.com/api/projects/status/m79ks9bt96gxa5u2?svg=true)](https://ci.appveyor.com/project/FrankSauve/radiocanada-searchengineaudiovideo)
+[![Build Status](https://dev.azure.com/francoiscrisposauve/SearchAV/_apis/build/status/SearchAV-ASP.NET%20Core-CI)](https://dev.azure.com/francoiscrisposauve/SearchAV/_build/latest?definitionId=2)
 
 [Project Description](https://docs.google.com/document/d/1BW1_ryxb9ybWWSz8yv0q_4uwVtmrzDudvvWG6gARVAk/edit)
 
