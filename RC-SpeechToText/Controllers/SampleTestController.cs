@@ -3,6 +3,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Google.Cloud.Speech.V1;
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.IO;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -14,18 +17,19 @@ namespace RC_SpeechToText.Controllers
         /// GET: /api/googletest/speechtotext
         /// </summary>
         /// <returns>GoogleResult</returns>
-        [HttpGet("[action]")]
-        public GoogleResult GoogleSpeechToText()
+        [HttpPost("[action]")]
+        public GoogleResult GoogleSpeechToText(IFormFile audioFile, IFormFile srtFile)
         {
+            
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
             {
                 Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
                 LanguageCode = "fr-ca",
                 EnableWordTimeOffsets = true
-            }, RecognitionAudio.FromFile(".\\Audio\\RAD_VEGAN\\RAD_Vegan_456-491.flac")); // Add file name here
+            }, RecognitionAudio.FromStream(audioFile.OpenReadStream())); // Add file name here
 
-            var manualTranscript = Helpers.CreateManualTranscipt(".\\Audio\\RAD_VEGAN\\RAD_Vegan_456-491.srt");
+            var manualTranscript = Helpers.CreateManualTranscipt(srtFile);
             var googleResult = new GoogleResult
             {
                 GoogleResponse = response.Results[0],
@@ -51,9 +55,15 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>string text</returns>
-        public static string CreateManualTranscipt(string filePath)
+        public static string CreateManualTranscipt(IFormFile srtFile)
         {
-            string[] lines = System.IO.File.ReadAllLines(filePath);
+            var lines = new List<string>();
+            using (var reader = new StreamReader(srtFile.OpenReadStream()))
+            {
+                while (reader.Peek() >= 0)
+                    lines.Add(reader.ReadLine());
+            }
+
             Regex rx = new Regex(@"^[0-9]*$");
             string text = "";
             foreach (string line in lines)
