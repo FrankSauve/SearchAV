@@ -47,8 +47,9 @@ namespace RC_SpeechToText.Controllers
         /// GET: /api/sampletest/videotoaudio
         /// </summary>
         /// <returns>string</returns>
+        // TODO: Convert FLAC output file to mono
         [HttpGet("[action]")]
-        public string VideoToAudio()
+        public string VideoToAudio() 
         {
             var inputLocation = "C:\\Users\\William\\Downloads\\f_d.mp4";
             var outputLocation = "C:\\Users\\William\\Downloads\\f_d.flac";
@@ -56,6 +57,10 @@ namespace RC_SpeechToText.Controllers
             var inputFile = new MediaFile { Filename = inputLocation};
             var outputFile = new MediaFile { Filename = outputLocation };
 
+            var conversionOptions = new ConversionOptions
+            {
+                AudioSampleRate = AudioSampleRate.Hz22050
+            };
 
             try
             {
@@ -63,7 +68,7 @@ namespace RC_SpeechToText.Controllers
                 {
                     engine.GetMetadata(inputFile);
 
-                    engine.Convert(inputFile, outputFile);
+                    engine.Convert(inputFile, outputFile, conversionOptions);
                 }
             }
             catch (Exception ex)
@@ -71,7 +76,7 @@ namespace RC_SpeechToText.Controllers
                 return "Conversion Unsuccessful";
             }
 
-            return "Conversion successful";
+            return "Conversion successful. Output file at: "+ outputLocation;
         }
     }
 
