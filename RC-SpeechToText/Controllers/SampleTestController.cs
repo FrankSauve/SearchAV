@@ -6,6 +6,9 @@ using Google.Cloud.Speech.V1;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.IO;
+using MediaToolkit;
+using MediaToolkit.Model;
+using MediaToolkit.Options;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -38,6 +41,37 @@ namespace RC_SpeechToText.Controllers
             };
 
             return googleResult;
+        }
+        /// <summary>
+        /// Converts an mp4 video into a flac audio file
+        /// GET: /api/sampletest/videotoaudio
+        /// </summary>
+        /// <returns>string</returns>
+        [HttpGet("[action]")]
+        public string VideoToAudio()
+        {
+            var inputLocation = "C:\\Users\\William\\Downloads\\f_d.mp4";
+            var outputLocation = "C:\\Users\\William\\Downloads\\f_d.flac";
+            
+            var inputFile = new MediaFile { Filename = inputLocation};
+            var outputFile = new MediaFile { Filename = outputLocation };
+
+
+            try
+            {
+                using (var engine = new Engine())
+                {
+                    engine.GetMetadata(inputFile);
+
+                    engine.Convert(inputFile, outputFile);
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Conversion Unsuccessful";
+            }
+
+            return "Conversion successful";
         }
     }
 
