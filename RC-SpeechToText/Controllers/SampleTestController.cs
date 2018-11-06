@@ -54,7 +54,7 @@ namespace RC_SpeechToText.Controllers
         public string VideoToAudio() 
         {
             var inputLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.mp4";
-            var outputLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.wav_d.flac";
+            var outputLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.wav";
             
             var inputFile = new MediaFile { Filename = inputLocation};
             var outputFile = new MediaFile { Filename = outputLocation };
@@ -83,6 +83,7 @@ namespace RC_SpeechToText.Controllers
         public String StereoToMono(String outputLocation)
         {
             var outputLocationMono = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan_Mono.wav";
+            var outputWaveLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.wav";
             try
             {
                 using (var inputReader = new AudioFileReader(outputLocation))
@@ -97,6 +98,7 @@ namespace RC_SpeechToText.Controllers
             {
                 return "Conversion Unsuccessful";
             }
+            System.IO.File.Delete(outputWaveLocation);
             return "Conversion from stereo to mono successful.";
         }
     }
