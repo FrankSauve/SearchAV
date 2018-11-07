@@ -7,7 +7,8 @@ interface State {
     srtFile: any,
     automatedTranscript :  string,
     manualTranscript: string,
-    accuracy : number
+    accuracy: number
+    editTranscription: boolean,
     loading: boolean
  }
 
@@ -21,6 +22,7 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
             srtFile: null,
             automatedTranscript: '',
             manualTranscript: '',
+            editTranscription: false,
             accuracy: 0,
             loading: false
         }
@@ -41,7 +43,8 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
         axios.post('/api/sampletest/googlespeechtotext', formData, config)
             .then(res => {
                 this.setState({'loading': false});
-                this.setState({'automatedTranscript': res.data.googleResponse.alternatives[0].transcript});
+                this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
+                this.setState({'editTranscription': true});
                 this.setState({'manualTranscript': res.data.manualTranscript});
                 this.setState({'accuracy': res.data.accuracy});
             })
@@ -56,6 +59,7 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
         this.setState({srtFile: e.target.files[0]})
     }
 
+
     loadingCircle = <div className="preloader-wrapper active mg-top-30">
                     <div className="spinner-layer spinner-red-only">
                     <div className="circle-clipper left">
@@ -67,6 +71,10 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                     </div>
                     </div>
                 </div>
+
+    editTranscriptionButton = <button className="waves-effect waves-light btn red">
+                                Edit Transcription
+                              </button>
 
     audioFileUpload = <div className="file-field input-field">
                         <div className="btn red">
@@ -101,7 +109,8 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                 {this.state.loading ? this.loadingCircle : null}
                 
                 <h3>{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
-                <p>{this.state.automatedTranscript}</p>
+                    <p>{this.state.automatedTranscript}</p>
+                    {this.state.editTranscription ? this.editTranscriptionButton : null}
 
                 <h3>{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
                 <p>{this.state.manualTranscript}</p>
