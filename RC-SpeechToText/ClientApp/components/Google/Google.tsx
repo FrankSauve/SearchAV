@@ -80,19 +80,16 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ 'textarea': false })
     }
 
-    editTranscriptionButton = <button className="waves-effect waves-light btn red" onClick={this.editTranscription}>
-                                    Edit Transcription
-                              </button>
+    editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
 
     automatedTranscriptionTextarea = <textarea
+                                        className="textarea"
                                         //onChange={this.handleChange}
-                                        rows={10} //Would be nice to adapt this to the number of lines in the future
+                                        rows={6} //Would be nice to adapt this to the number of lines in the future
                                         defaultValue=''
                                       />
 
-    submitEditButton = <button className="waves-effect waves-light btn red" onClick={this.handleSubmit}>
-                            Submit
-                       </button>
+    submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
 
   public render() {
       return (
