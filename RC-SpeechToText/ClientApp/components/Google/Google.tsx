@@ -102,7 +102,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             </div>
 
             <div className="level">
-                {this.state.loading ? <a className="button is-danger is-loading"></a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>}
+                {this.state.loading ? <a className="button is-danger is-loading">Go</a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>}
             </div>
 
             
