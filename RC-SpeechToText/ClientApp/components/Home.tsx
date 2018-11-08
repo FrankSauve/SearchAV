@@ -9,6 +9,8 @@ interface State {
     manualTranscript: string,
     accuracy: number
     editTranscription: boolean,
+    textarea: boolean,
+    submitEdit: boolean,
     loading: boolean
  }
 
@@ -16,6 +18,7 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
 
     constructor(props: any){
         super(props);
+        //this.handleChange = this.handleChange.bind(this);
 
         this.state = {
             audioFile: null,
@@ -23,6 +26,8 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
             automatedTranscript: '',
             manualTranscript: '',
             editTranscription: false,
+            textarea: false,
+            submitEdit: false,
             accuracy: 0,
             loading: false
         }
@@ -44,7 +49,7 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
             .then(res => {
                 this.setState({'loading': false});
                 this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
-                this.setState({'editTranscription': true});
+                this.setState({ 'editTranscription': true });
                 this.setState({'manualTranscript': res.data.manualTranscript});
                 this.setState({'accuracy': res.data.accuracy});
             })
@@ -59,6 +64,22 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
         this.setState({srtFile: e.target.files[0]})
     }
 
+    /*handleChange = (e: any) => {
+        this.setState({ automatedTranscript: e.target.value })
+    }*/  
+
+    public editTranscription = () => {
+        this.setState({ 'submitEdit': true })
+        this.setState({ 'editTranscription': false })
+        this.setState({ 'textarea': true })
+    }
+
+    public handleSubmit = (e: any) => {
+        this.setState({ 'automatedTranscript': e.target.value })
+        this.setState({ 'submitEdit': false })
+        this.setState({ 'editTranscription': true })
+        this.setState({ 'textarea': false })
+    }
 
     loadingCircle = <div className="preloader-wrapper active mg-top-30">
                     <div className="spinner-layer spinner-red-only">
@@ -72,9 +93,19 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                     </div>
                 </div>
 
-    editTranscriptionButton = <button className="waves-effect waves-light btn red">
+    editTranscriptionButton = <button className="waves-effect waves-light btn red" onClick={this.editTranscription}>
                                 Edit Transcription
                               </button>
+
+    automatedTranscriptionTextarea = <textarea
+                                        //onChange={this.handleChange}
+                                        rows={10} //Would be nice to adapt this to the number of lines in the future
+                                        defaultValue=''
+                                     />
+
+    submitEditButton = <button className="waves-effect waves-light btn red" onClick={this.handleSubmit}>
+                            Submit
+                       </button>
 
     audioFileUpload = <div className="file-field input-field">
                         <div className="btn red">
@@ -111,6 +142,8 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                 <h3>{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
                     <p>{this.state.automatedTranscript}</p>
                     {this.state.editTranscription ? this.editTranscriptionButton : null}
+                    {this.state.textarea ? this.automatedTranscriptionTextarea : null}
+                    {this.state.submitEdit ? this.submitEditButton : null}
 
                 <h3>{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
                 <p>{this.state.manualTranscript}</p>
