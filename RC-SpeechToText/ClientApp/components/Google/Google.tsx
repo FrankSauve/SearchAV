@@ -17,7 +17,6 @@ interface State {
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
     constructor(props: any){
         super(props);
-        //this.handleChange = this.handleChange.bind(this);
 
       this.state = {
           audioFile: null,
@@ -63,9 +62,9 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
       this.setState({srtFile: e.target.files[0]})
     }
 
-   /*handleChange = (e: any) => {
+   public handleChange = (e: any) => {
         this.setState({ automatedTranscript: e.target.value })
-    }*/
+    }
     
    public editTranscription = () => {
        this.setState({ 'submitEdit': true })
@@ -81,13 +80,6 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
     }
 
     editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
-
-    automatedTranscriptionTextarea = <textarea
-                                        className="textarea"
-                                        //onChange={this.handleChange}
-                                        rows={6} //Would be nice to adapt this to the number of lines in the future
-                                        defaultValue=''
-                                      />
 
     submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
 
@@ -145,7 +137,12 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
                   <p>{this.state.automatedTranscript}</p>
                   {this.state.editTranscription ? this.editTranscriptionButton : null}
-                  {this.state.textarea ? this.automatedTranscriptionTextarea : null}
+                  {this.state.textarea ? <textarea
+                                        className="textarea"
+                                        onChange={this.handleChange}
+                                        rows={6} //Would be nice to adapt this to the number of lines in the future
+                                        defaultValue={this.state.automatedTranscript}
+                                      /> : null}
                   {this.state.submitEdit ? this.submitEditButton : null}
           
             <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
