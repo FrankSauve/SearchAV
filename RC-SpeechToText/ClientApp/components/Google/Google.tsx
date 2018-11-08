@@ -6,11 +6,13 @@ interface State {
     audioFile: any,
     srtFile: any,
     automatedTranscript: string,
+    showAutomatedTranscript: boolean,
     manualTranscript: string,
     accuracy: number
     editTranscription: boolean,
     textarea: boolean,
     submitEdit: boolean,
+    editSuccess: boolean,
     loading: boolean
 }
 
@@ -22,11 +24,13 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           audioFile: null,
           srtFile: null,
           automatedTranscript: '',
+          showAutomatedTranscript: false,
           manualTranscript: '',
           editTranscription: false,
           textarea: false,
           submitEdit: false,
           accuracy: 0,
+          editSuccess: false,
           loading: false
       }
   }
@@ -47,9 +51,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           .then(res => {
               this.setState({ 'loading': false });
               this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
+              this.setState({ 'showAutomatedTranscript': true })
               this.setState({ 'editTranscription': true });
               this.setState({ 'manualTranscript': res.data.manualTranscript });
               this.setState({ 'accuracy': res.data.accuracy });
+              this.setState({ 'editSuccess': false })
           })
           .catch(err => console.log(err));
   }
@@ -70,13 +76,21 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
        this.setState({ 'submitEdit': true })
        this.setState({ 'editTranscription': false })
        this.setState({ 'textarea': true })
+       this.setState({ 'showAutomatedTranscript': false })
+       this.setState({ 'editSuccess': false })
     }
 
-    public handleSubmit = (e: any) => {
-        this.setState({ 'automatedTranscript': e.target.value })
+    public handleSubmit = () => {
+        this.setState({ 'automatedTranscript': this.state.automatedTranscript })
         this.setState({ 'submitEdit': false })
         this.setState({ 'editTranscription': true })
         this.setState({ 'textarea': false })
+        this.setState({ 'showAutomatedTranscript': true })
+        this.setState({ 'editSuccess': true })
+    }
+
+    public removeEditSuccessMessage = () => {
+        this.setState({ 'editSuccess': false })
     }
 
     editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
@@ -133,9 +147,13 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                 {this.state.loading ? <a className="button is-danger is-loading"></a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>}
             </div>
 
+            {this.state.editSuccess ? <div className="notification is-success">
+                                            <button className="delete" onClick={this.removeEditSuccessMessage}></button>
+                                                   You have successfully edited the automated transcription
+                                      </div> : null}
             
             <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
-                  <p>{this.state.automatedTranscript}</p>
+                  <p>{this.state.showAutomatedTranscript ? this.state.automatedTranscript : ''}</p>
                   {this.state.editTranscription ? this.editTranscriptionButton : null}
                   {this.state.textarea ? <textarea
                                         className="textarea"
