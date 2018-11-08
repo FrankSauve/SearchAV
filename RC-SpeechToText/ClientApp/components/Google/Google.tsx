@@ -3,23 +3,30 @@ import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
 
 interface State { 
-  audioFile: any,
-  srtFile: any,
-  automatedTranscript :  string,
-  manualTranscript: string,
-  accuracy : number
-  loading: boolean
+    audioFile: any,
+    srtFile: any,
+    automatedTranscript: string,
+    manualTranscript: string,
+    accuracy: number
+    editTranscription: boolean,
+    textarea: boolean,
+    submitEdit: boolean,
+    loading: boolean
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
     constructor(props: any){
-      super(props);
+        super(props);
+        //this.handleChange = this.handleChange.bind(this);
 
       this.state = {
           audioFile: null,
           srtFile: null,
           automatedTranscript: '',
           manualTranscript: '',
+          editTranscription: false,
+          textarea: false,
+          submitEdit: false,
           accuracy: 0,
           loading: false
       }
@@ -39,10 +46,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
       }
       axios.post('/api/sampletest/googlespeechtotext', formData, config)
           .then(res => {
-              this.setState({'loading': false});
-              this.setState({'automatedTranscript': res.data.googleResponse.alternatives[0].transcript});
-              this.setState({'manualTranscript': res.data.manualTranscript});
-              this.setState({'accuracy': res.data.accuracy});
+              this.setState({ 'loading': false });
+              this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
+              this.setState({ 'editTranscription': true });
+              this.setState({ 'manualTranscript': res.data.manualTranscript });
+              this.setState({ 'accuracy': res.data.accuracy });
           })
           .catch(err => console.log(err));
   }
@@ -53,7 +61,38 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
   public onAddSrtFile = (e: any) => {
       this.setState({srtFile: e.target.files[0]})
-  }
+    }
+
+   /*handleChange = (e: any) => {
+        this.setState({ automatedTranscript: e.target.value })
+    }*/
+    
+   public editTranscription = () => {
+       this.setState({ 'submitEdit': true })
+       this.setState({ 'editTranscription': false })
+       this.setState({ 'textarea': true })
+    }
+
+    public handleSubmit = (e: any) => {
+        this.setState({ 'automatedTranscript': e.target.value })
+        this.setState({ 'submitEdit': false })
+        this.setState({ 'editTranscription': true })
+        this.setState({ 'textarea': false })
+    }
+
+    editTranscriptionButton = <button className="waves-effect waves-light btn red" onClick={this.editTranscription}>
+                                    Edit Transcription
+                              </button>
+
+    automatedTranscriptionTextarea = <textarea
+                                        //onChange={this.handleChange}
+                                        rows={10} //Would be nice to adapt this to the number of lines in the future
+                                        defaultValue=''
+                                      />
+
+    submitEditButton = <button className="waves-effect waves-light btn red" onClick={this.handleSubmit}>
+                            Submit
+                       </button>
 
   public render() {
       return (
@@ -107,7 +146,10 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
             
             <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
-            <p>{this.state.automatedTranscript}</p>
+                  <p>{this.state.automatedTranscript}</p>
+                  {this.state.editTranscription ? this.editTranscriptionButton : null}
+                  {this.state.textarea ? this.automatedTranscriptionTextarea : null}
+                  {this.state.submitEdit ? this.submitEditButton : null}
           
             <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
