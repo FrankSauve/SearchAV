@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.IO;
 
+
 namespace RC_SpeechToText.Controllers
 {
     [Route("api/[controller]")]
@@ -20,7 +21,7 @@ namespace RC_SpeechToText.Controllers
         [HttpPost("[action]")]
         public GoogleResult GoogleSpeechToText(IFormFile audioFile, IFormFile srtFile)
         {
-            
+
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
             {
