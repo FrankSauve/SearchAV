@@ -7,6 +7,7 @@ interface State {
     srtFile: any,
     automatedTranscript: string,
     showAutomatedTranscript: boolean,
+    fullGoogleResponse: any,
     manualTranscript: string,
     accuracy: number
     editTranscription: boolean,
@@ -25,6 +26,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           srtFile: null,
           automatedTranscript: '',
           showAutomatedTranscript: false,
+          fullGoogleResponse: null,
           manualTranscript: '',
           editTranscription: false,
           textarea: false,
@@ -51,6 +53,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           .then(res => {
               this.setState({ 'loading': false });
               this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
+              this.setState({ 'fullGoogleResponse': res.data.googleResponse.alternatives[0] });
               this.setState({ 'showAutomatedTranscript': true })
               this.setState({ 'editTranscription': true });
               this.setState({ 'manualTranscript': res.data.manualTranscript });
