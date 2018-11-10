@@ -63,7 +63,26 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'editSuccess': false })
           })
           .catch(err => console.log(err));
-  }
+    }
+
+    public searchTranscript = () => {
+
+        const formData = new FormData();
+        formData.append('searchTerms', this.state.searchTerms)
+       //formData.append('test', this.state.fullGoogleResponse)
+
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
+
+        axios.post('/api/TranscriptSearch/SearchTranscript', formData, config)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => console.log(err));
+    }
 
   public onAddAudioFile = (e: any) => {
       this.setState({audioFile: e.target.files[0]})
@@ -102,10 +121,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ 'editSuccess': false })
     }
 
-    public searchTranscript = () => {
-
-        console.log(this.state.searchTerms);
-    }
+    
 
     editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
 
