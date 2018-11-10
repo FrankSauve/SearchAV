@@ -15,6 +15,7 @@ interface State {
     submitEdit: boolean,
     editSuccess: boolean,
     loading: boolean
+    searchTerms: string,
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
@@ -33,7 +34,8 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           submitEdit: false,
           accuracy: 0,
           editSuccess: false,
-          loading: false
+          loading: false,
+          searchTerms: '',
       }
   }
 
@@ -74,6 +76,10 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
    public handleChange = (e: any) => {
         this.setState({ automatedTranscript: e.target.value })
     }
+
+    public handleSearch = (e: any) => {
+        this.setState({ searchTerms: e.target.value })
+    }
     
    public editTranscription = () => {
        this.setState({ 'submitEdit': true })
@@ -96,9 +102,20 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ 'editSuccess': false })
     }
 
+    public searchTranscript = () => {
+
+        console.log(this.state.searchTerms);
+    }
+
     editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
 
     submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
+    searchForm =
+        <div className="field is-horizontal">
+            <a className="button is-primary" onClick={this.searchTranscript}> Search </a>
+            <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
+        </div>
+    
 
   public render() {
       return (
@@ -165,6 +182,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                                         defaultValue={this.state.automatedTranscript}
                                       /> : null}
                   {this.state.submitEdit ? this.submitEditButton : null}
+                  {this.state.automatedTranscript == '' ? null : this.searchForm}
           
             <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
