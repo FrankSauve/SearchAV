@@ -60,79 +60,64 @@ namespace RC_SpeechToText.Tests
 
             return inputFile.Metadata;
         }
-        
-        [TestMethod]
-        public void TestWavToMp3()
-        {
-            var inputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo.wav";
-            var outputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo.mp3";
 
-            // Delete pre-existing mp3 file
+        public void GenericConversionTester(string inputType, string outputType)
+        {
+            var inputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo." + inputType;
+            var outputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo." + outputType;
+
+            // Delete pre-existing output file
             if (File.Exists(outputFile))
             {
                 File.Delete(outputFile);
             }
 
-            //Create new mp3 using conversion
+            //Create new output file using conversion
             var convertedFile = FileConvert(inputFile, outputFile);
 
 
-            var wavMetadata = GetMetadata(inputFile);
-            var mp3Metadata = GetMetadata(outputFile);
+            var inputFileMetadata = GetMetadata(inputFile);
+            var outputFileMetadata = GetMetadata(outputFile);
 
             
             Assert.IsNotNull(convertedFile);
-            Assert.AreEqual(mp3Metadata.AudioData.SampleRate, "22050 Hz");
-            Assert.AreEqual(mp3Metadata.AudioData.Format, "mp3");
-            Assert.AreEqual(mp3Metadata.AudioData.SampleRate, wavMetadata.AudioData.SampleRate);
+            Assert.AreEqual(outputFileMetadata.AudioData.SampleRate, "22050 Hz");
+            Assert.AreEqual(outputFileMetadata.AudioData.Format,
+                outputType != "wav" ? outputType : "pcm_s16le ([1][0][0][0] / 0x0001)");
+            Assert.AreEqual(outputFileMetadata.AudioData.SampleRate, inputFileMetadata.AudioData.SampleRate);
+        }
+        
+        [TestMethod]
+        public void TestFlacToMp3()
+        {
+            GenericConversionTester("flac","mp3");
+        }
+        [TestMethod]
+        public void TestFlacToWav()
+        {
+            GenericConversionTester("flac", "wav");
         }
         
         [TestMethod]
         public void TestMp3ToWav()
         {
-            var inputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo.mp3";
-            var outputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo.wav";
-            
-            //Delete pre-existing wav file
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
-            }
-
-            //Create new wav using conversion
-            var convertedFile = FileConvert(inputFile, outputFile);
-
-            var mp3Metadata = GetMetadata(inputFile);
-            var wavMetadata = GetMetadata(outputFile);
-
-            Assert.IsNotNull(convertedFile);
-            Assert.AreEqual(wavMetadata.AudioData.SampleRate, "22050 Hz");
-            Assert.AreEqual(wavMetadata.AudioData.Format, "pcm_s16le ([1][0][0][0] / 0x0001)");
-            Assert.AreEqual(mp3Metadata.AudioData.SampleRate, wavMetadata.AudioData.SampleRate);
+            GenericConversionTester("mp3","wav");
         }
-        
         [TestMethod]
         public void TestMp3ToFlac()
         {
-            var inputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo.mp3";
-            var outputFile = "..\\..\\..\\..\\RC-SpeechToText.Tests\\TestFiles\\demo.flac";
-            
-            //Delete pre-existing flac file
-            if (File.Exists(outputFile))
-            {
-                File.Delete(outputFile);
-            }
-
-            //Create new flac using conversion
-            var convertedFile = FileConvert(inputFile, outputFile);
-
-            var mp3Metadata = GetMetadata(inputFile);
-            var wavMetadata = GetMetadata(outputFile);
-
-            Assert.IsNotNull(convertedFile);
-            Assert.AreEqual(wavMetadata.AudioData.SampleRate, "22050 Hz");
-            Assert.AreEqual(wavMetadata.AudioData.Format, "flac");
-            Assert.AreEqual(mp3Metadata.AudioData.SampleRate, wavMetadata.AudioData.SampleRate);
+            GenericConversionTester("mp3", "flac");
+        }
+        
+        [TestMethod]
+        public void TestWavToFlac()
+        {
+            GenericConversionTester("wav", "flac");
+        }
+        [TestMethod]
+        public void TestWavToMp3()
+        {
+            GenericConversionTester("wav","mp3");
         }
     }
 }
