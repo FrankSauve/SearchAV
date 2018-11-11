@@ -11,6 +11,7 @@ interface State {
     manualTranscript: string,
     accuracy: number
     editTranscription: boolean,
+    saveTranscription: boolean,
     textarea: boolean,
     submitEdit: boolean,
     editSuccess: boolean,
@@ -30,6 +31,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           fullGoogleResponse: null,
           manualTranscript: '',
           editTranscription: false,
+          saveTranscription: false,
           textarea: false,
           submitEdit: false,
           accuracy: 0,
@@ -84,6 +86,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             .catch(err => console.log(err));
     }
 
+    public saveTranscription = () => {
+
+
+
+    }
   public onAddAudioFile = (e: any) => {
       this.setState({audioFile: e.target.files[0]})
   }
@@ -121,16 +128,22 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ 'editSuccess': false })
     }
 
+   
     
 
     editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
+    saveTranscriptionButton = <a className="button is-info is-rounded" onClick={this.saveTranscription}> Save </a>
 
+
+    
+
+        
     submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
-    searchForm =
-        <div className="field is-horizontal">
-            <a className="button is-primary" onClick={this.searchTranscript}> Search </a>
-            <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
-        </div>
+    searchForm = <a className="button is-primary" onClick={this.searchTranscript}> Search </a>
+    inputField = <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
+        
+
+    
     
 
   public render() {
@@ -197,8 +210,14 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                                         rows={6} //Would be nice to adapt this to the number of lines in the future
                                         defaultValue={this.state.automatedTranscript}
                                       /> : null}
-                  {this.state.submitEdit ? this.submitEditButton : null}
-                  {this.state.automatedTranscript == '' ? null : this.searchForm}
+                  
+                  <div className="field is-grouped">
+                      <p className = "control">  {this.state.submitEdit ? this.submitEditButton : null} </p>
+                      <p className = "control"> {this.state.automatedTranscript == '' ? null : this.saveTranscriptionButton} </p>
+                      <p className="control"> {this.state.automatedTranscript == '' ? null : this.searchForm}  </p>
+                      <p className="control"> {this.state.automatedTranscript == '' ? null : this.inputField}  </p>
+
+                  </div>
           
             <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
