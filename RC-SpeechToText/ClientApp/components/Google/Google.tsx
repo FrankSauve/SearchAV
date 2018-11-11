@@ -3,12 +3,14 @@ import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
 
 interface State { 
-  audioFile: any,
-  srtFile: any,
-  automatedTranscript :  string,
-  manualTranscript: string,
-  accuracy : number
-  loading: boolean
+    audioFile: any,
+    audioFileTranscription: any, 
+    srtFile: any,
+    automatedTranscript: string,
+    automatedTranscript2: string,
+    manualTranscript: string,
+    accuracy : number
+    loading: boolean
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
@@ -17,8 +19,10 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
       this.state = {
           audioFile: null,
+          audioFileTranscription: null, 
           srtFile: null,
           automatedTranscript: '',
+          automatedTranscript2: '',
           manualTranscript: '',
           accuracy: 0,
           loading: false
@@ -31,7 +35,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
       const formData = new FormData();
       formData.append('audioFile', this.state.audioFile)
       formData.append('srtFile', this.state.srtFile)
-
+      
       const config = {
           headers: {
               'content-type': 'multipart/form-data'
@@ -47,9 +51,36 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           .catch(err => console.log(err));
   }
 
+
+    public getGoogleTranscription = () => {
+        //TODO: ONCE WE HAVE THE URL/FILE PATH IN THE SERVER, CALL THE TRANSCRIPTION CONTROLLER HERE.
+        this.setState({ 'loading': true })
+
+        const formData = new FormData();
+        formData.append('audioFileTranscription', this.state.audioFileTranscription)
+
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
+        axios.post('/api/googletranscription/googlespeechtotext2', formData, config)
+            .then(res => {
+                this.setState({ 'loading': false });
+                this.setState({ 'automatedTranscript2': res.data.googleTranscriptionResult.alternatives[0].transcript });
+            })
+            .catch(err => console.log(err));
+    }
+
   public onAddAudioFile = (e: any) => {
-      this.setState({audioFile: e.target.files[0]})
-  }
+      this.setState({ audioFile: e.target.files[0] })
+    }
+
+
+    public onAddAudioFileTranscription = (e: any) => {
+        //TODO: ONCE THE SERVER IS CONNECTED, SAVE THE FILE IN THE SERVER AND GET THE FILE URL OR PATH IN THE SERVER.
+        this.setState({audioFileTranscription: e.targer.files[0]})
+    }
 
   public onAddSrtFile = (e: any) => {
       this.setState({srtFile: e.target.files[0]})
@@ -102,18 +133,45 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             </div>
 
             <div className="level">
-                {this.state.loading ? <a className="button is-danger is-loading"></a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>}
+                {this.state.loading ? <a className="button is-danger is-loading"></a> : <a className="button is-danger" onClick={this.getGoogleSample}>Test Accuracy</a>}
             </div>
 
-            
             <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
             <p>{this.state.automatedTranscript}</p>
-          
+
             <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
-          
+
             <h3 className="title is-3">{this.state.accuracy == 0 ? null : 'Accuracy'}</h3>
             <p>{this.state.accuracy == 0 ? null : this.state.accuracy}</p>
+
+            <div className="level">
+                <div className="file has-name">
+                    <label className="file-label">
+                        <input className="file-input" type="file" name="resume" onChange={this.onAddAudioFileTranscription} />
+                        <span className="file-cta">
+                            <span className="file-icon">
+                                <i className="fas fa-upload"></i>
+                            </span>
+                            <span className="file-label">
+                                Fichier Audio…
+                            </span>
+                        </span>
+
+                        <span className="file-name">
+                            {this.state.audioFileTranscription == null ? null : this.state.audioFileTranscription.name}
+                        </span>
+                    </label>
+                </div>
+
+            </div>
+
+            <div className="level">
+                {this.state.loading ? <a className="button is-danger is-loading"></a> : <a className="button is-danger" onClick={this.getGoogleTranscription}>Transcript</a>}
+            </div>
+
+            <h3 className="title is-3">{this.state.automatedTranscript2 == '' ? null : 'Automated transcript'}</h3>
+            <p>{this.state.automatedTranscript2}</p>
           
         </div>
       </div>

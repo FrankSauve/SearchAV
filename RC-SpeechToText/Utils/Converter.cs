@@ -2,13 +2,20 @@
 using MediaToolkit;
 using MediaToolkit.Model;
 using MediaToolkit.Options;
+using Microsoft.AspNetCore.Mvc;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
 namespace RC_SpeechToText.Utils
 {
+    [Route("converter")]
     public class Converter
     {
+
+        //TODO: ADD A METHOD THAT WILL SELECT THE METHOD DEPENDING ON WHICH TYPE IS THE FILE. IT WILL ALSO RETURN THE FILE IN IFORM FORMAT.
+
+        //TODO: ADD A METHOD THAT WILL DELETE THE CONVERTED FILE FROM THE SERVER ONCE WE ARE DONE WITH IT (ONCE THE TRANSCRIPTION IS DONE). 
+
         public string VideoToAudio()
         {
             var inputLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.mp4";

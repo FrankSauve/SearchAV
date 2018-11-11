@@ -42,6 +42,33 @@ namespace RC_SpeechToText.Controllers
         }
     }
 
+    [Route("api/[controller]")]
+    public class GoogleTranscription : Controller
+    {
+        public SpeechRecognitionResult GoogleTranscriptionResult { get; set; }
+
+        [HttpPost("[action]")]
+        public GoogleTranscription GoogleSpeechToText2(IFormFile audioFileConverted)
+        {
+            var speech = SpeechClient.Create(); 
+            var response = speech.Recognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                LanguageCode = "fr-ca",
+                EnableWordTimeOffsets = true
+            }, RecognitionAudio.FromStream(audioFileConverted.OpenReadStream())); // Add file name here
+            
+            var googleTranscriptionResult = new GoogleTranscription
+            {
+                GoogleTranscriptionResult = response.Results[0]
+            };
+
+            return googleTranscriptionResult;
+        }
+
+    }
+
+
     public class GoogleResult
     {
         public SpeechRecognitionResult GoogleResponse { get; set; }
