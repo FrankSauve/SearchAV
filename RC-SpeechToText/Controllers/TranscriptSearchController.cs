@@ -22,7 +22,20 @@ namespace RC_SpeechToText.Controllers
 
             //Check if the search terms are in the transcript
             List<string> timeStampOfTerms = new List<string>(); // Saves all instances of words timestamps
-            string[] arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
+            searchTerms = searchTerms.Trim();
+
+            string[] arrayTerms;
+
+            //Make sure the user did not pass an empty string
+            if (searchTerms != null)
+            {
+                arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
+            }
+            else {
+                return "";
+            }
+                
+
             Words[] words = fullResponse.Words; // For clearer code instead of calling the full variable
 
             //First check if serch terms are in the transcript, if they are look at where the word instances are located
@@ -47,7 +60,7 @@ namespace RC_SpeechToText.Controllers
                                 else if (words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase) && j == arrayTerms.Length - 1)
                                 {
                                     //Adding the timestamp in the appropriate format
-                                    timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"hh\:mm\:ss\:fff"));
+                                    timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"hh\:mm\:ss"));
                                     i = i + j;
 
                                 }
@@ -60,10 +73,9 @@ namespace RC_SpeechToText.Controllers
                         }
                     }
                 }
+
+            //Getting all timestamps and converting them to string to make it easier when passing to frontend
             var result = String.Join(", ", timeStampOfTerms.ToArray());
-
-
-
 
             return result;
 

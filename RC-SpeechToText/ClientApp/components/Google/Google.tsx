@@ -16,6 +16,7 @@ interface State {
     editSuccess: boolean,
     loading: boolean
     searchTerms: string,
+    timestamps: string,
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
@@ -36,6 +37,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           editSuccess: false,
           loading: false,
           searchTerms: '',
+          timestamps: '',
       }
   }
 
@@ -61,7 +63,6 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'manualTranscript': res.data.manualTranscript });
               this.setState({ 'accuracy': res.data.accuracy });
               this.setState({ 'editSuccess': false });
-              console.log(this.state.fullGoogleResponse);
           })
           .catch(err => console.log(err));
     }
@@ -80,7 +81,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
         axios.post('/api/TranscriptSearch/SearchTranscript', formData, config)
             .then(res => {
-                console.log(res);
+                this.setState({'timestamps':res.data});
             })
             .catch(err => console.log(err));
     }
@@ -200,6 +201,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                                       /> : null}
                   {this.state.submitEdit ? this.submitEditButton : null}
                   {this.state.automatedTranscript == '' ? null : this.searchForm}
+                  {this.state.timestamps == '' ? null : <p> Results : {this.state.timestamps} </p> }
           
             <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
