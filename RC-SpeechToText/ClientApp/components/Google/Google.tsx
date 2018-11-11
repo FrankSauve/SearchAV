@@ -60,7 +60,8 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'editTranscription': true });
               this.setState({ 'manualTranscript': res.data.manualTranscript });
               this.setState({ 'accuracy': res.data.accuracy });
-              this.setState({ 'editSuccess': false })
+              this.setState({ 'editSuccess': false });
+              console.log(this.state.fullGoogleResponse);
           })
           .catch(err => console.log(err));
     }
@@ -69,12 +70,12 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
         const formData = new FormData();
         formData.append('searchTerms', this.state.searchTerms)
-       //formData.append('test', this.state.fullGoogleResponse)
+        formData.append('jsonResponse', JSON.stringify(this.state.fullGoogleResponse))
 
         const config = {
             headers: {
-                'content-type': 'multipart/form-data'
-            }
+                'content-type': 'application/json'
+            },
         }
 
         axios.post('/api/TranscriptSearch/SearchTranscript', formData, config)
