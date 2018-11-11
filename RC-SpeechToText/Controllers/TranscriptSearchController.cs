@@ -21,22 +21,54 @@ namespace RC_SpeechToText.Controllers
             FullGoogleResponse fullResponse = JsonConvert.DeserializeObject<FullGoogleResponse>(jsonResponse);
 
             //Check if the search terms are in the transcript
-            List<int> instancesOfTerms; //Saves all instances to get word index and ge timestamp
-            int indexPosition = 0; //Make sure we dont go out of subscript range when searching through transcription
+            List<string> timeStampOfTerms = new List<string>(); // Saves all instances of words timestamps
+            string[] arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
+            Words[] words = fullResponse.Words; // For clearer code instead of calling the full variable
 
             //First check if serch terms are in the transcript, if they are look at where the word instances are located
             if (fullResponse.Transcript.IndexOf(searchTerms, StringComparison.OrdinalIgnoreCase) >= 0) {
 
-                return "Exists in transcript";
+                //For each words check if it is what we were lonking for.
+                for (int i = 0; i < words.Length; i++) {
 
+                    //If first word of search term is equal to this current word, check if consecutive terms are equal.
+                    if (words[i].Word.Equals(arrayTerms[0], StringComparison.InvariantCultureIgnoreCase)) {
+                        for (int j = 0; j < arrayTerms.Length; j++) {
 
+                            //Make sure j doesn't go out of words range
+                            if (j < words.Length)
+                            {
+                                // If the next words in the sequence aren't the same break
+                                if (!words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    break;
+                                }
+                                //If the last words we are looking for are equal, add this timestamp to our current list and increment i.
+                                else if (words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase) && j == arrayTerms.Length - 1)
+                                {
+                                    //Adding the timestamp in the appropriate format
+                                    timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"hh\:mm\:ss\:fff"));
+                                    i = i + j;
+
+                                }
+                            }
+                            else {
+                                break;
+                            }
+                                
             }
-            else {
-                return "Does not exist in transcript";
-            }
+                        }
+                    }
+                }
+            var result = String.Join(", ", timeStampOfTerms.ToArray());
 
+
+
+
+            return result;
 
         }
+      
     }
 
     public class FullGoogleResponse {
