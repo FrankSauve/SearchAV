@@ -65,6 +65,9 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'editSuccess': false })
           })
           .catch(err => console.log(err));
+
+      console.log(this.state.fullGoogleResponse);
+
     }
 
     public searchTranscript = () => {
@@ -87,9 +90,20 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
     }
 
     public saveTranscription = () => {
+        const formData = new FormData();
+        formData.append('JSON', JSON.stringify(this.state.fullGoogleResponse))
 
+        const config = {
+            headers: {
+                'content-type': 'application/json'
+            }
+        }
 
-
+        axios.post('/api/SavingTranscripts/SaveTranscript', formData, config)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => console.log(err));
     }
   public onAddAudioFile = (e: any) => {
       this.setState({audioFile: e.target.files[0]})
@@ -146,7 +160,8 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
     
     
 
-  public render() {
+    public render() {
+        console.log(this.state.fullGoogleResponse);
       return (
       <div>
           <div className="container" >
