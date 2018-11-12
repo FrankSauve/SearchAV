@@ -25,7 +25,7 @@ namespace RC_SpeechToText.Controllers
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
             {
-                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                Encoding = RecognitionConfig.Types.AudioEncoding.Flac,
                 LanguageCode = "fr-ca",
                 EnableWordTimeOffsets = true
             }, RecognitionAudio.FromStream(audioFile.OpenReadStream())); // Add file name here
