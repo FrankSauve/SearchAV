@@ -9,12 +9,16 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\Prototyping\**" />
+    <Compile Remove="Form\**" />
     <Compile Remove="Videos\**" />
     <Content Remove="Controllers\Prototyping\**" />
+    <Content Remove="Form\**" />
     <Content Remove="Videos\**" />
     <EmbeddedResource Remove="Controllers\Prototyping\**" />
+    <EmbeddedResource Remove="Form\**" />
     <EmbeddedResource Remove="Videos\**" />
     <None Remove="Controllers\Prototyping\**" />
+    <None Remove="Form\**" />
     <None Remove="Videos\**" />
   </ItemGroup>
 
@@ -32,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Form\" />
+    <Folder Include="Audio\" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
