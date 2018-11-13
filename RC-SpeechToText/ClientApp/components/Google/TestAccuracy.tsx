@@ -16,7 +16,7 @@ interface State {
     loading: boolean
 }
 
-export default class Google extends React.Component<RouteComponentProps<{}>, State> {
+export default class TestAccuracy extends React.Component<RouteComponentProps<{}>, State> {
     constructor(props: any) {
         super(props);
 
