@@ -59,7 +59,7 @@ export default class Transcription extends React.Component<RouteComponentProps<{
                                 <i className="fas fa-upload"></i>
                             </span>
                             <span className="file-label">
-                                Fichier Audio…
+                                Fichier...
                             </span>
                         </span>
 
@@ -72,7 +72,7 @@ export default class Transcription extends React.Component<RouteComponentProps<{
             </div>
 
             <div className="level">
-                {this.state.loading ? <a className="button is-danger is-loading"></a> : <a className="button is-danger" onClick={this.getGoogleTranscription}>Transcript</a>}
+                {this.state.loading ? <a className="button is-danger is-loading">Go</a> : <a className="button is-danger" onClick={this.getGoogleTranscription}>Go</a>}
             </div>
 
             <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>

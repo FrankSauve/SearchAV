@@ -34,7 +34,7 @@ namespace RC_SpeechToText.Controllers
             string convertedFileLocation = converter.FileToWav(filePath);
 
             //call the method that will get the transcription
-            GoogleTranscriptionResult result = GoogleSpeechToText2(convertedFileLocation);
+            GoogleTranscriptionResult result = GoogleSpeechToText(convertedFileLocation);
 
             //delete the converted file
             converter.DeleteMonoFile(convertedFileLocation); 
@@ -44,9 +44,7 @@ namespace RC_SpeechToText.Controllers
 
         }
 
-
-    [HttpPost("[action]")]
-        public  GoogleTranscriptionResult GoogleSpeechToText2(string inputFilePath)
+        private  GoogleTranscriptionResult GoogleSpeechToText(string inputFilePath)
         {
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
