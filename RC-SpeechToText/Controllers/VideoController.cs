@@ -13,11 +13,17 @@ namespace RC_SpeechToText.Controllers
 public class VideoController : Controller
 {
 VideoDataAccessLayer videoObj = new VideoDataAccessLayer();
+        private SearchAVContext context;
 
-// GET: api/<controller>
-[HttpGet]
+        public VideoController(SearchAVContext context)
+        {
+            this.context = context;
+        }
+
+        // GET: api/<controller>
+        [HttpGet]
 [Route("api/Video/Index")]
-public IEnumerable<Videos> Index()
+public async Task<IEnumerable<Videos>> Index()
 {
     return videoObj.GetAllVideos();
 }

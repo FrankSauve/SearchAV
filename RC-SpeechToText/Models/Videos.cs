@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RC_SpeechToText.Models
 {
-    public partial class Videos
+    public  class Videos
     {
         public int VideoId { get; set; }
         public string Title { get; set; }

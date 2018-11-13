@@ -15,11 +15,11 @@ loading: boolean;
 
 export class GetVideo extends React.Component<RouteComponentProps<{}>, GetVideoDataState>
 {
-constructor() {
-    super();
+    constructor(props: any) {
+    super(props);
     this.state = { empList: [], loading: true };
 
-    fetch('api/Video/Index')
+    fetch('api/VideoController/GetAllVideos')
         .then(response => response.json() as Promise<VideoData[]>)
         .then(data => {
             this.setState({ empList: data, loading: false });
@@ -38,7 +38,7 @@ public render() {
         <h1>Video Data</h1>
         <p>All Videos</p>
         <p>
-            <Link to="/addeVideo">Create New</Link>
+            <Link to="/addVideo">Create New</Link>
         </p>
         {contents}
     </div>;
