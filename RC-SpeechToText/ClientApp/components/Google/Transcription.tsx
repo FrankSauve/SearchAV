@@ -34,7 +34,7 @@ export default class Transcription extends React.Component<RouteComponentProps<{
         axios.post('/api/transcription/ManageTranscription', formData, config)
             .then(res => {
                 this.setState({ 'loading': false });
-                this.setState({ 'automatedTranscript': res.data.googleTranscriptionResult.alternatives[0].transcript });
+                this.setState({ 'automatedTranscript': res.data.transcription.alternatives[0].transcript });
             })
             .catch(err => console.log(err));
     }
