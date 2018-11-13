@@ -7,6 +7,7 @@ interface State {
     srtFile: any,
     automatedTranscript: string,
     showAutomatedTranscript: boolean,
+    fullGoogleResponse: any,
     manualTranscript: string,
     accuracy: number
     editTranscription: boolean,
@@ -14,6 +15,8 @@ interface State {
     submitEdit: boolean,
     editSuccess: boolean,
     loading: boolean
+    searchTerms: string,
+    timestamps: string,
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
@@ -25,13 +28,16 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           srtFile: null,
           automatedTranscript: '',
           showAutomatedTranscript: false,
+          fullGoogleResponse: null,
           manualTranscript: '',
           editTranscription: false,
           textarea: false,
           submitEdit: false,
           accuracy: 0,
           editSuccess: false,
-          loading: false
+          loading: false,
+          searchTerms: '',
+          timestamps: '',
       }
   }
 
@@ -51,14 +57,34 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           .then(res => {
               this.setState({ 'loading': false });
               this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
+              this.setState({ 'fullGoogleResponse': res.data.googleResponse.alternatives[0] });
               this.setState({ 'showAutomatedTranscript': true })
               this.setState({ 'editTranscription': true });
               this.setState({ 'manualTranscript': res.data.manualTranscript });
               this.setState({ 'accuracy': res.data.accuracy });
-              this.setState({ 'editSuccess': false })
+              this.setState({ 'editSuccess': false });
           })
           .catch(err => console.log(err));
-  }
+    }
+
+    public searchTranscript = () => {
+
+        const formData = new FormData();
+        formData.append('searchTerms', this.state.searchTerms)
+        formData.append('jsonResponse', JSON.stringify(this.state.fullGoogleResponse))
+
+        const config = {
+            headers: {
+                'content-type': 'application/json'
+            },
+        }
+
+        axios.post('/api/TranscriptSearch/SearchTranscript', formData, config)
+            .then(res => {
+                this.setState({'timestamps':res.data});
+            })
+            .catch(err => console.log(err));
+    }
 
   public onAddAudioFile = (e: any) => {
       this.setState({audioFile: e.target.files[0]})
@@ -70,6 +96,10 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
    public handleChange = (e: any) => {
         this.setState({ automatedTranscript: e.target.value })
+    }
+
+    public handleSearch = (e: any) => {
+        this.setState({ searchTerms: e.target.value })
     }
     
    public editTranscription = () => {
@@ -93,9 +123,17 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ 'editSuccess': false })
     }
 
+    
+
     editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
 
     submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
+    searchForm =
+        <div className="field is-horizontal">
+            <a className="button is-primary" onClick={this.searchTranscript}> Search </a>
+            <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
+        </div>
+    
 
   public render() {
       return (
@@ -162,6 +200,8 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                                         defaultValue={this.state.automatedTranscript}
                                       /> : null}
                   {this.state.submitEdit ? this.submitEditButton : null}
+                  {this.state.automatedTranscript == '' ? null : this.searchForm}
+                  {this.state.timestamps == '' ? null : <p> Results : {this.state.timestamps} </p> }
           
             <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
