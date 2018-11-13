@@ -19,9 +19,8 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns>GoogleResult</returns>
         [HttpPost("[action]")]
-        public GoogleResult GoogleSpeechToText(IFormFile audioFile, IFormFile srtFile)
+        public GoogleResult GoogleSpeechToTextWithSrt(IFormFile audioFile, IFormFile srtFile)
         {
-
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
             {

@@ -9,12 +9,16 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\Prototyping\**" />
+    <Compile Remove="Form\**" />
     <Compile Remove="Videos\**" />
     <Content Remove="Controllers\Prototyping\**" />
+    <Content Remove="Form\**" />
     <Content Remove="Videos\**" />
     <EmbeddedResource Remove="Controllers\Prototyping\**" />
+    <EmbeddedResource Remove="Form\**" />
     <EmbeddedResource Remove="Videos\**" />
     <None Remove="Controllers\Prototyping\**" />
+    <None Remove="Form\**" />
     <None Remove="Videos\**" />
   </ItemGroup>
 
@@ -35,6 +39,10 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Audio\" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
