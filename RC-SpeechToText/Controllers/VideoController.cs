@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RC_SpeechToText.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,15 +12,18 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
 public class VideoController : Controller
 {
-    // GET: api/<controller>
-    [HttpGet]
-    public IEnumerable<string> Get()
-    {
-        return new string[] { "value1", "value2" };
-    }
+        VideoDataAccessLayer video = new VideoDataAccessLayer();
 
-    // GET api/<controller>/5
-    [HttpGet("{id}")]
+        // GET: api/<controller>
+        [HttpGet]
+        [Route("api/Video/Index")]
+        public IEnumerable<Videos> Index()
+        {
+            return video.GetAllVideos();
+        }
+
+        // GET api/<controller>/5
+        [HttpGet("{id}")]
     public string Get(int id)
     {
         return "value";
