@@ -12,25 +12,25 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
 public class VideoController : Controller
 {
-        VideoDataAccessLayer video = new VideoDataAccessLayer();
+        VideoDataAccessLayer videoObj = new VideoDataAccessLayer();
 
         // GET: api/<controller>
         [HttpGet]
         [Route("api/Video/Index")]
         public IEnumerable<Videos> Index()
         {
-            return video.GetAllVideos();
+            return videoObj.GetAllVideos();
         }
 
-        // GET api/<controller>/5
-        [HttpGet("{id}")]
-    public string Get(int id)
-    {
-        return "value";
-    }
+        [HttpPost]
+        [Route("api/Video/Add")]
+        public int Create(Videos video)
+        {
+            return videoObj.AddVideo(video);
+        }
 
-    // POST api/<controller>
-    [HttpPost]
+        // POST api/<controller>
+        [HttpPost]
     public void Post([FromBody]string value)
     {
     }
