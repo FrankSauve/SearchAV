@@ -36,6 +36,13 @@ public class VideoController : Controller
             return videoObj.AddVideo(video, path);
         }
 
+        [HttpPost]
+        [Route("api/Video/Add")]
+        public int CreatePath(Videos path)
+        {
+            return videoObj.AddVideo(path);
+        }
+
         // POST api/<controller>
         [HttpPost]
     public void Post([FromBody]string value)
