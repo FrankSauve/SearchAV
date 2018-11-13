@@ -12,49 +12,49 @@ namespace RC_SpeechToText.Controllers
 [Route("api/[controller]")]
 public class VideoController : Controller
 {
-    VideoDataAccessLayer videoObj = new VideoDataAccessLayer();
+VideoDataAccessLayer videoObj = new VideoDataAccessLayer();
 
-    // GET: api/<controller>
-    [HttpGet]
-    [Route("api/Video/Index")]
-    public IEnumerable<Videos> Index()
-    {
-        return videoObj.GetAllVideos();
-    }
+// GET: api/<controller>
+[HttpGet]
+[Route("api/Video/Index")]
+public IEnumerable<Videos> Index()
+{
+    return videoObj.GetAllVideos();
+}
 
-    [HttpPost]
-    [Route("api/Video/Add")]
-    public int Create(Videos video)
-    {
-        return videoObj.AddVideo(video);
-    }
+[HttpPost]
+[Route("api/Video/Add")]
+public int Create(Videos video)
+{
+    return videoObj.AddVideo(video);
+}
 
-    [HttpPost]
-    [Route("api/Video/Add")]
-    public int Create(Videos video, Videos path)
-    {
-        return videoObj.AddVideo(video, path);
-    }
+[HttpPost]
+[Route("api/Video/Add")]
+public int Create(Videos video, Videos path)
+{
+    return videoObj.AddVideo(video, path);
+}
 
-    [HttpPost]
-    [Route("api/Video/Add")]
-    public int CreatePath(Videos path)
-    {
-        return videoObj.AddVideo(path);
-    }
+[HttpPost]
+[Route("api/Video/Add")]
+public int CreatePath(Videos path)
+{
+    return videoObj.AddVideo(path);
+}
 
-    [HttpGet]
-    [Route("api/Video/Details/{id}")]
-    public Videos Details(int id)
-    {
-        return videoObj.GetVideo(id);
-    }
+[HttpGet]
+[Route("api/Video/Details/{id}")]
+public Videos Details(int id)
+{
+    return videoObj.GetVideo(id);
+}
 
-    [HttpDelete]
-    [Route("api/Video/Delete/{id}")]
-    public int Delete(int id)
-    {
-        return videoObj.RemoveVideo(id);
-    }
+[HttpDelete]
+[Route("api/Video/Delete/{id}")]
+public int Delete(int id)
+{
+    return videoObj.RemoveVideo(id);
+}
 }
 }
