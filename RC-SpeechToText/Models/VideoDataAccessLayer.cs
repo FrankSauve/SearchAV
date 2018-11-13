@@ -61,5 +61,18 @@ namespace RC_SpeechToText.Models
                 throw;
             }
         }
+
+        public Videos GetVideo(int id)
+        {
+            try
+            {
+                Videos video = db.Videos.Find(id);
+                return video;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }
