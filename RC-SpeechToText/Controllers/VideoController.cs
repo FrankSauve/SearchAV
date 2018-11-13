@@ -43,14 +43,15 @@ public class VideoController : Controller
             return videoObj.AddVideo(path);
         }
 
-        // POST api/<controller>
-        [HttpPost]
-    public void Post([FromBody]string value)
-    {
-    }
+        [HttpGet]
+        [Route("api/Video/Details/{id}")]
+        public Videos Details(int id)
+        {
+            return videoObj.GetVideo(id);
+        }
 
-    // PUT api/<controller>/5
-    [HttpPut("{id}")]
+        // PUT api/<controller>/5
+        [HttpPut("{id}")]
     public void Put(int id, [FromBody]string value)
     {
     }
