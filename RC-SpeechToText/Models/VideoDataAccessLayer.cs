@@ -20,5 +20,18 @@ namespace RC_SpeechToText.Models
                 throw;
             }
         }
+        public int AddVideo(Videos video)
+        {
+            try
+            {
+                db.Videos.Add(video);
+                db.SaveChanges();
+                return 1;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }
