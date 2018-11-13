@@ -5,89 +5,89 @@ using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Models
 {
-    public class VideoDataAccessLayer
+public class VideoDataAccessLayer
 {
-        SearchAVContext db = new SearchAVContext();
+    SearchAVContext db = new SearchAVContext();
 
-        public IEnumerable<Videos> GetAllVideos()
+    public IEnumerable<Videos> GetAllVideos()
+    {
+        try
         {
-            try
-            {
-                return db.Videos.ToList();
-            }
-            catch
-            {
-                throw;
-            }
+            return db.Videos.ToList();
         }
-        public int AddVideo(Videos video)
+        catch
         {
-            try
-            {
-                db.Videos.Add(video);
-                db.SaveChanges();
-                return 1;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public int AddVideo(Videos video, Videos path)
-        {
-            try
-            {
-                db.Videos.Add(video);
-                db.Videos.Add(path);
-                db.SaveChanges();
-                return 1;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-        public int AddPath(Videos path)
-        {
-            try
-            {
-                db.Videos.Add(path);
-                db.SaveChanges();
-                return 1;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public Videos GetVideo(int id)
-        {
-            try
-            {
-                Videos video = db.Videos.Find(id);
-                return video;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        public int RemoveVideo(int id)
-        {
-            try
-            {
-                Videos video = db.Videos.Find(id);
-                db.Videos.Remove(video);
-                db.SaveChanges();
-                return 1;
-            }
-            catch
-            {
-                throw;
-            }
+            throw;
         }
     }
+    public int AddVideo(Videos video)
+    {
+        try
+        {
+            db.Videos.Add(video);
+            db.SaveChanges();
+            return 1;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public int AddVideo(Videos video, Videos path)
+    {
+        try
+        {
+            db.Videos.Add(video);
+            db.Videos.Add(path);
+            db.SaveChanges();
+            return 1;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+    public int AddPath(Videos path)
+    {
+        try
+        {
+            db.Videos.Add(path);
+            db.SaveChanges();
+            return 1;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public Videos GetVideo(int id)
+    {
+        try
+        {
+            Videos video = db.Videos.Find(id);
+            return video;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public int RemoveVideo(int id)
+    {
+        try
+        {
+            Videos video = db.Videos.Find(id);
+            db.Videos.Remove(video);
+            db.SaveChanges();
+            return 1;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}
 }
