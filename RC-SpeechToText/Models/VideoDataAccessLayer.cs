@@ -74,5 +74,20 @@ namespace RC_SpeechToText.Models
                 throw;
             }
         }
+
+        public int RemoveVideo(int id)
+        {
+            try
+            {
+                Videos video = db.Videos.Find(id);
+                db.Videos.Remove(video);
+                db.SaveChanges();
+                return 1;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }
