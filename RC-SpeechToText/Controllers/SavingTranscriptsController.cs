@@ -22,8 +22,10 @@ namespace RC_SpeechToText.Controllers
         {
             string fileName = SubFile.FileName;
             
+            // Create the directory
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\transcriptions");
 
-            string path = System.IO.Path.GetFullPath(@"..\transcriptions\"+fileName+".json");
+            string path = System.IO.Path.GetFullPath(@".\transcriptions\"+fileName+".json");
             // This text is added only once to the file.
             if (!System.IO.File.Exists(path))
             {
@@ -38,14 +40,6 @@ namespace RC_SpeechToText.Controllers
                 Console.WriteLine(readText);
 
             }
-
-
-
-
-
-
-
-
         }
     }
 }

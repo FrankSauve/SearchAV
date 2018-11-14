@@ -92,6 +92,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
     }
 
     public saveTranscription = () => {
+        this.handleSubmit();
         const formData = new FormData();
         formData.append('JSON', JSON.stringify(this.state.fullGoogleResponse))
         formData.append('SubFile', this.state.srtFile)
@@ -151,7 +152,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         </div>
 
       const editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
-      const submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
+      const submitEditButton = <a className="button is-danger" onClick={this.saveTranscription}>Save</a>
 
       return (
       <div>
