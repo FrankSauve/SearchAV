@@ -4,8 +4,8 @@ import { Home } from './components/Home';
 import Navbar from './components/Navbar/Navbar';
 import TestAccuracy from './components/Google/TestAccuracy';
 import Transcription from './components/Google/Transcription'; 
-import { GetVideo } from './GetVideo';
-import { AddVideo } from './AddVideo';
+import { GetVideo } from './components/Videos/GetVideo';
+import { AddVideo } from './components/Videos/AddVideo';
 
 
 export const routes = <div>

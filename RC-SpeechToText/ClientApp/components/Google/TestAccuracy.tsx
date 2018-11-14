@@ -123,19 +123,15 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ 'editSuccess': false })
     }
 
-    
-
-    editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
-
-    submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
-    searchForm =
-        <div className="field is-horizontal">
-            <a className="button is-primary" onClick={this.searchTranscript}> Search </a>
+  public render() {
+      const searchForm = <div className="mg-top-30 field is-horizontal">
+            <a className="button is-danger mg-right-30" onClick={this.searchTranscript}> Search </a>
             <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
         </div>
-    
 
-  public render() {
+      const editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
+      const submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
+
       return (
       <div>
           <div className="container" >
@@ -171,7 +167,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                         <i className="fas fa-upload"></i>
                     </span>
                     <span className="file-label">
-                        Ficher SRT…
+                        Fichier SRT…
                     </span>
                     </span>
                     <span className="file-name">
@@ -191,19 +187,21 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                                       </div> : null}
             
             <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
+                  
+                  {this.state.automatedTranscript == '' ? null : searchForm}
+                  {this.state.timestamps == '' ? null : <p> Results : {this.state.timestamps} </p> }
+
                   <p>{this.state.showAutomatedTranscript ? this.state.automatedTranscript : ''}</p>
-                  {this.state.editTranscription ? this.editTranscriptionButton : null}
+                  {this.state.editTranscription ? editTranscriptionButton : null}
                   {this.state.textarea ? <textarea
                                         className="textarea"
                                         onChange={this.handleChange}
                                         rows={6} //Would be nice to adapt this to the number of lines in the future
                                         defaultValue={this.state.automatedTranscript}
                                       /> : null}
-                  {this.state.submitEdit ? this.submitEditButton : null}
-                  {this.state.automatedTranscript == '' ? null : this.searchForm}
-                  {this.state.timestamps == '' ? null : <p> Results : {this.state.timestamps} </p> }
+                  {this.state.submitEdit ? submitEditButton : null}
           
-            <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
+            <h3 className="title is-3 mg-top-30">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
           
             <h3 className="title is-3">{this.state.accuracy == 0 ? null : 'Accuracy'}</h3>

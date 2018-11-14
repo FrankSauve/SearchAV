@@ -41,12 +41,6 @@ namespace RC_SpeechToText.Controllers
         }
     }
 
-    public class GoogleResult
-    {
-        public SpeechRecognitionResult GoogleResponse { get; set; }
-        public string ManualTranscript { get; set; }
-        public double Accuracy { get; set; }
-    }
 
     public class Helpers
     {

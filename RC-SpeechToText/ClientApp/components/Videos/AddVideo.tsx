@@ -1,10 +1,9 @@
-﻿import './css/site.css';
-import 'bootstrap';
+﻿import 'bootstrap';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { BrowserRouter, Link } from 'react-router-dom';
-import * as RoutesModule from './routes';
+import * as RoutesModule from '../../routes';
 import { RouteComponentProps } from 'react-router';
 import { VideoData } from './GetVideo';
 let routes = RoutesModule.routes;
