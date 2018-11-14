@@ -92,7 +92,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
     public saveTranscription = () => {
         const formData = new FormData();
         formData.append('JSON', JSON.stringify(this.state.fullGoogleResponse))
-
+        formData.append('SubFile', this.state.srtFile)
         const config = {
             headers: {
                 'content-type': 'application/json'

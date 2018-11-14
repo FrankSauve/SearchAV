@@ -18,22 +18,29 @@ namespace RC_SpeechToText.Controllers
     public class SavingTranscriptsController : Controller
     {
         [HttpPost("[action]")]
-        public void SaveTranscript(string JSON)
+        public void SaveTranscript(string JSON, IFormFile SubFile)
         {
-            string path = System.IO.Path.GetFullPath(@"..\transcriptions\test.json");
+            string fileName = SubFile.FileName;
+            
+
+            string path = System.IO.Path.GetFullPath(@"..\transcriptions\"+fileName+".json");
             // This text is added only once to the file.
             if (!System.IO.File.Exists(path))
             {
                 // Create a file to write to.
 
                 System.IO.File.WriteAllText(path, JSON);
+            } else
+            {
+                // Open the file to read from.
+                string readText = System.IO.File.ReadAllText(path);
+                Console.WriteLine(readText);
+
             }
 
-           
 
-            // Open the file to read from.
-            //string readText = File.ReadAllText(path);
-            //Console.WriteLine(readText);
+
+
 
 
 
