@@ -11,6 +11,7 @@ interface State {
     manualTranscript: string,
     accuracy: number
     editTranscription: boolean,
+    saveTranscription: boolean,
     textarea: boolean,
     submitEdit: boolean,
     editSuccess: boolean,
@@ -31,6 +32,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           fullGoogleResponse: null,
           manualTranscript: '',
           editTranscription: false,
+          saveTranscription: false,
           textarea: false,
           submitEdit: false,
           accuracy: 0,
@@ -65,6 +67,9 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'editSuccess': false });
           })
           .catch(err => console.log(err));
+
+      console.log(this.state.fullGoogleResponse);
+
     }
 
     public searchTranscript = () => {
@@ -86,6 +91,23 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             .catch(err => console.log(err));
     }
 
+    public saveTranscription = () => {
+        this.handleSubmit();
+        const formData = new FormData();
+        formData.append('JSON', JSON.stringify(this.state.fullGoogleResponse))
+        formData.append('SubFile', this.state.srtFile)
+        const config = {
+            headers: {
+                'content-type': 'application/json'
+            }
+        }
+
+        axios.post('/api/SavingTranscripts/SaveTranscript', formData, config)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => console.log(err));
+    }
   public onAddAudioFile = (e: any) => {
       this.setState({audioFile: e.target.files[0]})
   }
@@ -130,7 +152,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         </div>
 
       const editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
-      const submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
+      const submitEditButton = <a className="button is-danger" onClick={this.saveTranscription}>Save</a>
 
       return (
       <div>

@@ -4,16 +4,16 @@ public class FullGoogleResponse {
         public Words[] Words { get; set; }
     }
 
-    public class Words {
-        public string Word { get; set; }
-        public Time StartTime { get; set; }
-        public Time EndTime { get; set; }
+public class Words {
+    public string Word { get; set; }
+    public Time StartTime { get; set; }
+    public Time EndTime { get; set; }
 
-    }
+}
 
-    public class Time {
+public class Time {
 
-        public int Seconds { get; set; }
-        public int Nanos { get; set; }
+    public int Seconds { get; set; }
+    public int Nanos { get; set; }
 
-    }
+}

@@ -7,7 +7,6 @@ namespace RC_SpeechToText.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-
     public class TranscriptSearchController : Controller
     {
         [HttpPost("[action]")]
