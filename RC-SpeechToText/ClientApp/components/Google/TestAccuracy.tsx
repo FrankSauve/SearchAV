@@ -17,6 +17,7 @@ interface State {
     editSuccess: boolean,
     loading: boolean
     searchTerms: string,
+    timestamps: string,
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
@@ -38,6 +39,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           editSuccess: false,
           loading: false,
           searchTerms: '',
+          timestamps: '',
       }
   }
 
@@ -53,7 +55,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               'content-type': 'multipart/form-data'
           }
       }
-      axios.post('/api/sampletest/googlespeechtotext', formData, config)
+      axios.post('/api/sampletest/googlespeechtotextwithsrt', formData, config)
           .then(res => {
               this.setState({ 'loading': false });
               this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
@@ -62,7 +64,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'editTranscription': true });
               this.setState({ 'manualTranscript': res.data.manualTranscript });
               this.setState({ 'accuracy': res.data.accuracy });
-              this.setState({ 'editSuccess': false })
+              this.setState({ 'editSuccess': false });
           })
           .catch(err => console.log(err));
 
@@ -74,17 +76,17 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
         const formData = new FormData();
         formData.append('searchTerms', this.state.searchTerms)
-       //formData.append('test', this.state.fullGoogleResponse)
+        formData.append('jsonResponse', JSON.stringify(this.state.fullGoogleResponse))
 
         const config = {
             headers: {
-                'content-type': 'multipart/form-data'
-            }
+                'content-type': 'application/json'
+            },
         }
 
         axios.post('/api/TranscriptSearch/SearchTranscript', formData, config)
             .then(res => {
-                console.log(res);
+                this.setState({'timestamps':res.data});
             })
             .catch(err => console.log(err));
     }
@@ -142,26 +144,15 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ 'editSuccess': false })
     }
 
-   
-    
+  public render() {
+      const searchForm = <div className="mg-top-30 field is-horizontal">
+            <a className="button is-danger mg-right-30" onClick={this.searchTranscript}> Search </a>
+            <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
+        </div>
 
-    editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
-    saveTranscriptionButton = <a className="button is-info is-rounded" onClick={this.saveTranscription}> Save </a>
+      const editTranscriptionButton = <a className="button is-danger" onClick={this.editTranscription}>Edit</a>
+      const submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
 
-
-    
-
-        
-    submitEditButton = <a className="button is-danger" onClick={this.handleSubmit}>Save</a>
-    searchForm = <a className="button is-primary" onClick={this.searchTranscript}> Search </a>
-    inputField = <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
-        
-
-    
-    
-
-    public render() {
-        console.log(this.state.fullGoogleResponse);
       return (
       <div>
           <div className="container" >
@@ -197,7 +188,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                         <i className="fas fa-upload"></i>
                     </span>
                     <span className="file-label">
-                        Ficher SRT…
+                        Fichier SRT…
                     </span>
                     </span>
                     <span className="file-name">
@@ -217,24 +208,21 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
                                       </div> : null}
             
             <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
+                  
+                  {this.state.automatedTranscript == '' ? null : searchForm}
+                  {this.state.timestamps == '' ? null : <p> Results : {this.state.timestamps} </p> }
+
                   <p>{this.state.showAutomatedTranscript ? this.state.automatedTranscript : ''}</p>
-                  {this.state.editTranscription ? this.editTranscriptionButton : null}
+                  {this.state.editTranscription ? editTranscriptionButton : null}
                   {this.state.textarea ? <textarea
                                         className="textarea"
                                         onChange={this.handleChange}
                                         rows={6} //Would be nice to adapt this to the number of lines in the future
                                         defaultValue={this.state.automatedTranscript}
                                       /> : null}
-                  
-                  <div className="field is-grouped">
-                      <p className = "control">  {this.state.submitEdit ? this.submitEditButton : null} </p>
-                      <p className = "control"> {this.state.automatedTranscript == '' ? null : this.saveTranscriptionButton} </p>
-                      <p className="control"> {this.state.automatedTranscript == '' ? null : this.searchForm}  </p>
-                      <p className="control"> {this.state.automatedTranscript == '' ? null : this.inputField}  </p>
-
-                  </div>
+                  {this.state.submitEdit ? submitEditButton : null}
           
-            <h3 className="title is-3">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
+            <h3 className="title is-3 mg-top-30">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
             <p>{this.state.manualTranscript}</p>
           
             <h3 className="title is-3">{this.state.accuracy == 0 ? null : 'Accuracy'}</h3>

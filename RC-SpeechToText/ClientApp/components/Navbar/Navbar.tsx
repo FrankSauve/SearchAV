@@ -29,9 +29,13 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                 Accueil
               </Link>
 
-              <Link className="navbar-item" to="/google">
-                Google
+              <Link className="navbar-item" to="/TestAccuracy">
+                Test Google's Accuracy
               </Link>
+
+              <Link className="navbar-item" to="/Transcription">
+                 Transcribe File
+              </Link>           
             </div>
 
             <div className="navbar-end">

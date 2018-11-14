@@ -2,20 +2,23 @@
 using MediaToolkit;
 using MediaToolkit.Model;
 using MediaToolkit.Options;
+using Microsoft.AspNetCore.Mvc;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
 namespace RC_SpeechToText.Utils
 {
+    [Route("converter")]
     public class Converter
     {
-        public string VideoToAudio()
-        {
-            var inputLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.mp4";
-            var outputLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.wav";
+        //TODO: ADD A METHOD THAT WILL DELETE THE CONVERTED FILE FROM THE SERVER ONCE WE ARE DONE WITH IT (ONCE THE TRANSCRIPTION IS DONE). 
 
-            var inputFile = new MediaFile { Filename = inputLocation };
-            var outputFile = new MediaFile { Filename = outputLocation };
+        public string FileToWav(string inputFilePath)
+        {
+            var wavFileLocation = inputFilePath.Substring(0, inputFilePath.LastIndexOf('.')+1) + "wav"; 
+
+            var inputFile = new MediaFile { Filename = inputFilePath };
+            var outputFile = new MediaFile { Filename = wavFileLocation };
 
             var conversionOptions = new ConversionOptions
             {
@@ -35,29 +38,40 @@ namespace RC_SpeechToText.Utils
             {
                 return "Conversion Unsuccessful";
             }
-            StereoToMono(outputLocation);
-            return "Conversion successful. Output file at: " + outputLocation;
+            
+            return StereoToMono(wavFileLocation);
         }
-        public String StereoToMono(String outputLocation)
+        public String StereoToMono(String wavFileLocation)
         {
-            var outputLocationMono = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan_Mono.wav";
-            var outputWaveLocation = "C:\\Users\\sarb\\Desktop\\rad\\RAD_Vegan.wav";
+            var monoFileLocation = wavFileLocation.Substring(0, wavFileLocation.LastIndexOf('.')) + "_Mono.wav";
             try
             {
-                using (var inputReader = new AudioFileReader(outputLocation))
+                using (var inputReader = new AudioFileReader(wavFileLocation))
                 {
                     var mono = new StereoToMonoSampleProvider(inputReader);
                     mono.LeftVolume = 0.0f;
                     mono.RightVolume = 1.0f;
-                    WaveFileWriter.CreateWaveFile16(outputLocationMono, mono);
+                    WaveFileWriter.CreateWaveFile16(monoFileLocation, mono);
                 }
             }
             catch (Exception ex)
             {
                 return "Conversion Unsuccessful";
             }
-            System.IO.File.Delete(outputWaveLocation);
-            return "Conversion from stereo to mono successful.";
+
+            DeleteWavFile(wavFileLocation); 
+
+            return monoFileLocation;
+        }
+
+        public void DeleteWavFile(String wavFilePath)
+        {
+            System.IO.File.Delete(wavFilePath);
+        }
+
+        public void DeleteMonoFile(String monoFilePath)
+        {
+            System.IO.File.Delete(monoFilePath);
         }
     }
 }
