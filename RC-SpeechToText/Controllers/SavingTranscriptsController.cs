@@ -34,6 +34,7 @@ namespace RC_SpeechToText.Controllers
             {
                 // Open the file to read from.
                 string readText = System.IO.File.ReadAllText(path);
+                Console.WriteLine("Here is the json file as a string again!");
                 Console.WriteLine(readText);
 
             }
