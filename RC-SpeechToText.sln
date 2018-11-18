@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RC-SpeechToText", "RC-SpeechToText\RC-SpeechToText.csproj", "{7E4453CB-D304-47AD-8FB2-B25C4BBFB084}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC-SpeechToText.Tests", "RC-SpeechToText.Tests\RC-SpeechToText.Tests.csproj", "{40C15AD9-F26A-4019-A86C-5841DF24B771}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RC-SpeechToText.Tests", "RC-SpeechToText.Tests\RC-SpeechToText.Tests.csproj", "{40C15AD9-F26A-4019-A86C-5841DF24B771}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{42D8B217-36F9-47FF-8C1A-F983161417BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{40C15AD9-F26A-4019-A86C-5841DF24B771}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40C15AD9-F26A-4019-A86C-5841DF24B771}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40C15AD9-F26A-4019-A86C-5841DF24B771}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42D8B217-36F9-47FF-8C1A-F983161417BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42D8B217-36F9-47FF-8C1A-F983161417BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42D8B217-36F9-47FF-8C1A-F983161417BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42D8B217-36F9-47FF-8C1A-F983161417BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
