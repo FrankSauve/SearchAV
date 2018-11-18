@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
+import Login from './Login';
+import Logout from './Logout';
 
 interface State {
 
@@ -39,7 +41,12 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
             </div>
 
             <div className="navbar-end">
-              
+              <div className="navbar-item">
+                <Login/>
+              </div>
+              <div className="navbar-item">
+                <Logout/>
+              </div>
             </div>
           </div>
         </nav>
