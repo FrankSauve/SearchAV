@@ -21,6 +21,9 @@ namespace RC_SpeechToText.Controllers
         [HttpPost("[action]")]
         public GoogleTranscriptionResult ManageTranscription(IFormFile audioFile)
         {
+            // Create the directory
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\transcriptions");
+
             // Saves the file to the audio directory
             var filePath = Directory.GetCurrentDirectory() + "\\Audio\\" + audioFile.FileName;
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -52,7 +55,7 @@ namespace RC_SpeechToText.Controllers
                 Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
                 LanguageCode = "fr-ca",
                 EnableWordTimeOffsets = true
-            }, RecognitionAudio.FromFile(inputFilePath)); // Add file name here
+            }, RecognitionAudio.FromFile(inputFilePath));
 
             var googleTranscriptionResult = new GoogleTranscriptionResult
             {
