@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Google.Cloud.Speech.V1;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 using System.IO;
 using RC_SpeechToText.Utils;
+using RC_SpeechToText.Models;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -31,18 +28,29 @@ namespace RC_SpeechToText.Controllers
                 audioFile.CopyTo(stream);
             }
 
-            //once we get the file path(of the uploaded file) from the server, we use it to call the converter
+            // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
             Converter converter = new Converter();
-            //call converter to convert the file to mono and bring back its file path. 
+            // Call converter to convert the file to mono and bring back its file path. 
             string convertedFileLocation = converter.FileToWav(filePath);
 
-            //call the method that will get the transcription
+            // Call the method that will get the transcription
             GoogleResult result = GoogleSpeechToText(convertedFileLocation);
 
-            //delete the converted file
-            converter.DeleteMonoFile(convertedFileLocation); 
+            // Delete the converted file
+            converter.DeleteMonoFile(convertedFileLocation);
 
-            //return the transcription
+            // Create video object
+            Video video = new Video
+            {
+                Title = audioFile.FileName,
+                VideoPath = filePath,
+                Transcription = result.GoogleResponse.Alternatives[0].Transcript
+            };
+            // Add video object to database
+            VideoDataAccessLayer videoDataAccessLayer = new VideoDataAccessLayer();
+            videoDataAccessLayer.AddVideo(video);
+
+            // Return the transcription
             return result;
 
         }

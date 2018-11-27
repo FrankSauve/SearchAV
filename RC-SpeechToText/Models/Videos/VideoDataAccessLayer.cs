@@ -9,22 +9,22 @@ namespace RC_SpeechToText.Models
     {
         SearchAVContext db = new SearchAVContext();
 
-        public IEnumerable<Videos> GetAllVideos()
+        public IEnumerable<Video> GetAllVideos()
         {
             try
             {
-                return db.Videos.ToList();
+                return db.Video.ToList();
             }
             catch
             {
                 throw;
             }
         }
-        public int AddVideo(Videos video)
+        public int AddVideo(Video video)
         {
             try
             {
-                db.Videos.Add(video);
+                db.Video.Add(video);
                 db.SaveChanges();
                 return 1;
             }
@@ -34,12 +34,12 @@ namespace RC_SpeechToText.Models
             }
         }
 
-        public int AddVideo(Videos video, Videos path)
+        public int AddVideo(Video video, Video path)
         {
             try
             {
-                db.Videos.Add(video);
-                db.Videos.Add(path);
+                db.Video.Add(video);
+                db.Video.Add(path);
                 db.SaveChanges();
                 return 1;
             }
@@ -48,11 +48,11 @@ namespace RC_SpeechToText.Models
                 throw;
             }
         }
-        public int AddPath(Videos path)
+        public int AddPath(Video path)
         {
             try
             {
-                db.Videos.Add(path);
+                db.Video.Add(path);
                 db.SaveChanges();
                 return 1;
             }
@@ -62,11 +62,11 @@ namespace RC_SpeechToText.Models
             }
         }
 
-        public Videos GetVideo(int id)
+        public Video GetVideo(int id)
         {
             try
             {
-                Videos video = db.Videos.Find(id);
+                Video video = db.Video.Find(id);
                 return video;
             }
             catch
@@ -79,8 +79,8 @@ namespace RC_SpeechToText.Models
         {
             try
             {
-                Videos video = db.Videos.Find(id);
-                db.Videos.Remove(video);
+                Video video = db.Video.Find(id);
+                db.Video.Remove(video);
                 db.SaveChanges();
                 return 1;
             }

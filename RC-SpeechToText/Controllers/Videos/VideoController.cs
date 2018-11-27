@@ -23,35 +23,35 @@ namespace RC_SpeechToText.Controllers
         // GET: api/<controller>
         [HttpGet]
         [Route("api/Video/Index")]
-        public async Task<IEnumerable<Videos>> Index()
+        public async Task<IEnumerable<Video>> Index()
         {
             return videoObj.GetAllVideos();
         }
 
         [HttpPost]
         [Route("api/Video/Add")]
-        public int Create(Videos video)
+        public int Create(Video video)
         {
             return videoObj.AddVideo(video);
         }
 
         [HttpPost]
         [Route("api/Video/Add")]
-        public int Create(Videos video, Videos path)
+        public int Create(Video video, Video path)
         {
             return videoObj.AddVideo(video, path);
         }
 
         [HttpPost]
         [Route("api/Video/Add")]
-        public int CreatePath(Videos path)
+        public int CreatePath(Video path)
         {
             return videoObj.AddVideo(path);
         }
 
         [HttpGet]
         [Route("api/Video/Details/{id}")]
-        public Videos Details(int id)
+        public Video Details(int id)
         {
             return videoObj.GetVideo(id);
         }

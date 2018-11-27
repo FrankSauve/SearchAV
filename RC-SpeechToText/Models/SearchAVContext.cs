@@ -15,7 +15,7 @@ namespace RC_SpeechToText.Models
         {
         }
 
-        public virtual DbSet<Videos> Videos { get; set; }
+        public virtual DbSet<Video> Video { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -27,7 +27,7 @@ namespace RC_SpeechToText.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Videos>(entity =>
+            modelBuilder.Entity<Video>(entity =>
             {
                 entity.HasKey(e => e.VideoId);
 
@@ -40,7 +40,7 @@ namespace RC_SpeechToText.Models
                     .HasMaxLength(256)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TranscriptionPath)
+                entity.Property(e => e.Transcription)
                     .HasMaxLength(256)
                     .IsUnicode(false);
 
