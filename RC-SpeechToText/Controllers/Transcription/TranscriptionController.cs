@@ -19,10 +19,10 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns>GoogleResult</returns>
         [HttpPost("[action]")]
-        public GoogleTranscriptionResult ManageTranscription(IFormFile audioFile)
+        public GoogleResult ConvertAndTranscribe(IFormFile audioFile)
         {
             // Create the directory
-            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\transcriptions");
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\Audio");
 
             // Saves the file to the audio directory
             var filePath = Directory.GetCurrentDirectory() + "\\Audio\\" + audioFile.FileName;
@@ -37,7 +37,7 @@ namespace RC_SpeechToText.Controllers
             string convertedFileLocation = converter.FileToWav(filePath);
 
             //call the method that will get the transcription
-            GoogleTranscriptionResult result = GoogleSpeechToText(convertedFileLocation);
+            GoogleResult result = GoogleSpeechToText(convertedFileLocation);
 
             //delete the converted file
             converter.DeleteMonoFile(convertedFileLocation); 
@@ -47,7 +47,7 @@ namespace RC_SpeechToText.Controllers
 
         }
 
-        private  GoogleTranscriptionResult GoogleSpeechToText(string inputFilePath)
+        private  GoogleResult GoogleSpeechToText(string inputFilePath)
         {
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
@@ -57,17 +57,12 @@ namespace RC_SpeechToText.Controllers
                 EnableWordTimeOffsets = true
             }, RecognitionAudio.FromFile(inputFilePath));
 
-            var googleTranscriptionResult = new GoogleTranscriptionResult
+            var googleResult = new GoogleResult
             {
-                Transcription= response.Results[0]
+                GoogleResponse= response.Results[0]
             };
 
-            return googleTranscriptionResult;
+            return googleResult;
         }
-    }
-
-    public class GoogleTranscriptionResult
-    {
-        public SpeechRecognitionResult Transcription { get; set; }
     }
 }
