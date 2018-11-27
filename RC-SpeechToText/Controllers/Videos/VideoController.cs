@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace RC_SpeechToText.Controllers
 {
@@ -13,51 +9,39 @@ namespace RC_SpeechToText.Controllers
     public class VideoController : Controller
     {
         VideoDataAccessLayer videoObj = new VideoDataAccessLayer();
-        private SearchAVContext context;
-
-        public VideoController(SearchAVContext context)
-        {
-            this.context = context;
-        }
 
         // GET: api/<controller>
-        [HttpGet]
-        [Route("api/Video/Index")]
+        [HttpGet("[action]")]
         public async Task<IEnumerable<Video>> Index()
         {
             return videoObj.GetAllVideos();
         }
 
-        [HttpPost]
-        [Route("api/Video/Add")]
+        [HttpPost("[action]")]
         public int Create(Video video)
         {
             return videoObj.AddVideo(video);
         }
 
-        [HttpPost]
-        [Route("api/Video/Add")]
+        [HttpPost("[action]")]
         public int Create(Video video, Video path)
         {
             return videoObj.AddVideo(video, path);
         }
 
-        [HttpPost]
-        [Route("api/Video/Add")]
+        [HttpPost("[action]")]
         public int CreatePath(Video path)
         {
             return videoObj.AddVideo(path);
         }
 
-        [HttpGet]
-        [Route("api/Video/Details/{id}")]
+        [HttpGet("[action]/{id}")]
         public Video Details(int id)
         {
             return videoObj.GetVideo(id);
         }
 
-        [HttpDelete]
-        [Route("api/Video/Delete/{id}")]
+        [HttpDelete("[action]/{id}")]
         public int Delete(int id)
         {
             return videoObj.RemoveVideo(id);
