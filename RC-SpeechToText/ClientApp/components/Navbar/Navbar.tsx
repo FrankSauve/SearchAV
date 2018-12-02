@@ -34,8 +34,12 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
               </Link>
 
               <Link className="navbar-item" to="/Transcription">
-                 Transcribe File
-              </Link>           
+                 Transcrire vidéo
+              </Link>
+
+              <Link className="navbar-item" to="/videos">
+                 Mes vidéos
+              </Link>          
             </div>
 
             <div className="navbar-end">
