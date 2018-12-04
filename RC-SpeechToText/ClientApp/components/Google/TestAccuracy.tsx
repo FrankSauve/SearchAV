@@ -55,7 +55,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               'content-type': 'multipart/form-data'
           }
       }
-      axios.post('/api/sampletest/googlespeechtotextwithsrt', formData, config)
+      axios.post('/api/accuracy/googlespeechtotextwithsrt', formData, config)
           .then(res => {
               this.setState({ 'loading': false });
               this.setState({ 'automatedTranscript': res.data.googleResponse.alternatives[0].transcript });
