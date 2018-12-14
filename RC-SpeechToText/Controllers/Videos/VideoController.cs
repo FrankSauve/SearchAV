@@ -18,12 +18,6 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpPost("[action]")]
-        public int Create(Video video)
-        {
-            return videoObj.AddVideo(video);
-        }
-
-        [HttpPost("[action]")]
         public int Create(Video video, Video path)
         {
             return videoObj.AddVideo(video, path);
