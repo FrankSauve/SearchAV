@@ -16,7 +16,7 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns>GoogleResult</returns>
         [HttpPost("[action]")]
-        public GoogleResult ConvertAndTranscribe(IFormFile audioFile)
+        public IActionResult ConvertAndTranscribe(IFormFile audioFile)
         {
             // Create the directory
             Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\Audio");
@@ -47,11 +47,11 @@ namespace RC_SpeechToText.Controllers
                 Transcription = result.GoogleResponse.Alternatives[0].Transcript
             };
             // Add video object to database
-            VideoDataAccessLayer videoDataAccessLayer = new VideoDataAccessLayer();
-            videoDataAccessLayer.AddVideo(video);
+            SearchAVContext db = new SearchAVContext();
+            db.Video.Add(video);
 
             // Return the transcription
-            return result;
+            return Ok(result);
 
         }
 
