@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+using RC_SpeechToText.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace RC_SpeechToText
 {
@@ -23,6 +22,10 @@ namespace RC_SpeechToText
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add database from connection string in appsettings.json
+            services.AddDbContext<SearchAVContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddMvc();
 
             // Register the Swagger generator, defining 1 or more Swagger documents

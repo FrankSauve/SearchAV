@@ -10,6 +10,13 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class TranscriptionController : Controller
     {
+        private readonly SearchAVContext _context;
+
+        public TranscriptionController(SearchAVContext context)
+        {
+            _context = context;
+        }
+
         /// <summary>
         /// Generates an automatic transcript using google cloud.
         /// GET: /api/googletest/speechtotext
@@ -46,9 +53,9 @@ namespace RC_SpeechToText.Controllers
                 VideoPath = filePath,
                 Transcription = result.GoogleResponse.Alternatives[0].Transcript
             };
+
             // Add video object to database
-            SearchAVContext db = new SearchAVContext();
-            db.Video.Add(video);
+            _context.Video.Add(video);
 
             // Return the transcription
             return Ok(result);

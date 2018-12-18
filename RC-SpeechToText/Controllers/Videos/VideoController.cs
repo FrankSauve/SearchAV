@@ -9,15 +9,19 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class VideoController : Controller
     {
-        SearchAVContext db = new SearchAVContext();
+        private readonly SearchAVContext _context;
 
-        // GET: api/<controller>
+        public VideoController(SearchAVContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet("[action]")]
         public IActionResult Index()
         {
             try
             {
-                return Ok(db.Video.ToList());
+                return Ok(_context.Video.ToList());
             }
             catch
             {
@@ -30,8 +34,8 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                db.Video.Add(video);
-                db.SaveChanges();
+                _context.Video.Add(video);
+                _context.SaveChanges();
                 return Ok(video);
             }
             catch
@@ -45,7 +49,7 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                return Ok(db.Video.Find(id));
+                return Ok(_context.Video.Find(id));
             }
             catch
             {
@@ -58,16 +62,15 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                Video video = db.Video.Find(id);
-                db.Video.Remove(video);
-                db.SaveChanges();
+                Video video = _context.Video.Find(id);
+                _context.Video.Remove(video);
+                _context.SaveChanges();
                 return Ok();
             }
             catch
             {
                 return BadRequest("Video with ID" + id + " not found");
             }
-            
         }
     }
 }

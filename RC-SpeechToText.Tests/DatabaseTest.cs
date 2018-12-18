@@ -13,10 +13,9 @@ namespace RC_SpeechToText.Tests
     public class DatabaseTest
     {
         [Fact]
-        public async Task GettAllVideos()
+        public void GettAllVideos()
         {
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase()
-.Options;
+            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
 
             var context = new SearchAVContext(options);
             context.Video.AddRange(Enumerable.Range(1, 20).Select(t => new Video { Title = "Video " + t, VideoPath = "vPath " + t, Transcription = "tPath " + t }));
@@ -25,7 +24,7 @@ namespace RC_SpeechToText.Tests
             var controller = new VideoController();
 
             //Act
-            var result = await controller.Index();
+            var result = controller.Index();
             var model = Assert.IsAssignableFrom<IEnumerable<Video>>(result);
             Assert.True(model.Count() >= 0);
             
