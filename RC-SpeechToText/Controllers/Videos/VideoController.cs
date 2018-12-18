@@ -14,7 +14,7 @@ namespace RC_SpeechToText.Controllers
         private readonly SearchAVContext _context;
         private readonly ILogger _logger;
 
-        public VideoController(SearchAVContext context, ILogger logger)
+        public VideoController(SearchAVContext context, ILogger<VideoController> logger)
         {
             _context = context;
             _logger = logger;

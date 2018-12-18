@@ -12,7 +12,7 @@ namespace RC_SpeechToText.Controllers
     {
         private readonly ILogger _logger;
 
-        public TranscriptSearchController(ILogger logger)
+        public TranscriptSearchController(ILogger<TranscriptSearchController> logger)
         {
             _logger = logger;
         }

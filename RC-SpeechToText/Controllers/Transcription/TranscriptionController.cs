@@ -14,7 +14,7 @@ namespace RC_SpeechToText.Controllers
         private readonly SearchAVContext _context;
         private readonly ILogger _logger;
 
-        public TranscriptionController(SearchAVContext context, ILogger logger)
+        public TranscriptionController(SearchAVContext context, ILogger<TranscriptionController> logger)
         {
             _context = context;
             _logger = logger;

@@ -13,10 +13,9 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class AccuracyController : Controller
     {
-
         private readonly ILogger _logger;
 
-        public AccuracyController(ILogger logger)
+        public AccuracyController(ILogger<AccuracyController> logger)
         {
             _logger = logger;
         }
