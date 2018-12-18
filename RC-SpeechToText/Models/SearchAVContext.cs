@@ -22,7 +22,7 @@ namespace RC_SpeechToText.Models
                 entity.HasKey(e => e.VideoId);
 
                 entity.Property(e => e.VideoId).HasColumnName("VideoID");
-
+                
                 entity.Property(e => e.DateAdded).HasColumnType("date");
 
                 entity.Property(e => e.Title)

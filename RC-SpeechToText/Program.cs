@@ -9,9 +9,6 @@ namespace RC_SpeechToText
 {
     public class Program
     {
-        private static object services;
-        private static object host;
-
         public static void Main(string[] args)
         {
             var host = BuildWebHost(args);
