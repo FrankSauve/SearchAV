@@ -1,5 +1,6 @@
 function isLoggedIn() {
-    console.log("Loggedin: " + localStorage.getItem('jwtToken'))
+    console.log("Loggedin: " + localStorage.getItem('jwtToken'));
+    
     if (localStorage.getItem('jwtToken')) {
         return true;
     }
