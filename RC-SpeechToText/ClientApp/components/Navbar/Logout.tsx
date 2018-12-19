@@ -8,10 +8,10 @@ interface State {
     redirectToHome: boolean
 }
 
-export default class Login extends React.Component<any, State> {
+export default class Logout extends React.Component<any, State> {
 
     constructor(props: RouteComponentProps<{}>) {
-        super(props)
+        super(props);
 
         this.state = {
             redirectToHome: false
@@ -21,17 +21,12 @@ export default class Login extends React.Component<any, State> {
     public onLogout = () => {
         auth.removeAuthToken();
         this.setState({'redirectToHome': true})
-    }
+    };
 
     public render() {
         return (
             <div>
-                <GoogleLogout
-                    className="button is-light"
-                    buttonText="Logout"
-                    onLogoutSuccess={this.onLogout}
-                >
-                </GoogleLogout>
+                <button className="button is-light" onClick={this.onLogout}>Logout</button>
                 {this.state.redirectToHome ? <Redirect to="/"/> : null}
             </div>
             

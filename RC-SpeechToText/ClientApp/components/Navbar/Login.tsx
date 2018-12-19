@@ -23,12 +23,12 @@ export default class Login extends React.Component<any, State> {
         auth.setAuthToken(response.tokenId);
         // TODO: Make request to server
         this.setState({'redirectToVideos': true})
-    }
+    };
 
     public onLoginFailure = (response: any) => {
         console.log("Google login response: " + response);
-        alert("Failed loggin")
-    }
+        alert("Failed login")
+    };
 
     public render() {
         return (
