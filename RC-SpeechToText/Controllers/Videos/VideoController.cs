@@ -2,43 +2,87 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace RC_SpeechToText.Controllers
 {
     [Route("api/[controller]")]
     public class VideoController : Controller
     {
-        VideoDataAccessLayer videoObj = new VideoDataAccessLayer();
+        private readonly SearchAVContext _context;
+        private readonly ILogger _logger;
 
-        // GET: api/<controller>
+        public VideoController(SearchAVContext context, ILogger<VideoController> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
+
         [HttpGet("[action]")]
-        public async Task<IEnumerable<Video>> Index()
+        public IActionResult Index()
         {
-            return videoObj.GetAllVideos();
+            try
+            {
+                _logger.LogInformation("Fetching all videos");
+                return Ok(_context.Video.ToList());
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching all videos");
+                return BadRequest("Get all videos failed.");
+            }
         }
 
         [HttpPost("[action]")]
-        public int Create(Video video, Video path)
+        public IActionResult Create(Video video)
         {
-            return videoObj.AddVideo(video, path);
-        }
-
-        [HttpPost("[action]")]
-        public int CreatePath(Video path)
-        {
-            return videoObj.AddVideo(path);
+            try
+            {
+                _context.Video.Add(video);
+                _context.SaveChanges();
+                _logger.LogInformation("Created video with id: " + video.VideoId);
+                return Ok(video);
+            }
+            catch
+            {
+                _logger.LogError("Error creating video with id: " + video.VideoId);
+                return BadRequest("Video not created.");
+            }
         }
 
         [HttpGet("[action]/{id}")]
-        public Video Details(int id)
+        public IActionResult Details(int id)
         {
-            return videoObj.GetVideo(id);
+            try
+            {
+                _logger.LogInformation("Fetching video with id: " + id);
+                return Ok(_context.Video.Find(id));
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching video with id: " + id);
+                return BadRequest("Video with ID" + id + " not found");
+            }
         }
 
         [HttpDelete("[action]/{id}")]
-        public int Delete(int id)
+        public IActionResult Delete(int id)
         {
-            return videoObj.RemoveVideo(id);
+            try
+            {
+                Video video = _context.Video.Find(id);
+                _context.Video.Remove(video);
+                _context.SaveChanges();
+                _logger.LogInformation("Delete video with id: " + id);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting video with id: " + id);
+                return BadRequest("Video with ID" + id + " not found");
+            }
         }
     }
 }
