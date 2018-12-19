@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 .vscode/
+./packages
 # User-specific files
 *.rsuser
 *.suo
@@ -333,3 +334,7 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+.vs/RC-SpeechToText/v15/.suo
+RC-SpeechToText.Tests/TestFiles/demo.flac
+RC-SpeechToText.Tests/TestFiles/demo.mp3
+RC-SpeechToText.Tests/TestFiles/demo.wav
