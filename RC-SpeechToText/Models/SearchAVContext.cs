@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace RC_SpeechToText.Models
 {
@@ -15,25 +13,16 @@ namespace RC_SpeechToText.Models
         {
         }
 
-        public virtual DbSet<Videos> Videos { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:cap-project.database.windows.net,1433;Initial Catalog=SearchAV;Persist Security Info=False;User ID= searchav;Password= Capstone1819;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            }
-        }
+        public virtual DbSet<Video> Video { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Videos>(entity =>
+            modelBuilder.Entity<Video>(entity =>
             {
                 entity.HasKey(e => e.VideoId);
 
                 entity.Property(e => e.VideoId).HasColumnName("VideoID");
-
+                
                 entity.Property(e => e.DateAdded).HasColumnType("date");
 
                 entity.Property(e => e.Title)
@@ -41,7 +30,7 @@ namespace RC_SpeechToText.Models
                     .HasMaxLength(256)
                     .IsUnicode(false);
 
-                entity.Property(e => e.TranscriptionPath)
+                entity.Property(e => e.Transcription)
                     .HasMaxLength(256)
                     .IsUnicode(false);
 
