@@ -4,6 +4,7 @@ import * as React from 'react';
 export class VideoInput extends React.Component<any> {
     constructor(props: any) {
         super(props);
+
     }
 
     public render() {
@@ -22,7 +23,7 @@ export class VideoInput extends React.Component<any> {
                             </span>
                         </span>
                         <span className="file-name">
-                              {(this.props.audioFile == null) || (this.props.audioFile == undefined) ? null : this.props.audioFile.name}
+                              {this.props.audioFile ? this.props.audioFile.name : null}
                         </span>
                     </label>
                 </div>

@@ -29,7 +29,10 @@ export default class Transcription extends React.Component<any, State>{
         return (
             <div className="container">
                 <h1 className="title mg-top-30">Transcription</h1>
-                <VideoInput onChange={this.onAddAudioFile}/>
+                <VideoInput 
+                    onChange={this.onAddAudioFile}
+                    audioFile={this.state.audioFile}     
+                />
             </div>
         );
     }
