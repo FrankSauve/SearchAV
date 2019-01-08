@@ -12,6 +12,8 @@ interface State{
     audioFile:any,
     loading:boolean,
     automatedTranscript: string,
+    searchTerms: string,
+    timestamps: string,
     fullGoogleResponse: any,
     showAutomatedTranscript: boolean
 }
@@ -24,6 +26,8 @@ export default class Transcription extends React.Component<any, State>{
             audioFile: null,
             loading:false,
             automatedTranscript: '',
+            searchTerms: '',
+            timestamps: '',
             fullGoogleResponse: null,
             showAutomatedTranscript: false
         };
@@ -42,8 +46,29 @@ export default class Transcription extends React.Component<any, State>{
         this.setState({ fullGoogleResponse: e });
         this.setState({ automatedTranscript: e.transcript });
         this.setState({ showAutomatedTranscript: true});
+    };
 
-        console.log('automatedTranscript after button press: '+this.state.automatedTranscript); //TODO: Remove this line
+    public updateSearchTerms = (e: any) =>{
+        this.setState({ searchTerms: e.target.value });
+    };
+
+    public searchTranscript = () => {
+
+        const formData = new FormData();
+        formData.append('searchTerms', this.state.searchTerms);
+        formData.append('jsonResponse', JSON.stringify(this.state.fullGoogleResponse));
+
+        const config = {
+            headers: {
+                'content-type': 'application/json'
+            },
+        };
+
+        axios.post('/api/TranscriptSearch/SearchTranscript', formData, config)
+            .then(res => {
+                this.setState({ 'timestamps': res.data });
+            })
+            .catch(err => console.log(err));
     };
 
     public render() {
@@ -64,8 +89,10 @@ export default class Transcription extends React.Component<any, State>{
                     audioFile={this.state.audioFile}
                     updateTranscript={this.updateTranscript}
                 />
-                <br/>
                 <SearchField
+                    searchTranscript={this.searchTranscript}
+                    updateSearchTerms={this.updateSearchTerms}
+                    timestamps={this.state.timestamps}
                     showText={this.state.showAutomatedTranscript}
                 />
                 <TranscriptionText

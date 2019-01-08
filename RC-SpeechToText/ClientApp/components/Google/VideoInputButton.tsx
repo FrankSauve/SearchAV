@@ -46,7 +46,9 @@ export class VideoInputButton extends React.Component<any> {
         return (
             <div>
                 <div className="level">
-                    {this.props.loading ? <a className="button is-danger is-loading">Go</a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>}
+                    {this.props.loading ? <a className="button is-danger is-loading">Go</a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>
+                        //TODO: Check if file is null
+                    }
                 </div>
             </div>
         );
