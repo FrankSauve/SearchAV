@@ -6,6 +6,8 @@ export class TranscriptionText extends React.Component<any> {
         super(props);
 
     }
+    
+    //TODO: Add editing functionality back in
 
     public render() {
         

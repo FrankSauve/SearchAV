@@ -4,6 +4,8 @@ import axios from 'axios';
 
 import {VideoInput} from './VideoInput';
 import {VideoInputButton} from './VideoInputButton';
+import {EditTranscriptionButton} from './EditTranscriptionButton';
+import {SearchField} from './SearchField';
 import {TranscriptionText} from './TranscriptionText';
 
 interface State{
@@ -63,9 +65,15 @@ export default class Transcription extends React.Component<any, State>{
                     updateTranscript={this.updateTranscript}
                 />
                 <br/>
+                <SearchField
+                    showText={this.state.showAutomatedTranscript}
+                />
                 <TranscriptionText
                     text={this.state.automatedTranscript}
                     showText={this.state.showAutomatedTranscript}
+                />
+                <EditTranscriptionButton
+                    
                 />
             </div>
         );
