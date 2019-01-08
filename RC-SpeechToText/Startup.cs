@@ -7,6 +7,9 @@ using Swashbuckle.AspNetCore.Swagger;
 using RC_SpeechToText.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace RC_SpeechToText
 {
@@ -26,6 +29,8 @@ namespace RC_SpeechToText
             services.AddDbContext<SearchAVContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddHttpClient();
+
             services.AddMvc();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -33,6 +38,27 @@ namespace RC_SpeechToText
             {
                 c.SwaggerDoc("v1", new Info { Title = "SearchAV API", Version = "v1" });
             });
+
+            // configure jwt authentication
+            var key = Encoding.ASCII.GetBytes("asdasdas");
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +89,8 @@ namespace RC_SpeechToText
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SearchAV API V1");
             });
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
