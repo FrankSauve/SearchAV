@@ -84,24 +84,25 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             .catch(err => console.log(err));
     }
 
-     public saveTranscription = () => {
-         const formData = new FormData();
-         formData.append('oldTranscript', this.state.automatedTranscript)
-         //formData.append('jsonResponse', JSON.stringify(this.state.fullGoogleResponse))
-         formData.append('newTranscript', this.state.newAutomatedTranscript)
+     //For now as we cannot really get the id of the video/audio uploded 
+    public saveTranscription = () => {
+        this.handleSubmit()
+         //const formData = new FormData();
+         //formData.append('oldTranscript', this.state.automatedTranscript)
+         //formData.append('newTranscript', this.state.newAutomatedTranscript)
 
-         const config = {
-             headers: {
-                 'content-type': 'application/json'
-             }
-         }
+         //const config = {
+         //    headers: {
+         //        'content-type': 'application/json'
+         //    }
+         //}
 
-         axios.post('/api/SavingTranscript/SaveTranscript', formData, config)
-             .then(res => {
-                 console.log(res);
-                 this.handleSubmit();
-             })
-             .catch(err => console.log(err));
+         //axios.post('/api/SavingTranscript/SaveTranscript', formData, config)
+         //    .then(res => {
+         //        console.log(res);
+         //        this.handleSubmit();
+         //    })
+         //    .catch(err => console.log(err));
      }
 
     public onAddAudioFile = (e: any) => {
