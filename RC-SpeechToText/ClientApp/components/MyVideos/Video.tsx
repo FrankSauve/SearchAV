@@ -8,7 +8,8 @@ interface State {
     transcription: string,
     dateAdded: string,
     isEditing: boolean,
-    editedTranscription: string
+    editedTranscription: string,
+    editSuccess: boolean,
 }
 
 export default class Video extends React.Component<any, State> {
@@ -22,7 +23,8 @@ export default class Video extends React.Component<any, State> {
             transcription: this.props.transcription,
             dateAdded: this.props.dateAdded,
             isEditing: false,
-            editedTranscription: ""
+            editedTranscription: "",
+            editSuccess: false,
         }
     }
 
@@ -56,11 +58,16 @@ export default class Video extends React.Component<any, State> {
 
     public handleSubmit = () => {
         this.setState({ transcription: this.state.editedTranscription })
+        this.setState({ 'editSuccess': true })
         this.setState({ 'isEditing': false })
     }
 
     public handleCancel = () => {
         this.setState({ 'isEditing': false })
+    }
+
+    public removeEditSuccessMessage = () => {
+        this.setState({ 'editSuccess': false })
     }
 
     public render() {   
@@ -90,10 +97,17 @@ export default class Video extends React.Component<any, State> {
         const notEditingFooter = <footer className="card-footer">
                                     <a className="card-footer-item">View</a>
                                     <a onClick={this.editTranscription} className="card-footer-item">Edit</a>
-                                 </footer>
+        </footer>
+
+        const successMessage = <div className="notification is-success">
+            <button className="delete" onClick={this.removeEditSuccessMessage}></button>
+            You have successfully edited the transcription of the following video: <b>{this.state.title}</b>
+        </div>
 
         return (
-            <div className="column is-one-quarter">
+            
+            <div className="column is-one-quarter" >
+                {this.state.editSuccess ? successMessage : null}
                 <div className="card mg-top-30">
                      <header className="card-header">
                         <p className="card-header-title">
@@ -104,6 +118,7 @@ export default class Video extends React.Component<any, State> {
                     {this.state.isEditing ? isEditingFooter : notEditingFooter}
                 </div>
             </div>
+
         )
     }
 
