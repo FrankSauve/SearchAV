@@ -15,7 +15,8 @@ interface State{
     searchTerms: string,
     timestamps: string,
     fullGoogleResponse: any,
-    showAutomatedTranscript: boolean
+    showAutomatedTranscript: boolean,
+    isEditing: boolean
 }
 
 export default class Transcription extends React.Component<any, State>{
@@ -29,14 +30,29 @@ export default class Transcription extends React.Component<any, State>{
             searchTerms: '',
             timestamps: '',
             fullGoogleResponse: null,
-            showAutomatedTranscript: false
+            showAutomatedTranscript: false,
+            isEditing: false
         };
     }
 
     public updateFile = (e: any) => {
         this.setState({audioFile: e.target.files[0]});
-        console.log(e.target.files[0]); //TODO: Remove this line
+        console.log(e.target.files[0]);
     };
+
+    public handleEditChange = (e: any) => {
+        this.setState({ automatedTranscript: e.target.value })
+    }
+
+    public editTranscription = () =>  {
+        this.setState({ isEditing: true });
+    }
+
+    public saveTranscription = () => {
+        alert("Feature not implemented yet");
+        // TODO: We need the ID of the video.
+        // We probably need to change the object that gets returned by /convertandtranscribe to include the ID of the video
+    }
     
     public toggleLoad = (e: any) =>{
         (this.state.loading) ? (this.setState({loading: false})) : (this.setState({loading: true}));
@@ -72,9 +88,6 @@ export default class Transcription extends React.Component<any, State>{
     };
 
     public render() {
-        
-        
-        
         return (
             <div className="container">
                 <h1 className="title mg-top-30">Transcription</h1>
@@ -98,9 +111,14 @@ export default class Transcription extends React.Component<any, State>{
                 <TranscriptionText
                     text={this.state.automatedTranscript}
                     showText={this.state.showAutomatedTranscript}
+                    isEditing={this.state.isEditing}
+                    handleEditChange={this.handleEditChange}
                 />
                 <EditTranscriptionButton
-                    
+                    showText={this.state.showAutomatedTranscript}
+                    isEditing={this.state.isEditing}
+                    editTranscription={this.editTranscription}
+                    saveTranscription={this.saveTranscription}
                 />
             </div>
         );
