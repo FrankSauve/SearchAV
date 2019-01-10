@@ -30,13 +30,13 @@ export default class VideoTable extends React.Component<RouteComponentProps<{}>,
             headers: {
                 'content-type': 'application/json'
             }
-        }
+        };
         axios.get('/api/video/index', config)
             .then(res => {
                 this.setState({'videos': res.data});
                 this.setState({'loading': false});
             });
-    }
+    };
 
     public render() {
 
