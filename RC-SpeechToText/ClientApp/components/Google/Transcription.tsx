@@ -3,7 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
 
 import {VideoInput} from './VideoInput';
-import {VideoInputButton} from './VideoInputButton';
+import {VideoInputButton} from './TranscriptionButton';
 import {EditTranscriptionButton} from './EditTranscriptionButton';
 import {SearchField} from './SearchField';
 import {TranscriptionText} from './TranscriptionText';
