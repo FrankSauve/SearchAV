@@ -3,10 +3,10 @@ import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
 
 import {VideoInput} from '../Google/VideoInput';
+import {VideoPlayer} from './VideoPlayer';
 
 interface State{
-    audioFile:any,
-    loading:boolean
+    audioFile:any
 }
 
 export default class VideoView extends React.Component<any, State>{
@@ -14,8 +14,7 @@ export default class VideoView extends React.Component<any, State>{
         super(props);
 
         this.state = {
-            audioFile: null,
-            loading: false
+            audioFile: null
         };
     }
 
@@ -27,15 +26,13 @@ export default class VideoView extends React.Component<any, State>{
     public render() {
         return (
             <div className="container">
-                <h1 className="title mg-top-30">Video Player</h1>
+                <h1 className="title mg-top-30">Prototype Video Player</h1>
                 
                 <VideoInput
                     onChange={this.updateFile}
                     audioFile={this.state.audioFile}
                 />
-                {
-                    /*TODO: Add Video Player here*/
-                }
+                <VideoPlayer/>
                 
             </div>
         );
