@@ -21,22 +21,21 @@ export default class Login extends React.Component<any, State> {
     public onLoginSuccess = (response:any) => {
         console.log("Google login response: " + response);
         auth.setAuthToken(response.tokenId);
-        // TODO: Make request to server
         this.setState({'redirectToVideos': true})
     };
 
     public onLoginFailure = (response: any) => {
         console.log("Google login response: " + response);
-        alert("Failed login")
+        alert("Failed login");
     };
 
     public render() {
         return (
             <div>
                 <GoogleLogin
-                    className="button is-danger"
+                    className="fab fa-google button is-danger"
                     clientId="608596289285-2ap5igg0pluo10sb16pvkbd3ubhdql7h.apps.googleusercontent.com"
-                    buttonText="Login"
+                    buttonText=" Login with Google"
                     onSuccess={this.onLoginSuccess}
                     onFailure={this.onLoginFailure}
                 />

@@ -4,7 +4,7 @@ using RC_SpeechToText.Controllers;
 namespace RC_SpeechToText.Tests
 {
     [TestClass]
-    public class GoogleTest
+    public class AccuracyTest
     {
         //[TestMethod]
         //public void TestCreateManualTranscript()

@@ -6,10 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using RC_SpeechToText.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 
 namespace RC_SpeechToText
 {
@@ -39,25 +36,11 @@ namespace RC_SpeechToText
                 c.SwaggerDoc("v1", new Info { Title = "SearchAV API", Version = "v1" });
             });
 
-            // configure jwt authentication
-            var key = Encoding.ASCII.GetBytes("asdasdas");
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
+            // Configure Google JWT authentication
+            // TODO: Hide clientID in appsettings.json
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x => x.UseGoogle(
+                    clientId: "608596289285-2ap5igg0pluo10sb16pvkbd3ubhdql7h.apps.googleusercontent.com"));
 
         }
 

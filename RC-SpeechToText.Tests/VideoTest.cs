@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RC_SpeechToText.Tests
 {
-    public class DatabaseTest
+    public class VideoTest
     {
         [Fact]
         public void GettAllVideos()
