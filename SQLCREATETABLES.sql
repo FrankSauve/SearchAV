@@ -1,4 +1,7 @@
-﻿CREATE TABLE [dbo].[User] (
+﻿DROP TABLE [dbo].[Word];  
+DROP TABLE [dbo].[Video];  
+
+CREATE TABLE [dbo].[User] (
 	[UserId] INT IDENTITY (1, 1) NOT NULL,
 	[Name] VARCHAR (MAX) NOT NULL,
 	[EmailAdress] VARCHAR (MAX) NOT NULL,
@@ -18,16 +21,9 @@ CREATE TABLE [dbo].[File] (
     [FilePath]     VARCHAR (MAX) NULL,
     [TranscriptionId] INT NULL REFERENCES [Transcription] ([TranscriptionId]),
     [DateAdded]     DATETIME      DEFAULT (getdate()) NULL,
+	[Type]     VARCHAR (MAX) NULL,
+	[UserId]  INT NULL REFERENCES [User] ([UserId]),
     PRIMARY KEY CLUSTERED ([FileId] ASC)
-);
-
-CREATE TABLE [dbo].[Word] (
-    [Id]        INT           NOT NULL,
-    [Term]      VARCHAR (MAX) NULL,
-    [Timestamp] VARCHAR (MAX) NULL,
-    [VersionId]   INT           NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC),
-    FOREIGN KEY ([VersionId]) REFERENCES [dbo].[Versions] ([VersionId])
 );
 
 CREATE TABLE [dbo].[Versions] (
@@ -37,4 +33,13 @@ CREATE TABLE [dbo].[Versions] (
 	[Transcription] VARCHAR (MAX) NOT NULL,
 	[Active] INT DEFAULT 0 NOT NULL, 
 	PRIMARY KEY CLUSTERED ([VersionId] ASC) 
+);
+
+CREATE TABLE [dbo].[Word] (
+    [Id]        INT           NOT NULL,
+    [Term]      VARCHAR (MAX) NULL,
+    [Timestamp] VARCHAR (MAX) NULL,
+    [VersionId]   INT           NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([VersionId]) REFERENCES [dbo].[Versions] ([VersionId])
 )
