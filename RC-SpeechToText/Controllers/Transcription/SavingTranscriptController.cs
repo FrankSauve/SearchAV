@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RC_SpeechToText.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RC_SpeechToText.Controllers.Transcription
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("api/SavingTranscript")]
     public class SavingTranscriptController : Controller

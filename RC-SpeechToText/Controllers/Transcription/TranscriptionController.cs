@@ -5,9 +5,11 @@ using System.IO;
 using RC_SpeechToText.Utils;
 using RC_SpeechToText.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RC_SpeechToText.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class TranscriptionController : Controller
     {

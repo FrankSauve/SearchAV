@@ -2,7 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import Video from './Video';
 import { RouteComponentProps } from 'react-router';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import auth from '../../Utils/auth';
 
 interface State {

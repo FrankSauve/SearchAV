@@ -35,7 +35,7 @@ export default class Login extends React.Component<any, State> {
                 <GoogleLogin
                     className="fab fa-google button is-danger"
                     clientId="608596289285-2ap5igg0pluo10sb16pvkbd3ubhdql7h.apps.googleusercontent.com"
-                    buttonText=" Login with Google"
+                    buttonText=" Login avec Google"
                     onSuccess={this.onLoginSuccess}
                     onFailure={this.onLoginFailure}
                 />

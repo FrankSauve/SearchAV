@@ -1,5 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
+import auth from '../../Utils/auth';
+import { Redirect } from 'react-router-dom';
 
 interface State {
     videoId: number,
@@ -10,6 +12,7 @@ interface State {
     isEditing: boolean,
     editedTranscription: string,
     editSuccess: boolean,
+    unauthorized: boolean
 }
 
 export default class Video extends React.Component<any, State> {
@@ -25,6 +28,7 @@ export default class Video extends React.Component<any, State> {
             isEditing: false,
             editedTranscription: "",
             editSuccess: false,
+            unauthorized: false
         }
     }
 
@@ -36,6 +40,7 @@ export default class Video extends React.Component<any, State> {
 
         const config = {
             headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             }
         }
@@ -45,7 +50,11 @@ export default class Video extends React.Component<any, State> {
                 console.log(res);
                 this.handleSubmit();
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                if(err.response.status == 401) {
+                    this.setState({'unauthorized': true});
+                }
+            });
     }
 
     public editTranscription = () => {
@@ -107,6 +116,8 @@ export default class Video extends React.Component<any, State> {
         return (
             
             <div className="column is-one-quarter" >
+                {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
+
                 {this.state.editSuccess ? successMessage : null}
                 <div className="card mg-top-30">
                      <header className="card-header">
