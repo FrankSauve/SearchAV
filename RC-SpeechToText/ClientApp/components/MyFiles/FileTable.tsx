@@ -7,7 +7,8 @@ import auth from '../../Utils/auth';
 
 interface State {
     files: any[]
-    loading: boolean
+    loading: boolean,
+    unauthorized: boolean
 }
 
 export default class FileTable extends React.Component<RouteComponentProps<{}>, State> {
@@ -16,7 +17,8 @@ export default class FileTable extends React.Component<RouteComponentProps<{}>, 
         super(props);
         this.state = {
             files: [],
-            loading: true
+            loading: true,
+            unauthorized: false
         }
     }
 

@@ -14,6 +14,7 @@ namespace RC_SpeechToText.Models
         }
 
         public virtual DbSet<File> File { get; set; }
+        public virtual DbSet<Version> Version { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +49,22 @@ namespace RC_SpeechToText.Models
 
                 entity.Property(e => e.UserId).HasColumnName("UserId");
 
+            });
+
+            modelBuilder.Entity<Version>(entity =>
+            {
+                entity.HasKey(e => e.VersionId);
+
+                entity.Property(e => e.VersionId).HasColumnName("VersionId");
+
+                entity.Property(e => e.UserId).HasColumnName("UserId");
+
+                entity.Property(e => e.TranscriptionId).HasColumnName("TranscriptionId");
+
+                entity.Property(e => e.Transcription)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Active).HasColumnName("Active");
             });
         }
     }

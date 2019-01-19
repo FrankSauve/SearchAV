@@ -21,34 +21,35 @@ namespace RC_SpeechToText.Controllers.Transcription
             _logger = logger;
         }
 
+        // TODO: Change saving to work with new DB
         [HttpPost("[action]")]
-        public IActionResult SaveTranscript(string videoId, string oldTranscript, string newTranscript)
+        public IActionResult SaveTranscript(string fileId, string oldTranscript, string newTranscript)
         {
-            _logger.LogInformation("videoId: " + videoId);
+            _logger.LogInformation("fileId: " + fileId);
             _logger.LogInformation("New transcript: " + newTranscript);
             _logger.LogInformation("Old transcript: " + oldTranscript);
 
-            //Converting videoId to an integer in oder to find the corresponding video
-            int id = Int32.Parse(videoId);
+            //Converting fileId to an integer in oder to find the corresponding file
+            int id = Int32.Parse(fileId);
 
-            Video video = _context.Video.Find(id);
+            File file = _context.File.Find(id);
 
-            //Updating video's transcription
-            _logger.LogInformation("Video old transcript: " + video.Transcription);
-            video.Transcription = newTranscript;
-            _logger.LogInformation("Video new transcript: " + video.Transcription);
+            //Updating file's transcription
+            _logger.LogInformation("file old transcript: " + file.TranscriptionId);
+            //file.TranscriptionId = newTranscript;
+            _logger.LogInformation("file new transcript: " + file.TranscriptionId);
 
             try
             {
-                _context.Video.Update(video);
+                _context.File.Update(file);
                 _context.SaveChanges();
-                _logger.LogInformation("Updated video transcription with id: " + video.VideoId);
-                return Ok(video);
+                _logger.LogInformation("Updated file transcription with id: " + file.FileId);
+                return Ok(file);
             }
             catch
             {
-                _logger.LogError("Error updating video transcription with id: " + video.VideoId);
-                return BadRequest("Video transcription not updated.");
+                _logger.LogError("Error updating file transcription with id: " + file.FileId);
+                return BadRequest("file transcription not updated.");
             }
 
         }
