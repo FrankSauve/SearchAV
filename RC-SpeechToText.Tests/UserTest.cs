@@ -20,7 +20,7 @@ namespace RC_SpeechToText.Tests
             // Arrange
             var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             var client = server.CreateClient();
-            var url = "api/video/index";
+            var url = "api/file/index";
             var expected = HttpStatusCode.Unauthorized;
 
             // Act
