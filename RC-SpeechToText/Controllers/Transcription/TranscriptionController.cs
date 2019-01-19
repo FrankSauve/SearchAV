@@ -55,17 +55,19 @@ namespace RC_SpeechToText.Controllers
             converter.DeleteMonoFile(convertedFileLocation);
             _logger.LogInformation("Deleted " + convertedFileLocation);
 
-            // Create video object
-            Video video = new Video
+            // Create file object
+            //TODO: save the transcription first in a Version and in the Transcription table, then save the id into this object
+            //TODO: get the type of the object, if it is a Video or an Audio file 
+            Models.File file = new Models.File
             {
                 Title = audioFile.FileName,
-                VideoPath = filePath,
-                Transcription = result.GoogleResponse.Alternatives[0].Transcript
+                FilePath = filePath,
+                //Transcription = result.GoogleResponse.Alternatives[0].Transcript //it has to be an id that refers to the table transcription and then to the table Versions. 
             };
 
-            // Add video object to database
-            _context.Video.Add(video);
-            _logger.LogInformation("Added video with title: " + video.Title + " to the database");
+            // Add file object to database
+            _context.File.Add(file);
+            _logger.LogInformation("Added file with title: " + file.Title + " to the database");
 
             // Return the transcription
             return Ok(result);
