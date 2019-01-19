@@ -39,7 +39,7 @@ export default class Login extends React.Component<any, State> {
                     onSuccess={this.onLoginSuccess}
                     onFailure={this.onLoginFailure}
                 />
-                {this.state.redirectToVideos ? <Redirect to="/videos"/> : null}
+                {this.state.redirectToVideos ? <Redirect to="/files"/> : null}
             </div>
         )
     }

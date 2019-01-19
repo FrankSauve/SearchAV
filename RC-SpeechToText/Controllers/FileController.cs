@@ -5,9 +5,11 @@ using RC_SpeechToText.Models;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RC_SpeechToText.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class FileController : Controller
     {

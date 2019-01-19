@@ -14,5 +14,5 @@ export const routes = <div>
     <Route exact path='/' component={Home} />
     <Route exact path="/TestAccuracy" component={TestAccuracy} />
     <Route exact path="/Transcription" component={Transcription} />
-    <Route exact path="/videos" component={ FileTable } />
+    <Route exact path="/files" component={ FileTable } />
 </div>;
