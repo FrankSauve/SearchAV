@@ -10,6 +10,57 @@ interface State {
 }
 
 export default class Navbar extends React.Component<RouteComponentProps<{}>, State> {
+
+    // Shown when the user is logged in
+    public renderLoggedIn = () => {
+        return(
+            <div className="navbar-menu">
+                <div className="navbar-start">
+                    <Link className="navbar-item" to="/">
+                        Accueil
+                    </Link>
+
+                    <Link className="navbar-item" to="/TestAccuracy">
+                        Test Google's Accuracy
+                    </Link>
+
+                    <Link className="navbar-item" to="/Transcription">
+                        Transcrire vidéo
+                    </Link>
+
+                    <Link className="navbar-item" to="/files">
+                        Mes vidéos
+                    </Link>
+                </div>
+
+                <div className="navbar-end">
+                    <div className="navbar-item">
+                        <Logout />
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    // Shown when the user is logged out
+    public renderLoggedOut = () => {
+        return(
+            <div className="navbar-menu">
+                    <div className="navbar-start">
+                        <Link className="navbar-item" to="/">
+                            Accueil
+                        </Link>
+                    </div>
+
+                    <div className="navbar-end">
+                        <div className="navbar-item">
+                            <Login />
+                        </div>
+                    </div>
+                </div>
+        )
+    }
+
     public render() {
         return (
             <div>
@@ -26,31 +77,8 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                         </a>
                     </div>
 
-                    <div id="navbarBasicExample" className="navbar-menu">
-                        <div className="navbar-start">
-                            <Link className="navbar-item" to="/">
-                                Accueil
-                            </Link>
+                    {auth.isLoggedIn() ? this.renderLoggedIn() : this.renderLoggedOut()}
 
-                            <Link className="navbar-item" to="/TestAccuracy">
-                                Test Google's Accuracy
-                            </Link>
-
-                            <Link className="navbar-item" to="/Transcription">
-                                Transcrire vidéo
-                            </Link>
-
-                            <Link className="navbar-item" to="/videos">
-                                Mes vidéos
-                            </Link>
-                        </div>
-
-                        <div className="navbar-end">
-                            <div className="navbar-item">
-                                {auth.isLoggedIn() ? <Logout /> : <Login />}
-                            </div>
-                        </div>
-                    </div>
                 </nav>
             </div>
         )

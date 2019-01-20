@@ -1,17 +1,21 @@
 import * as React from 'react';
 import axios from "axios";
+import auth from '../../Utils/auth';
+import { Redirect } from 'react-router-dom';
 
 
 interface State{
-    fullGoogleResponse:any
+    fullGoogleResponse:any,
+    unauthorized: boolean
 }
 
-export class VideoInputButton extends React.Component<any> {
+export class VideoInputButton extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
         
         this.state ={
-            fullGoogleResponse:null
+            fullGoogleResponse:null,
+            unauthorized: false
         }
 
     }
@@ -25,6 +29,7 @@ export class VideoInputButton extends React.Component<any> {
 
         const config = {
             headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'multipart/form-data'
             }
         };
@@ -38,7 +43,11 @@ export class VideoInputButton extends React.Component<any> {
                 this.props.updateTranscript(fullGoogleResponse);
                 this.props.toggleLoad();
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                if(err.response.status == 401) {
+                    this.setState({'unauthorized': true});
+                }
+            });
     };
     
     static showError(){
@@ -49,6 +58,9 @@ export class VideoInputButton extends React.Component<any> {
         
         return (
             <div>
+                
+                {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
+
                 <div className="level">
                     {(this.props.loading) ? <a className="button is-danger is-loading">Go</a> : 
                         <a className="button is-danger" onClick={(this.props.audioFile != null) ? this.getGoogleSample : VideoInputButton.showError}>Go</a>
