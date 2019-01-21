@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
+import auth from '../../Utils/auth';
+import { Redirect } from 'react-router-dom';
 
 interface State { 
     audioFile: any,
@@ -15,9 +17,10 @@ interface State {
     textarea: boolean,
     submitEdit: boolean,
     editSuccess: boolean,
-    loading: boolean
+    loading: boolean,
     searchTerms: string,
     timestamps: string,
+    unauthorized: boolean
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
@@ -40,6 +43,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           loading: false,
           searchTerms: '',
           timestamps: '',
+          unauthorized: false
       }
   }
 
@@ -52,6 +56,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
       const config = {
           headers: {
+              'Authorization': 'Bearer ' + auth.getAuthToken(),
               'content-type': 'multipart/form-data'
           }
       }
@@ -66,7 +71,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'accuracy': res.data.accuracy });
               this.setState({ 'editSuccess': false });
           })
-          .catch(err => console.log(err));
+          .catch(err => {
+            if(err.response.status == 401) {
+                this.setState({'unauthorized': true});
+            }
+        });
 
       console.log(this.state.fullGoogleResponse);
 
@@ -80,6 +89,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
         const config = {
             headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             },
         }
@@ -88,7 +98,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             .then(res => {
                 this.setState({'timestamps':res.data});
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                if(err.response.status == 401) {
+                    this.setState({'unauthorized': true});
+                }
+            });
     }
 
     public saveTranscription = () => {
@@ -98,6 +112,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         formData.append('SubFile', this.state.srtFile)
         const config = {
             headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             }
         }
@@ -106,7 +121,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             .then(res => {
                 console.log(res);
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                if(err.response.status == 401) {
+                    this.setState({'unauthorized': true});
+                }
+            });
     }
   public onAddAudioFile = (e: any) => {
       this.setState({audioFile: e.target.files[0]})
@@ -155,82 +174,73 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
       const submitEditButton = <a className="button is-danger" onClick={this.saveTranscription}>Save</a>
 
       return (
-      <div>
-          <div className="container" >
-            
-            <h1 className="title mg-top-30">Google Speech To Text</h1>
-
-            <div className="level mg-top-30">
-              <div className="file has-name">
-                <label className="file-label">
-                    <input className="file-input" type="file" name="resume" onChange={this.onAddAudioFile}/>
-                    <span className="file-cta">
-                    <span className="file-icon">
-                        <i className="fas fa-upload"></i>
-                    </span>
-                    <span className="file-label">
-                        Fichier Audio…
-                    </span>
-                    </span>
-
-                    <span className="file-name">
-                      {this.state.audioFile == null ? null : this.state.audioFile.name}
-                    </span>
-                </label>
-              </div>
-            </div>
-
-            <div className="level">
-              <div className="file has-name">
-                <label className="file-label">
-                    <input className="file-input" type="file" name="resume" onChange={this.onAddSrtFile}/>
-                    <span className="file-cta">
-                    <span className="file-icon">
-                        <i className="fas fa-upload"></i>
-                    </span>
-                    <span className="file-label">
-                        Fichier SRT…
-                    </span>
-                    </span>
-                    <span className="file-name">
-                    {this.state.srtFile == null ? null : this.state.srtFile.name}
-                    </span>
-                </label>
-              </div>
-            </div>
-
-            <div className="level">
-                {this.state.loading ? <a className="button is-danger is-loading">Go</a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>}
-            </div>
-
-            {this.state.editSuccess ? <div className="notification is-success">
-                                            <button className="delete" onClick={this.removeEditSuccessMessage}></button>
-                                                   You have successfully edited the automated transcription
-                                      </div> : null}
-            
-            <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
-                  
+          <div>
+              {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
+              <div className="container" >
+                  <h1 className="title mg-top-30">Google Speech To Text</h1>
+                  <div className="level mg-top-30">
+                      <div className="file has-name">
+                          <label className="file-label">
+                              <input className="file-input" type="file" name="resume" onChange={this.onAddAudioFile}/>
+                              <span className="file-cta">
+                                  <span className="file-icon">
+                                      <i className="fas fa-upload"></i>
+                                  </span>
+                                  <span className="file-label">
+                                      Fichier Audio…
+                                  </span>
+                              </span>
+                              <span className="file-name">
+                                  {this.state.audioFile == null ? null : this.state.audioFile.name}
+                              </span>
+                          </label>
+                      </div>
+                  </div>
+    
+                  <div className="level">
+                      <div className="file has-name">
+                          <label className="file-label">
+                              <input className="file-input" type="file" name="resume" onChange={this.onAddSrtFile}/>
+                              <span className="file-cta">
+                                  <span className="file-icon">
+                                      <i className="fas fa-upload"></i>
+                                  </span>
+                                  <span className="file-label">
+                                      Fichier SRT…
+                                  </span>
+                              </span>
+                              <span className="file-name">
+                                  {this.state.srtFile == null ? null : this.state.srtFile.name}
+                              </span>
+                          </label>
+                      </div>
+                  </div>
+                  <div className="level">
+                      {this.state.loading ? <a className="button is-danger is-loading">Go</a> : <a className="button is-danger" onClick={this.getGoogleSample}>Go</a>}
+                  </div>
+                  {this.state.editSuccess ? <div className="notification is-success">
+                    <button className="delete" onClick={this.removeEditSuccessMessage}></button>
+                    You have successfully edited the automated transcription
+                    </div> : null}
+                  <h3 className="title is-3">{this.state.automatedTranscript == '' ? null : 'Automated transcript'}</h3>
                   {this.state.automatedTranscript == '' ? null : searchForm}
                   {this.state.timestamps == '' ? null : <p> Results : {this.state.timestamps} </p> }
-
+    
                   <p>{this.state.showAutomatedTranscript ? this.state.automatedTranscript : ''}</p>
                   {this.state.editTranscription ? editTranscriptionButton : null}
                   {this.state.textarea ? <textarea
-                                        className="textarea"
-                                        onChange={this.handleChange}
-                                        rows={6} //Would be nice to adapt this to the number of lines in the future
-                                        defaultValue={this.state.automatedTranscript}
-                                      /> : null}
+                    className="textarea"
+                    onChange={this.handleChange}
+                    rows={6} //Would be nice to adapt this to the number of lines in the future
+                    defaultValue={this.state.automatedTranscript} /> : null}
                   {this.state.submitEdit ? submitEditButton : null}
-          
-            <h3 className="title is-3 mg-top-30">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
-            <p>{this.state.manualTranscript}</p>
-          
-            <h3 className="title is-3">{this.state.accuracy == 0 ? null : 'Accuracy'}</h3>
-            <p>{this.state.accuracy == 0 ? null : this.state.accuracy}</p>
-          
-        </div>
-      </div>
+                  
+                  <h3 className="title is-3 mg-top-30">{this.state.manualTranscript == '' ? null : 'Manual transcript'}</h3>
+                  <p>{this.state.manualTranscript}</p>
+                  <h3 className="title is-3">{this.state.accuracy == 0 ? null : 'Accuracy'}</h3>
+                  <p>{this.state.accuracy == 0 ? null : this.state.accuracy}</p>
+              </div>
+          </div>
       );
   }
 }

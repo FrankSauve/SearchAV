@@ -5,24 +5,24 @@ import { AppContainer } from 'react-hot-loader';
 import { BrowserRouter, Link } from 'react-router-dom';
 import * as RoutesModule from '../../routes';
 import { RouteComponentProps } from 'react-router';
-import { VideoData } from './GetVideo';
+import { FileData } from './GetFile';
 let routes = RoutesModule.routes;
 
-interface AddVideoDataState {
+interface AddFileDataState {
     title: string;
     loading: boolean;
-    vidData: VideoData;
+    filData: FileData;
 } 
 
-export class AddVideo extends React.Component<RouteComponentProps<{}>, AddVideoDataState>
+export class AddFile extends React.Component<RouteComponentProps<{}>, AddFileDataState>
 {
 
     constructor() {
         super();
 
-        this.state = { title: "", loading: true, vidData: new VideoData };
+        this.state = { title: "", loading: true, filData: new FileData };
 
-        this.state = { title: "Create", loading: false, vidData: new VideoData }
+        this.state = { title: "Create", loading: false, filData: new FileData }
 
         this.handleSave = this.handleSave.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
@@ -32,7 +32,7 @@ export class AddVideo extends React.Component<RouteComponentProps<{}>, AddVideoD
         let contents = this.state.loading;
         return <div>
             <h1>{this.state.title}</h1>
-            <h3>Video</h3>
+            <h3>File</h3>
             <hr />
             {contents}
         </div>;
@@ -42,36 +42,36 @@ export class AddVideo extends React.Component<RouteComponentProps<{}>, AddVideoD
         event.preventDefault();
         const data = new FormData(event.target);
 
-        fetch('api/Video/Add', {
+        fetch('api/File/Add', {
             method: 'POST',
             body: data,
 
         }).then((response) => response.json())
             .then((responseJson) => {
-                this.props.history.push("/GetVideo");
+                this.props.history.push("/GetFile");
             })
     }
     private handleCancel(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        this.props.history.push("/GetVideo");
+        this.props.history.push("/GetFile");
     }
 
     private renderAddForm() {
         return (
             <form >
                 <div className="form-group row" >
-                    <input type="hidden" name="VideoId" value={this.state.vidData.videoId} />
+                    <input type="hidden" name="FileId" value={this.state.filData.fileId} />
                 </div>
                 < div className="form-group row" >
                     <label className=" control-label col-md-12" htmlFor="Name">Name</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="name" defaultValue={this.state.vidData.name} required />
+                        <input className="form-control" type="text" name="name" defaultValue={this.state.filData.name} required />
                     </div>
                 </div >
                 <div className="form-group row">
                     <label className="control-label col-md-12" htmlFor="Path" >Path</label>
                     <div className="col-md-4">
-                        <input className="form-control" type="text" name="Path" defaultValue={this.state.vidData.path} required />
+                        <input className="form-control" type="text" name="Path" defaultValue={this.state.filData.path} required />
                     </div>
                 </div>
                 <div className="form-group">

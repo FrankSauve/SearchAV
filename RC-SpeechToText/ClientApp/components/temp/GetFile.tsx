@@ -7,19 +7,19 @@ import * as RoutesModule from '../../routes';
 import { RouteComponentProps } from 'react-router';
 let routes = RoutesModule.routes;
 
-interface GetVideoDataState {
-empList: VideoData[];
+interface GetFileDataState {
+empList: FileData[];
 loading: boolean;
 } 
 
-export class GetVideo extends React.Component<RouteComponentProps<{}>, GetVideoDataState>
+export class GetFile extends React.Component<RouteComponentProps<{}>, GetFileDataState>
 {
     constructor(props: any) {
     super(props);
     this.state = { empList: [], loading: true };
 
-    fetch('api/VideoController/GetAllVideos')
-        .then(response => response.json() as Promise<VideoData[]>)
+    fetch('api/FileController/GetAllFiles')
+        .then(response => response.json() as Promise<FileData[]>)
         .then(data => {
             this.setState({ empList: data, loading: false });
         });
@@ -31,54 +31,54 @@ export class GetVideo extends React.Component<RouteComponentProps<{}>, GetVideoD
 public render() {
     let contents = this.state.loading
         ? <p><em>Loading...</em></p>
-        : this.renderVideoTable(this.state.empList);
+        : this.renderFileTable(this.state.empList);
 
     return <div>
-        <h1>Video Data</h1>
-        <p>All Videos</p>
+        <h1>File Data</h1>
+        <p>All Files</p>
         <p>
-            <Link to="/addVideo">Create New</Link>
+            <Link to="/addFile">Create New</Link>
         </p>
         {contents}
     </div>;
 } 
 
 private handleDelete(id: number) {
-    if (!confirm("Do you want to delete Video with Id: " + id))
+    if (!confirm("Do you want to delete File with Id: " + id))
         return;
     else {
-        fetch('api/Video/Delete/' + id, {
+        fetch('api/File/Delete/' + id, {
             method: 'delete'
         }).then(data => {
             this.setState(
                 {
                     empList: this.state.empList.filter((rec) => {
-                        return (rec.videoId != id);
+                        return (rec.fileId != id);
                     })
                 });
         });
     }
 } 
 
-private renderVideoTable(empList: VideoData[]) {
+private renderFileTable(empList: FileData[]) {
     return <table className='table'>
         <thead>
             <tr>
                 <th></th>
-                <th>VideoId</th>
+                <th>FileId</th>
                 <th>Name</th>
                 <th>Path</th>
             </tr>
         </thead>
         <tbody>
-            {empList.map(vid =>
-                <tr key={vid.videoId}>
+            {empList.map(fil =>
+                <tr key={fil.fileId}>
                     <td></td>
-                    <td>{vid.videoId}</td>
-                    <td>{vid.name}</td>
-                    <td>{vid.path}</td>
+                    <td>{fil.fileId}</td>
+                    <td>{fil.name}</td>
+                    <td>{fil.path}</td>
                     <td>
-                        <a className="action" onClick={(id) => this.handleDelete(vid.videoId)}>Delete</a>
+                        <a className="action" onClick={(id) => this.handleDelete(fil.fileId)}>Delete</a>
                     </td>
                 </tr>
             )}
@@ -87,8 +87,8 @@ private renderVideoTable(empList: VideoData[]) {
 }
 } 
 
-export class VideoData {
-videoId: number = 0;
+export class FileData {
+fileId: number = 0;
 name: string = "";
 path: string = "";
 }

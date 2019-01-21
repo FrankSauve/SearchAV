@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RC_SpeechToText.Tests
 {
-    public class DatabaseTest
+    public class FileTest
     {
         [Fact]
         public void GettAllVideos()
@@ -20,21 +20,21 @@ namespace RC_SpeechToText.Tests
             var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
 
             var context = new SearchAVContext(options);
-            context.Video.AddRange(Enumerable.Range(1, 20).Select(t => new Video { Title = "Video " + t, VideoPath = "vPath " + t, Transcription = "tPath " + t }));
+            context.File.AddRange(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t, TranscriptionId = t }));
             context.SaveChanges();
 
-            var mock = new Mock<ILogger<VideoController>>();
-            ILogger<VideoController> logger = mock.Object;
+            var mock = new Mock<ILogger<FileController>>();
+            ILogger<FileController> logger = mock.Object;
 
             //or use this short equivalent 
-            logger = Mock.Of<ILogger<VideoController>>();
+            logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new VideoController(context, logger);
+            var controller = new FileController(context, logger);
 
             //Act
             var result = controller.Index();
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<Video>>(okResult.Value);
+            var returnValue = Assert.IsType<List<File>>(okResult.Value);
             Assert.True(returnValue.Count() >= 0);
             
         }
