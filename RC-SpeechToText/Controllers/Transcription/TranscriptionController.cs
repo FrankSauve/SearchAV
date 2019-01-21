@@ -29,11 +29,11 @@ namespace RC_SpeechToText.Controllers
         public IActionResult ConvertAndTranscribe(IFormFile audioFile)
         {
             // Create the directory
-            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\Audio");
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
             _logger.LogInformation("Created directory /Audio");
 
             // Saves the file to the audio directory
-            var filePath = Directory.GetCurrentDirectory() + "\\Audio\\" + audioFile.FileName;
+            var filePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\" + audioFile.FileName;
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 audioFile.CopyTo(stream);
