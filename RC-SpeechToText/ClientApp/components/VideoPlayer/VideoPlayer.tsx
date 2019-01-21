@@ -3,10 +3,7 @@ import * as React from 'react';
 
 
 import {Player, ControlBar} from 'video-react';
-import {
-    Button, Form, FormGroup,
-    Label, Input, Col
-} from 'reactstrap';
+
 
 export class VideoPlayer extends React.Component<any> {
     constructor(props: any) {
@@ -20,9 +17,11 @@ export class VideoPlayer extends React.Component<any> {
             <div>
                 <Player
                     ref="player"
-                    autoPlay
+                    autoplay
                 >
-                    <source src={'http://media.w3.org/2010/05/sintel/trailer.mp4'} />
+                    {(this.props.audioFile != null) ? 
+                        console.log('audioFile: '+this.props.audioFile.name):''}
+                    <source src={'D:\\Concordia University\\Capstone\\FL.mp4'} />
                     <ControlBar autoHide={false}/>
                 </Player>
             </div>

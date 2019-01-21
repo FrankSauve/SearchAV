@@ -5,7 +5,6 @@ import Navbar from './components/Navbar/Navbar';
 import TestAccuracy from './components/Google/TestAccuracy';
 import Transcription from './components/Google/Transcription';
 import VideoTable from './components/MyVideos/VideoTable'
-import VideoPlayer from './components/VideoPlayer/VideoView'
 
 export const routes = <div>
     <Route path='/' component = { Navbar } />
@@ -13,5 +12,4 @@ export const routes = <div>
     <Route exact path="/TestAccuracy" component={TestAccuracy} />
     <Route exact path="/Transcription" component={Transcription} />
     <Route exact path="/videos" component={ VideoTable } />
-    <Route exact path="/videoPlayer" component={ VideoPlayer } />
 </div>;

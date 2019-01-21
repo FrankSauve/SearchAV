@@ -3,10 +3,12 @@ import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
 
 import {VideoInput} from './VideoInput';
-import {VideoInputButton} from './TranscriptionButton';
+import {TranscriptionButton} from './TranscriptionButton';
 import {EditTranscriptionButton} from './EditTranscriptionButton';
 import {SearchField} from './SearchField';
 import {TranscriptionText} from './TranscriptionText';
+
+import {VideoView} from '../VideoPlayer/VideoView';
 
 interface State{
     audioFile:any,
@@ -16,6 +18,7 @@ interface State{
     timestamps: string,
     fullGoogleResponse: any,
     showAutomatedTranscript: boolean,
+    showVideo: boolean,
     isEditing: boolean
 }
 
@@ -31,6 +34,7 @@ export default class Transcription extends React.Component<any, State>{
             timestamps: '',
             fullGoogleResponse: null,
             showAutomatedTranscript: false,
+            showVideo: false,
             isEditing: false
         };
     }
@@ -62,6 +66,7 @@ export default class Transcription extends React.Component<any, State>{
         this.setState({ fullGoogleResponse: e });
         this.setState({ automatedTranscript: e.transcript });
         this.setState({ showAutomatedTranscript: true});
+        this.setState({ showVideo: true});
     };
 
     public updateSearchTerms = (e: any) =>{
@@ -96,12 +101,13 @@ export default class Transcription extends React.Component<any, State>{
                     audioFile={this.state.audioFile}     
                 />
                 <br/>
-                <VideoInputButton
+                <TranscriptionButton
                     loading={this.state.loading}
                     toggleLoad={this.toggleLoad}
                     audioFile={this.state.audioFile}
                     updateTranscript={this.updateTranscript}
                 />
+                
                 <SearchField
                     searchTranscript={this.searchTranscript}
                     updateSearchTerms={this.updateSearchTerms}
@@ -119,6 +125,10 @@ export default class Transcription extends React.Component<any, State>{
                     isEditing={this.state.isEditing}
                     editTranscription={this.editTranscription}
                     saveTranscription={this.saveTranscription}
+                />
+                <VideoView
+                    audioFile={this.state.audioFile}
+                    showVideo={this.state.showVideo}
                 />
             </div>
         );
