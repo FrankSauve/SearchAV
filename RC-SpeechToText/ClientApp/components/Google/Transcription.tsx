@@ -20,6 +20,7 @@ interface State{
     timestamps: string,
     fullGoogleResponse: any,
     showAutomatedTranscript: boolean,
+    showVideo: boolean,
     isEditing: boolean,
     unauthorized: boolean 
 }
@@ -36,6 +37,7 @@ export default class Transcription extends React.Component<any, State>{
             timestamps: '',
             fullGoogleResponse: null,
             showAutomatedTranscript: false,
+            showVideo: false,
             isEditing: false,
             unauthorized: false
         };
@@ -140,6 +142,12 @@ export default class Transcription extends React.Component<any, State>{
                     audioFile={this.state.audioFile}
                     showVideo={this.state.showVideo}
                 />
+                {
+                    //TODO: Update the video when audioFile is changed
+                }
+                
+                
+                <br/><br/><br/>
             </div>
         );
     }

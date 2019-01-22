@@ -9,7 +9,7 @@ interface State{
     unauthorized: boolean
 }
 
-export class VideoInputButton extends React.Component<any, State> {
+export class TranscriptionButton extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
         
