@@ -1,6 +1,8 @@
 import * as React from 'react';
 import axios from 'axios';
 
+import { FileCard } from './FileCard';
+
 interface State {
     videoId: number,
     title: string,
@@ -113,19 +115,12 @@ export default class Video extends React.Component<any, State> {
         </div>
 
         return (
-            
-            <div className="column is-one-quarter" >
-                {this.state.editSuccess ? successMessage : null}
-                <div className="card mg-top-30">
-                     <header className="card-header">
-                        <p className="card-header-title">
-                        {this.state.title}
-                        </p>
-                    </header>
-                    {this.state.isEditing ? isEditingContent : notEditingContent}
-                    {this.state.isEditing ? isEditingFooter : notEditingFooter}
-                </div>
-            </div>
+
+            <FileCard
+                title={this.state.title}
+                transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) : this.state.transcription : null}
+                date={this.state.dateAdded}
+            />
 
         )
     }
