@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using RC_SpeechToText.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace RC_SpeechToText
 {
@@ -26,6 +26,8 @@ namespace RC_SpeechToText
             services.AddDbContext<SearchAVContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddHttpClient();
+
             services.AddMvc();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -33,6 +35,13 @@ namespace RC_SpeechToText
             {
                 c.SwaggerDoc("v1", new Info { Title = "SearchAV API", Version = "v1" });
             });
+
+            // Configure Google JWT authentication
+            // TODO: Hide clientID in appsettings.json
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x => x.UseGoogle(
+                    clientId: "608596289285-2ap5igg0pluo10sb16pvkbd3ubhdql7h.apps.googleusercontent.com"));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +72,8 @@ namespace RC_SpeechToText
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SearchAV API V1");
             });
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

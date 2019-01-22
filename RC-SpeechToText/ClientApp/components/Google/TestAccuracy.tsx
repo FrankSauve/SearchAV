@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
+import auth from '../../Utils/auth';
+import { Redirect } from 'react-router-dom';
 
 interface State { 
     audioFile: any,
@@ -18,6 +20,7 @@ interface State {
     loading: boolean,
     searchTerms: string,
     timestamps: string,
+    unauthorized: boolean
 }
 
 export default class Google extends React.Component<RouteComponentProps<{}>, State> {
@@ -40,6 +43,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
           loading: false,
           searchTerms: '',
           timestamps: '',
+          unauthorized: false
       }
   }
 
@@ -52,6 +56,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
       const config = {
           headers: {
+              'Authorization': 'Bearer ' + auth.getAuthToken(),
               'content-type': 'multipart/form-data'
           }
       }
@@ -66,7 +71,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
               this.setState({ 'accuracy': res.data.accuracy });
               this.setState({ 'editSuccess': false });
           })
-          .catch(err => console.log(err));
+          .catch(err => {
+            if(err.response.status == 401) {
+                this.setState({'unauthorized': true});
+            }
+        });
 
       console.log(this.state.fullGoogleResponse);
 
@@ -80,6 +89,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
         const config = {
             headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             },
         }
@@ -88,7 +98,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             .then(res => {
                 this.setState({'timestamps':res.data});
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                if(err.response.status == 401) {
+                    this.setState({'unauthorized': true});
+                }
+            });
     }
 
     public saveTranscription = () => {
@@ -98,6 +112,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
         formData.append('SubFile', this.state.srtFile)
         const config = {
             headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             }
         }
@@ -106,7 +121,11 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             .then(res => {
                 console.log(res);
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                if(err.response.status == 401) {
+                    this.setState({'unauthorized': true});
+                }
+            });
     }
   public onAddAudioFile = (e: any) => {
       this.setState({audioFile: e.target.files[0]})
@@ -156,6 +175,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
 
       return (
           <div>
+              {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
               <div className="container" >
                   <h1 className="title mg-top-30">Google Speech To Text</h1>
                   <div className="level mg-top-30">

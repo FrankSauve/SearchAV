@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import axios from 'axios';
+import auth from '../../Utils/auth';
+import { Redirect } from 'react-router-dom';
 
 import {VideoInput} from './VideoInput';
 import {TranscriptionButton} from './TranscriptionButton';
@@ -18,8 +20,8 @@ interface State{
     timestamps: string,
     fullGoogleResponse: any,
     showAutomatedTranscript: boolean,
-    showVideo: boolean,
-    isEditing: boolean
+    isEditing: boolean,
+    unauthorized: boolean 
 }
 
 export default class Transcription extends React.Component<any, State>{
@@ -34,8 +36,8 @@ export default class Transcription extends React.Component<any, State>{
             timestamps: '',
             fullGoogleResponse: null,
             showAutomatedTranscript: false,
-            showVideo: false,
-            isEditing: false
+            isEditing: false,
+            unauthorized: false
         };
     }
 
@@ -81,6 +83,7 @@ export default class Transcription extends React.Component<any, State>{
 
         const config = {
             headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             },
         };
@@ -89,12 +92,19 @@ export default class Transcription extends React.Component<any, State>{
             .then(res => {
                 this.setState({ 'timestamps': res.data });
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                if(err.response.status == 401) {
+                    this.setState({'unauthorized': true});
+                }
+            });
     };
 
     public render() {
         return (
             <div className="container">
+
+                {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
+
                 <h1 className="title mg-top-30">Transcription</h1>
                 <VideoInput 
                     onChange={this.updateFile}
