@@ -118,8 +118,9 @@ export default class Video extends React.Component<any, State> {
 
             <FileCard
                 title={this.state.title}
+                image="assets/speakerIcon.png"
                 transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) : this.state.transcription : null}
-                date={this.state.dateAdded}
+                date={this.state.dateAdded.substring(0,10)}
             />
 
         )

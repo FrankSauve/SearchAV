@@ -19,7 +19,7 @@ export class FileCard extends React.Component<any> {
                     <div className="card-image">
                         <div className="hovereffect">
                     <figure className="image is-4by3">
-                                <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" />
+                                <img src={this.props.image} alt="Placeholder image" />
                                 <div className="overlay">
                                     <a className="info" href="/FileView">View/Edit</a>
                                 </div>

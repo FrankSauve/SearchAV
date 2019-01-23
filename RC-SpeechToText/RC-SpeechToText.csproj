@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\assets\speakerIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Cloud.Speech.V1" Version="1.0.1" />
     <PackageReference Include="Hellang.Authentication.JwtBearer.Google" Version="1.2.0" />
     <PackageReference Include="MediaToolkit" Version="1.1.0.1" />
@@ -46,6 +50,10 @@
 
   <ItemGroup>
     <Folder Include="Audio\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\assets\speakerIcon.png" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
