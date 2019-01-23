@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -20,7 +21,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpPost("[action]")]
-        public string SearchTranscript(string searchTerms, string jsonResponse)
+        public IActionResult SearchTranscript(string searchTerms, string jsonResponse)
         {
             _logger.LogInformation("Searching for " + searchTerms);
             //Gets JSON as a string and then deserialize it into an object.
@@ -38,7 +39,7 @@ namespace RC_SpeechToText.Controllers
                 arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
             }
             else {
-                return "";
+                return Ok("");
             }
                 
             Words[] words = fullResponse.Words; // For clearer code instead of calling the full variable
@@ -84,7 +85,7 @@ namespace RC_SpeechToText.Controllers
             var result = String.Join(", ", timeStampOfTerms.ToArray());
             _logger.LogInformation("Time stamps of terms: " + timeStampOfTerms);
 
-            return result;
+            return Ok(result);
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -27,12 +27,12 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("[action]")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
                 _logger.LogInformation("Fetching all versions");
-                return Ok(_context.Version.ToList());
+                return Ok(await _context.Version.ToListAsync());
             }
             catch (Exception ex)
             {
@@ -47,12 +47,12 @@ namespace RC_SpeechToText.Controllers
         /// <param name="transcriptionId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{transcriptionId}")]
-        public IActionResult GetByTranscriptionId(int transcriptionId)
+        public async Task<IActionResult> GetByTranscriptionId(int transcriptionId)
         {
             try
             {
                 _logger.LogInformation("Fetching version with ID: " + transcriptionId);
-                var versions = _context.Version.Where(v => v.TranscriptionId == transcriptionId);
+                var versions = await _context.Version.Where(v => v.TranscriptionId == transcriptionId).FirstOrDefaultAsync();
                 return Ok(versions);
             }
             catch (Exception ex)

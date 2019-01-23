@@ -9,6 +9,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using RC_SpeechToText.Services;
+using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Controllers
 {

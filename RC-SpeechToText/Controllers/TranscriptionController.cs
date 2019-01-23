@@ -7,6 +7,7 @@ using RC_SpeechToText.Models;
 using RC_SpeechToText.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -29,7 +30,7 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns>GoogleResult</returns>
         [HttpPost("[action]")]
-        public IActionResult ConvertAndTranscribe(IFormFile audioFile)
+        public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile)
         {
             // Create the directory
             Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
@@ -68,6 +69,7 @@ namespace RC_SpeechToText.Controllers
 
             // Add file object to database
             _context.File.Add(file);
+            await _context.SaveChangesAsync();
             _logger.LogInformation("Added file with title: " + file.Title + " to the database");
 
             // Return the transcription

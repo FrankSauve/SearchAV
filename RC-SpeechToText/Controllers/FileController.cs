@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -23,12 +22,12 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
                 _logger.LogInformation("Fetching all files");
-                return Ok(_context.File.ToList());
+                return Ok(await _context.File.ToListAsync());
             }
             catch(Exception ex)
             {
@@ -38,12 +37,12 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             try
             {
                 _logger.LogInformation("Fetching file with id: " + id);
-                return Ok(_context.File.Find(id));
+                return Ok(await _context.File.FindAsync(id));
             }
             catch(Exception ex)
             {
@@ -53,13 +52,14 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpDelete("[action]/{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 var file = new File { FileId = id };
                 _context.File.Attach(file);
-                _context.SaveChanges();
+                _context.File.Remove(file);
+                await _context.SaveChangesAsync();
                 _logger.LogInformation("Delete file with id: " + id);
                 return Ok();
             }
