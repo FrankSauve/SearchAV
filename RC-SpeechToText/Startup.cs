@@ -37,7 +37,6 @@ namespace RC_SpeechToText
             });
 
             // Configure Google JWT authentication
-            // TODO: Hide clientID in appsettings.json
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(x => x.UseGoogle(
                     clientId: Configuration["GoogleClientId"]));
