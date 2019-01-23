@@ -37,23 +37,6 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
-        [HttpPost("[action]")]
-        public IActionResult Create(File file)
-        {
-            try
-            {
-                _context.File.Add(file);
-                _context.SaveChanges();
-                _logger.LogInformation("Created file with id: " + file.FileId);
-                return Ok(file);
-            }
-            catch
-            {
-                _logger.LogError("Error creating file with id: " + file.FileId);
-                return BadRequest("File not created.");
-            }
-        }
-
         [HttpGet("[action]/{id}")]
         public IActionResult Details(int id)
         {
@@ -74,8 +57,8 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                File file = _context.File.Find(id);
-                _context.File.Remove(file);
+                var file = new File { FileId = id };
+                _context.File.Attach(file);
                 _context.SaveChanges();
                 _logger.LogInformation("Delete file with id: " + id);
                 return Ok();
