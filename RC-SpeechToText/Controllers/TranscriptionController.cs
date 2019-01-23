@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using RC_SpeechToText.Utils;
 using RC_SpeechToText.Models;
+using RC_SpeechToText.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
@@ -49,7 +50,7 @@ namespace RC_SpeechToText.Controllers
             _logger.LogInformation("Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
 
             // Call the method that will get the transcription
-            GoogleResult result = GoogleSpeechToText(convertedFileLocation);
+            GoogleResult result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
 
             // Delete the converted file
             converter.DeleteMonoFile(convertedFileLocation);
@@ -74,22 +75,6 @@ namespace RC_SpeechToText.Controllers
 
         }
 
-        private  GoogleResult GoogleSpeechToText(string inputFilePath)
-        {
-            var speech = SpeechClient.Create();
-            var response = speech.Recognize(new RecognitionConfig()
-            {
-                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                LanguageCode = "fr-ca",
-                EnableWordTimeOffsets = true
-            }, RecognitionAudio.FromFile(inputFilePath));
-
-            var googleResult = new GoogleResult
-            {
-                GoogleResponse= response.Results[0]
-            };
-
-            return googleResult;
-        }
+        
     }
 }
