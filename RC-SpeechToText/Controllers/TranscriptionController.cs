@@ -53,7 +53,7 @@ namespace RC_SpeechToText.Controllers
             GoogleResult result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
 
             // Delete the converted file
-            converter.DeleteMonoFile(convertedFileLocation);
+            converter.DeleteFile(convertedFileLocation);
             _logger.LogInformation("Deleted " + convertedFileLocation);
 
             // Create file object
