@@ -8,7 +8,6 @@ using NAudio.Wave.SampleProviders;
 
 namespace RC_SpeechToText.Utils
 {
-    [Route("converter")]
     public class Converter
     {
         //TODO: ADD A METHOD THAT WILL DELETE THE CONVERTED FILE FROM THE SERVER ONCE WE ARE DONE WITH IT (ONCE THE TRANSCRIPTION IS DONE). 
@@ -25,53 +24,35 @@ namespace RC_SpeechToText.Utils
                 AudioSampleRate = AudioSampleRate.Hz22050
             };
 
-            try
+            using (var engine = new Engine())
             {
-                using (var engine = new Engine())
-                {
-                    engine.GetMetadata(inputFile);
+                engine.GetMetadata(inputFile);
 
-                    engine.Convert(inputFile, outputFile, conversionOptions);
-                }
-            }
-            catch (Exception ex)
-            {
-                return "Conversion Unsuccessful";
+                engine.Convert(inputFile, outputFile, conversionOptions);
             }
             
             return StereoToMono(wavFileLocation);
         }
-        public String StereoToMono(String wavFileLocation)
+        public string StereoToMono(string wavFileLocation)
         {
             var monoFileLocation = wavFileLocation.Substring(0, wavFileLocation.LastIndexOf('.')) + "_Mono.wav";
-            try
+
+            using (var inputReader = new AudioFileReader(wavFileLocation))
             {
-                using (var inputReader = new AudioFileReader(wavFileLocation))
-                {
-                    var mono = new StereoToMonoSampleProvider(inputReader);
-                    mono.LeftVolume = 0.0f;
-                    mono.RightVolume = 1.0f;
-                    WaveFileWriter.CreateWaveFile16(monoFileLocation, mono);
-                }
-            }
-            catch (Exception ex)
-            {
-                return "Conversion Unsuccessful";
+                var mono = new StereoToMonoSampleProvider(inputReader);
+                mono.LeftVolume = 0.0f;
+                mono.RightVolume = 1.0f;
+                WaveFileWriter.CreateWaveFile16(monoFileLocation, mono);
             }
 
-            DeleteWavFile(wavFileLocation); 
+            DeleteFile(wavFileLocation); 
 
             return monoFileLocation;
         }
 
-        public void DeleteWavFile(String wavFilePath)
+        public void DeleteFile(string wavFilePath)
         {
             System.IO.File.Delete(wavFilePath);
-        }
-
-        public void DeleteMonoFile(String monoFilePath)
-        {
-            System.IO.File.Delete(monoFilePath);
         }
     }
 }
