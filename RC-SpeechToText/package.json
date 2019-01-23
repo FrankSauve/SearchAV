@@ -33,7 +33,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "react": "https://registry.npmjs.org/react/-/react-15.6.1.tgz",
+    "react-dom": "https://registry.npmjs.org/react-dom/-/react-dom-15.6.1.tgz",
     "react-google-login": "^3.2.1",
-    "react-textarea-autosize": "^7.1.0-1"
+    "react-textarea-autosize": "^7.1.0-1",
+    "redux": "^4.0.1",
+    "video-react": "^0.13.2"
   }
 }

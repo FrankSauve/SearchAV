@@ -9,7 +9,7 @@ interface State{
     unauthorized: boolean
 }
 
-export class VideoInputButton extends React.Component<any, State> {
+export class TranscriptionButton extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
         
@@ -63,7 +63,7 @@ export class VideoInputButton extends React.Component<any, State> {
 
                 <div className="level">
                     {(this.props.loading) ? <a className="button is-danger is-loading">Go</a> : 
-                        <a className="button is-danger" onClick={(this.props.audioFile != null) ? this.getGoogleSample : VideoInputButton.showError}>Go</a>
+                        <a className="button is-danger" onClick={(this.props.audioFile != null) ? this.getGoogleSample : TranscriptionButton.showError}>Go</a>
                     }
                 </div>
             </div>
