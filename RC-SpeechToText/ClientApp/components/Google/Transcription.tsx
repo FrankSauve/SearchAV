@@ -5,10 +5,12 @@ import auth from '../../Utils/auth';
 import { Redirect } from 'react-router-dom';
 
 import {VideoInput} from './VideoInput';
-import {VideoInputButton} from './VideoInputButton';
+import {TranscriptionButton} from './TranscriptionButton';
 import {EditTranscriptionButton} from './EditTranscriptionButton';
 import {SearchField} from './SearchField';
 import {TranscriptionText} from './TranscriptionText';
+
+import {VideoView} from '../VideoPlayer/VideoView';
 
 interface State{
     audioFile:any,
@@ -18,6 +20,7 @@ interface State{
     timestamps: string,
     fullGoogleResponse: any,
     showAutomatedTranscript: boolean,
+    showVideo: boolean,
     isEditing: boolean,
     unauthorized: boolean 
 }
@@ -34,6 +37,7 @@ export default class Transcription extends React.Component<any, State>{
             timestamps: '',
             fullGoogleResponse: null,
             showAutomatedTranscript: false,
+            showVideo: false,
             isEditing: false,
             unauthorized: false
         };
@@ -66,6 +70,7 @@ export default class Transcription extends React.Component<any, State>{
         this.setState({ fullGoogleResponse: e });
         this.setState({ automatedTranscript: e.transcript });
         this.setState({ showAutomatedTranscript: true});
+        this.setState({ showVideo: true});
     };
 
     public updateSearchTerms = (e: any) =>{
@@ -108,12 +113,13 @@ export default class Transcription extends React.Component<any, State>{
                     audioFile={this.state.audioFile}     
                 />
                 <br/>
-                <VideoInputButton
+                <TranscriptionButton
                     loading={this.state.loading}
                     toggleLoad={this.toggleLoad}
                     audioFile={this.state.audioFile}
                     updateTranscript={this.updateTranscript}
                 />
+                
                 <SearchField
                     searchTranscript={this.searchTranscript}
                     updateSearchTerms={this.updateSearchTerms}
@@ -132,6 +138,16 @@ export default class Transcription extends React.Component<any, State>{
                     editTranscription={this.editTranscription}
                     saveTranscription={this.saveTranscription}
                 />
+                <VideoView
+                    audioFile={this.state.audioFile}
+                    showVideo={this.state.showVideo}
+                />
+                {
+                    //TODO: Update the video when audioFile is changed
+                }
+                
+                
+                <br/><br/><br/>
             </div>
         );
     }
