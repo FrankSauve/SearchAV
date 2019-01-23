@@ -4,6 +4,7 @@ using RC_SpeechToText.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 
@@ -15,6 +16,7 @@ namespace RC_SpeechToText.Controllers
     {
         private readonly SearchAVContext _context;
         private readonly ILogger _logger;
+        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public VersionController(SearchAVContext context, ILogger<FileController> logger)
         {
@@ -31,12 +33,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation("Fetching all versions");
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching all versions");
                 return Ok(await _context.Version.ToListAsync());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching all versions");
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching all versions");
                 return BadRequest("Get all versions failed.");
             }
         }
@@ -51,13 +53,13 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation("Fetching version with ID: " + transcriptionId);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching version with ID: " + transcriptionId);
                 var versions = await _context.Version.Where(v => v.TranscriptionId == transcriptionId).FirstOrDefaultAsync();
                 return Ok(versions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching version with ID: " + transcriptionId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching version with ID: " + transcriptionId);
                 return BadRequest("Error fetching version with ID: " + transcriptionId);
             }
         }

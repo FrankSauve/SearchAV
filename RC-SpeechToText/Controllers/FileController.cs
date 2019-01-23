@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ namespace RC_SpeechToText.Controllers
     {
         private readonly SearchAVContext _context;
         private readonly ILogger _logger;
+        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public FileController(SearchAVContext context, ILogger<FileController> logger)
         {
@@ -26,12 +28,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation("Fetching all files");
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching all files");
                 return Ok(await _context.File.ToListAsync());
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "Error fetching all files");
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching all files");
                 return BadRequest("Get all files failed.");
             }
         }
@@ -41,12 +43,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation("Fetching file with id: " + id);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching file with id: " + id);
                 return Ok(await _context.File.FindAsync(id));
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "Error fetching file with id: " + id);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching file with id: " + id);
                 return BadRequest("File with ID" + id + " not found");
             }
         }
@@ -60,12 +62,12 @@ namespace RC_SpeechToText.Controllers
                 _context.File.Attach(file);
                 _context.File.Remove(file);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("Delete file with id: " + id);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Delete file with id: " + id);
                 return Ok();
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "Error deleting file with id: " + id);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error deleting file with id: " + id);
                 return BadRequest("File with ID" + id + " not found");
             }
         }
