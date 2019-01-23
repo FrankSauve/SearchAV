@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using RC_SpeechToText.Controllers;
-using RC_SpeechToText.Controllers.Transcription;
 using RC_SpeechToText.Models;
 using System;
 
