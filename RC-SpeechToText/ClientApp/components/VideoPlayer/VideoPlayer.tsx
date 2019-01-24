@@ -1,16 +1,10 @@
 import * as React from 'react';
-
-
-
 import {Player, ControlBar} from 'video-react';
-
 
 export class VideoPlayer extends React.Component<any> {
     constructor(props: any) {
         super(props);
     }
-
-    
 
     public render() {
         return (
