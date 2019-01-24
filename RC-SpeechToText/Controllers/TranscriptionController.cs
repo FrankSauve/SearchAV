@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
-using Google.Cloud.Speech.V1;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using RC_SpeechToText.Utils;
@@ -10,6 +9,8 @@ using RC_SpeechToText.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -33,7 +34,7 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns>GoogleResult</returns>
         [HttpPost("[action]")]
-        public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile)
+        public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
         {
             // Create the directory
             Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
@@ -60,19 +61,39 @@ namespace RC_SpeechToText.Controllers
             converter.DeleteFile(convertedFileLocation);
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
 
-            // Create file object
-            //TODO: save the transcription first in a Version and in the Transcription table, then save the id into this object
+            // Create transcription
+            var transcription = new Transcription
+            {
+                Flag = "In Progress"
+            };
+            await _context.Transcription.AddAsync(transcription);
+            await _context.SaveChangesAsync();
+
+            // Get user id by email
+            var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+
+            // Create version
+            var version = new Models.Version
+            {
+                UserId = user.UserId,
+                TranscriptionId = transcription.TranscriptionId,
+                Transcription = result.GoogleResponse.Alternatives[0].Transcript,
+            };
+            await _context.Version.AddAsync(version);
+            await _context.SaveChangesAsync();
+
+            // Create file
             //TODO: get the type of the object, if it is a Video or an Audio file 
-            Models.File file = new Models.File
+            var file = new Models.File
             {
                 Title = audioFile.FileName,
                 FilePath = filePath,
-                //Transcription = result.GoogleResponse.Alternatives[0].Transcript //it has to be an id that refers to the table transcription and then to the table Versions. 
+                TranscriptionId = transcription.TranscriptionId,
+                UserId = user.UserId
             };
-
-            // Add file object to database
             await _context.File.AddAsync(file);
             await _context.SaveChangesAsync();
+
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
 
             // Return the transcription
