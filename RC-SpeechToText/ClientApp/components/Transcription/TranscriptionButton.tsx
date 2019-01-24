@@ -23,9 +23,10 @@ export class TranscriptionButton extends React.Component<any, State> {
     public getGoogleSample = () => {
         
         this.props.toggleLoad();
-        
+
         const formData = new FormData();
         formData.append('audioFile', this.props.audioFile);
+        formData.append('userEmail', auth.getEmail()!);
 
         const config = {
             headers: {
