@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -18,8 +22,18 @@ namespace RC_SpeechToText.Tests
         public async Task UnauthorizedTest()
         {
             // Arrange
-            var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+            var Configuration = config.Build();
+
+            var server = new TestServer(WebHost.CreateDefaultBuilder()
+                .UseConfiguration(Configuration)
+                .UseStartup<Startup>());
+
             var client = server.CreateClient();
+
             var url = "api/file/index";
             var expected = HttpStatusCode.Unauthorized;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RC_SpeechToText.Controllers;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Tests
 {
@@ -26,7 +26,7 @@ namespace RC_SpeechToText.Tests
             string text1 = "hello world this is a test of accuracy.";
             string text2 = "hello world this is a test of accuracy.";
 
-            double accuracy = Helpers.CalculateAccuracy(text1, text2);
+            double accuracy = AccuracyService.CalculateAccuracy(text1, text2);
 
             Assert.AreEqual(1.0, accuracy);
         }

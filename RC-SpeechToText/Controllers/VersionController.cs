@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -15,6 +16,7 @@ namespace RC_SpeechToText.Controllers
     {
         private readonly SearchAVContext _context;
         private readonly ILogger _logger;
+        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public VersionController(SearchAVContext context, ILogger<FileController> logger)
         {
@@ -27,16 +29,16 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("[action]")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                _logger.LogInformation("Fetching all versions");
-                return Ok(_context.Version.ToList());
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching all versions");
+                return Ok(await _context.Version.ToListAsync());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching all versions");
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching all versions");
                 return BadRequest("Get all versions failed.");
             }
         }
@@ -47,17 +49,17 @@ namespace RC_SpeechToText.Controllers
         /// <param name="transcriptionId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{transcriptionId}")]
-        public IActionResult GetByTranscriptionId(int transcriptionId)
+        public async Task<IActionResult> GetByTranscriptionId(int transcriptionId)
         {
             try
             {
-                _logger.LogInformation("Fetching version with ID: " + transcriptionId);
-                var versions = _context.Version.Where(v => v.TranscriptionId == transcriptionId);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching version with ID: " + transcriptionId);
+                var versions = await _context.Version.Where(v => v.TranscriptionId == transcriptionId).FirstOrDefaultAsync();
                 return Ok(versions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching version with ID: " + transcriptionId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching version with ID: " + transcriptionId);
                 return BadRequest("Error fetching version with ID: " + transcriptionId);
             }
         }

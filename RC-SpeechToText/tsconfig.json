@@ -12,6 +12,8 @@
   },
   "exclude": [
       "bin",
-      "node_modules"
+      "node_modules",
+      "**/appsettings.json",
+      "**/appsettings.Development.json"
   ]
 }

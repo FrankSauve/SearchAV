@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -13,6 +15,7 @@ namespace RC_SpeechToText.Controllers
     public class TranscriptSearchController : Controller
     {
         private readonly ILogger _logger;
+        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public TranscriptSearchController(ILogger<TranscriptSearchController> logger)
         {
@@ -20,9 +23,9 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpPost("[action]")]
-        public string SearchTranscript(string searchTerms, string jsonResponse)
+        public IActionResult SearchTranscript(string searchTerms, string jsonResponse)
         {
-            _logger.LogInformation("Searching for " + searchTerms);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Searching for " + searchTerms);
             //Gets JSON as a string and then deserialize it into an object.
             var fullResponse = JsonConvert.DeserializeObject<FullGoogleResponse>(jsonResponse);
 
@@ -38,11 +41,11 @@ namespace RC_SpeechToText.Controllers
                 arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
             }
             else {
-                return "";
+                return Ok("");
             }
                 
             Words[] words = fullResponse.Words; // For clearer code instead of calling the full variable
-            _logger.LogInformation("Searching on words: " + fullResponse.Words);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Searching on words: " + fullResponse.Words);
 
             //First check if serch terms are in the transcript, if they are look at where the word instances are located
             if (fullResponse.Transcript.IndexOf(searchTerms, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -82,9 +85,9 @@ namespace RC_SpeechToText.Controllers
 
             //Getting all timestamps and converting them to string to make it easier when passing to frontend
             var result = String.Join(", ", timeStampOfTerms.ToArray());
-            _logger.LogInformation("Time stamps of terms: " + timeStampOfTerms);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Time stamps of terms: " + timeStampOfTerms);
 
-            return result;
+            return Ok(result);
         }
     }
 }
