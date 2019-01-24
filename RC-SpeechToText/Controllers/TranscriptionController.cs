@@ -89,8 +89,9 @@ namespace RC_SpeechToText.Controllers
                 Title = audioFile.FileName,
                 FilePath = filePath,
                 TranscriptionId = transcription.TranscriptionId,
-                UserId = user.UserId
-            };
+                UserId = user.UserId,
+                DateAdded = DateTime.Now
+        };
             await _context.File.AddAsync(file);
             await _context.SaveChangesAsync();
 
