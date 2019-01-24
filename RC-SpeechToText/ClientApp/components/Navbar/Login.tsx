@@ -2,6 +2,7 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { GoogleLogin } from 'react-google-login';
 import { Redirect } from 'react-router-dom';
+import axios from 'axios';
 import auth from '../../Utils/auth';
 
 var {GoogleClientId} = require("../../../appsettings.json");
@@ -23,8 +24,27 @@ export default class Login extends React.Component<any, State> {
     }
 
     public onLoginSuccess = (response:any) => {
-        console.log("Google login response: " + response);
+        // Store Google JWT in localstorage
         auth.setAuthToken(response.tokenId);
+
+        // User object
+        const data = {
+            name: response.profileObj.name,
+            email: response.profileObj.email
+        }
+        
+        const config = {
+            headers: {
+                'content-type': 'application/json'
+            }
+        }
+        axios.post("/api/user/create", data, config)
+            .then(user => {
+                console.log("User created" + user);
+            })
+            .catch(err => alert(err));
+
+
         this.setState({'redirectToVideos': true})
     };
 

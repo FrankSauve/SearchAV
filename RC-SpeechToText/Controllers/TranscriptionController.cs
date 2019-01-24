@@ -71,7 +71,7 @@ namespace RC_SpeechToText.Controllers
             };
 
             // Add file object to database
-            _context.File.Add(file);
+            await _context.File.AddAsync(file);
             await _context.SaveChangesAsync();
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
 
