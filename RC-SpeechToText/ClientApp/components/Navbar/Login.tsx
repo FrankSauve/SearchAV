@@ -2,11 +2,13 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { GoogleLogin } from 'react-google-login';
 import { Redirect } from 'react-router-dom';
-import { AppConfiguration } from "read-appsettings-json";
 import auth from '../../Utils/auth';
+
+var {GoogleClientId} = require("../../../appsettings.json");
 
 interface State {
     redirectToVideos: boolean
+    googleClientId: string
 }
 
 export default class Login extends React.Component<any, State> {
@@ -15,7 +17,8 @@ export default class Login extends React.Component<any, State> {
         super(props);
 
         this.state = {
-            redirectToVideos: false
+            redirectToVideos: false,
+            googleClientId: GoogleClientId
         }
     }
 
@@ -31,11 +34,12 @@ export default class Login extends React.Component<any, State> {
     };
 
     public render() {
+        
         return (
             <div>
                 <GoogleLogin
                     className="fab fa-google button is-danger"
-                    clientId={AppConfiguration.Setting().GoogleClientId}
+                    clientId={this.state.googleClientId}
                     buttonText=" Login avec Google"
                     onSuccess={this.onLoginSuccess}
                     onFailure={this.onLoginFailure}

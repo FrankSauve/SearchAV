@@ -37,7 +37,6 @@
     "react-dom": "https://registry.npmjs.org/react-dom/-/react-dom-15.6.1.tgz",
     "react-google-login": "^3.2.1",
     "react-textarea-autosize": "^7.1.0-1",
-    "read-appsettings-json": "^1.0.98",
     "redux": "^4.0.1",
     "video-react": "^0.13.2"
   }
