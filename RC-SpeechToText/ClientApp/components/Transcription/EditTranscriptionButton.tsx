@@ -11,8 +11,7 @@ export class EditTranscriptionButton extends React.Component<any> {
         
         return (
             <div>
-                {//TODO: Implement EditTranscriptionButton
-                }
+                {this.props.showEditButton ? (this.props.isEditing ? <a className="button is-danger" onClick={this.props.handleSubmit}>Save</a> : <a className="button is-danger" onClick={this.props.editTranscription}>Edit</a>) : null} 
             </div>
         );
     }

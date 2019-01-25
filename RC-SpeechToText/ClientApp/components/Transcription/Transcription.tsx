@@ -16,6 +16,8 @@ interface State{
     audioFile:any,
     loading:boolean,
     automatedTranscript: string,
+    showEditButton: boolean,
+    editedTranscription: string,
     searchTerms: string,
     timestamps: string,
     fullGoogleResponse: any,
@@ -31,12 +33,14 @@ export default class Transcription extends React.Component<any, State>{
 
         this.state = {
             audioFile: null,
-            loading:false,
+            loading: false,
             automatedTranscript: '',
+            editedTranscription: '',
             searchTerms: '',
             timestamps: '',
             fullGoogleResponse: null,
             showAutomatedTranscript: false,
+            showEditButton: false,
             showVideo: false,
             isEditing: false,
             unauthorized: false
@@ -49,28 +53,57 @@ export default class Transcription extends React.Component<any, State>{
     };
 
     public handleEditChange = (e: any) => {
-        this.setState({ automatedTranscript: e.target.value })
+        this.setState({ editedTranscription: e.target.value })
     }
 
     public editTranscription = () =>  {
         this.setState({ isEditing: true });
     }
 
-    public saveTranscription = () => {
-        alert("Feature not implemented yet");
-        // TODO: We need the ID of the video.
-        // We probably need to change the object that gets returned by /convertandtranscribe to include the ID of the video
+    public saveEditedTranscription = () => {
+        const formData = new FormData();
+        formData.append('videoId', this.state.audioFile + '') //This converts videoId to a string 
+        //formData.append('oldTranscript', this.state.transcription)
+        //formData.append('newTranscript', this.state.editedTranscription)
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            },
+        };
+
+        axios.post('/api/SavingTranscript/SaveTranscript', formData, config)
+            .then(res => {
+                console.log(res);
+                this.handleSubmit();
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    }
+
+    public handleSubmit = () => {
+        this.setState({ automatedTranscript: this.state.editedTranscription })
+        this.setState({ 'isEditing': false })
+    }
+
+    public handleCancel = () => {
+        this.setState({ 'isEditing': false })
     }
     
     public toggleLoad = (e: any) =>{
-        (this.state.loading) ? (this.setState({loading: false})) : (this.setState({loading: true}));
+        (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
     
     public updateTranscript = (e: any) =>{
         this.setState({ fullGoogleResponse: e });
         this.setState({ automatedTranscript: e.transcript });
         this.setState({ showAutomatedTranscript: true});
-        this.setState({ showVideo: true});
+        this.setState({ showVideo: true });
+        this.setState({ showEditButton: true });
     };
 
     public updateSearchTerms = (e: any) =>{
@@ -134,9 +167,11 @@ export default class Transcription extends React.Component<any, State>{
                 />
                 <EditTranscriptionButton
                     showText={this.state.showAutomatedTranscript}
+                    showEditButton={this.state.showEditButton}
                     isEditing={this.state.isEditing}
                     editTranscription={this.editTranscription}
-                    saveTranscription={this.saveTranscription}
+                    handleSubmit={this.handleSubmit}
+                    saveTranscription={this.saveEditedTranscription}
                 />
                 <VideoView
                     audioFile={this.state.audioFile}
