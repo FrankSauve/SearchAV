@@ -22,6 +22,7 @@ namespace RC_SpeechToText.Controllers
             _logger = logger;
         }
 
+        //TO DO: Fix searching using versions instead of jsonResponse
         [HttpPost("[action]")]
         public IActionResult SearchTranscript(string searchTerms, string jsonResponse)
         {
