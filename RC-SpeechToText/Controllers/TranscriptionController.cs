@@ -61,26 +61,8 @@ namespace RC_SpeechToText.Controllers
             converter.DeleteFile(convertedFileLocation);
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
 
-            // Create transcription
-            var transcription = new Transcription
-            {
-                Flag = "In Progress"
-            };
-            await _context.Transcription.AddAsync(transcription);
-            await _context.SaveChangesAsync();
-
             // Get user id by email
             var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
-
-            // Create version
-            var version = new Models.Version
-            {
-                UserId = user.UserId,
-                TranscriptionId = transcription.TranscriptionId,
-                Transcription = result.GoogleResponse.Alternatives[0].Transcript,
-            };
-            await _context.Version.AddAsync(version);
-            await _context.SaveChangesAsync();
 
             // Create file
             //TODO: get the type of the object, if it is a Video or an Audio file 
@@ -88,17 +70,29 @@ namespace RC_SpeechToText.Controllers
             {
                 Title = audioFile.FileName,
                 FilePath = filePath,
-                TranscriptionId = transcription.TranscriptionId,
-                UserId = user.UserId,
-                DateAdded = DateTime.Now
-        };
+                Flag = "Automatisé",
+                UserId = user.Id,
+                DateAdded = DateTime.Now    
+            };
             await _context.File.AddAsync(file);
+            await _context.SaveChangesAsync();
+
+            // Create version
+            var version = new Models.Version
+            {
+                UserId = user.Id,
+                FileId = file.Id,
+                Transcription = result.GoogleResponse.Alternatives[0].Transcript,
+                DateModified = DateTime.Now,
+                Active = 1
+            };
+            await _context.Version.AddAsync(version);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
 
             // Return the transcription
-            return Ok(result);
+            return Ok(version);
 
         }
 

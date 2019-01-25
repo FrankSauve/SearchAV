@@ -46,21 +46,42 @@ namespace RC_SpeechToText.Controllers
         /// <summary>
         /// Returns all versions with the transcriptionId
         /// </summary>
-        /// <param name="transcriptionId"></param>
+        /// <param name="fileId"></param>
         /// <returns></returns>
-        [HttpGet("[action]/{transcriptionId}")]
-        public async Task<IActionResult> GetByTranscriptionId(int transcriptionId)
+        [HttpGet("[action]/{fileId}")]
+        public async Task<IActionResult> GetbyFileId(int fileId)
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching version with ID: " + transcriptionId);
-                var versions = await _context.Version.Where(v => v.TranscriptionId == transcriptionId).FirstOrDefaultAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching versions with fileId: " + fileId);
+                var versions = await _context.Version.Where(v => v.FileId == fileId).AnyAsync();
                 return Ok(versions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching version with ID: " + transcriptionId);
-                return BadRequest("Error fetching version with ID: " + transcriptionId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching versions with fileId: " + fileId);
+                return BadRequest("Error fetching versions with fileId: " + fileId);
+            }
+        }
+
+        /// <summary>
+        /// Returns active version corresponding to the fileId
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
+        [HttpGet("[action]/{fileId}")]
+        public async Task<IActionResult> GetActivebyFileId(int fileId)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Fetching active version with fileId: " + fileId);
+                var version = await _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == 1).FirstOrDefaultAsync();
+                return Ok(version);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error fetching active version with fileId: " + fileId);
+                return BadRequest("Error fetching active version with fileId: " + fileId);
             }
         }
     }
