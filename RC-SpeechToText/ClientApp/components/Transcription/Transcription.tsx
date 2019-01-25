@@ -66,9 +66,8 @@ export default class Transcription extends React.Component<any, State>{
         (this.state.loading) ? (this.setState({loading: false})) : (this.setState({loading: true}));
     };
     
-    public updateTranscript = (e: any) =>{
-        this.setState({ fullGoogleResponse: e });
-        this.setState({ automatedTranscript: e.transcript });
+    public updateTranscript = (transcription: any) =>{
+        this.setState({ automatedTranscript: transcription });
         this.setState({ showAutomatedTranscript: true});
         this.setState({ showVideo: true});
     };
@@ -78,7 +77,7 @@ export default class Transcription extends React.Component<any, State>{
     };
 
     public searchTranscript = () => {
-
+        // TODO: Change all this
         const formData = new FormData();
         formData.append('searchTerms', this.state.searchTerms);
         formData.append('jsonResponse', JSON.stringify(this.state.fullGoogleResponse));

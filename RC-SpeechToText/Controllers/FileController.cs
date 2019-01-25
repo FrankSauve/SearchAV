@@ -58,7 +58,7 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                var file = new File { FileId = id };
+                var file = new File { Id = id };
                 _context.File.Attach(file);
                 _context.File.Remove(file);
                 await _context.SaveChangesAsync();

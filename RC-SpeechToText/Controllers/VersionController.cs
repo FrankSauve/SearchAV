@@ -49,18 +49,18 @@ namespace RC_SpeechToText.Controllers
         /// <param name="transcriptionId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{transcriptionId}")]
-        public async Task<IActionResult> GetByTranscriptionId(int transcriptionId)
+        public async Task<IActionResult> GetbyFileId(int fileId)
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching version with ID: " + transcriptionId);
-                var versions = await _context.Version.Where(v => v.TranscriptionId == transcriptionId).FirstOrDefaultAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching version with ID: " + fileId);
+                var versions = await _context.Version.Where(v => v.FileId == fileId).FirstOrDefaultAsync();
                 return Ok(versions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching version with ID: " + transcriptionId);
-                return BadRequest("Error fetching version with ID: " + transcriptionId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching version with ID: " + fileId);
+                return BadRequest("Error fetching version with ID: " + fileId);
             }
         }
     }

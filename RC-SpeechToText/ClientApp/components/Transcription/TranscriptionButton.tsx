@@ -5,7 +5,6 @@ import { Redirect } from 'react-router-dom';
 
 
 interface State{
-    fullGoogleResponse:any,
     unauthorized: boolean
 }
 
@@ -14,7 +13,6 @@ export class TranscriptionButton extends React.Component<any, State> {
         super(props);
         
         this.state ={
-            fullGoogleResponse:null,
             unauthorized: false
         }
 
@@ -35,13 +33,9 @@ export class TranscriptionButton extends React.Component<any, State> {
             }
         };
         
-        let fullGoogleResponse=null;
-        
         axios.post('/api/transcription/convertandtranscribe', formData, config)
             .then(res => {
-                fullGoogleResponse = res.data.googleResponse.alternatives[0];
-
-                this.props.updateTranscript(fullGoogleResponse);
+                this.props.updateTranscript(res.data.transcription);
                 this.props.toggleLoad();
             })
             .catch(err => {
