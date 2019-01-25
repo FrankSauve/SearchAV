@@ -20,7 +20,7 @@ namespace RC_SpeechToText.Tests
             var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
 
             var context = new SearchAVContext(options);
-            context.File.AddRange(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t, TranscriptionId = t }));
+            context.File.AddRange(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t }));
             context.SaveChanges();
 
             var mock = new Mock<ILogger<FileController>>();
