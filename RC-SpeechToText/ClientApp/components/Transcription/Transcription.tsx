@@ -24,6 +24,7 @@ interface State{
     showAutomatedTranscript: boolean,
     showVideo: boolean,
     isEditing: boolean,
+    versionId: number,
     unauthorized: boolean 
 }
 
@@ -43,6 +44,7 @@ export default class Transcription extends React.Component<any, State>{
             showEditButton: false,
             showVideo: false,
             isEditing: false,
+            versionId: 0,
             unauthorized: false
         };
     }
@@ -58,31 +60,6 @@ export default class Transcription extends React.Component<any, State>{
 
     public editTranscription = () =>  {
         this.setState({ isEditing: true });
-    }
-
-    public saveEditedTranscription = () => {
-        const formData = new FormData();
-        formData.append('videoId', this.state.audioFile + '') //This converts videoId to a string 
-        //formData.append('oldTranscript', this.state.transcription)
-        //formData.append('newTranscript', this.state.editedTranscription)
-
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
-
-        axios.post('/api/SavingTranscript/SaveTranscript', formData, config)
-            .then(res => {
-                console.log(res);
-                this.handleSubmit();
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
     }
 
     public handleSubmit = () => {
@@ -103,6 +80,10 @@ export default class Transcription extends React.Component<any, State>{
         this.setState({ showAutomatedTranscript: true});
         this.setState({ showVideo: true });
         this.setState({ showEditButton: true });
+    };
+
+    public updateVersionId = (Id: any) => {
+        this.setState({ versionId: Id });
     };
 
     public updateSearchTerms = (e: any) =>{
@@ -150,6 +131,7 @@ export default class Transcription extends React.Component<any, State>{
                     toggleLoad={this.toggleLoad}
                     audioFile={this.state.audioFile}
                     updateTranscript={this.updateTranscript}
+                    updateVersionId={this.updateVersionId}
                 />
                 
                 <SearchField
@@ -169,8 +151,11 @@ export default class Transcription extends React.Component<any, State>{
                     showEditButton={this.state.showEditButton}
                     isEditing={this.state.isEditing}
                     editTranscription={this.editTranscription}
+                    editedTranscription={this.state.editedTranscription}
+                    transcription={this.state.automatedTranscript}
+                    versionId={this.state.versionId}
+                    updateVersionId={this.updateVersionId}
                     handleSubmit={this.handleSubmit}
-                    saveTranscription={this.saveEditedTranscription}
                 />
                 <VideoView
                     audioFile={this.state.audioFile}

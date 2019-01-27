@@ -37,6 +37,7 @@ export class TranscriptionButton extends React.Component<any, State> {
             .then(res => {
                 this.props.updateTranscript(res.data.transcription);
                 this.props.toggleLoad();
+                this.props.updateVersionId(res.data.id);
             })
             .catch(err => {
                 if(err.response.status == 401) {

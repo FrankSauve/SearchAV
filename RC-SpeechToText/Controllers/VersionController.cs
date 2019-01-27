@@ -54,7 +54,7 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching versions with fileId: " + fileId);
-                var versions = await _context.Version.Where(v => v.FileId == fileId).AnyAsync();
+                var versions = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
                 return Ok(versions);
             }
             catch (Exception ex)
@@ -75,7 +75,7 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Fetching active version with fileId: " + fileId);
-                var version = await _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == 1).FirstOrDefaultAsync();
+                var version = await _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).FirstOrDefaultAsync();
                 return Ok(version);
             }
             catch (Exception ex)
