@@ -15,12 +15,12 @@ namespace RC_SpeechToText.Tests
     public class FileTest
     {
         [Fact]
-        public void GettAllVideos()
+        public async Task GettAllVideos()
         {
             var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
 
             var context = new SearchAVContext(options);
-            context.File.AddRange(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t, TranscriptionId = t }));
+            context.File.AddRange(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t }));
             context.SaveChanges();
 
             var mock = new Mock<ILogger<FileController>>();
@@ -32,7 +32,7 @@ namespace RC_SpeechToText.Tests
             var controller = new FileController(context, logger);
 
             //Act
-            var result = controller.Index();
+            var result = await controller.Index();
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<List<File>>(okResult.Value);
             Assert.True(returnValue.Count() >= 0);

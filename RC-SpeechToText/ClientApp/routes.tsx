@@ -3,8 +3,8 @@ import { Route } from 'react-router-dom';
 import { Home } from './components/Home';
 import Unauthorized from './components/Unauthorized';
 import Navbar from './components/Navbar/Navbar';
-import TestAccuracy from './components/Google/TestAccuracy';
-import Transcription from './components/Google/Transcription'; 
+import TestAccuracy from './components/Transcription/TestAccuracy';
+import Transcription from './components/Transcription/Transcription'; 
 import FileTable from './components/MyFiles/FileTable'
 
 
