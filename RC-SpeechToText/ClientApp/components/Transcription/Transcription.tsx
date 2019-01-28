@@ -16,12 +16,15 @@ interface State{
     audioFile:any,
     loading:boolean,
     automatedTranscript: string,
+    showEditButton: boolean,
+    editedTranscription: string,
     searchTerms: string,
     timestamps: string,
     fullGoogleResponse: any,
     showAutomatedTranscript: boolean,
     showVideo: boolean,
     isEditing: boolean,
+    versionId: number,
     unauthorized: boolean 
 }
 
@@ -31,14 +34,17 @@ export default class Transcription extends React.Component<any, State>{
 
         this.state = {
             audioFile: null,
-            loading:false,
+            loading: false,
             automatedTranscript: '',
+            editedTranscription: '',
             searchTerms: '',
             timestamps: '',
             fullGoogleResponse: null,
             showAutomatedTranscript: false,
+            showEditButton: false,
             showVideo: false,
             isEditing: false,
+            versionId: 0,
             unauthorized: false
         };
     }
@@ -49,27 +55,35 @@ export default class Transcription extends React.Component<any, State>{
     };
 
     public handleEditChange = (e: any) => {
-        this.setState({ automatedTranscript: e.target.value })
+        this.setState({ editedTranscription: e.target.value })
     }
 
     public editTranscription = () =>  {
         this.setState({ isEditing: true });
     }
 
-    public saveTranscription = () => {
-        alert("Feature not implemented yet");
-        // TODO: We need the ID of the video.
-        // We probably need to change the object that gets returned by /convertandtranscribe to include the ID of the video
+    public handleSubmit = () => {
+        this.setState({ automatedTranscript: this.state.editedTranscription })
+        this.setState({ 'isEditing': false })
+    }
+
+    public handleCancel = () => {
+        this.setState({ 'isEditing': false })
     }
     
     public toggleLoad = (e: any) =>{
-        (this.state.loading) ? (this.setState({loading: false})) : (this.setState({loading: true}));
+        (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
     
     public updateTranscript = (transcription: any) =>{
         this.setState({ automatedTranscript: transcription });
         this.setState({ showAutomatedTranscript: true});
-        this.setState({ showVideo: true});
+        this.setState({ showVideo: true });
+        this.setState({ showEditButton: true });
+    };
+
+    public updateVersionId = (Id: any) => {
+        this.setState({ versionId: Id });
     };
 
     public updateSearchTerms = (e: any) =>{
@@ -117,6 +131,7 @@ export default class Transcription extends React.Component<any, State>{
                     toggleLoad={this.toggleLoad}
                     audioFile={this.state.audioFile}
                     updateTranscript={this.updateTranscript}
+                    updateVersionId={this.updateVersionId}
                 />
                 
                 <SearchField
@@ -133,9 +148,14 @@ export default class Transcription extends React.Component<any, State>{
                 />
                 <EditTranscriptionButton
                     showText={this.state.showAutomatedTranscript}
+                    showEditButton={this.state.showEditButton}
                     isEditing={this.state.isEditing}
                     editTranscription={this.editTranscription}
-                    saveTranscription={this.saveTranscription}
+                    editedTranscription={this.state.editedTranscription}
+                    transcription={this.state.automatedTranscript}
+                    versionId={this.state.versionId}
+                    updateVersionId={this.updateVersionId}
+                    handleSubmit={this.handleSubmit}
                 />
                 <VideoView
                     audioFile={this.state.audioFile}

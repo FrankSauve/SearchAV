@@ -84,12 +84,13 @@ namespace RC_SpeechToText.Controllers
                 FileId = file.Id,
                 Transcription = result.GoogleResponse.Alternatives[0].Transcript,
                 DateModified = DateTime.Now,
-                Active = 1
+                Active = true
             };
             await _context.Version.AddAsync(version);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added version with ID: " + version.Id + " to the database");
 
             // Return the transcription
             return Ok(version);

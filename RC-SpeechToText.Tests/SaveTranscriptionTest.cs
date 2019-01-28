@@ -5,45 +5,63 @@ using Moq;
 using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
 using System;
+using Version = RC_SpeechToText.Models.Version;
 
 namespace RC_SpeechToText.Tests
 {
     [TestClass]
     public class SaveTranscriptionTest
     {
-        // TODO: Change this test when new models and controllers are implemented
         [TestMethod]
-        public void TestSave()
+        public async void TestSaveEditedTranscript()
         {
 
-            //var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
+            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
 
-            //var context = new SearchAVContext(options);
+            var context = new SearchAVContext(options);
 
-            ////Add video to database
-            //Video v = new Video();
-            //v.Transcription = "Transcription";
-            //context.Video.Add(v);
-            //context.SaveChanges();
+            string transcript = "Transcription";
 
-            ////Retrieve newly added video
-            //v = context.Video.Find(1);
+            //Add File to database
+            File f = new File { Title = "title", DateAdded = DateTime.Now, Flag = "Automatisé" };
+            context.File.Add(f);
+            int fileId = context.SaveChanges();
 
-            ////string trans1 = v.Transcription;
-            //string newTranscription = "New Transcription";
+            //Add Version to database
+            Version v = new Version { FileId = fileId, Active = true};
+            v.Transcription = transcript;
+            context.Version.Add(v);
+            int versionId = context.SaveChanges();
 
-            //var mock = new Mock<ILogger<SavingTranscriptController>>();
-            //ILogger<SavingTranscriptController> logger = mock.Object;
-            //logger = Mock.Of<ILogger<SavingTranscriptController>>();
+            //Retrieve newly added Version
+            v = context.Version.Find(versionId);
 
-            //var controller = new SavingTranscriptController(context, logger);
+            string newTranscription = "New Transcription";
 
-            //controller.SaveTranscript(v.VideoId +"", v.Transcription, newTranscription);
-            //Assert.AreEqual(v.Transcription, newTranscription);
+            var mock = new Mock<ILogger<SaveEditedTranscriptController>>();
+            ILogger<SaveEditedTranscriptController> logger = mock.Object;
+            logger = Mock.Of<ILogger<SaveEditedTranscriptController>>();
 
-            ////Checking if the transcription has been saved in DB
-            //v = context.Video.Find(1);
-            //Assert.AreEqual(v.Transcription, newTranscription);
+            var controller = new SaveEditedTranscriptController(context, logger);
+
+            await controller.SaveEditedTranscript(v.Id + "", v.Transcription, newTranscription);
+            Assert.AreEqual(v.Transcription, newTranscription);
+
+            //Checking new version
+            Version newVersion = context.Version.Find(versionId + 1);
+            Assert.AreEqual(newVersion.Transcription, newTranscription);
+            Assert.AreEqual(newVersion.FileId, fileId);
+            Assert.IsTrue(newVersion.Active);
+
+            //Checking old version
+            v = context.Version.Find(versionId);
+            Assert.AreEqual(v.Transcription, transcript);
+            Assert.AreEqual(v.FileId, newVersion.FileId);
+            Assert.IsFalse(newVersion.Active);
+
+            //Checking corresponding file
+            f = context.File.Find(fileId);
+            Assert.AreEqual(f.Flag, "Edité");
 
         }
     }
