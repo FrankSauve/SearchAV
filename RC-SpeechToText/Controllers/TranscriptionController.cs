@@ -1,70 +1,102 @@
 ﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
-using Google.Cloud.Speech.V1;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 using System.IO;
 using RC_SpeechToText.Utils;
+using RC_SpeechToText.Models;
+using RC_SpeechToText.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace RC_SpeechToText.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class TranscriptionController : Controller
     {
+        private readonly SearchAVContext _context;
+        private readonly ILogger _logger;
+        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
+
+        public TranscriptionController(SearchAVContext context, ILogger<TranscriptionController> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
+
         /// <summary>
         /// Generates an automatic transcript using google cloud.
         /// GET: /api/googletest/speechtotext
         /// </summary>
         /// <returns>GoogleResult</returns>
         [HttpPost("[action]")]
-        public GoogleTranscriptionResult ManageTranscription(IFormFile audioFile)
+        public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
         {
+            // Create the directory
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Created directory /Audio");
+
             // Saves the file to the audio directory
-            var filePath = Directory.GetCurrentDirectory() + "\\Audio\\" + audioFile.FileName;
+            var filePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\" + audioFile.FileName;
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 audioFile.CopyTo(stream);
             }
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Saved audio file " + audioFile.FileName + " in /audio");
 
-            //once we get the file path(of the uploaded file) from the server, we use it to call the converter
+            // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
             Converter converter = new Converter();
-            //call converter to convert the file to mono and bring back its file path. 
+            // Call converter to convert the file to mono and bring back its file path. 
             string convertedFileLocation = converter.FileToWav(filePath);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
 
-            //call the method that will get the transcription
-            GoogleTranscriptionResult result = GoogleSpeechToText(convertedFileLocation);
+            // Call the method that will get the transcription
+            GoogleResult result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
 
-            //delete the converted file
-            converter.DeleteMonoFile(convertedFileLocation); 
+            // Delete the converted file
+            converter.DeleteFile(convertedFileLocation);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
 
-            //return the transcription
-            return result;
+            // Get user id by email
+            var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
 
-        }
-
-        private  GoogleTranscriptionResult GoogleSpeechToText(string inputFilePath)
-        {
-            var speech = SpeechClient.Create();
-            var response = speech.Recognize(new RecognitionConfig()
+            // Create file
+            //TODO: get the type of the object, if it is a Video or an Audio file 
+            var file = new Models.File
             {
-                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                LanguageCode = "fr-ca",
-                EnableWordTimeOffsets = true
-            }, RecognitionAudio.FromFile(inputFilePath)); // Add file name here
-
-            var googleTranscriptionResult = new GoogleTranscriptionResult
-            {
-                Transcription= response.Results[0]
+                Title = audioFile.FileName,
+                FilePath = filePath,
+                Flag = "Automatisé",
+                UserId = user.Id,
+                DateAdded = DateTime.Now    
             };
+            await _context.File.AddAsync(file);
+            await _context.SaveChangesAsync();
 
-            return googleTranscriptionResult;
+            // Create version
+            var version = new Models.Version
+            {
+                UserId = user.Id,
+                FileId = file.Id,
+                Transcription = result.GoogleResponse.Alternatives[0].Transcript,
+                DateModified = DateTime.Now,
+                Active = true
+            };
+            await _context.Version.AddAsync(version);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added version with ID: " + version.Id + " to the database");
+
+            // Return the transcription
+            return Ok(version);
+
         }
-    }
 
-    public class GoogleTranscriptionResult
-    {
-        public SpeechRecognitionResult Transcription { get; set; }
+        
     }
 }
