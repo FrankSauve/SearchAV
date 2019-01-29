@@ -10,7 +10,8 @@ export class FileCard extends React.Component<any> {
         return (
             <div className="column is-one-quarter" >
                 <div className="card mg-top-30">
-                <header className="card-header">
+                    <header className="card-header">
+                        {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
                         <p className="card-header-title">
                             {this.props.title}
                         </p>
@@ -30,7 +31,7 @@ export class FileCard extends React.Component<any> {
 
                         <div className="content">
                             {this.props.transcription}
-                            <time dateTime="">Date added: {this.props.date}</time>
+                            <time dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
                 </div>

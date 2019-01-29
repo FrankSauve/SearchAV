@@ -210,6 +210,7 @@ export default class Dashboard extends React.Component<any, State>{
                             return (
                                 <File
                                     fileId={file.id}
+                                    flag={file.flag}
                                     title={file.title}
                                     filePath={file.filePath}
                                     transcription={file.transcription}

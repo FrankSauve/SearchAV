@@ -6,6 +6,7 @@ import { FileCard } from './FileCard';
 interface State {
     fileId: number,
     title: string,
+    flag: string,
     filePath: string, 
     transcription: string,
     dateAdded: string,
@@ -20,6 +21,7 @@ export default class File extends React.Component<any, State> {
         this.state = {
             fileId: this.props.fileId,
             title: this.props.title,
+            flag: this.props.flag,
             filePath: this.props.filePath,
             transcription: this.props.transcription,
             dateAdded: this.props.dateAdded,
@@ -34,9 +36,10 @@ export default class File extends React.Component<any, State> {
         return (
             <FileCard
                 title={this.state.title}
+                flag={this.state.flag}
                 image="assets/speakerIcon.png"
-                transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) : this.state.transcription : null}
-                date={this.state.dateAdded.substring(0,10)}
+                transcription={this.state.transcription != null ? this.state.transcription.length > 50 ? this.state.transcription.substring(0, 50) + "..." : this.state.transcription : null}
+                date={this.state.dateAdded.substring(0, 10) + " " + this.state.dateAdded.substring(11, 16)}
             />
         )
     }
