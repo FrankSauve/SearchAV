@@ -29,7 +29,9 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching all files");
-                return Ok(await _context.File.ToListAsync());
+                var files = await _context.File.ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Files size: " + files.Count);
+                return Ok(files);
             }
             catch(Exception ex)
             {

@@ -24,13 +24,10 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                         Test Google's Accuracy
                     </Link>
 
-                    <Link className="navbar-item" to="/Transcription">
-                        Transcrire vidéo
+                    <Link className="navbar-item" to="/Dashboard">
+                        Dashboard
                     </Link>
 
-                    <Link className="navbar-item" to="/files">
-                        Mes vidéos
-                    </Link>
                 </div>
 
                 <div className="navbar-end">

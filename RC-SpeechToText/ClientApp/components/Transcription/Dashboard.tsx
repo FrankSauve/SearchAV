@@ -8,13 +8,17 @@ import {VideoInput} from './VideoInput';
 import {TranscriptionButton} from './TranscriptionButton';
 import {EditTranscriptionButton} from './EditTranscriptionButton';
 import {SearchField} from './SearchField';
-import {TranscriptionText} from './TranscriptionText';
+import { TranscriptionText } from './TranscriptionText';
+//import  FileTable  from '../MyFiles/FileTable';
+import File from '../MyFiles/File';
 
 import {VideoView} from '../VideoPlayer/VideoView';
 
 interface State{
-    audioFile:any,
-    loading:boolean,
+    audioFile: any,
+    files: any[],
+    loading: boolean,
+    loadingFiles: boolean,
     automatedTranscript: string,
     showEditButton: boolean,
     editedTranscription: string,
@@ -28,13 +32,15 @@ interface State{
     unauthorized: boolean 
 }
 
-export default class Transcription extends React.Component<any, State>{
+export default class Dashboard extends React.Component<any, State>{
     constructor(props: any) {
         super(props);
 
         this.state = {
             audioFile: null,
+            files: [],
             loading: false,
+            loadingFiles: false,
             automatedTranscript: '',
             editedTranscription: '',
             searchTerms: '',
@@ -48,6 +54,32 @@ export default class Transcription extends React.Component<any, State>{
             unauthorized: false
         };
     }
+
+    // Called when the component gets rendered
+    public componentDidMount() {
+        this.getAllFiles();
+    }
+
+    public getAllFiles = () => {
+        this.setState({ 'loadingFiles': true });
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/file/index', config)
+            .then(res => {
+                this.setState({ 'files': res.data });
+                this.setState({ 'loadingFiles': false });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    };
 
     public updateFile = (e: any) => {
         this.setState({audioFile: e.target.files[0]});
@@ -115,6 +147,9 @@ export default class Transcription extends React.Component<any, State>{
     };
 
     public render() {
+
+        const progressBar = <img src="assets/loading.gif" alt="Loading..." />
+
         return (
             <div className="container">
 
@@ -161,6 +196,31 @@ export default class Transcription extends React.Component<any, State>{
                     audioFile={this.state.audioFile}
                     showVideo={this.state.showVideo}
                 />
+
+                {
+                    //TO DO: Refactor this to use FileTable component
+                }
+                <div className="container has-text-centered">
+
+                    {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
+
+                    {this.state.loadingFiles ? progressBar : null}
+                    <div className="columns is-multiline">
+                        {this.state.files.map((file) => {
+                            return (
+                                <File
+                                    fileId={file.id}
+                                    title={file.title}
+                                    filePath={file.filePath}
+                                    transcription={file.transcription}
+                                    dateAdded={file.dateAdded}
+                                    key={file.id}
+                                />
+                            )
+                        })}
+                    </div>
+                </div>
+
                 {
                     //TODO: Update the video when audioFile is changed
                 }

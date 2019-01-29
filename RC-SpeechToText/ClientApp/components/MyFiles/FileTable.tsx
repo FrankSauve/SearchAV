@@ -11,42 +11,16 @@ interface State {
     unauthorized: boolean
 }
 
-export default class FileTable extends React.Component<RouteComponentProps<{}>, State> {
+export default class FileTable extends React.Component<any, State> {
 
     constructor(props: any) {
         super(props);
         this.state = {
-            files: [],
-            loading: true,
-            unauthorized: false
+            files: this.props.files,
+            loading: this.props.loading,
+            unauthorized: this.props.unauthorized
         }
     }
-
-    // Called when the component gets rendered
-    public componentDidMount() {
-        this.getAllFiles();
-    }
-
-    public getAllFiles = () => {
-        this.setState({'loading': true});
-        
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/file/index', config)
-            .then(res => {
-                this.setState({'files': res.data});
-                this.setState({'loading': false});
-            })
-            .catch(err => {
-                if(err.response.status == 401) {
-                    this.setState({'unauthorized': true});
-                }
-            });
-    };
 
     public render() {
 
@@ -62,12 +36,12 @@ export default class FileTable extends React.Component<RouteComponentProps<{}>, 
                     {this.state.files.map((file) => {
                         return (
                             <File 
-                                fileId = {file.fileId}
+                                fileId = {file.id}
                                 title = {file.title}
                                 filePath = {file.filePath}
                                 transcription = {file.transcription}
                                 dateAdded = {file.dateAdded}
-                                key = {file.fileId}
+                                key = {file.id}
                             />
                         )
                     })}

@@ -4,8 +4,7 @@ import { Home } from './components/Home';
 import Unauthorized from './components/Unauthorized';
 import Navbar from './components/Navbar/Navbar';
 import TestAccuracy from './components/Transcription/TestAccuracy';
-import Transcription from './components/Transcription/Transcription'; 
-import FileTable from './components/MyFiles/FileTable'
+import Dashboard from './components/Transcription/Dashboard';
 
 
 export const routes = <div>
@@ -13,6 +12,5 @@ export const routes = <div>
     <Route exact path="/unauthorized" component={Unauthorized} />
     <Route exact path='/' component={Home} />
     <Route exact path="/TestAccuracy" component={TestAccuracy} />
-    <Route exact path="/Transcription" component={Transcription} />
-    <Route exact path="/files" component={ FileTable } />
+    <Route exact path="/Dashboard" component={Dashboard} />
 </div>;
