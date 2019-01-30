@@ -6,6 +6,7 @@ using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -31,7 +32,16 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching all files");
                 var files = await _context.File.ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Files size: " + files.Count);
-                return Ok(files);
+
+                var usernames = new List<string>();
+
+                foreach(var file in files)
+                {
+                    var user = await _context.User.FindAsync(file.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { files, usernames }));
             }
             catch(Exception ex)
             {

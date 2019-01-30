@@ -3,14 +3,12 @@ import { Route } from 'react-router-dom';
 import { Home } from './components/Home';
 import Unauthorized from './components/Unauthorized';
 import Navbar from './components/Navbar/Navbar';
-import TestAccuracy from './components/Transcription/TestAccuracy';
-import Dashboard from './components/Transcription/Dashboard';
+import Dashboard from './components/Dashboard/Dashboard';
 
 
 export const routes = <div>
     <Route path='/' component={ Navbar } />
     <Route exact path="/unauthorized" component={Unauthorized} />
     <Route exact path='/' component={Home} />
-    <Route exact path="/TestAccuracy" component={TestAccuracy} />
     <Route exact path="/Dashboard" component={Dashboard} />
 </div>;
