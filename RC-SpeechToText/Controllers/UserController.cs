@@ -48,5 +48,20 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> getUserName(int id)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Fetching user with id: " + id);
+                return Ok(await _context.User.FindAsync(id));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error fetching user with id: " + id);
+                return BadRequest("User with ID" + id + " not found");
+            }
+        }
     }
 }

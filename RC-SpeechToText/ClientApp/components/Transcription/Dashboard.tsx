@@ -9,7 +9,7 @@ import {TranscriptionButton} from './TranscriptionButton';
 import {EditTranscriptionButton} from './EditTranscriptionButton';
 import {SearchField} from './SearchField';
 import { TranscriptionText } from './TranscriptionText';
-//import  FileTable  from '../MyFiles/FileTable';
+import  FileTable  from '../MyFiles/FileTable';
 import File from '../MyFiles/File';
 
 import {VideoView} from '../VideoPlayer/VideoView';
@@ -212,6 +212,7 @@ export default class Dashboard extends React.Component<any, State>{
                                     fileId={file.id}
                                     flag={file.flag}
                                     title={file.title}
+                                    userId={file.userId}
                                     filePath={file.filePath}
                                     transcription={file.transcription}
                                     dateAdded={file.dateAdded}
