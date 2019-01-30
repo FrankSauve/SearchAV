@@ -11,6 +11,10 @@ html, body {
   margin-right: 30px;
 }
 
+.is-circular {
+    border-radius: 50%;
+}
+
 .hovereffect {
     width: 100%;
     height: 100%;

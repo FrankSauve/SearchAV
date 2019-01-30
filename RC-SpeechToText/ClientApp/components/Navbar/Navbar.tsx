@@ -17,6 +17,12 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
             <div className="navbar-menu">
                 <div className="navbar-end">
                     <div className="navbar-item">
+                        <p>{auth.getName()!}</p>
+                    </div>
+                    <div className="navbar-item">
+                        <img className="is-circular" src={auth.getProfilePicture()!} />
+                    </div>
+                    <div className="navbar-item">
                         <Logout />
                     </div>
                 </div>
