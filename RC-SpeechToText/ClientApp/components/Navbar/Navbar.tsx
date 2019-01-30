@@ -24,20 +24,6 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         )
     }
 
-    // Shown when the user is logged out
-    public renderLoggedOut = () => {
-        return (
-            <div className="navbar-menu">
-
-                <div className="navbar-end">
-                    <div className="navbar-item">
-                        <Login />
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
     public render() {
         return (
             <div>
@@ -62,7 +48,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                             </a>
                         </div>
 
-                        {auth.isLoggedIn() ? this.renderLoggedIn() : this.renderLoggedOut()}
+                        {auth.isLoggedIn() ? this.renderLoggedIn(): null }
 
                 </nav>
             </div>
