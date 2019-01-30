@@ -37,7 +37,7 @@ export default class FileTable extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/file/index', config)
+        axios.get('/api/file/GetAllWithUsernames', config)
             .then(res => {
                 console.log(res.data);
                 this.setState({'files': res.data.value.files});

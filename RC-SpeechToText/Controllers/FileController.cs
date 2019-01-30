@@ -29,6 +29,21 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Fetching all files");
+                return Ok(await _context.File.ToListAsync());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error fetching all files");
+                return BadRequest("Get all files failed.");
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetAllWithUsernames()
+        {
+            try
+            {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching all files");
                 var files = await _context.File.ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Files size: " + files.Count);
