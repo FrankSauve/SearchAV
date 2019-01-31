@@ -43,7 +43,7 @@ export class FileCard extends React.Component<any> {
 
     public render() {
         return (
-            <div className="column is-one-quarter" >
+            <div className="column is-3">
                 <div className="card mg-top-30">
                     <header className="card-header">
                         {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
@@ -65,7 +65,7 @@ export class FileCard extends React.Component<any> {
                     <div className="card-content">
 
                         <div className="content">
-                            {this.props.transcription}
+                            <p>{this.props.transcription}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
                         </div>

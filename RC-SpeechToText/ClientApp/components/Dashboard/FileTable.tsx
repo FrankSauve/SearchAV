@@ -58,7 +58,7 @@ export default class FileTable extends React.Component<any, State> {
         var i = 0;
 
         return (
-            <div className="has-text-centered">
+            <div>
 
                 {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
                 
@@ -71,7 +71,6 @@ export default class FileTable extends React.Component<any, State> {
                                         title = {file.title}
                                         username={this.state.usernames[i]}
                                         filePath = {file.filePath}
-                                        transcription = {file.transcription}
                                         dateAdded = {file.dateAdded}
                                         key = {file.fileId}
                                     />

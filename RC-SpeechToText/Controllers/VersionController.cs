@@ -33,12 +33,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching all versions");
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching all versions");
                 return Ok(await _context.Version.ToListAsync());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching all versions");
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching all versions");
                 return BadRequest("Get all versions failed.");
             }
         }
@@ -53,13 +53,13 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Fetching versions with fileId: " + fileId);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching versions with fileId: " + fileId);
                 var versions = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
                 return Ok(versions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Error fetching versions with fileId: " + fileId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching versions with fileId: " + fileId);
                 return BadRequest("Error fetching versions with fileId: " + fileId);
             }
         }
@@ -74,13 +74,13 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Fetching active version with fileId: " + fileId);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching active version with fileId: " + fileId);
                 var version = await _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).FirstOrDefaultAsync();
                 return Ok(version);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error fetching active version with fileId: " + fileId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching active version with fileId: " + fileId);
                 return BadRequest("Error fetching active version with fileId: " + fileId);
             }
         }
