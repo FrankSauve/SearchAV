@@ -1,10 +1,45 @@
 import * as React from 'react';
-
+import axios from 'axios';
+import auth from '../../Utils/auth'; 
 
 export class FileCard extends React.Component<any> {
     constructor(props: any) {
         super(props);
     }
+
+    public deleteFileWithVersions = () => {   
+
+        console.log(this.props.fileId); 
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+
+        axios.delete('/api/version/DeleteFileVersions/' + this.props.fileId, config)
+            .then(res => {
+                console.log(res.data);
+
+                axios.delete('/api/file/Delete/' + this.props.fileId, config)
+                    .then(res => {
+                        console.log(res.data);
+                    })
+                    .catch(err => {
+                        if (err.response.status == 401) {
+                            this.setState({ 'unauthorized': true });
+                        }
+                    });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+
+        
+    };
 
     public render() {
         return (
@@ -26,7 +61,7 @@ export class FileCard extends React.Component<any> {
                                 </div>
                             </figure>
                         </div>
-                </div>
+                    </div>
                     <div className="card-content">
 
                         <div className="content">
@@ -35,6 +70,9 @@ export class FileCard extends React.Component<any> {
                             <time dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
+                    <footer className="card-footer">
+                        <a className="card-footer-item" onClick={this.deleteFileWithVersions}>Delete</a>
+                    </footer>
                 </div>
             </div>
         );

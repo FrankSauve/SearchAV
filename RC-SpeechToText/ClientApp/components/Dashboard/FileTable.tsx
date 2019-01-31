@@ -66,7 +66,7 @@ export default class FileTable extends React.Component<any, State> {
                 <div className="columns is-multiline">
                     {this.state.files.map((file) => {
                         const FileComponent = <File 
-                                        fileId = {file.fileId}
+                                        fileId = {file.id}
                                         flag={file.flag}
                                         title = {file.title}
                                         username={this.state.usernames[i]}
