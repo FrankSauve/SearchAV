@@ -84,5 +84,29 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("Error fetching active version with fileId: " + fileId);
             }
         }
+
+        [HttpDelete("[action]/{fileId}")]
+        public async Task<IActionResult> DeleteFileVersions(int fileId)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting all versions for file with id: " + fileId);
+
+                var versionsList = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
+
+                foreach (var version in versionsList)
+                {
+                    _context.Version.Remove(version);
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok("ok all versions are deleted for file with id: " + fileId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error all versions for file with id: "+ fileId);
+                return BadRequest("Delete all versions failed.");
+            }
+        }
     }
 }
