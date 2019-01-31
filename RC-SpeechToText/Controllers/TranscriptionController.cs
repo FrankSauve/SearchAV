@@ -72,7 +72,8 @@ namespace RC_SpeechToText.Controllers
                 FilePath = filePath,
                 Flag = "Automatisé",
                 UserId = user.Id,
-                DateAdded = DateTime.Now    
+                DateAdded = DateTime.Now,
+                Description = "" 
             };
             await _context.File.AddAsync(file);
             await _context.SaveChangesAsync();
