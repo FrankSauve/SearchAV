@@ -48,6 +48,7 @@ export default class File extends React.Component<any, State> {
     public render() {   
         return (
             <FileCard
+                fileId={this.props.fileId}
                 title={this.props.title}
                 flag={this.props.flag}
                 username={this.props.username}
