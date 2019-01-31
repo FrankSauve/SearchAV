@@ -355,3 +355,4 @@ RC-SpeechToText/wwwroot/assets/Audio/RAD_Vegan_Mono.wav
 *.yml
 *.dcproj
 *.yml
+.vs/RC-SpeechToText/v15/.suo
