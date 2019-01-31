@@ -57,8 +57,8 @@ export default class FileInput extends React.Component<any, State> {
         const progressBar = <img width="100" height="100" src="assets/loading.gif" alt="Loading..."/>
         
         return (
-            <div className="mg-top-30">
-                <div className="file is-boxed is-medium has-name">
+            <div className="column mg-top-30">
+                <div className="file is-boxed has-name">
                     <label className="file-label">
                         <input className="file-input" type="file" name="File" onChange={this.getGoogleSample}/>
                         <span className="file-cta">
@@ -66,9 +66,9 @@ export default class FileInput extends React.Component<any, State> {
                                 <i className="fas fa-upload"></i>
                             </span>
                             {this.state.loading ? progressBar : 
-                                <span className="file-label is-size-5">
+                                <span className="file-label">
                                     <br/>
-                                    Ajouter un fichier à transcrire...
+                                    Ajouter un fichier...
                                     <br/>
                                     <br/>
                                 </span>

@@ -52,7 +52,7 @@ export default class File extends React.Component<any, State> {
                 flag={this.props.flag}
                 username={this.props.username}
                 image="assets/speakerIcon.png"
-                transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) : this.state.transcription : null}
+                transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) + "..." : this.state.transcription : null}
                 date={this.props.dateAdded.substring(0, 10) + " " + this.props.dateAdded.substring(11, 16)}
             />
         )
