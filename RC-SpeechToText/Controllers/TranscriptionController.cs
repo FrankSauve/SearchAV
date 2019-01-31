@@ -38,7 +38,7 @@ namespace RC_SpeechToText.Controllers
         {
             // Create the directory
             Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Created directory /Audio");
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Created directory /Audio");
 
             // Saves the file to the audio directory
             var filePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\" + audioFile.FileName;
@@ -46,20 +46,20 @@ namespace RC_SpeechToText.Controllers
             {
                 audioFile.CopyTo(stream);
             }
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Saved audio file " + audioFile.FileName + " in /audio");
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Saved audio file " + audioFile.FileName + " in /audio");
 
             // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
             Converter converter = new Converter();
             // Call converter to convert the file to mono and bring back its file path. 
             string convertedFileLocation = converter.FileToWav(filePath);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
 
             // Call the method that will get the transcription
             GoogleResult result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
 
             // Delete the converted file
             converter.DeleteFile(convertedFileLocation);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Deleted " + convertedFileLocation);
 
             // Get user id by email
             var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
@@ -89,8 +89,8 @@ namespace RC_SpeechToText.Controllers
             await _context.Version.AddAsync(version);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added version with ID: " + version.Id + " to the database");
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Added file with title: " + file.Title + " to the database");
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Added version with ID: " + version.Id + " to the database");
 
             // Return the transcription
             return Ok(version);
