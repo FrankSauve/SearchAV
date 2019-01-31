@@ -24,7 +24,7 @@ export default class Dashboard extends React.Component<any, State> {
         return (
             <div className="container">
                 <div className="columns">
-                    <div className="column is-one-third">
+                    <div className="column is-one-fifth">
                         <FileInput/>
                     </div>
                     <section className="section">
