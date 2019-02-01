@@ -11,12 +11,6 @@ interface State {
 
 export default class Navbar extends React.Component<RouteComponentProps<{}>, State> {
 
-
-    // Called when the component renders
-    public com() {
-        console.log(this.props);
-    }
-
     // Shown when the user is logged in
     public renderLoggedIn = () => {
         return (
