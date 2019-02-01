@@ -29,11 +29,31 @@ function setEmail(email: string) {
     localStorage.setItem('email', email);
 }
 
+function setProfilePicture(profilePicture: string) {
+    localStorage.setItem('profilePicture', profilePicture);
+}
+
+function getProfilePicture() {
+    return localStorage.getItem('profilePicture');
+}
+
+function setName(name: string) {
+    localStorage.setItem('name', name);
+}
+
+function getName() {
+    return localStorage.getItem('name');
+}
+
 export default{
     isLoggedIn: isLoggedIn,
     getAuthToken: getAuthToken,
     setAuthToken: setAuthToken,
     removeAuthToken: removeAuthToken,
     getEmail: getEmail,
-    setEmail: setEmail
+    setEmail: setEmail,
+    setProfilePicture: setProfilePicture,
+    getProfilePicture: getProfilePicture,
+    setName: setName,
+    getName: getName
 }

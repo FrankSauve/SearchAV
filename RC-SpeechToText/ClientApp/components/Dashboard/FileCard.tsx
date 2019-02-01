@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
-import auth from '../../Utils/auth'; 
+import auth from '../../Utils/auth';
+import { Link } from 'react-router-dom';
 
 export class FileCard extends React.Component<any> {
     constructor(props: any) {
@@ -37,8 +38,6 @@ export class FileCard extends React.Component<any> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-
-        
     };
 
     public render() {
@@ -46,18 +45,17 @@ export class FileCard extends React.Component<any> {
             <div className="column is-3">
                 <div className="card mg-top-30">
                     <header className="card-header">
-                        {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
                         <p className="card-header-title">
                             {this.props.title}
                         </p>
-                   
-                </header>
+                    </header>
+                    {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
                     <div className="card-image">
                         <div className="hovereffect">
                     <figure className="image is-4by3">
                                 <img src={this.props.image} alt="Placeholder image" />
                                 <div className="overlay">
-                                    <a className="info" href="/FileView">View/Edit</a>
+                                    <Link className="info" to={`/FileView/${this.props.fileId}`}>View/Edit</Link>
                                 </div>
                             </figure>
                         </div>
