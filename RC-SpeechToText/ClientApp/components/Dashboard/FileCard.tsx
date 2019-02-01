@@ -45,12 +45,11 @@ export class FileCard extends React.Component<any> {
             <div className="column is-3">
                 <div className="card mg-top-30">
                     <header className="card-header">
-                        {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
                         <p className="card-header-title">
                             {this.props.title}
                         </p>
-                   
-                </header>
+                    </header>
+                    {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
                     <div className="card-image">
                         <div className="hovereffect">
                     <figure className="image is-4by3">

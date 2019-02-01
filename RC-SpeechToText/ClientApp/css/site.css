@@ -17,6 +17,10 @@ html, body {
     border-radius: 50%;
 }
 
+.card-header-title {
+    overflow:hidden;
+}
+
 .hovereffect {
     width: 100%;
     height: 100%;
