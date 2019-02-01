@@ -13,9 +13,7 @@ export class VideoPlayer extends React.Component<any> {
                     ref="player"
                     autoplay
                 >
-                    {(this.props.audioFile != null) ? 
-                        console.log('audioFile: '+this.props.audioFile.name):''}
-                    <source src={'../assets/Audio/' + this.props.audioFile.name} />
+                    <source src={'../assets/Audio/' + this.props.path} />
                     <ControlBar autoHide={false}/>
                 </Player>
             </div>

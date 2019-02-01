@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
-import auth from '../../Utils/auth'; 
+import auth from '../../Utils/auth';
+import { Link } from 'react-router-dom';
 
 export class FileCard extends React.Component<any> {
     constructor(props: any) {
@@ -57,7 +58,7 @@ export class FileCard extends React.Component<any> {
                     <figure className="image is-4by3">
                                 <img src={this.props.image} alt="Placeholder image" />
                                 <div className="overlay">
-                                    <a className="info" href="/FileView">View/Edit</a>
+                                    <Link className="info" to={`/FileView/${this.props.fileId}`}>View/Edit</Link>
                                 </div>
                             </figure>
                         </div>
