@@ -11,6 +11,12 @@ interface State {
 
 export default class Navbar extends React.Component<RouteComponentProps<{}>, State> {
 
+
+    // Called when the component renders
+    public com() {
+        console.log(this.props);
+    }
+
     // Shown when the user is logged in
     public renderLoggedIn = () => {
         return (
@@ -27,10 +33,40 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     </div>
                 </div>
             </div>
-        )
+        );
+    }
+
+    public isInFileViewPage() {
+        var re = /^.*(FileView).*$/; // Letters only regex
+        return re.test(window.location.pathname);
+    }
+
+    public renderFileViewNav = () => {
+        return (
+            <div className="navbar-menu">
+                <div className="navbar-start">
+                    <Link className="navbar-item" to="/dashboard">
+                        <i className="fas fa-angle-left"></i>
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    public renderNormalNav = () => {
+        return(
+            <div className="navbar-menu">
+                <div className="navbar-start">
+                    <Link className="navbar-item" to="/">
+                        STENO
+                    </Link>
+                </div>
+            </div>
+        );
     }
 
     public render() {
+        
         return (
             <div>
                 <nav className="navbar is-light" role="navigation" aria-label="main navigation">
@@ -38,14 +74,9 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                         <a className="navbar-item" href="/">
                             <img src="https://vignette.wikia.nocookie.net/logopedia/images/b/b7/Cbc-logo.png/revision/latest/scale-to-width-down/240?cb=20110304223128" width="30" height="30" />
                         </a>
-
-                        <div className="navbar-menu">
-                            <div className="navbar-start">
-                                <Link className="navbar-item" to="/">
-                                    STENO
-                                </Link>
-                            </div>
-                        </div>
+                        
+                        {this.isInFileViewPage() ? this.renderFileViewNav() : this.renderNormalNav()}
+                        
 
                             <a role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                                 <span aria-hidden="true"></span>

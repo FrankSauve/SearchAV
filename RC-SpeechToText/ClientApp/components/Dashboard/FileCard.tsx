@@ -38,8 +38,6 @@ export class FileCard extends React.Component<any> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-
-        
     };
 
     public render() {
