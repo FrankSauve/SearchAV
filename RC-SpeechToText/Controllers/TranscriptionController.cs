@@ -89,9 +89,24 @@ namespace RC_SpeechToText.Controllers
             await _context.Version.AddAsync(version);
             await _context.SaveChangesAsync();
 
+            //Adding all words and their timestamps to the Word table
+            foreach (Google.Cloud.Speech.V1.WordInfo wordInfo in result.GoogleResponse.Alternatives[0].Words)
+            {
+                var word = new Models.Word
+                {
+                    Term = wordInfo.Word,
+                    Timestamp = wordInfo.StartTime.ToString(),
+                    VersionId = version.Id
+                };
+
+                await _context.Word.AddAsync(word);
+                await _context.SaveChangesAsync();
+
+            }
+
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added version with ID: " + version.Id + " to the database");
-
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to title/version: " + file.Title + "/" + version.Id + " to the database");
             // Return the transcription
             return Ok(version);
 
