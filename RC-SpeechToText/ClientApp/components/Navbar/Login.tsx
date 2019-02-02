@@ -27,6 +27,8 @@ export default class Login extends React.Component<any, State> {
         // Store Google JWT in localstorage
         auth.setAuthToken(response.tokenId);
         auth.setEmail(response.profileObj.email);
+        auth.setProfilePicture(response.profileObj.imageUrl);
+        auth.setName(response.profileObj.name);
 
         // User object
         const data = {

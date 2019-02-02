@@ -34,7 +34,7 @@ namespace RC_SpeechToText.Controllers
         [HttpPost("[action]")]
         public IActionResult GoogleSpeechToTextWithSrt(IFormFile audioFile, IFormFile srtFile)
         {
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - AccuracyController \n Executing speech to text on file " + audioFile.FileName);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Executing speech to text on file " + audioFile.FileName);
             var speech = SpeechClient.Create();
             var response = speech.Recognize(new RecognitionConfig()
             {
@@ -42,7 +42,7 @@ namespace RC_SpeechToText.Controllers
                 LanguageCode = "fr-ca",
                 EnableWordTimeOffsets = true
             }, RecognitionAudio.FromStream(audioFile.OpenReadStream()));
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - AccuracyController \n Speech to text done on file " + audioFile.FileName);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Speech to text done on file " + audioFile.FileName);
 
             var manualTranscript = AccuracyService.CreateManualTranscipt(srtFile);
             var googleResult = new GoogleResult
@@ -51,7 +51,7 @@ namespace RC_SpeechToText.Controllers
                 ManualTranscript = manualTranscript,
                 Accuracy = AccuracyService.CalculateAccuracy(manualTranscript, response.Results[0].Alternatives[0].Transcript)
             };
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - AccuracyController \n Accuracy of audio file " + audioFile.FileName + " with srt file " + srtFile.FileName + ": " + googleResult.Accuracy);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Accuracy of audio file " + audioFile.FileName + " with srt file " + srtFile.FileName + ": " + googleResult.Accuracy);
 
             return Ok(googleResult);
         }

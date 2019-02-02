@@ -7,6 +7,7 @@ using RC_SpeechToText.Models;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -35,12 +36,20 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                // Store in DB
-                await _context.User.AddAsync(user);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n User created: " + user);
+                if (!await _context.User.AnyAsync(u => u.Email == user.Email))
+                {
+                    // Store in DB
+                    await _context.User.AddAsync(user);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User created: ID: "+user.Id+" Email: " + user.Email + " Name: " + user.Name);
 
+                    return Ok(user);
+                }
+                
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User already exists, logging in as: ID:"+user.Id+" Email:" + user.Email + " Name:" + user.Name);
                 return Ok(user);
+                
+                
             }
             catch(Exception ex)
             {
@@ -54,12 +63,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Fetching user with id: " + id);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching user with id: " + id);
                 return Ok(await _context.User.FindAsync(id));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error fetching user with id: " + id);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user with id: " + id);
                 return BadRequest("User with ID" + id + " not found");
             }
         }

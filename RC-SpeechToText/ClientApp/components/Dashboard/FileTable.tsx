@@ -58,7 +58,7 @@ export default class FileTable extends React.Component<any, State> {
         var i = 0;
 
         return (
-            <div className="has-text-centered">
+            <div>
 
                 {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
                 
@@ -66,13 +66,12 @@ export default class FileTable extends React.Component<any, State> {
                 <div className="columns is-multiline">
                     {this.state.files.map((file) => {
                         const FileComponent = <File 
-                                        fileId = {file.fileId}
+                                        fileId = {file.id}
                                         flag={file.flag}
                                         title = {file.title}
                                         description={file.description}
                                         username={this.state.usernames[i]}
                                         filePath = {file.filePath}
-                                        transcription = {file.transcription}
                                         dateAdded = {file.dateAdded}
                                         key = {file.fileId}
                                     />
