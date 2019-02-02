@@ -21,10 +21,10 @@ export default class File extends React.Component<any, State> {
         return (
             <FileCard
                 title={this.props.title}
+                description={this.props.description}
                 flag={this.props.flag}
                 username={this.props.username}
                 image="assets/speakerIcon.png"
-                description={this.props.description}
                 transcription={this.props.transcription != null ? this.props.transcription.length > 50 ? this.props.transcription.substring(0, 50) + "..." : this.props.transcription : null}
                 date={this.props.dateAdded.substring(0, 10) + " " + this.props.dateAdded.substring(11, 16)}
             />

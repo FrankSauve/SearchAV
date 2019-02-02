@@ -69,6 +69,7 @@ export default class FileTable extends React.Component<any, State> {
                                         fileId = {file.fileId}
                                         flag={file.flag}
                                         title = {file.title}
+                                        description={file.description}
                                         username={this.state.usernames[i]}
                                         filePath = {file.filePath}
                                         transcription = {file.transcription}

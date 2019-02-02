@@ -33,6 +33,7 @@ export class FileCard extends React.Component<any> {
                             {this.props.transcription}
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
+                            <p><b>Description:</b> {this.props.description}</p>
                         </div>
                     </div>
                 </div>
