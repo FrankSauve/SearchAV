@@ -1,19 +1,25 @@
 import * as React from 'react';
 
 
-export class FileCard extends React.Component<any> {
+interface State {
+    title: string
+}
+
+export class FileCard extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
+
+        this.state = { title: this.props.title }
     }
 
     public render() {
         return (
             <div className="column is-3">
-                <div className="card mg-top-30">
+                <div className="card mg-top-30 fileCard">
                     <header className="card-header">
                         {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
-                        <p className="card-header-title">
-                            {this.props.title}
+                        <p className="card-header-title fileTitle">
+                            {this.state.title.substring(0, this.state.title.lastIndexOf('.'))}
                         </p>
                    
                 </header>
@@ -29,8 +35,8 @@ export class FileCard extends React.Component<any> {
                 </div>
                     <div className="card-content">
 
-                        <div className="content">
-                            <p>{this.props.transcription}</p>
+                        <div className="content fileContent">
+                            <p className="transcription">{this.props.transcription}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
                         </div>
