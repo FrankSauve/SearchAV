@@ -59,7 +59,7 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            // Remove all file in DB
+            // Remove all files in DB
             var files = await context.File.ToListAsync();
             context.File.RemoveRange(files);
             await context.SaveChangesAsync();
@@ -91,6 +91,35 @@ namespace RC_SpeechToText.Tests
             // Assert that title is testFile
             string fileTitle = data.Value.files[0].Title;
             Assert.Equal("testFile", fileTitle);
+        }
+
+        /// <summary>
+        /// Test fetching one File by Id
+        /// </summary>
+        [Fact]
+        public async Task TestDetails()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
+            var context = new SearchAVContext(options);
+
+            // Add file with title testFile
+            var file = new File { Title = "testFile" };
+            await context.File.AddAsync(file);
+            await context.SaveChangesAsync();
+
+            var mock = new Mock<ILogger<FileController>>();
+            ILogger<FileController> logger = mock.Object;
+            logger = Mock.Of<ILogger<FileController>>();
+
+            var controller = new FileController(context, logger);
+
+            // Act
+            var result = await controller.Details(file.Id);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<File>(okResult.Value);
         }
     }
 }
