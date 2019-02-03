@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 interface State {
     title: string,
     showDropdown: boolean,
-    unauthorized: boolean
+    unauthorized: boolean,
 }
 
 export class FileCard extends React.Component<any, State> {
@@ -18,6 +18,15 @@ export class FileCard extends React.Component<any, State> {
             showDropdown: false,
             unauthorized: false
         }
+    }
+
+    // Add event listener for a click anywhere in the page
+    componentDidMount() {
+        document.addEventListener('mousedown', this.hideDropdown);
+    }
+    // Remove event listener
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.hideDropdown);
     }
 
     public deleteFileWithVersions = () => {
@@ -52,6 +61,14 @@ export class FileCard extends React.Component<any, State> {
             });
     };
 
+    public showDropdown = () => {
+        this.setState({ showDropdown: true });
+    }
+
+    public hideDropdown = () => {
+        this.setState({ showDropdown: false });
+    }
+
     public render() {
         return (
             <div className="column is-3">
@@ -64,19 +81,20 @@ export class FileCard extends React.Component<any, State> {
                         <p className="card-header-title fileTitle">
                             {this.state.title.substring(0, this.state.title.lastIndexOf('.'))}</p>
 
-                        <div className="dropdown is-hoverable">
+                        <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
                             <div className="dropdown-trigger">
-                                <a  aria-haspopup="true" aria-controls="dropdown-menu4">
-                                    <i className="fas fa-ellipsis-v"></i></a>
+                                <div className="is-black" aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
+                                    <i className="fas fa-ellipsis-v "></i>
+                                </div>
                             </div>
 
-                           <div className="dropdown-menu" id="dropdown-menu3" role="menu">
+                            <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                                 <div className="dropdown-content">
                                     <a className="dropdown-item" onClick={this.deleteFileWithVersions}>
                                         Effacer le fichier
                                     </a>
                                 </div>
-                            </div> 
+                            </div>
 
                         </div>
 
