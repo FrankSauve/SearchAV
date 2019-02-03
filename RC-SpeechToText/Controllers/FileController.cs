@@ -61,7 +61,7 @@ namespace RC_SpeechToText.Controllers
             catch(Exception ex)
             {
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching all files");
-                return BadRequest("Get all files failed.");
+                return BadRequest(ex);
             }
         }
 
