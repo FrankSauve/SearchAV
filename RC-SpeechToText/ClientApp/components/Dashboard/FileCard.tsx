@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 interface State {
     title: string,
+    showDropdown: boolean,
     unauthorized: boolean
 }
 
@@ -14,6 +15,7 @@ export class FileCard extends React.Component<any, State> {
 
         this.state = {
             title: this.props.title,
+            showDropdown: false,
             unauthorized: false
         }
     }
@@ -55,9 +57,30 @@ export class FileCard extends React.Component<any, State> {
             <div className="column is-3">
                 <div className="card mg-top-30 fileCard">
 
+                    <span className="tag is-danger is-rounded">{this.props.flag}</span>
+
                     <header className="card-header">
-                        {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
-                        <p className="card-header-title fileTitle">{this.state.title.substring(0, this.state.title.lastIndexOf('.'))}</p>
+
+                        <p className="card-header-title fileTitle">
+                            {this.state.title.substring(0, this.state.title.lastIndexOf('.'))}</p>
+
+                        <div className="dropdown is-hoverable">
+                            <div className="dropdown-trigger">
+                                <a  aria-haspopup="true" aria-controls="dropdown-menu4">
+                                    <i className="fas fa-ellipsis-v"></i></a>
+                            </div>
+
+                           <div className="dropdown-menu" id="dropdown-menu3" role="menu">
+                                <div className="dropdown-content">
+                                    <a className="dropdown-item" onClick={this.deleteFileWithVersions}>
+                                        Effacer le fichier
+                                    </a>
+                                </div>
+                            </div> 
+
+                        </div>
+
+
                     </header>
 
                     <div className="card-image">
@@ -79,10 +102,6 @@ export class FileCard extends React.Component<any, State> {
                             <time dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
-
-                    <footer className="card-footer">
-                        <a className="card-footer-item" onClick={this.deleteFileWithVersions}>Delete</a>
-                    </footer>
 
                 </div>
             </div>
