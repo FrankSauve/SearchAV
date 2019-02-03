@@ -6,27 +6,67 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using RC_SpeechToText.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace RC_SpeechToText.Controllers
 {
-    [Authorize]
     [Produces("application/json")]
     [Route("api/[controller]")]
     public class TranscriptSearchController : Controller
     {
         private readonly ILogger _logger;
+        private readonly SearchAVContext _context;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
-        public TranscriptSearchController(ILogger<TranscriptSearchController> logger)
+        public TranscriptSearchController(SearchAVContext context, ILogger<TranscriptSearchController> logger)
         {
             _logger = logger;
+            _context = context;
         }
 
-        //TO DO: Fix searching using versions instead of jsonResponse
-        [HttpPost("[action]")]
-        public IActionResult SearchTranscript(string searchTerms, string jsonResponse)
+        /// <summary>
+        /// Returns all versions
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Index()
         {
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Searching for " + searchTerms);
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all versions");
+                return Ok(await _context.Version.ToListAsync());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all versions");
+                return BadRequest("Get all versions failed.");
+            }
+        }
+
+        /// <summary>
+        /// Returns active version corresponding to the fileId
+        /// </summary>
+        /// <param name="versionId"></param>
+        /// <param name="searchTerms"></param>
+        /// <returns></returns>
+        [HttpGet("[action]/{versionId}")]
+        public async Task<IActionResult> SearchTranscript(string searchTerms, int versionId)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all words for versionId: " + versionId);
+                var words = await _context.Word.Where(w => w.VersionId == versionId).ToListAsync();
+                return Ok(words);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all words for versionId: " + versionId);
+                return BadRequest("Error fetching active version with fileId: " + versionId);
+            }
+            /*
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching for " + searchTerms);
             //Gets JSON as a string and then deserialize it into an object.
             var fullResponse = JsonConvert.DeserializeObject<FullGoogleResponse>(jsonResponse);
 
@@ -41,12 +81,13 @@ namespace RC_SpeechToText.Controllers
             {
                 arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
             }
-            else {
+            else
+            {
                 return Ok("");
             }
-                
+
             Words[] words = fullResponse.Words; // For clearer code instead of calling the full variable
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Searching on words: " + fullResponse.Words);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching on words: " + fullResponse.Words);
 
             //First check if serch terms are in the transcript, if they are look at where the word instances are located
             if (fullResponse.Transcript.IndexOf(searchTerms, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -55,7 +96,8 @@ namespace RC_SpeechToText.Controllers
                 for (var i = 0; i < words.Length; i++)
                 {
                     //If first word of search term is equal to this current word, check if consecutive terms are equal.
-                    if (words[i].Word.Equals(arrayTerms[0], StringComparison.InvariantCultureIgnoreCase)) {
+                    if (words[i].Word.Equals(arrayTerms[0], StringComparison.InvariantCultureIgnoreCase))
+                    {
                         for (var j = 0; j < arrayTerms.Length; j++)
                         {
 
@@ -86,9 +128,10 @@ namespace RC_SpeechToText.Controllers
 
             //Getting all timestamps and converting them to string to make it easier when passing to frontend
             var result = String.Join(", ", timeStampOfTerms.ToArray());
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Time stamps of terms: " + timeStampOfTerms);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Time stamps of terms: " + timeStampOfTerms);
 
-            return Ok(result);
+            return Ok(result);*/
         }
+
     }
 }
