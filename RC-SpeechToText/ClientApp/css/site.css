@@ -134,3 +134,8 @@ html, body {
     color: rgba(33, 41, 64, 1);
     text-align: left;
 }
+
+.fa-ellipsis-v {
+    margin-right: 10px;
+    margin-top: 10px;
+}
