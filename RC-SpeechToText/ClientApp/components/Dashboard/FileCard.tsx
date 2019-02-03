@@ -3,14 +3,35 @@ import axios from 'axios';
 import auth from '../../Utils/auth';
 import { Link } from 'react-router-dom';
 
-export class FileCard extends React.Component<any> {
+interface State {
+    title: string,
+    showDropdown: boolean,
+    unauthorized: boolean,
+}
+
+export class FileCard extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
+
+        this.state = {
+            title: this.props.title,
+            showDropdown: false,
+            unauthorized: false
+        }
     }
 
-    public deleteFileWithVersions = () => {   
+    // Add event listener for a click anywhere in the page
+    componentDidMount() {
+        document.addEventListener('mousedown', this.hideDropdown);
+    }
+    // Remove event listener
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.hideDropdown);
+    }
 
-        console.log(this.props.fileId); 
+    public deleteFileWithVersions = () => {
+
+        console.log(this.props.fileId);
 
         const config = {
             headers: {
@@ -40,19 +61,49 @@ export class FileCard extends React.Component<any> {
             });
     };
 
+    public showDropdown = () => {
+        this.setState({ showDropdown: true });
+    }
+
+    public hideDropdown = () => {
+        this.setState({ showDropdown: false });
+    }
+
     public render() {
         return (
             <div className="column is-3">
-                <div className="card mg-top-30">
+                <div className="card mg-top-30 fileCard">
+
+                    <span className="tag is-danger is-rounded">{this.props.flag}</span>
+
                     <header className="card-header">
-                        <p className="card-header-title">
-                            {this.props.title}
-                        </p>
+
+                        <p className="card-header-title fileTitle">
+                            {this.state.title.substring(0, this.state.title.lastIndexOf('.'))}</p>
+
+                        <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
+                            <div className="dropdown-trigger">
+                                <div className="is-black" aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
+                                    <i className="fas fa-ellipsis-v "></i>
+                                </div>
+                            </div>
+
+                            <div className="dropdown-menu" id="dropdown-menu4" role="menu">
+                                <div className="dropdown-content">
+                                    <a className="dropdown-item" onClick={this.deleteFileWithVersions}>
+                                        Effacer le fichier
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+
                     </header>
-                    {this.props.flag != null ? <span className="tag is-danger">{this.props.flag}</span> : null}
+
                     <div className="card-image">
                         <div className="hovereffect">
-                    <figure className="image is-4by3">
+                            <figure className="image is-4by3">
                                 <img src={this.props.image} alt="Placeholder image" />
                                 <div className="overlay">
                                     <Link className="info" to={`/FileView/${this.props.fileId}`}>View/Edit</Link>
@@ -60,17 +111,16 @@ export class FileCard extends React.Component<any> {
                             </figure>
                         </div>
                     </div>
+
                     <div className="card-content">
 
-                        <div className="content">
-                            <p>{this.props.transcription}</p>
+                        <div className="content fileContent">
+                            <p className="transcription">{this.props.transcription}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
-                    <footer className="card-footer">
-                        <a className="card-footer-item" onClick={this.deleteFileWithVersions}>Delete</a>
-                    </footer>
+
                 </div>
             </div>
         );
