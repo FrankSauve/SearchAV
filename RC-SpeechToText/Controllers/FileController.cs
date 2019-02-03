@@ -123,13 +123,13 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> getAllFilesByUser(int userId)
+        [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> getAllFilesByUser(int id)
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files with userId: " + userId);
-                var files = await _context.File.Where(f => f.UserId == userId).ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files with userId: " + id);
+                var files = await _context.File.Where(f => f.UserId == id).ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES: " + files.Count);
 
 
@@ -137,7 +137,7 @@ namespace RC_SpeechToText.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files with userId -> " + userId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files with userId -> " + id);
                 return BadRequest("Get user files failed.");
             }
         }
