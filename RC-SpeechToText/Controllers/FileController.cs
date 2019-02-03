@@ -41,25 +41,6 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> getAllAutomatedFiles()
-        {
-            try
-            {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all automated files");
-                var files = await _context.File.Where(f => f.Flag == "Automatisé").ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t AUTOMATED FILES: " + files.Count);
-
-
-                return Ok(files);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all files");
-                return BadRequest("Get all files failed.");
-            }
-        }
-
-        [HttpGet("[action]")]
         public async Task<IActionResult> GetAllWithUsernames()
         {
             try
@@ -82,6 +63,82 @@ namespace RC_SpeechToText.Controllers
             {
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching all files");
                 return BadRequest(ex);
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllAutomatedFiles()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all automated files");
+                var files = await _context.File.Where(f => f.Flag == "Automatisé").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t AUTOMATED FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all automated files");
+                return BadRequest("Get all automated files failed.");
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllEditedFiles()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all edited files");
+                var files = await _context.File.Where(f => f.Flag == "Edité").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITED FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all edited files");
+                return BadRequest("Get all edited files failed.");
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllReviewedFiles()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all reviewed files");
+                var files = await _context.File.Where(f => f.Flag == "Révisé").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t REVIEWED FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all edited files");
+                return BadRequest("Get all edited files failed.");
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllFilesByUser(int userId)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files with userId: " + userId);
+                var files = await _context.File.Where(f => f.UserId == userId).ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files with userId -> " + userId);
+                return BadRequest("Get user files failed.");
             }
         }
 

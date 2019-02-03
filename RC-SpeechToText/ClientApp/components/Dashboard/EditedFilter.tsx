@@ -19,10 +19,10 @@ export default class EditedFilter extends React.Component<any, State> {
 
     // Called when the component gets rendered
     public componentDidMount() {
-        this.getAutomatedFiles();
+        this.getEditedFiles();
     }
 
-    public getAutomatedFiles = () => {
+    public getEditedFiles = () => {
 
         const config = {
             headers: {
@@ -31,7 +31,7 @@ export default class EditedFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllAutomatedFiles', config)
+        axios.get('/api/file/getAllEditedFiles', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data })

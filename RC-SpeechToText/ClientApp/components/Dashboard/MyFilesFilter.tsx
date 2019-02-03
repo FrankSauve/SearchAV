@@ -4,6 +4,7 @@ import auth from '../../Utils/auth';
 
 interface State {
     files: any[],
+    userId: number,
     unauthorized: boolean
 }
 
@@ -13,16 +14,17 @@ export default class MyFilesFilter extends React.Component<any, State> {
         super(props);
         this.state = {
             files: [],
+            userId: 0,
             unauthorized: false
         }
     }
 
     // Called when the component gets rendered
     public componentDidMount() {
-        this.getAutomatedFiles();
+        this.getUserFiles();
     }
 
-    public getAutomatedFiles = () => {
+    public getUserFiles = () => {
 
         const config = {
             headers: {
@@ -31,10 +33,22 @@ export default class MyFilesFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllAutomatedFiles', config)
+        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data })
+                this.setState({ 'userId': res.data.id });
+
+                axios.get('/api/file/getAllFilesByUser/' + this.state.userId, config)
+                    .then(res => {
+                        console.log(res);
+                        this.setState({ 'files': res.data })
+                    })
+                    .catch(err => {
+                        if (err.response.status == 401) {
+                            this.setState({ 'unauthorized': true });
+                        }
+                    });
+
             })
             .catch(err => {
                 if (err.response.status == 401) {

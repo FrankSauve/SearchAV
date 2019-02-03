@@ -37,7 +37,8 @@ export default class Dashboard extends React.Component<any, State> {
                         <br />
                         <ReviewedFilter />
                         <br /> <br />
-                        <MyFilesFilter />
+                        <MyFilesFilter
+                        />
                     </div>
                     <section className="section">
                         <div className="box">
