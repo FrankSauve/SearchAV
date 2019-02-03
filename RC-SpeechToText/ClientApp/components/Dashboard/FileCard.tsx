@@ -118,7 +118,7 @@ export class FileCard extends React.Component<any, State> {
                             <p className="transcription">{this.props.transcription}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
-                            <p><b>Description:</b> {this.props.description}</p>
+                            {/* <p><b>Description:</b> {this.props.description}</p> */}
                         </div>
                     </div>
 
