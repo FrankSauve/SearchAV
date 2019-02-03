@@ -40,7 +40,7 @@ namespace RC_SpeechToText.Tests
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<List<File>>(okResult.Value);
-            Assert.True(returnValue.Count() >= 0);
+            Assert.True(returnValue.Count() == 20);
 
         }
 
