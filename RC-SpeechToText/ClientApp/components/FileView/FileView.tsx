@@ -4,6 +4,7 @@ import auth from '../../Utils/auth';
 import { TranscriptionText } from './TranscriptionText';
 import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
+import { Link } from 'react-router-dom';
 
 interface State {
     fileId: number,
@@ -96,6 +97,7 @@ export default class FileView extends React.Component<any, State> {
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
                         <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
+                        <button>Save</button>
                     </div>
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
