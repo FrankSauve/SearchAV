@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom';
 
 interface State {
     title: string,
+    modifiedTitle: string,
     showDropdown: boolean,
+    showModal: boolean,
     unauthorized: boolean,
 }
 
@@ -15,7 +17,9 @@ export class FileCard extends React.Component<any, State> {
 
         this.state = {
             title: this.props.title,
+            modifiedTitle: "",
             showDropdown: false,
+            showModal: false,
             unauthorized: false
         }
     }
@@ -93,7 +97,37 @@ export class FileCard extends React.Component<any, State> {
             });
     }
 
-    
+    public saveTitleChange = () => {
+        
+        var newTitle = this.state.modifiedTitle
+
+        const formData = new FormData();
+        formData.append("newTitle", newTitle)
+
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + auth.getAuthToken(),
+                    'content-type': 'application/json'
+                }
+            }
+
+            axios.put('/api/file/ModifyTitle/' + this.props.fileId, formData, config)
+                .then(res => {
+                    this.setState({ title: this.state.modifiedTitle });
+                    this.hideModal();
+                })
+                .catch(err => {
+                    console.log(err);
+                    if (err.response.status == 401) {
+                        this.setState({ 'unauthorized': true });
+                    }
+                });
+        
+    }
+
+    public handleChange = (event : any) =>{
+        this.setState({ modifiedTitle: event.target.value });
+    }
 
     public showDropdown = () => {
         this.setState({ showDropdown: true });
@@ -103,9 +137,41 @@ export class FileCard extends React.Component<any, State> {
         this.setState({ showDropdown: false });
     }
 
+    public showModal = () => {
+        this.setState({ showModal: true });
+    }
+
+    public hideModal = () => {
+        this.setState({ showModal: false });
+    }
+
     public render() {
         return (
             <div className="column is-3">
+
+                <div className={`modal ${this.state.showModal ? "is-active" : null}`} >
+                    <div className="modal-background"></div>
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">Modify title</p>
+                            <button className="delete" aria-label="close" onClick={this.hideModal}></button>
+                        </header>
+                        <section className="modal-card-body">
+                            <div className="field">
+                                <div className="control">
+                                    <input className="input is-primary" type="text" placeholder={this.state.title ?
+                                        (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.'))
+                                            : this.state.title) : "Enter title"} defaultValue={this.state.title} onChange={this.handleChange} />
+                                </div>
+                            </div>
+                        </section>
+                        <footer className="modal-card-foot">
+                            <button className="button is-success" onClick={this.saveTitleChange}>Save changes</button>
+                            <button className="button" onClick={this.hideModal}>Cancel</button>
+                        </footer>
+                    </div>
+                </div>
+
                 <div className="card mg-top-30 fileCard">
 
                     <span className="tag is-danger is-rounded">{this.props.flag}</span>
@@ -113,7 +179,7 @@ export class FileCard extends React.Component<any, State> {
                     <header className="card-header">
 
                         <p className="card-header-title fileTitle">
-                            {this.state.title ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : null}</p>
+                            {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>
 
                         <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
                             <div className="dropdown-trigger">
@@ -124,6 +190,9 @@ export class FileCard extends React.Component<any, State> {
 
                             <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                                 <div className="dropdown-content">
+                                    <a className="dropdown-item" onClick={this.showModal}>
+                                        Modifier le titre
+                                    </a>
                                     <a className="dropdown-item" onClick={this.deleteWords}>
                                         Effacer le fichier
                                     </a>
@@ -158,6 +227,7 @@ export class FileCard extends React.Component<any, State> {
 
                 </div>
             </div>
+
         );
     }
 }

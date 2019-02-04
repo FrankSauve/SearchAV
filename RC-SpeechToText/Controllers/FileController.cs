@@ -80,6 +80,34 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+		[HttpPut("[action]/{id}")]
+		public async Task<IActionResult> ModifyTitle(int id, string newTitle)
+		{
+			if (newTitle != null)
+			{
+				File file = _context.File.Find(id);
+
+				file.Title = newTitle;
+
+				try
+				{
+					_context.File.Update(file);
+					await _context.SaveChangesAsync();
+					_logger.LogInformation("Updated current title for file with id: " + file.Id);
+					return Ok(file);
+				}
+				catch
+				{
+					_logger.LogError("Error updating current title for file with id: " + file.Id);
+					return BadRequest("File title not updated");
+				}
+			}
+			else
+			{
+				return BadRequest("Title is null");
+			}
+		}
+
         [HttpDelete("[action]/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
