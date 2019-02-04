@@ -113,7 +113,7 @@ export class FileCard extends React.Component<any, State> {
                     <header className="card-header">
 
                         <p className="card-header-title fileTitle">
-                            {this.state.title.substring(0, this.state.title.lastIndexOf('.'))}</p>
+                            {this.state.title ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : null}</p>
 
                         <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
                             <div className="dropdown-trigger">
