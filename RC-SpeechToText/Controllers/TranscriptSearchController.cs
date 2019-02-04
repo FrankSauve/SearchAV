@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using RC_SpeechToText.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -46,21 +47,22 @@ namespace RC_SpeechToText.Controllers
         }
 
         /// <summary>
-        /// Returns active version corresponding to the fileId
+        /// Returns timestamps of searched terms
         /// </summary>
         /// <param name="versionId"></param>
         /// <param name="searchTerms"></param>
         /// <returns></returns>
-        [HttpGet("[action]/{versionId}")]
+        [HttpGet("[action]/{versionId}/{searchTerms}")]
         public async Task<IActionResult> SearchTranscript(string searchTerms, int versionId)
         {
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all words for versionId: " + versionId);
 
+                //Ordered by Id to get the words in the same order as transcript
                 var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
                 
-                return Ok(words);
+                return Ok(PerformSearch(searchTerms, words));
             }
             catch (Exception ex)
             {
@@ -70,11 +72,11 @@ namespace RC_SpeechToText.Controllers
            
         }
 
-        private string[] PerformSearch(string searchTerms, List<Models.Word> wordInfo) {
-            /*
+        //Performs the serach on the terms
+        private string PerformSearch(string searchTerms, List<Models.Word> wordInfo) {
+            
            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching for " + searchTerms);
            //Gets JSON as a string and then deserialize it into an object.
-           var fullResponse = JsonConvert.DeserializeObject<FullGoogleResponse>(jsonResponse);
 
            //Check if the search terms are in the transcript
            var timeStampOfTerms = new List<string>(); // Saves all instances of words timestamps
@@ -89,15 +91,13 @@ namespace RC_SpeechToText.Controllers
            }
            else
            {
-               return Ok("");
+               return "";
            }
 
-           Words[] words = fullResponse.Words; // For clearer code instead of calling the full variable
-           _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching on words: " + fullResponse.Words);
+           Words[] words = stringToWordList(wordInfo); // For clearer code instead of calling the full variable
+           _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching on words: " + wordInfo);
 
-           //First check if serch terms are in the transcript, if they are look at where the word instances are located
-           if (fullResponse.Transcript.IndexOf(searchTerms, StringComparison.OrdinalIgnoreCase) >= 0)
-           {
+        
                //For each words check if it is what we were looking for.
                for (var i = 0; i < words.Length; i++)
                {
@@ -119,7 +119,7 @@ namespace RC_SpeechToText.Controllers
                                else if (words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase) && j == arrayTerms.Length - 1)
                                {
                                    //Adding the timestamp in the appropriate format
-                                   timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"hh\:mm\:ss"));
+                                   timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"g"));
                                    i = i + j;
                                }
                            }
@@ -130,22 +130,42 @@ namespace RC_SpeechToText.Controllers
                        }
                    }
                }
-           }
+           
 
            //Getting all timestamps and converting them to string to make it easier when passing to frontend
            var result = String.Join(", ", timeStampOfTerms.ToArray());
            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Time stamps of terms: " + timeStampOfTerms);
-           */
-            string[] result = { "x"};
+           
+            
            return result;
         }
 
-        /*private Models.Words[] stringToWordList(List<String> wordInfo)
+        //Converts the new databse Model to the one previously used, 
+        //done this way to keep same algorithm used before.
+        private Models.Words[] stringToWordList(List<Models.Word> wordInfo)
         {
-            Models.Words[] allWords;
+           
+            List<Models.Words> allWords = new List<Models.Words>();
 
-            return x;
-        }*/
+            foreach (Models.Word x in wordInfo) {
+                Regex regex = new Regex(@"([\d.]+)");
+                string match = regex.Match(x.Timestamp).ToString();
+                var wordToAdd = new Models.Words
+                {
+                    Word = x.Term,
+                    StartTime = new Models.Time
+                    {
+                        Seconds = Convert.ToDouble(match)
+                    },
+
+                };
+
+                allWords.Add(wordToAdd);
+            }
+
+
+            return allWords.ToArray();
+        }
 
     }
 }
