@@ -10,7 +10,7 @@ interface State {
     version: any,
     file: any,
     unauthorized: boolean,
-    fileTitle: String,
+    fileTitle: string,
     description: any
 }
 
@@ -27,9 +27,6 @@ export default class FileView extends React.Component<any, State> {
             fileTitle: "",
             description: null
         }
-
-        this.handleChange = this.handleChange.bind(this);
-        this.saveTitleChange = this.saveTitleChange.bind(this);
     }
 
     // Called when the component is rendered
@@ -93,40 +90,6 @@ export default class FileView extends React.Component<any, State> {
             });
     }
 
-    handleChange(event: React.FormEvent<HTMLTextAreaElement>) {
-        var safeSearchTypeValue: string = event.currentTarget.value;
-
-        this.setState({ fileTitle: safeSearchTypeValue });
-    }
-
-    saveTitleChange() {
-        var oldTitle = this.state.file.title
-        var newTitle = this.state.fileTitle
-
-        const formData = new FormData();
-        formData.append("fileId", this.state.fileId + '')
-        formData.append("newTitle", newTitle + '')
-
-        if (oldTitle != newTitle) {
-            const config = {
-                headers: {
-                    'Authorization': 'Bearer ' + auth.getAuthToken(),
-                    'content-type': 'application/json'
-                }
-            }
-
-            axios.put('/api/file/ModifyTitle', formData, config)
-                .then(res => {
-                    this.setState({ file: res.data });
-                })
-                .catch(err => {
-                    if (err.response.status == 401) {
-                        this.setState({ 'unauthorized': true });
-                    }
-                });
-        }
-    }
-
     render() {
         return (
             <div className="container">
@@ -137,18 +100,6 @@ export default class FileView extends React.Component<any, State> {
                         <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
                     </div>
                     <div className="column mg-top-30">
-                        {this.state.file ?
-                            <textarea
-                                className="title-area"
-                                rows={1}
-                                defaultValue={this.state.file.title}
-                                onChange={this.handleChange}>
-                            </textarea> :
-                            null
-                        }
-                        <button className="save-title-button" onClick={this.saveTitleChange}>
-                            Save
-                        </button>
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
                     </div>
                     <div className="column mg-top-30">

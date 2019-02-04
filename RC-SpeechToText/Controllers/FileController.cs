@@ -80,10 +80,9 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
-		[HttpPut("[action]")]
-		public async Task<IActionResult> ModifyTitle(string fileId, string newTitle)
+		[HttpPut("[action]/{id}")]
+		public async Task<IActionResult> ModifyTitle(int id, string newTitle)
 		{
-			int id = int.Parse(fileId);
 			if (newTitle != null)
 			{
 				File file = _context.File.Find(id);

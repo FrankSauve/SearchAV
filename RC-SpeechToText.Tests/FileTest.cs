@@ -143,13 +143,13 @@ namespace RC_SpeechToText.Tests
 
 			var controller = new FileController(context, logger);
 
-			var result = await controller.ModifyTitle(file.Id + "", "new Title");
+			var result = await controller.ModifyTitle(file.Id, "new Title");
 
 			// Assert
 			var okResult = Assert.IsType<OkObjectResult>(result);
 			var returnValue = Assert.IsType<File>(okResult.Value);
-			var newFile = result as File;
-			Assert.Equal("new Title", newFile.Title);
+			file = context.File.Find(100); //Retrieve file from db
+			Assert.Equal("new Title", file.Title);
 		}
 	}
 }
