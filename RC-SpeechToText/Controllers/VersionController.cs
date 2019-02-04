@@ -93,19 +93,15 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting all versions for file with id: " + fileId);
 
                 var versionsList = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
+                _context.Version.RemoveRange(versionsList);
+                await _context.SaveChangesAsync();
 
-                foreach (var version in versionsList)
-                {
-                    _context.Version.Remove(version);
-                    await _context.SaveChangesAsync();
-                }
-
-                return Ok("ok all versions are deleted for file with id: " + fileId);
+                return Ok(versionsList);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error all versions for file with id: "+ fileId);
-                return BadRequest("Delete all versions failed.");
+                return BadRequest(ex);
             }
         }
     }
