@@ -50,6 +50,7 @@ export default class File extends React.Component<any, State> {
             <FileCard
                 fileId={this.props.fileId}
                 title={this.props.title}
+                description={this.props.description}
                 flag={this.props.flag}
                 username={this.props.username}
                 image="assets/speakerIcon.png"

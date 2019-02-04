@@ -3,13 +3,15 @@ import axios from 'axios';
 import auth from '../../Utils/auth';
 import { TranscriptionText } from './TranscriptionText';
 import { VideoPlayer } from './VideoPlayer';
+import { DescriptionText } from './DescriptionText';
 
 interface State {
     fileId: number,
     version: any,
     file: any,
     unauthorized: boolean,
-    fileTitle: String
+    fileTitle: String,
+    description: any
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -22,7 +24,8 @@ export default class FileView extends React.Component<any, State> {
             version: null,
             file: null,
             unauthorized: false,
-            fileTitle: ""
+            fileTitle: "",
+            description: null
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -33,6 +36,7 @@ export default class FileView extends React.Component<any, State> {
     public componentDidMount() {
         this.getVersion();
         this.getFile();
+        this.getDescription();
     }
 
     public getVersion = () => {
@@ -54,6 +58,24 @@ export default class FileView extends React.Component<any, State> {
     }
 
     public getFile = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/file/details/' + this.state.fileId, config)
+            .then(res => {
+                this.setState({ file: res.data });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });                
+                }
+            });
+    }
+
+    public getDescription = () => {
         const config = {
             headers: {
                 'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -111,7 +133,8 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third mg-top-30">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title}/> : null} 
+                        {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
+                        <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
                     </div>
                     <div className="column mg-top-30">
                         {this.state.file ?
@@ -127,6 +150,9 @@ export default class FileView extends React.Component<any, State> {
                             Save
                         </button>
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
+                    </div>
+                    <div className="column mg-top-30">
+                       
                     </div>
                 </div>
             </div>

@@ -16,6 +16,7 @@ CREATE TABLE [dbo].[File] (
     [FileId]       INT           IDENTITY (1, 1) NOT NULL,
     [Title]         VARCHAR (MAX) NULL,
     [FilePath]     VARCHAR (MAX) NULL,
+	[Description]     VARCHAR (MAX) NULL,
     [TranscriptionId] INT NULL REFERENCES [Transcription] ([TranscriptionId]),
     [DateAdded]     DATETIME      DEFAULT (getdate()) NULL,
     PRIMARY KEY CLUSTERED ([FileId] ASC)
