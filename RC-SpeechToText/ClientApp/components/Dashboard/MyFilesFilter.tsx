@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
+import { Link } from 'react-router-dom';
 
 interface State {
     files: any[],
@@ -59,16 +60,18 @@ export default class MyFilesFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <a><div className="card filters">
-                <div className="card-content">
-                    <p className="title">
-                        {this.state.files.length}
+            <Link to={`/dashboard/myFiles/${this.state.userId}`}>
+                <div className="card filters">
+                    <div className="card-content">
+                        <p className="title">
+                            {this.state.files.length}
+                        </p>
+                        <p className="subtitle">
+                            MES FICHIERS
                     </p>
-                    <p className="subtitle">
-                        MES FICHIERS
-                </p>
+                    </div>
                 </div>
-            </div></a>
+            </Link>
         )
     }
 }

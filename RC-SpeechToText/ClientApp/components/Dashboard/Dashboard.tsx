@@ -40,7 +40,7 @@ export default class Dashboard extends React.Component<any, State> {
                         <MyFilesFilter
                         />
                     </div>
-                    <section className="section">
+                    <section className="section column">
                         <div className="box">
                             <FileTable />
                         </div>
