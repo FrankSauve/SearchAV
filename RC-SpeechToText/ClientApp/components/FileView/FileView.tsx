@@ -122,6 +122,7 @@ export default class FileView extends React.Component<any, State> {
                         this.setState({ 'unauthorized': true });
                     }
                 });
+            
         }
     }
     render() {
@@ -131,15 +132,13 @@ export default class FileView extends React.Component<any, State> {
                     <div className="column is-one-third mg-top-30">
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
-                        <p><b>Description: </b>		                         {this.state.file ?
+                        <p><b>Description: </b>{this.state.file ?
                             <textarea
                                 className="textarea"
                                 defaultValue={this.state.file.description}
                                 onChange={this.handleChange}>
-                            </textarea> :
-                            null
-                        }</p>
-                        <button className="button is-danger" onClick={this.saveDescription}>Save</button>
+                            </textarea> :null}</p>
+                        <button className="button is-danger" onClick={this.saveDescription}>Enregistrer</button>
                     </div>
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
