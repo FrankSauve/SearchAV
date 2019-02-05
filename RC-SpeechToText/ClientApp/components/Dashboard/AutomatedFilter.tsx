@@ -45,12 +45,12 @@ export default class AutomatedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <a><div className="card filters">
+            <a><div className="card filters has-background-link">
                 <div className="card-content">
-                    <p className="title">
+                    <p className="title has-text-warning">
                         {this.state.files.length}
                     </p>
-                    <p className="subtitle">
+                    <p className="subtitle has-text-warning">
                         FICHIERS
                         TRANSCRIPTS
                 </p>

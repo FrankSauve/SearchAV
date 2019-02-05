@@ -59,12 +59,12 @@ export default class MyFilesFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <div className="card filters">
+            <div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className="title">
+                    <p className="title has-text-white-bis">
                         {this.state.files ? this.state.files.length : 0}
                     </p>
-                    <p className="subtitle">
+                    <p className="subtitle has-text-white-bis">
                         MES FICHIERS
                 </p>
                 </div>

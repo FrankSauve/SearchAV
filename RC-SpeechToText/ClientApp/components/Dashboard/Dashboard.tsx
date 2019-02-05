@@ -12,6 +12,7 @@ interface State {
     files: any[],
     usernames: string[],
     userId: number,
+    isMyFilesActive: boolean,
     loading: boolean,
     unauthorized: boolean
 }
@@ -25,6 +26,7 @@ export default class Dashboard extends React.Component<any, State> {
             files: [],
             usernames: [],
             userId: 0,
+            isMyFilesActive: false,
             loading: false,
             unauthorized: false
         }
@@ -50,6 +52,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'files': res.data.value.files });
                 this.setState({ 'usernames': res.data.value.usernames })
                 this.setState({ 'loading': false });
+                this.setState({ 'isMyFilesActive': false });
             })
             .catch(err => {
                 console.log(err);
@@ -80,6 +83,7 @@ export default class Dashboard extends React.Component<any, State> {
                         this.setState({ 'files': res.data.value.files })
                         this.setState({ 'usernames': res.data.value.usernames })
                         this.setState({ 'loading': false });
+                        this.setState({ 'isMyFilesActive': true });
                     })
                     .catch(err => {
                         if (err.response.status == 401) {
@@ -108,8 +112,11 @@ export default class Dashboard extends React.Component<any, State> {
                         <br />
                         <ReviewedFilter />
                         <br /> <br />
-                        <a onClick={this.getUserFiles}><MyFilesFilter
-                        /></a>
+                        <a className="myFilesFilter" onClick={this.getUserFiles}>
+                            <MyFilesFilter
+                                isActive={this.state.isMyFilesActive}
+                            />
+                        </a>
                     </div>
                     <section className="section column">
                         <div className="box">
