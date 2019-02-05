@@ -26,6 +26,9 @@ export default class FileView extends React.Component<any, State> {
             description: null,
             unauthorized: false
         }
+
+        this.handleChange = this.handleChange.bind(this);
+        this.saveDescription = this.saveDescription.bind(this);
     }
 
     // Called when the component is rendered
@@ -89,6 +92,38 @@ export default class FileView extends React.Component<any, State> {
             });
     }
 
+    handleChange(event: React.FormEvent<HTMLTextAreaElement>) {
+        var safeSearchTypeValue: string = event.currentTarget.value;
+
+        this.setState({ description: safeSearchTypeValue });
+    }
+    saveDescription() {
+        var oldDescription = this.state.file.description
+        var newDescription = this.state.description
+
+        const formData = new FormData();
+        formData.append("fileId", this.state.fileId + '')
+        formData.append("newDescription", newDescription + '')
+
+        if (oldDescription != newDescription) {
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + auth.getAuthToken(),
+                    'content-type': 'application/json'
+                }
+            }
+
+            axios.put('/api/file/saveDescription', formData, config)
+                .then(res => {
+                    this.setState({ file: res.data });
+                })
+                .catch(err => {
+                    if (err.response.status == 401) {
+                        this.setState({ 'unauthorized': true });
+                    }
+                });
+        }
+    }
     render() {
         return (
             <div className="container">
@@ -96,8 +131,15 @@ export default class FileView extends React.Component<any, State> {
                     <div className="column is-one-third mg-top-30">
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
-                        <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
-                        <button className="button is-danger" type="submit" value="Submit input">Save</button>
+                        <p><b>Description: </b>		                         {this.state.file ?
+                            <textarea
+                                className="textarea"
+                                defaultValue={this.state.file.description}
+                                onChange={this.handleChange}>
+                            </textarea> :
+                            null
+                        }</p>
+                        <button className="button is-danger" onClick={this.saveDescription}>Save</button>
                     </div>
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
