@@ -1,7 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
-import { Link } from 'react-router-dom';
 
 interface State {
     files: any[],
@@ -42,7 +41,7 @@ export default class MyFilesFilter extends React.Component<any, State> {
                 axios.get('/api/file/getAllFilesByUser/' + this.state.userId, config)
                     .then(res => {
                         console.log(res);
-                        this.setState({ 'files': res.data })
+                        this.setState({ 'files': res.data.value.files })
                     })
                     .catch(err => {
                         if (err.response.status == 401) {
@@ -60,18 +59,16 @@ export default class MyFilesFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <Link to={`/dashboard/myFiles/${this.state.userId}`}>
-                <div className="card filters">
-                    <div className="card-content">
-                        <p className="title">
-                            {this.state.files.length}
-                        </p>
-                        <p className="subtitle">
-                            MES FICHIERS
+            <div className="card filters">
+                <div className="card-content">
+                    <p className="title">
+                        {this.state.files ? this.state.files.length : 0}
                     </p>
-                    </div>
+                    <p className="subtitle">
+                        MES FICHIERS
+                </p>
                 </div>
-            </Link>
+            </div>
         )
     }
 }

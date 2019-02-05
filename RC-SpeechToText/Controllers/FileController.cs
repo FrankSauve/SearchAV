@@ -31,7 +31,10 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files");
-                return Ok(await _context.File.ToListAsync());
+                var files = await _context.File.ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILES FOUND: " + files.Count);
+
+                return Ok(files);
             }
             catch (Exception ex)
             {
@@ -132,8 +135,16 @@ namespace RC_SpeechToText.Controllers
                 var files = await _context.File.Where(f => f.UserId == id).ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES: " + files.Count);
 
+                var usernames = new List<string>();
 
-                return Ok(files);
+                foreach (var file in files)
+                {
+                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILE TITLE: : " + file.Title);
+                    var user = await _context.User.FindAsync(file.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { files, usernames }));
             }
             catch (Exception ex)
             {
