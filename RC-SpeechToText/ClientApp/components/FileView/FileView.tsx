@@ -4,6 +4,7 @@ import auth from '../../Utils/auth';
 import { TranscriptionText } from './TranscriptionText';
 import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
+import { TranscriptionSearch } from './TranscriptionSearch';
 
 interface State {
     fileId: number,
@@ -98,10 +99,10 @@ export default class FileView extends React.Component<any, State> {
                         <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
                     </div>
                     <div className="column mg-top-30">
+                        {this.state.version ? <TranscriptionSearch/> : null }
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
                     </div>
                     <div className="column mg-top-30">
-                       
                     </div>
                 </div>
             </div>
