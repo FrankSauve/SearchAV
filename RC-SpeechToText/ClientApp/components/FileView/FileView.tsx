@@ -3,12 +3,15 @@ import axios from 'axios';
 import auth from '../../Utils/auth';
 import { TranscriptionText } from './TranscriptionText';
 import { VideoPlayer } from './VideoPlayer';
+import { DescriptionText } from './DescriptionText';
 
 interface State {
     fileId: number,
     version: any,
     file: any,
-    unauthorized: boolean
+    unauthorized: boolean,
+    fileTitle: string,
+    description: any
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -20,7 +23,9 @@ export default class FileView extends React.Component<any, State> {
             fileId: this.props.match.params.id,
             version: null,
             file: null,
-            unauthorized: false
+            unauthorized: false,
+            fileTitle: "",
+            description: null
         }
     }
 
@@ -28,6 +33,7 @@ export default class FileView extends React.Component<any, State> {
     public componentDidMount() {
         this.getVersion();
         this.getFile();
+        this.getDescription();
     }
 
     public getVersion = () => {
@@ -42,8 +48,8 @@ export default class FileView extends React.Component<any, State> {
                 this.setState({ version: res.data[0] });
             })
             .catch(err => {
-                if(err.response.status == 401) {
-                    this.setState({'unauthorized': true});
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
                 }
             });
     }
@@ -60,8 +66,26 @@ export default class FileView extends React.Component<any, State> {
                 this.setState({ file: res.data });
             })
             .catch(err => {
-                if(err.response.status == 401) {
-                    this.setState({'unauthorized': true});
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });                
+                }
+            });
+    }
+
+    public getDescription = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/file/details/' + this.state.fileId, config)
+            .then(res => {
+                this.setState({ file: res.data });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
                 }
             });
     }
@@ -72,10 +96,14 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third mg-top-30">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title}/> : null} 
+                        {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
+                        <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
                     </div>
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
+                    </div>
+                    <div className="column mg-top-30">
+                       
                     </div>
                 </div>
             </div>

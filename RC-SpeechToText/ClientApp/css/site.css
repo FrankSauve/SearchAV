@@ -108,3 +108,34 @@ html, body {
         -webkit-transition-delay: .2s;
         transition-delay: .2s;
     }
+
+.fileCard {
+    position: relative;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(244, 245, 248, 1);
+}
+
+.transcription {
+    font-size: 13px;
+    color: rgba(33, 41, 64, 1);
+    line-height: 16px;
+}
+
+.fileContent {
+    font-size: 15px;
+    color: rgba(33, 41, 64, 1);
+    text-align: left;
+    line-height: 20px;
+}
+
+.fileTitle {
+    font-size: 14px;
+    color: rgba(33, 41, 64, 1);
+    text-align: left;
+}
+
+.fa-ellipsis-v {
+    margin-right: 10px;
+    margin-top: 10px;
+}

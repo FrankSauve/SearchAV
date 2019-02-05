@@ -45,6 +45,7 @@ export default class FileTable extends React.Component<any, State> {
                 this.setState({'loading': false});
             })
             .catch(err => {
+                console.log(err);
                 if(err.response.status == 401) {
                     this.setState({'unauthorized': true});
                 }
@@ -69,6 +70,7 @@ export default class FileTable extends React.Component<any, State> {
                                         fileId = {file.id}
                                         flag={file.flag}
                                         title = {file.title}
+                                        description={file.description}
                                         username={this.state.usernames[i]}
                                         filePath = {file.filePath}
                                         dateAdded = {file.dateAdded}

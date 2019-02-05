@@ -21,8 +21,9 @@ CREATE TABLE [dbo].[File] (
     [FilePath]     VARCHAR (MAX) NULL,
     [TranscriptionId] INT NULL REFERENCES [Transcription] ([TranscriptionId]),
     [DateAdded]     DATETIME      DEFAULT (getdate()) NULL,
-	[Type]     VARCHAR (MAX) NULL,
-	[UserId]  INT NULL REFERENCES [User] ([UserId]),
+    [Type]     VARCHAR (MAX) NULL,
+    [UserId]  INT NULL REFERENCES [User] ([UserId]),
+    [Description] VARCHAR (MAX) NULL,
     PRIMARY KEY CLUSTERED ([FileId] ASC)
 );
 
