@@ -5,9 +5,7 @@ import { Link } from 'react-router-dom';
 
 interface State {
     title: string,
-    modifiedTitle: string,
     showDropdown: boolean,
-    showModal: boolean,
     unauthorized: boolean,
 }
 
@@ -17,45 +15,21 @@ export class FileCard extends React.Component<any, State> {
 
         this.state = {
             title: this.props.title,
-            modifiedTitle: "",
             showDropdown: false,
-            showModal: false,
             unauthorized: false
         }
     }
 
     // Add event listener for a click anywhere in the page
     componentDidMount() {
-        document.addEventListener('mouseup', this.hideDropdown);
+        document.addEventListener('mousedown', this.hideDropdown);
     }
     // Remove event listener
     componentWillUnmount() {
-        document.removeEventListener('mouseup', this.hideDropdown);
+        document.removeEventListener('mousedown', this.hideDropdown);
     }
 
-    public deleteWords = () => {
-
-        console.log("Deleting words");
-
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.delete('/api/word/DeleteByFileId/' + this.props.fileId, config)
-            .then(res => {
-                console.log(res.status);
-                this.deleteVersion();
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    }
-
-    public deleteVersion = () => {
+    public deleteFileWithVersions = () => {
 
         console.log(this.props.fileId);
 
@@ -69,7 +43,16 @@ export class FileCard extends React.Component<any, State> {
         axios.delete('/api/version/DeleteFileVersions/' + this.props.fileId, config)
             .then(res => {
                 console.log(res.data);
-                this.deleteFile();
+
+                axios.delete('/api/file/Delete/' + this.props.fileId, config)
+                    .then(res => {
+                        console.log(res.data);
+                    })
+                    .catch(err => {
+                        if (err.response.status == 401) {
+                            this.setState({ 'unauthorized': true });
+                        }
+                    });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -77,57 +60,6 @@ export class FileCard extends React.Component<any, State> {
                 }
             });
     };
-
-    public deleteFile = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.delete('/api/file/Delete/' + this.props.fileId, config)
-            .then(res => {
-                console.log(res.data);
-                alert("File deleted");
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    }
-
-    public saveTitleChange = () => {
-        
-        var newTitle = this.state.modifiedTitle
-
-        const formData = new FormData();
-        formData.append("newTitle", newTitle)
-
-            const config = {
-                headers: {
-                    'Authorization': 'Bearer ' + auth.getAuthToken(),
-                    'content-type': 'application/json'
-                }
-            }
-
-            axios.put('/api/file/ModifyTitle/' + this.props.fileId, formData, config)
-                .then(res => {
-                    this.setState({ title: this.state.modifiedTitle });
-                    this.hideModal();
-                })
-                .catch(err => {
-                    console.log(err);
-                    if (err.response.status == 401) {
-                        this.setState({ 'unauthorized': true });
-                    }
-                });
-        
-    }
-
-    public handleChange = (event : any) =>{
-        this.setState({ modifiedTitle: event.target.value });
-    }
 
     public showDropdown = () => {
         this.setState({ showDropdown: true });
@@ -137,41 +69,9 @@ export class FileCard extends React.Component<any, State> {
         this.setState({ showDropdown: false });
     }
 
-    public showModal = () => {
-        this.setState({ showModal: true });
-    }
-
-    public hideModal = () => {
-        this.setState({ showModal: false });
-    }
-
     public render() {
         return (
             <div className="column is-3">
-
-                <div className={`modal ${this.state.showModal ? "is-active" : null}`} >
-                    <div className="modal-background"></div>
-                    <div className="modal-card">
-                        <header className="modal-card-head">
-                            <p className="modal-card-title">Modify title</p>
-                            <button className="delete" aria-label="close" onClick={this.hideModal}></button>
-                        </header>
-                        <section className="modal-card-body">
-                            <div className="field">
-                                <div className="control">
-                                    <input className="input is-primary" type="text" placeholder={this.state.title ?
-                                        (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.'))
-                                            : this.state.title) : "Enter title"} defaultValue={this.state.title} onChange={this.handleChange} />
-                                </div>
-                            </div>
-                        </section>
-                        <footer className="modal-card-foot">
-                            <button className="button is-success" onClick={this.saveTitleChange}>Save changes</button>
-                            <button className="button" onClick={this.hideModal}>Cancel</button>
-                        </footer>
-                    </div>
-                </div>
-
                 <div className="card mg-top-30 fileCard">
 
                     <span className="tag is-danger is-rounded">{this.props.flag}</span>
@@ -179,7 +79,7 @@ export class FileCard extends React.Component<any, State> {
                     <header className="card-header">
 
                         <p className="card-header-title fileTitle">
-                            {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>
+                            {this.state.title.substring(0, this.state.title.lastIndexOf('.'))}</p>
 
                         <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
                             <div className="dropdown-trigger">
@@ -190,10 +90,7 @@ export class FileCard extends React.Component<any, State> {
 
                             <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                                 <div className="dropdown-content">
-                                    <a className="dropdown-item" onClick={this.showModal}>
-                                        Modifier le titre
-                                    </a>
-                                    <a className="dropdown-item" onClick={this.deleteWords}>
+                                    <a className="dropdown-item" onClick={this.deleteFileWithVersions}>
                                         Effacer le fichier
                                     </a>
                                 </div>
@@ -221,13 +118,11 @@ export class FileCard extends React.Component<any, State> {
                             <p className="transcription">{this.props.transcription}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
-                            {/* <p><b>Description:</b> {this.props.description}</p> */}
                         </div>
                     </div>
 
                 </div>
             </div>
-
         );
     }
 }

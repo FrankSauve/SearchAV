@@ -3,6 +3,10 @@ import FileInput from './FileInput';
 import axios from 'axios';
 import auth from '../../Utils/auth';
 import FileTable from './FileTable';
+import AutomatedFilter from './AutomatedFilter';
+import EditedFilter from './EditedFilter';
+import ReviewedFilter from './ReviewedFilter';
+import MyFilesFilter from './MyFilesFilter';
 
 interface State {
     loading: boolean,
@@ -25,7 +29,16 @@ export default class Dashboard extends React.Component<any, State> {
             <div className="container">
                 <div className="columns">
                     <div className="column is-one-fifth">
-                        <FileInput/>
+                        <FileInput />
+                        <br /> <br />
+                        <AutomatedFilter />
+                        <br />
+                        <EditedFilter />
+                        <br />
+                        <ReviewedFilter />
+                        <br /> <br />
+                        <MyFilesFilter
+                        />
                     </div>
                     <section className="section">
                         <div className="box">

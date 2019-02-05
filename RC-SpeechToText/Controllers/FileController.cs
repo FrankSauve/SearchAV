@@ -7,6 +7,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -65,6 +66,82 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllAutomatedFiles()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all automated files");
+                var files = await _context.File.Where(f => f.Flag == "Automatisé").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t AUTOMATED FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all automated files");
+                return BadRequest("Get all automated files failed.");
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllEditedFiles()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all edited files");
+                var files = await _context.File.Where(f => f.Flag == "Edité").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITED FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all edited files");
+                return BadRequest("Get all edited files failed.");
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllReviewedFiles()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all reviewed files");
+                var files = await _context.File.Where(f => f.Flag == "Révisé").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t REVIEWED FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all edited files");
+                return BadRequest("Get all edited files failed.");
+            }
+        }
+
+        [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> getAllFilesByUser(int id)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files with userId: " + id);
+                var files = await _context.File.Where(f => f.UserId == id).ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES: " + files.Count);
+
+
+                return Ok(files);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files with userId -> " + id);
+                return BadRequest("Get user files failed.");
+            }
+        }
+
         [HttpGet("[action]/{id}")]
         public async Task<IActionResult> Details(int id)
         {
@@ -79,34 +156,6 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("File with ID" + id + " not found");
             }
         }
-
-		[HttpPut("[action]/{id}")]
-		public async Task<IActionResult> ModifyTitle(int id, string newTitle)
-		{
-			if (newTitle != null)
-			{
-				File file = _context.File.Find(id);
-
-				file.Title = newTitle;
-
-				try
-				{
-					_context.File.Update(file);
-					await _context.SaveChangesAsync();
-					_logger.LogInformation("Updated current title for file with id: " + file.Id);
-					return Ok(file);
-				}
-				catch
-				{
-					_logger.LogError("Error updating current title for file with id: " + file.Id);
-					return BadRequest("File title not updated");
-				}
-			}
-			else
-			{
-				return BadRequest("Title is null");
-			}
-		}
 
         [HttpDelete("[action]/{id}")]
         public async Task<IActionResult> Delete(int id)
