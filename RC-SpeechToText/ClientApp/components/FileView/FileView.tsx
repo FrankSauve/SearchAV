@@ -99,7 +99,7 @@ export default class FileView extends React.Component<any, State> {
                         <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
                     </div>
                     <div className="column mg-top-30">
-                        {this.state.version ? <TranscriptionSearch/> : null }
+                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id}/> : null }
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
                     </div>
                     <div className="column mg-top-30">

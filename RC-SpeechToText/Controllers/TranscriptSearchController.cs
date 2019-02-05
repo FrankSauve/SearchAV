@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace RC_SpeechToText.Controllers
 {
+    [Authorize]
     [Produces("application/json")]
     [Route("api/[controller]")]
     public class TranscriptSearchController : Controller
