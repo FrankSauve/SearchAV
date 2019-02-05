@@ -97,7 +97,7 @@ export default class FileView extends React.Component<any, State> {
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
                         <p><b>Description: </b>{this.state.version ? <DescriptionText text={this.state.file.description} /> : null}</p>
-                        <button>Save</button>
+                        <button className="button is-danger" type="submit" value="Submit input">Save</button>
                     </div>
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
@@ -107,6 +107,7 @@ export default class FileView extends React.Component<any, State> {
                     </div>
                 </div>
             </div>
+
         )
     }
 }
