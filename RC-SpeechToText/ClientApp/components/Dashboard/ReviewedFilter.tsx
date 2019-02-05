@@ -34,7 +34,7 @@ export default class ReviewedFilter extends React.Component<any, State> {
         axios.get('/api/file/getAllReviewedFiles', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data })
+                this.setState({ 'files': res.data.value.files })
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -45,12 +45,12 @@ export default class ReviewedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <a><div className="card filters has-background-link">
+            <a><div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className="title has-text-success">
+                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
                         {this.state.files.length}
                     </p>
-                    <p className="subtitle has-text-success">
+                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
                         FICHIERS<br />
                         REVISES</p>
                 </div>

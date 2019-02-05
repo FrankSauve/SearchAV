@@ -34,7 +34,7 @@ export default class AutomatedFilter extends React.Component<any, State> {
         axios.get('/api/file/getAllAutomatedFiles', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data })
+                this.setState({ 'files': res.data.value.files })
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -45,17 +45,17 @@ export default class AutomatedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <a><div className="card filters has-background-link">
+            <div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className="title has-text-warning">
+                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-warning"}`}>
                         {this.state.files.length}
                     </p>
-                    <p className="subtitle has-text-warning">
+                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-warning"}`}>
                         FICHIERS
                         TRANSCRIPTS
                 </p>
                 </div>
-            </div></a>
+            </div>
         )
     }
 }

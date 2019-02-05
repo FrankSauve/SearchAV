@@ -79,7 +79,15 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t AUTOMATED FILES: " + files.Count);
 
 
-                return Ok(files);
+                var usernames = new List<string>();
+
+                foreach (var file in files)
+                {
+                    var user = await _context.User.FindAsync(file.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { files, usernames }));
             }
             catch (Exception ex)
             {
@@ -98,7 +106,15 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITED FILES: " + files.Count);
 
 
-                return Ok(files);
+                var usernames = new List<string>();
+
+                foreach (var file in files)
+                {
+                    var user = await _context.User.FindAsync(file.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { files, usernames }));
             }
             catch (Exception ex)
             {
@@ -117,7 +133,15 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t REVIEWED FILES: " + files.Count);
 
 
-                return Ok(files);
+                var usernames = new List<string>();
+
+                foreach (var file in files)
+                {
+                    var user = await _context.User.FindAsync(file.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { files, usernames }));
             }
             catch (Exception ex)
             {
