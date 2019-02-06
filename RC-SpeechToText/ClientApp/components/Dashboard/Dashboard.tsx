@@ -7,6 +7,7 @@ import AutomatedFilter from './AutomatedFilter';
 import EditedFilter from './EditedFilter';
 import ReviewedFilter from './ReviewedFilter';
 import MyFilesFilter from './MyFilesFilter';
+import { FileDescriptionSearch } from '../FileView/FileDescriptionSearch';
 
 interface State {
     files: any[],
@@ -236,6 +237,7 @@ export default class Dashboard extends React.Component<any, State> {
                     </div>
 
                     <section className="section column">
+                        <FileDescriptionSearch />
                         <div className="box">
                             {this.state.files ? <FileTable
                                 files={this.state.files}

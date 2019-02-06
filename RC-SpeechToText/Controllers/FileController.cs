@@ -182,17 +182,48 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching file with id: " + id);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching file with id: " + id);
                 return Ok(await _context.File.FindAsync(id));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching file with id: " + id);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching file with id: " + id);
                 return BadRequest("File with ID" + id + " not found");
             }
         }
 
-		[HttpPut("[action]/{id}")]
+        [HttpGet("[action]/{search}")]
+        public async Task<IActionResult> GetFilesByDescription(string search)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files");
+                var files = await _context.File.ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
+
+                var filesContainDescription = new List<string>();
+
+                foreach (var file in files)
+                {
+                    if (file.Description != null)
+                    {
+                        if (file.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            filesContainDescription.Add(file.Title);
+                        }
+                    }
+                }
+
+                return Ok(filesContainDescription);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching files");
+                return BadRequest("Error retrieving files");
+            }
+        }
+
+        [HttpPut("[action]/{id}")]
 		public async Task<IActionResult> ModifyTitle(int id, string newTitle)
 		{
 			if (newTitle != null)
