@@ -3,6 +3,7 @@ import FileInput from './FileInput';
 import axios from 'axios';
 import auth from '../../Utils/auth';
 import FileTable from './FileTable';
+import { FileDescriptionSearch } from '../FileView/FileDescriptionSearch';
 
 interface State {
     loading: boolean,
@@ -28,6 +29,7 @@ export default class Dashboard extends React.Component<any, State> {
                         <FileInput/>
                     </div>
                     <section className="section">
+                        <FileDescriptionSearch />
                         <div className="box">
                             <FileTable />
                         </div>
