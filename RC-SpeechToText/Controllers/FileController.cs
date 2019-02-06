@@ -7,6 +7,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -80,8 +81,8 @@ namespace RC_SpeechToText.Controllers
 			}
 		}
 
-		[HttpGet("[action]")]
-		public async Task<IActionResult> getFilesByDescription(string search)
+		[HttpGet("[action]/{search}")]
+		public async Task<IActionResult> GetFilesByDescription(string search)
 		{
 			try
 			{
@@ -89,19 +90,24 @@ namespace RC_SpeechToText.Controllers
 				var files = await _context.File.ToListAsync();
 				_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
 
-				var fileContainDescription = new List<File>();
+				var filesContainDescription = new List<string>();
 
-				foreach (var file in files)
+				foreach(var file in files) 
 				{
-					if (file.Description.Contains(search))
-						fileContainDescription.Add(file);
+					if (file.Description != null)
+					{
+						if (file.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+						{
+							filesContainDescription.Add(file.Title);
+						}
+					}
 				}
 
-				return Ok(fileContainDescription);
+				return Ok(filesContainDescription);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching file with id: " + id);
+				_logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching files");
 				return BadRequest("Error retrieving files");
 			}
 		}
