@@ -16,41 +16,23 @@ export default class FileTable extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
         this.state = {
-            files: [],
-            usernames: [],
-            loading: true,
+            files: this.props.files,
+            usernames: this.props.usernames,
+            loading: this.props.loading,
             unauthorized: false
         }
     }
 
-    // Called when the component gets rendered
-    public componentDidMount() {
-        this.getAllFiles();
-    }
-
-    public getAllFiles = () => {
-        this.setState({'loading': true});
-    
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
+    //Will update if props change
+    public componentDidUpdate(prevProps : any) {
+        if (this.props.files !== prevProps.files) {
+            this.setState({ 'files': this.props.files });
         }
-        axios.get('/api/file/GetAllWithUsernames', config)
-            .then(res => {
-                console.log(res.data);
-                this.setState({'files': res.data.value.files});
-                this.setState({'usernames': res.data.value.usernames})
-                this.setState({'loading': false});
-            })
-            .catch(err => {
-                console.log(err);
-                if(err.response.status == 401) {
-                    this.setState({'unauthorized': true});
-                }
-            });
-    };
+
+        if (this.props.usernames !== prevProps.usernames) {
+            this.setState({ 'usernames': this.props.usernames });
+        }
+    }
 
     public render() {
 
@@ -74,7 +56,7 @@ export default class FileTable extends React.Component<any, State> {
                                         username={this.state.usernames[i]}
                                         filePath = {file.filePath}
                                         dateAdded = {file.dateAdded}
-                                        key = {file.fileId}
+                                        key = {file.id}
                                     />
                         i++; 
                         return(

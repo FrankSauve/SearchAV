@@ -72,5 +72,23 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("User with ID" + id + " not found");
             }
         }
+
+        [HttpGet("[action]/{email}")]
+        public async Task<IActionResult> getUserByEmail(string email)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching user with email: " + email);
+                var user = await _context.User.Where(u => u.Email == email).FirstOrDefaultAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User Found! USER ID: " + user.Id);
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user with email: " + email);
+                return BadRequest("User with EMAIL '" + email + "' not found");
+            }
+        }
     }
 }

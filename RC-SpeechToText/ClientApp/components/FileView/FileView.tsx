@@ -4,14 +4,15 @@ import auth from '../../Utils/auth';
 import { TranscriptionText } from './TranscriptionText';
 import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
-import { Link } from 'react-router-dom';
+import { TranscriptionSearch } from './TranscriptionSearch';
 
 interface State {
     fileId: number,
     version: any,
     file: any,
-    description: any,
-    unauthorized: boolean
+    unauthorized: boolean,
+    fileTitle: string,
+    description: any
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -23,8 +24,9 @@ export default class FileView extends React.Component<any, State> {
             fileId: this.props.match.params.id,
             version: null,
             file: null,
-            description: null,
-            unauthorized: false
+            unauthorized: false,
+            fileTitle: "",
+            description: null
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -69,7 +71,7 @@ export default class FileView extends React.Component<any, State> {
             })
             .catch(err => {
                 if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
+                    this.setState({ 'unauthorized': true });                
                 }
             });
     }
@@ -141,10 +143,10 @@ export default class FileView extends React.Component<any, State> {
                         <button className="button is-danger" onClick={this.saveDescription}>Enregistrer</button>
                     </div>
                     <div className="column mg-top-30">
+                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id}/> : null }
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
                     </div>
                     <div className="column mg-top-30">
-                       
                     </div>
                 </div>
             </div>
