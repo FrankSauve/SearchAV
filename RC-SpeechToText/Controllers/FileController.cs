@@ -269,5 +269,27 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("File with ID" + id + " not found");
             }
         }
+
+        [HttpPut("[action]")]
+        public async Task<IActionResult> SaveDescription(string fileId, string newDescription)
+        {
+            int id = int.Parse(fileId);
+            File file = _context.File.Find(id);
+            file.Description = newDescription;
+
+            try
+            {
+                _context.File.Update(file);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Updated description for file with id: " + file.Id);
+                return Ok(file);
+            }
+            catch
+            {
+                _logger.LogError("Error updating description for file with id: " + file.Id);
+                return BadRequest("Description not updated");
+            }
+
+        }
     }
 }

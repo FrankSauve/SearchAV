@@ -5,6 +5,7 @@ import { TranscriptionText } from './TranscriptionText';
 import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
 import { TranscriptionSearch } from './TranscriptionSearch';
+import { Link } from 'react-router-dom';
 
 interface State {
     fileId: number,
@@ -28,9 +29,6 @@ export default class FileView extends React.Component<any, State> {
             fileTitle: "",
             description: null
         }
-
-        this.handleChange = this.handleChange.bind(this);
-        this.saveDescription = this.saveDescription.bind(this);
     }
 
     // Called when the component is rendered
@@ -94,12 +92,13 @@ export default class FileView extends React.Component<any, State> {
             });
     }
 
-    handleChange(event: React.FormEvent<HTMLTextAreaElement>) {
+    public handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
         var safeSearchTypeValue: string = event.currentTarget.value;
 
         this.setState({ description: safeSearchTypeValue });
     }
-    saveDescription() {
+
+    public saveDescription = () => {
         var oldDescription = this.state.file.description
         var newDescription = this.state.description
 
