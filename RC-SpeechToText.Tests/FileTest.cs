@@ -136,7 +136,7 @@ namespace RC_SpeechToText.Tests
             dynamic data = JsonConvert.DeserializeObject<object>(json);
 
             // Assert that username is testUser for all files
-            for(int i = 0; i < data.Value.usernames.Count; i++)
+            for (int i = 0; i < data.Value.usernames.Count; i++)
             {
                 string username = data.Value.usernames[i];
                 Assert.Equal(user.Name, username);
@@ -151,170 +151,170 @@ namespace RC_SpeechToText.Tests
 
         }
 
-        /// <summary>
-        /// Test fetching all the automated files 
-        /// </summary>
-        [Fact]
-        public async Task TestGetAutomatedFiles()
-        {
-            // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+        ///// <summary>
+        ///// Test fetching all the automated files 
+        ///// </summary>
+        //[Fact]
+        //public async Task TestGetAutomatedFiles()
+        //{
+        //    // Arrange
+        //    var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
+        //    var context = new SearchAVContext(options);
 
-            // Remove all files in DB
-            var files = await context.File.ToListAsync();
-            context.File.RemoveRange(files);
-            await context.SaveChangesAsync();
+        //    // Remove all files in DB
+        //    var files = await context.File.ToListAsync();
+        //    context.File.RemoveRange(files);
+        //    await context.SaveChangesAsync();
 
-            // Add user with username testUser
-            var user = new User { Email = "test@email.com", Name = "testUser" };
-            await context.AddAsync(user);
-            user.Id = await context.SaveChangesAsync();
+        //    // Add user with username testUser
+        //    var user = new User { Email = "test@email.com", Name = "testUser" };
+        //    await context.AddAsync(user);
+        //    user.Id = await context.SaveChangesAsync();
 
-            // Add files using flag
-            await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Automatisé" });
-            await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Automatisé" });
-            await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
-            await context.SaveChangesAsync();
+        //    // Add files using flag
+        //    await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Automatisé" });
+        //    await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Automatisé" });
+        //    await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
+        //    await context.SaveChangesAsync();
 
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
+        //    var mock = new Mock<ILogger<FileController>>();
+        //    ILogger<FileController> logger = mock.Object;
+        //    logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
+        //    var controller = new FileController(context, logger);
 
-            // Act
-            var result = await controller.getAllAutomatedFiles();
+        //    // Act
+        //    var result = await controller.getAllAutomatedFiles();
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+        //    // Assert
+        //    var okResult = Assert.IsType<OkObjectResult>(result);
+        //    var returnValue = Assert.IsType<JsonResult>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+        //    var json = JsonConvert.SerializeObject(okResult.Value);
+        //    dynamic data = JsonConvert.DeserializeObject<object>(json);
 
-            // Verify that we get 2 files 
-            int automatedFiles = data.Value.files.Count;
-            Assert.Equal(2, automatedFiles);
+        //    // Verify that we get 2 files 
+        //    int automatedFiles = data.Value.files.Count;
+        //    Assert.Equal(2, automatedFiles);
 
-            //Verify the flags
-            for (int i = 0; i < automatedFiles; i++)
-            {
-                string flag = data.Value.files[i].Flag;
-                Assert.Equal("Automatisé", flag);
-            }
+        //    //Verify the flags
+        //    for (int i = 0; i < automatedFiles; i++)
+        //    {
+        //        string flag = data.Value.files[i].Flag;
+        //        Assert.Equal("Automatisé", flag);
+        //    }
 
-        }
+        //}
 
-        /// <summary>
-        /// Test fetching all the edited files 
-        /// </summary>
-        [Fact]
-        public async Task TestGetEditedFiles()
-        {
-            // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+        ///// <summary>
+        ///// Test fetching all the edited files 
+        ///// </summary>
+        //[Fact]
+        //public async Task TestGetEditedFiles()
+        //{
+        //    // Arrange
+        //    var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
+        //    var context = new SearchAVContext(options);
 
-            // Remove all files in DB
-            var files = await context.File.ToListAsync();
-            context.File.RemoveRange(files);
-            await context.SaveChangesAsync();
+        //    // Remove all files in DB
+        //    var files = await context.File.ToListAsync();
+        //    context.File.RemoveRange(files);
+        //    await context.SaveChangesAsync();
 
-            // Add user with username testUser
-            var user = new User { Email = "test@email.com", Name = "testUser" };
-            await context.AddAsync(user);
-            user.Id = await context.SaveChangesAsync();
+        //    // Add user with username testUser
+        //    var user = new User { Email = "test@email.com", Name = "testUser" };
+        //    await context.AddAsync(user);
+        //    user.Id = await context.SaveChangesAsync();
 
-            // Add files using flag
-            await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Edité" });
-            await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Edité" });
-            await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
-            await context.SaveChangesAsync();
+        //    // Add files using flag
+        //    await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Edité" });
+        //    await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Edité" });
+        //    await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
+        //    await context.SaveChangesAsync();
 
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
+        //    var mock = new Mock<ILogger<FileController>>();
+        //    ILogger<FileController> logger = mock.Object;
+        //    logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
+        //    var controller = new FileController(context, logger);
 
-            // Act
-            var result = await controller.getAllEditedFiles();
+        //    // Act
+        //    var result = await controller.getAllEditedFiles();
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+        //    // Assert
+        //    var okResult = Assert.IsType<OkObjectResult>(result);
+        //    var returnValue = Assert.IsType<JsonResult>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+        //    var json = JsonConvert.SerializeObject(okResult.Value);
+        //    dynamic data = JsonConvert.DeserializeObject<object>(json);
 
-            // Verify that we get 2 files 
-            int editedFiles = data.Value.files.Count;
-            Assert.Equal(2, editedFiles);
+        //    // Verify that we get 2 files 
+        //    int editedFiles = data.Value.files.Count;
+        //    Assert.Equal(2, editedFiles);
 
-            //Verify the flags
-            for (int i = 0; i < editedFiles; i++)
-            {
-                string flag = data.Value.files[i].Flag;
-                Assert.Equal("Edité", flag);
-            }
+        //    //Verify the flags
+        //    for (int i = 0; i < editedFiles; i++)
+        //    {
+        //        string flag = data.Value.files[i].Flag;
+        //        Assert.Equal("Edité", flag);
+        //    }
 
-        }
+        //}
 
-        /// <summary>
-        /// Test fetching all the reviewed files 
-        /// </summary>
-        [Fact]
-        public async Task TestGetReviewedFiles()
-        {
-            // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+        ///// <summary>
+        ///// Test fetching all the reviewed files 
+        ///// </summary>
+        //[Fact]
+        //public async Task TestGetReviewedFiles()
+        //{
+        //    // Arrange
+        //    var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
+        //    var context = new SearchAVContext(options);
 
-            // Remove all files in DB
-            var files = await context.File.ToListAsync();
-            context.File.RemoveRange(files);
-            await context.SaveChangesAsync();
+        //    // Remove all files in DB
+        //    var files = await context.File.ToListAsync();
+        //    context.File.RemoveRange(files);
+        //    await context.SaveChangesAsync();
 
-            // Add user with username testUser
-            var user = new User { Email = "test@email.com", Name = "testUser" };
-            await context.AddAsync(user);
-            user.Id = await context.SaveChangesAsync();
+        //    // Add user with username testUser
+        //    var user = new User { Email = "test@email.com", Name = "testUser" };
+        //    await context.AddAsync(user);
+        //    user.Id = await context.SaveChangesAsync();
 
-            // Add files using flag
-            await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Révisé" });
-            await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Révisé" });
-            await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
-            await context.SaveChangesAsync();
+        //    // Add files using flag
+        //    await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Révisé" });
+        //    await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Révisé" });
+        //    await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
+        //    await context.SaveChangesAsync();
 
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
+        //    var mock = new Mock<ILogger<FileController>>();
+        //    ILogger<FileController> logger = mock.Object;
+        //    logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
+        //    var controller = new FileController(context, logger);
 
-            // Act
-            var result = await controller.getAllReviewedFiles();
+        //    // Act
+        //    var result = await controller.getAllReviewedFiles();
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+        //    // Assert
+        //    var okResult = Assert.IsType<OkObjectResult>(result);
+        //    var returnValue = Assert.IsType<JsonResult>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+        //    var json = JsonConvert.SerializeObject(okResult.Value);
+        //    dynamic data = JsonConvert.DeserializeObject<object>(json);
 
-            // Verify that we get 2 files 
-            int reviewedFiles = data.Value.files.Count;
-            Assert.Equal(2, reviewedFiles);
+        //    // Verify that we get 2 files 
+        //    int reviewedFiles = data.Value.files.Count;
+        //    Assert.Equal(2, reviewedFiles);
 
-            //Verify the flags
-            for (int i = 0; i < reviewedFiles; i++)
-            {
-                string flag = data.Value.files[i].Flag;
-                Assert.Equal("Révisé", flag);
-            }
+        //    //Verify the flags
+        //    for (int i = 0; i < reviewedFiles; i++)
+        //    {
+        //        string flag = data.Value.files[i].Flag;
+        //        Assert.Equal("Révisé", flag);
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// Test fetching one File by Id
