@@ -98,34 +98,34 @@ export class FileCard extends React.Component<any, State> {
     }
 
     public saveTitleChange = () => {
-        
+
         var newTitle = this.state.modifiedTitle
 
         const formData = new FormData();
         formData.append("newTitle", newTitle)
 
-            const config = {
-                headers: {
-                    'Authorization': 'Bearer ' + auth.getAuthToken(),
-                    'content-type': 'application/json'
-                }
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
             }
+        }
 
-            axios.put('/api/file/ModifyTitle/' + this.props.fileId, formData, config)
-                .then(res => {
-                    this.setState({ title: this.state.modifiedTitle });
-                    this.hideModal();
-                })
-                .catch(err => {
-                    console.log(err);
-                    if (err.response.status == 401) {
-                        this.setState({ 'unauthorized': true });
-                    }
-                });
-        
+        axios.put('/api/file/ModifyTitle/' + this.props.fileId, formData, config)
+            .then(res => {
+                this.setState({ title: this.state.modifiedTitle });
+                this.hideModal();
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+
     }
 
-    public handleChange = (event : any) =>{
+    public handleChange = (event: any) => {
         this.setState({ modifiedTitle: event.target.value });
     }
 
@@ -171,23 +171,17 @@ export class FileCard extends React.Component<any, State> {
                         </footer>
                     </div>
                 </div>
-
                 <div className="card mg-top-30 fileCard">
-
                     <span className="tag is-danger is-rounded">{this.props.flag}</span>
-
                     <header className="card-header">
-
                         <p className="card-header-title fileTitle">
                             {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>
-
                         <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
                             <div className="dropdown-trigger">
                                 <div className="is-black" aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
                                     <i className="fas fa-ellipsis-v "></i>
                                 </div>
                             </div>
-
                             <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                                 <div className="dropdown-content">
                                     <a className="dropdown-item" onClick={this.showModal}>
@@ -198,12 +192,8 @@ export class FileCard extends React.Component<any, State> {
                                     </a>
                                 </div>
                             </div>
-
                         </div>
-
-
                     </header>
-
                     <div className="card-image">
                         <div className="hovereffect">
                             <figure className="image is-4by3">
@@ -214,9 +204,7 @@ export class FileCard extends React.Component<any, State> {
                             </figure>
                         </div>
                     </div>
-
                     <div className="card-content">
-
                         <div className="content fileContent">
                             <p className="transcription">{this.props.transcription}</p>
                             <p><b>{this.props.username}</b></p>
@@ -224,10 +212,8 @@ export class FileCard extends React.Component<any, State> {
                             {/* <p><b>Description:</b> {this.props.description}</p> */}
                         </div>
                     </div>
-
                 </div>
             </div>
-
         );
     }
 }

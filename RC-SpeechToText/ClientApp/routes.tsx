@@ -5,6 +5,7 @@ import Unauthorized from './components/Unauthorized';
 import Navbar from './components/Navbar/Navbar';
 import Dashboard from './components/Dashboard/Dashboard';
 import FileView from './components/FileView/FileView';
+import MyFiles from './components/Filters/MyFiles';
 
 
 export const routes = <div>
