@@ -5,9 +5,12 @@ import { Link } from 'react-router-dom';
 
 interface State {
     title: string,
+    description: string,
     modifiedTitle: string,
+    newDescription: string,
     showDropdown: boolean,
-    showModal: boolean,
+    showTitleModal: boolean,
+    showDescriptionModal: boolean,
     unauthorized: boolean,
 }
 
@@ -17,9 +20,12 @@ export class FileCard extends React.Component<any, State> {
 
         this.state = {
             title: this.props.title,
+            description: this.props.description,
             modifiedTitle: "",
+            newDescription:"",
             showDropdown: false,
-            showModal: false,
+            showTitleModal: false,
+            showDescriptionModal: false,
             unauthorized: false
         }
     }
@@ -114,7 +120,7 @@ export class FileCard extends React.Component<any, State> {
         axios.put('/api/file/ModifyTitle/' + this.props.fileId, formData, config)
             .then(res => {
                 this.setState({ title: this.state.modifiedTitle });
-                this.hideModal();
+                this.hideTitleModal();
             })
             .catch(err => {
                 console.log(err);
@@ -125,8 +131,41 @@ export class FileCard extends React.Component<any, State> {
 
     }
 
-    public handleChange = (event: any) => {
+    //public saveDescription = () => {
+    //    var oldDescription = this.state.file.description
+    //    var newDescription = this.state.description
+
+    //    const formData = new FormData();
+    //    formData.append("fileId", this.state.fileId + '')
+    //    formData.append("newDescription", newDescription + '')
+
+    //    if (oldDescription != newDescription) {
+    //        const config = {
+    //            headers: {
+    //                'Authorization': 'Bearer ' + auth.getAuthToken(),
+    //                'content-type': 'application/json'
+    //            }
+    //        }
+
+    //        axios.put('/api/file/saveDescription', formData, config)
+    //            .then(res => {
+    //                this.setState({ description: this.state.newDescription });
+    //                this.hideDescriptionModal();
+    //            })
+    //            .catch(err => {
+    //                if (err.response.status == 401) {
+    //                    this.setState({ 'unauthorized': true });
+    //                }
+    //            });
+    //    }
+    //}
+
+    public handleTitleChange = (event: any) => {
         this.setState({ modifiedTitle: event.target.value });
+    }
+
+    public handleDescriptionChange = (event: any) => {
+        this.setState({ newDescription: event.target.value });
     }
 
     public showDropdown = () => {
@@ -137,40 +176,72 @@ export class FileCard extends React.Component<any, State> {
         this.setState({ showDropdown: false });
     }
 
-    public showModal = () => {
-        this.setState({ showModal: true });
+    public showTitleModal = () => {
+        this.setState({ showTitleModal: true });
     }
 
-    public hideModal = () => {
-        this.setState({ showModal: false });
+    public hideTitleModal = () => {
+        this.setState({ showTitleModal: false });
+    }
+
+    public showDescriptionModal = () => {
+        this.setState({ showDescriptionModal: true });
+    }
+
+    public hideDescriptionModal = () => {
+        this.setState({ showDescriptionModal: false });
     }
 
     public render() {
         return (
             <div className="column is-3">
 
-                <div className={`modal ${this.state.showModal ? "is-active" : null}`} >
+                <div className={`modal ${this.state.showTitleModal ? "is-active" : null}`} >
                     <div className="modal-background"></div>
                     <div className="modal-card">
                         <header className="modal-card-head">
-                            <p className="modal-card-title">Modify title</p>
-                            <button className="delete" aria-label="close" onClick={this.hideModal}></button>
+                            <p className="modal-card-title">Modifier le titre</p>
+                            <button className="delete" aria-label="close" onClick={this.hideTitleModal}></button>
                         </header>
                         <section className="modal-card-body">
                             <div className="field">
                                 <div className="control">
                                     <input className="input is-primary" type="text" placeholder={this.state.title ?
                                         (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.'))
-                                            : this.state.title) : "Enter title"} defaultValue={this.state.title} onChange={this.handleChange} />
+                                            : this.state.title) : "Enter title"} defaultValue={this.state.title} onChange={this.handleTitleChange} />
                                 </div>
                             </div>
                         </section>
                         <footer className="modal-card-foot">
-                            <button className="button is-success" onClick={this.saveTitleChange}>Save changes</button>
-                            <button className="button" onClick={this.hideModal}>Cancel</button>
+                            <button className="button is-success" onClick={this.saveTitleChange}>Enregistrer</button>
+                            <button className="button" onClick={this.hideTitleModal}>Annuler</button>
                         </footer>
                     </div>
                 </div>
+
+                <div className={`modal ${this.state.showDescriptionModal ? "is-active" : null}`} >
+                    <div className="modal-background"></div>
+                    <div className="modal-card">
+                        <header className="modal-card-head">
+                            <p className="modal-card-title">{this.state.description && this.state.description != "" ? "Modifier une description" : "Ajouter une description" }</p>
+                            <button className="delete" aria-label="close" onClick={this.hideDescriptionModal}></button>
+                        </header>
+                        <section className="modal-card-body">
+                            <div className="field">
+                                <div className="control">
+                                    <textarea className="textarea is-primary" type="text" placeholder={this.state.description && this.state.description != "" ?
+                                        this.state.description : "Enter description"} defaultValue={this.state.description ? this.state.description : ""}
+                                        onChange={this.handleDescriptionChange} />
+                                </div>
+                            </div>
+                        </section>
+                        <footer className="modal-card-foot">
+                            <button className="button is-success">Enregistrer</button>
+                            <button className="button" onClick={this.hideDescriptionModal}>Annuler</button>
+                        </footer>
+                    </div>
+                </div>
+
                 <div className="card mg-top-30 fileCard">
                     <span className="tag is-danger is-rounded">{this.props.flag}</span>
                     <header className="card-header">
@@ -184,12 +255,17 @@ export class FileCard extends React.Component<any, State> {
                             </div>
                             <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                                 <div className="dropdown-content">
-                                    <a className="dropdown-item" onClick={this.showModal}>
+                                    <a className="dropdown-item" onClick={this.showTitleModal}>
                                         Modifier le titre
                                     </a>
                                     <a className="dropdown-item" onClick={this.deleteWords}>
                                         Effacer le fichier
                                     </a>
+                                    {this.props.description ? <a className="dropdown-item" onClick={this.showDescriptionModal}>
+                                        Modifier la description
+                                    </a> : <a className="dropdown-item" onClick={this.showDescriptionModal}>
+                                            Ajouter une description
+                                    </a>}
                                 </div>
                             </div>
                         </div>
@@ -209,7 +285,7 @@ export class FileCard extends React.Component<any, State> {
                             <p className="transcription">{this.props.transcription}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
-                            {/* <p><b>Description:</b> {this.props.description}</p> */}
+                            {/* <p><b>Description:</b> {this.state.description}</p> */}
                         </div>
                     </div>
                 </div>

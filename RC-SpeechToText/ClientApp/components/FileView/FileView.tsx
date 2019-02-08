@@ -35,7 +35,6 @@ export default class FileView extends React.Component<any, State> {
     public componentDidMount() {
         this.getVersion();
         this.getFile();
-        this.getDescription();
     }
 
     public getVersion = () => {
@@ -74,58 +73,13 @@ export default class FileView extends React.Component<any, State> {
             });
     }
 
-    public getDescription = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/file/details/' + this.state.fileId, config)
-            .then(res => {
-                this.setState({ file: res.data });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    }
-
     public handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
         var safeSearchTypeValue: string = event.currentTarget.value;
 
         this.setState({ description: safeSearchTypeValue });
     }
 
-    public saveDescription = () => {
-        var oldDescription = this.state.file.description
-        var newDescription = this.state.description
 
-        const formData = new FormData();
-        formData.append("fileId", this.state.fileId + '')
-        formData.append("newDescription", newDescription + '')
-
-        if (oldDescription != newDescription) {
-            const config = {
-                headers: {
-                    'Authorization': 'Bearer ' + auth.getAuthToken(),
-                    'content-type': 'application/json'
-                }
-            }
-
-            axios.put('/api/file/saveDescription', formData, config)
-                .then(res => {
-                    this.setState({ file: res.data });
-                })
-                .catch(err => {
-                    if (err.response.status == 401) {
-                        this.setState({ 'unauthorized': true });
-                    }
-                });
-            
-        }
-    }
     render() {
         return (
             <div className="container">
