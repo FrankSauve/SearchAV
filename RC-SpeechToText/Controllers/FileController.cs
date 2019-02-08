@@ -270,10 +270,9 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
-        [HttpPut("[action]")]
-        public async Task<IActionResult> SaveDescription(string fileId, string newDescription)
+        [HttpPut("[action]/{id}")]
+        public async Task<IActionResult> SaveDescription(int id, string newDescription)
         {
-            int id = int.Parse(fileId);
             File file = _context.File.Find(id);
             file.Description = newDescription;
 

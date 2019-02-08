@@ -131,34 +131,34 @@ export class FileCard extends React.Component<any, State> {
 
     }
 
-    //public saveDescription = () => {
-    //    var oldDescription = this.state.file.description
-    //    var newDescription = this.state.description
+    public saveDescription = () => {
 
-    //    const formData = new FormData();
-    //    formData.append("fileId", this.state.fileId + '')
-    //    formData.append("newDescription", newDescription + '')
+        var oldDescription = this.state.description
+        var newDescription = this.state.newDescription
 
-    //    if (oldDescription != newDescription) {
-    //        const config = {
-    //            headers: {
-    //                'Authorization': 'Bearer ' + auth.getAuthToken(),
-    //                'content-type': 'application/json'
-    //            }
-    //        }
+        const formData = new FormData();
+        formData.append("newDescription", newDescription)
 
-    //        axios.put('/api/file/saveDescription', formData, config)
-    //            .then(res => {
-    //                this.setState({ description: this.state.newDescription });
-    //                this.hideDescriptionModal();
-    //            })
-    //            .catch(err => {
-    //                if (err.response.status == 401) {
-    //                    this.setState({ 'unauthorized': true });
-    //                }
-    //            });
-    //    }
-    //}
+        if (oldDescription != newDescription) {
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + auth.getAuthToken(),
+                    'content-type': 'application/json'
+                }
+            }
+
+            axios.put('/api/file/saveDescription/' + this.props.fileId, formData, config)
+                .then(res => {
+                    this.setState({ description: this.state.newDescription });
+                    this.hideDescriptionModal();
+                })
+                .catch(err => {
+                    if (err.response.status == 401) {
+                        this.setState({ 'unauthorized': true });
+                    }
+                });
+        }
+    }
 
     public handleTitleChange = (event: any) => {
         this.setState({ modifiedTitle: event.target.value });
@@ -236,7 +236,7 @@ export class FileCard extends React.Component<any, State> {
                             </div>
                         </section>
                         <footer className="modal-card-foot">
-                            <button className="button is-success">Enregistrer</button>
+                            <button className="button is-success" onClick={this.saveDescription}>Enregistrer</button>
                             <button className="button" onClick={this.hideDescriptionModal}>Annuler</button>
                         </footer>
                     </div>
