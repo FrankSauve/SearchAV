@@ -134,6 +134,12 @@ export default class FileView extends React.Component<any, State> {
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
 
+                        <p><b>Titre: </b>{this.state.file ? (this.state.file.title ? <div className="card">
+                            <div className="card-content">
+                                {this.state.file.title}
+                            </div> </div> : <div className="card">
+                                <div className="card-content"> This file has no title </div></div>) : null}</p>
+
                         <br/>
 
                         <p><b>Description: </b>{this.state.file ? (this.state.file.description ? <div className="card">
@@ -142,6 +148,7 @@ export default class FileView extends React.Component<any, State> {
                             </div> </div> : <div className="card">
                                 <div className="card-content"> This file has no description </div></div> ) : null}</p>
                     </div>
+
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionSearch versionId={this.state.version.id}/> : null }
                         {this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
