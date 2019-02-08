@@ -8,6 +8,7 @@ import EditedFilter from './EditedFilter';
 import ReviewedFilter from './ReviewedFilter';
 import MyFilesFilter from './MyFilesFilter';
 import { FileDescriptionSearch } from '../FileView/FileDescriptionSearch';
+import Loading from '../Loading';
 
 interface State {
     files: any[],
@@ -45,7 +46,8 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public getAllFiles = () => {
-        this.setState({ 'loading': true });
+        this.setState({ loading: true });
+
 
         const config = {
             headers: {
@@ -63,6 +65,8 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': false });
                 this.setState({ 'isEditedFilterActive': false });
                 this.setState({ 'isReviewedFilterActive': false });
+                this.setState({ loading: false });
+                console.log(this.state.loading);
             })
             .catch(err => {
                 console.log(err);
@@ -73,7 +77,7 @@ export default class Dashboard extends React.Component<any, State> {
     };
 
     public getUserFiles = () => {
-        this.setState({ 'loading': true });
+        this.setState({ loading: true });
 
         const config = {
             headers: {
@@ -97,6 +101,7 @@ export default class Dashboard extends React.Component<any, State> {
                         this.setState({ 'isAutomatedFilterActive': false });
                         this.setState({ 'isEditedFilterActive': false });
                         this.setState({ 'isReviewedFilterActive': false });
+                        this.setState({ loading: false });
                     })
                     .catch(err => {
                         if (err.response.status == 401) {
@@ -113,7 +118,7 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public getAutomatedFiles = () => {
-        this.setState({ 'loading': true });
+        this.setState({ loading: true });
 
         const config = {
             headers: {
@@ -132,6 +137,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': true });
                 this.setState({ 'isEditedFilterActive': false });
                 this.setState({ 'isReviewedFilterActive': false });
+                this.setState({ loading: false });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -141,7 +147,7 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public getReviewedFiles = () => {
-        this.setState({ 'loading': true });
+        this.setState({ loading: true });
 
         const config = {
             headers: {
@@ -160,6 +166,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': false });
                 this.setState({ 'isEditedFilterActive': false });
                 this.setState({ 'isReviewedFilterActive': true });
+                this.setState({ loading: false });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -169,7 +176,7 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public getEditedFiles = () => {
-        this.setState({ 'loading': true });
+        this.setState({ loading: true });
 
         const config = {
             headers: {
@@ -188,12 +195,25 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': false });
                 this.setState({ 'isEditedFilterActive': true });
                 this.setState({ 'isReviewedFilterActive': false });
+                this.setState({ loading: false });
             })
             .catch(err => {
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }
             });
+    }
+
+    public renderFileTable = () => {
+        return (
+            <div>
+                {this.state.files ? <FileTable
+                                files={this.state.files}
+                                usernames={this.state.usernames}
+                                loading={this.state.loading}
+                            /> : <h1 className="title">NO FILES</h1>}
+           </div>
+        )
     }
 
     public render() {
@@ -239,12 +259,11 @@ export default class Dashboard extends React.Component<any, State> {
                     <section className="section column">
                         <FileDescriptionSearch />
                         <div className="box">
-                            {this.state.files ? <FileTable
+                            {this.state.loading ? <Loading /> : this.state.files ? <FileTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
-                            /> : <h1 className="title">NO FILES</h1>}
-                            
+                            /> : <h1 className="title">NO FILES</h1> }
                         </div>
                     </section>
 

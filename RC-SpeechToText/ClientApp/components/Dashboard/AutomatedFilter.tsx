@@ -4,7 +4,8 @@ import auth from '../../Utils/auth';
 
 interface State {
     files: any[],
-    unauthorized: boolean
+    unauthorized: boolean,
+    loading: boolean
 }
 
 export default class AutomatedFilter extends React.Component<any, State> {
@@ -13,7 +14,8 @@ export default class AutomatedFilter extends React.Component<any, State> {
         super(props);
         this.state = {
             files: [],
-            unauthorized: false
+            unauthorized: false,
+            loading: false
         }
     }
 
@@ -34,7 +36,7 @@ export default class AutomatedFilter extends React.Component<any, State> {
         axios.get('/api/file/getAllAutomatedFiles', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data.value.files })
+                this.setState({ 'files': res.data.value.files });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -52,7 +54,7 @@ export default class AutomatedFilter extends React.Component<any, State> {
                     </p>
                     <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-warning"}`}>
                         FICHIERS
-                        TRANSCRIPTS
+                        TRANSCRITS
                 </p>
                 </div>
             </div>

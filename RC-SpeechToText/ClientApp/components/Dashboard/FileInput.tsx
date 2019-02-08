@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
+import Loading from '../Loading';
 
 
 interface State {
@@ -54,7 +55,6 @@ export default class FileInput extends React.Component<any, State> {
     };
 
     public render() {
-        const progressBar = <img width="100" height="100" src="assets/loading.gif" alt="Loading..."/>
         
         return (
             <div className="column mg-top-30">
@@ -65,7 +65,7 @@ export default class FileInput extends React.Component<any, State> {
                             <span className="file-icon">
                                 <i className="fas fa-upload"></i>
                             </span>
-                            {this.state.loading ? progressBar : 
+                            {this.state.loading ? <Loading/> : 
                                 <span className="file-label">
                                     <br/>
                                     Ajouter un fichier...
