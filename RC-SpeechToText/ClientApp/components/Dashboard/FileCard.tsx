@@ -223,7 +223,7 @@ export class FileCard extends React.Component<any, State> {
                     <div className="modal-background"></div>
                     <div className="modal-card">
                         <header className="modal-card-head">
-                            <p className="modal-card-title">{this.state.description && this.state.description != "" ? "Modifier une description" : "Ajouter une description" }</p>
+                            <p className="modal-card-title">{this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description" }</p>
                             <button className="delete" aria-label="close" onClick={this.hideDescriptionModal}></button>
                         </header>
                         <section className="modal-card-body">
