@@ -133,13 +133,14 @@ export default class FileView extends React.Component<any, State> {
                     <div className="column is-one-third mg-top-30">
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
-                        <p><b>Description: </b>{this.state.file ?
-                            <textarea
-                                className="textarea"
-                                defaultValue={this.state.file.description}
-                                onChange={this.handleChange}>
-                            </textarea> :null}</p>
-                        <button className="button is-danger" onClick={this.saveDescription}>Enregistrer</button>
+
+                        <br/>
+
+                        <p><b>Description: </b>{this.state.file ? (this.state.file.description ? <div className="card">
+                            <div className="card-content">
+                            {this.state.file.description}
+                            </div> </div> : <div className="card">
+                                <div className="card-content"> This file has no description </div></div> ) : null}</p>
                     </div>
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionSearch versionId={this.state.version.id}/> : null }
