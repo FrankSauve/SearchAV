@@ -24,17 +24,14 @@ namespace RC_SpeechToText.Controllers
             _logger = logger;
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> SaveEditedTranscript(string versionId, string oldTranscript, string newTranscript)
+        [HttpPost("[action]/{versionId}")]
+        public async Task<IActionResult> SaveEditedTranscript(int versionId, string newTranscript)
         {
             _logger.LogInformation("versionId: " + versionId);
+            Version currentVersion = _context.Version.Find(versionId);
+
             _logger.LogInformation("New transcript: " + newTranscript);
-            _logger.LogInformation("Old transcript: " + oldTranscript);
-
-            //Converting versionId to an integer in oder to find the corresponding version
-            int id = int.Parse(versionId);
-
-            Version currentVersion = _context.Version.Find(id);
+            _logger.LogInformation("Old transcript: " + currentVersion.Transcription);
 
             //Deactivate current version 
             _logger.LogInformation("current version active: " + currentVersion.Active);
