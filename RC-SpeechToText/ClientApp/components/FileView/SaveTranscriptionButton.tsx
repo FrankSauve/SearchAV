@@ -85,7 +85,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                             <button className="delete" aria-label="close" onClick={this.hideSaveTranscriptModal}></button>
                         </header>
                         <section className="modal-card-body">
-                            <p>Etes-vous sur(e) d'enregistrer les changements effectues a la transcription?</p>
+                            <p>Êtes-vous sûr(e) de vouloir enregistrer les changements effectués à la transcription?</p>
                         </section>
                         <footer className="modal-card-foot">
                             <button className="button is-success" onClick={this.saveEditedTranscription}>Enregistrer</button>
@@ -102,14 +102,14 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                             <button className="delete" aria-label="close" onClick={this.hideErrorModalModal}></button>
                         </header>
                         <section className="modal-card-body">
-                            <p className="has-text-danger">Enregistrement annule! Vous n'avez effectue aucun changements ou vous avez apporte les memes modifications.</p>
+                            <p className="has-text-danger">Enregistrement annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.</p>
                         </section>
                         <footer className="modal-card-foot">
                         </footer>
                     </div>
                 </div>
 
-                <a className="button is-danger" onClick={this.showSaveTranscriptModal}>Enregistrer</a>
+                <a className="button is-link mg-top-10" onClick={this.showSaveTranscriptModal}>Enregistrer</a>
             </div>
         );
     }

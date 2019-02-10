@@ -9,9 +9,17 @@ html, body {
   margin-top: 30px;
 }
 
+.mg-top-10 {
+    margin-top: 10px;
+  }
+
 .mg-right-30 {
   margin-right: 30px;
 }
+
+.mg-right-10 {
+    margin-right: 10px;
+  }
 
 .is-circular {
     border-radius: 50%;

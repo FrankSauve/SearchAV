@@ -48,10 +48,10 @@ export class TranscriptionSearch extends React.Component<any,State> {
         return (
             <div>
                 <div className="field is-horizontal">
-                    <a className="button is-primary" onClick={this.searchTranscript}> Search </a>
+                    <a className="button is-link mg-right-10" onClick={this.searchTranscript}> Rechercher </a>
                     <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
                 </div>
-                {this.state.timestamps ?  <p> Results : {this.state.timestamps} </p> : null}
+                {this.state.timestamps ?  <p> Résultats : {this.state.timestamps} </p> : null}
             </div>
         );
     }

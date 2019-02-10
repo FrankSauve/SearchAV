@@ -115,12 +115,21 @@ export default class FileView extends React.Component<any, State> {
 
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
-                        {this.state.loading ? <Loading /> : this.state.version ? <TranscriptionText text={this.state.version.transcription} handleChange={this.handleTranscriptChange} /> : null}
-                        <SaveTranscriptionButton
-                            version={this.state.version}
-                            updateVersion={this.updateVersion}
-                            editedTranscription={this.state.editedTranscript}
-                        />
+                        {this.state.loading ? 
+                            <Loading />
+                        : this.state.version ? 
+                                <div>
+                                    <TranscriptionText 
+                                        text={this.state.version.transcription} 
+                                        handleChange={this.handleTranscriptChange} />
+                                    <SaveTranscriptionButton
+                                        version={this.state.version}
+                                        updateVersion={this.updateVersion}
+                                        editedTranscription={this.state.editedTranscript}
+                                    />
+                                </div>
+                        : null}
+                        
                     </div>
 
                     <div className="column mg-top-30">

@@ -258,7 +258,7 @@ export default class Dashboard extends React.Component<any, State> {
 
                     <section className="section column">
                         <FileDescriptionSearch />
-                        <div className="box">
+                        <div className="box mg-top-30">
                             {this.state.loading ? <Loading /> : this.state.files ? <FileTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}

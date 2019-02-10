@@ -45,10 +45,10 @@ export class FileDescriptionSearch extends React.Component<any,State> {
         return (
             <div>
                 <div className="field is-horizontal">
-                    <a className="button is-primary" onClick={this.searchDescription}> Search </a>
+                    <a className="button is-link mg-right-10" onClick={this.searchDescription}> Rechercher </a>
                     <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
                 </div>
-                {this.state.files ? <p> Results : {this.state.files} </p> : null}
+                {this.state.files ? <p> Résultats : {this.state.files} </p> : null}
             </div>
         );
     }
