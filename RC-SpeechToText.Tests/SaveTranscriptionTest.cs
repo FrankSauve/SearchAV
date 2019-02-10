@@ -13,57 +13,54 @@ namespace RC_SpeechToText.Tests
     
     public class SaveTranscriptionTest
     {
-        //[Fact]
-        //public async Task TestSaveEditedTranscript()
-        //{
+        [Fact]
+        public async Task TestSaveEditedTranscript()
+        {
 
-        //    var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-        //    var context = new SearchAVContext(options);
+            string transcript = "Transcription";
 
-        //    string transcript = "Transcription";
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = "Automatisé" };
 
-        //    //Add File to database
-        //    File f = new File { Title = "title", DateAdded = DateTime.Now, Flag = "Automatisé" };
-        //    context.File.Add(f);
-        //    int fileId = context.SaveChanges();
+            //AddAsync File to database
+            await context.File.AddAsync(file);
+            await context.SaveChangesAsync();
+            
 
-        //    //Add Version to database
-        //    Version v = new Version { FileId = fileId, Active = true};
-        //    v.Transcription = transcript;
-        //    context.Version.Add(v);
-        //    int versionId = context.SaveChanges();
+            var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
 
-        //    //Retrieve added Version
-        //    v = context.Version.Find(versionId);
+            //AddAsync Version to database
+            await context.Version.AddAsync(version);
+            await context.SaveChangesAsync();
+            
+            string newTranscription = "New Transcription";
 
-        //    string newTranscription = "New Transcription";
+            var mock = new Mock<ILogger<SaveEditedTranscriptController>>();
+            ILogger<SaveEditedTranscriptController> logger = mock.Object;
+            logger = Mock.Of<ILogger<SaveEditedTranscriptController>>();
 
-        //    var mock = new Mock<ILogger<SaveEditedTranscriptController>>();
-        //    ILogger<SaveEditedTranscriptController> logger = mock.Object;
-        //    logger = Mock.Of<ILogger<SaveEditedTranscriptController>>();
+            var controller = new SaveEditedTranscriptController(context, logger);
 
-        //    var controller = new SaveEditedTranscriptController(context, logger);
+            await controller.SaveEditedTranscript(version.Id, newTranscription);
+            Assert.NotEqual(version.Transcription, newTranscription);
 
-        //    await controller.SaveEditedTranscript(v.Id, newTranscription);
-        //    Assert.NotEqual(v.Transcription, newTranscription);
+            //Checking new version
+            Version newVersion = context.Version.Find(version.Id + 1);
+            Assert.Equal(newVersion.Transcription, newTranscription);
+            Assert.Equal(newVersion.FileId, file.Id);
+            Assert.True(newVersion.Active);
 
-        //    //Checking new version
-        //    Version newVersion = context.Version.Find(versionId + 1);
-        //    Assert.Equal(newVersion.Transcription, newTranscription);
-        //    Assert.Equal(newVersion.FileId, fileId);
-        //    Assert.True(newVersion.Active);
+            //Checking old version
+            version = context.Version.Find(version.Id);
+            Assert.Equal(version.Transcription, transcript);
+            Assert.Equal(version.FileId, newVersion.FileId);
+            Assert.False(version.Active);
 
-        //    //Checking old version
-        //    v = context.Version.Find(versionId);
-        //    Assert.Equal(v.Transcription, transcript);
-        //    Assert.Equal(v.FileId, newVersion.FileId);
-        //    Assert.False(v.Active);
-
-        //    //Checking corresponding file
-        //    f = context.File.Find(fileId);
-        //    Assert.Equal("Edité", f.Flag);
-
-        //}
+            //Checking corresponding file
+            file = context.File.Find(file.Id);
+            Assert.Equal("Edité", file.Flag);
+            
+        }
     }
 }

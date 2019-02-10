@@ -23,8 +23,7 @@ namespace RC_SpeechToText.Tests
         public async Task TestGetAll()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             await context.Version.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new Models.Version { Transcription = "transcription", FileId = 1, UserId = 1}));
             await context.SaveChangesAsync();
@@ -33,15 +32,13 @@ namespace RC_SpeechToText.Tests
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new VersionController(context, logger);
-
             //Act
+            var controller = new VersionController(context, logger);
             var result = await controller.Index();
-
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<List<Models.Version>>(okResult.Value);
-            Assert.True(returnValue.Count() == 20);
+            Assert.Equal(20, returnValue.Count());
         }
 
         /// <summary>
@@ -52,15 +49,9 @@ namespace RC_SpeechToText.Tests
         public async Task TestGetByFileId()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-            // Remove all versions from db
-            var versions = await context.Version.ToListAsync();
-            context.Version.RemoveRange(versions);
-            await context.SaveChangesAsync();
-
-            // Add file with title testFile
+            // AddAsync file with title testFile
             var version = new Models.Version { Transcription = "transcription", FileId = 1, UserId = 1 };
             await context.Version.AddAsync(version);
             await context.SaveChangesAsync();
@@ -69,9 +60,8 @@ namespace RC_SpeechToText.Tests
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new VersionController(context, logger);
-
             // Act
+            var controller = new VersionController(context, logger);
             var result = await controller.GetbyFileId(version.FileId);
 
             // Assert

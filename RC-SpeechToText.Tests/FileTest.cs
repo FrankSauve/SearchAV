@@ -15,35 +15,30 @@ namespace RC_SpeechToText.Tests
 {
     public class FileTest
     {
-        //Don't really need this test anymore
-        ///// <summary>
-        ///// Test fetching all the files
-        ///// </summary>
-        //[Fact]
-        //public async Task TestGetAllVideos()
-        //{
-        //    // Arrange
-        //    var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-        //    var context = new SearchAVContext(options);
+        /// <summary>
+        /// Test fetching all the files
+        /// </summary>
+        [Fact]
+        public async Task TestGetAllVideos()
+        {
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-        //    await context.File.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t }));
-        //    await context.SaveChangesAsync();
+            await context.File.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t }));
+            await context.SaveChangesAsync();
+            
+            var mock = new Mock<ILogger<FileController>>();
+            ILogger<FileController> logger = mock.Object;
+            logger = Mock.Of<ILogger<FileController>>();
 
-        //    var mock = new Mock<ILogger<FileController>>();
-        //    ILogger<FileController> logger = mock.Object;
-        //    logger = Mock.Of<ILogger<FileController>>();
-
-        //    var controller = new FileController(context, logger);
-
-        //    //Act
-        //    var result = await controller.Index();
-
-        //    // Assert
-        //    var okResult = Assert.IsType<OkObjectResult>(result);
-        //    var returnValue = Assert.IsType<List<File>>(okResult.Value);
-        //    //Assert.True(returnValue.Count() == 20); 
-
-        //}
+            //Act
+            var controller = new FileController(context, logger);
+            var result = await controller.Index();
+                
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<File>>(okResult.Value);
+            Assert.Equal(20, returnValue.Count()); 
+        }
 
         /// <summary>
         /// Test fetching all the files with the corresponding usernames
@@ -51,12 +46,11 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestGetAllWithUsernames()
         {
-            // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+
+            var user = new User { Email = "test@email.com", Name = "testUser" };
 
             // Add user with username testUser
-            var user = new User { Email = "test@email.com", Name = "testUser" };
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
@@ -73,9 +67,8 @@ namespace RC_SpeechToText.Tests
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
-
             // Act
+            var controller = new FileController(context, logger);
             var result = await controller.GetAllWithUsernames();
 
             // Assert
@@ -100,12 +93,11 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestGetUserFiles()
         {
-            // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+
+            var user = new User { Email = "test@email.com", Name = "testUser" };
 
             // Add user with username testUser
-            var user = new User { Email = "test@email.com", Name = "testUser" };
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
@@ -114,21 +106,26 @@ namespace RC_SpeechToText.Tests
             context.File.RemoveRange(files);
             await context.SaveChangesAsync();
 
+
+            var file1 = new File { Title = "testFile1", UserId = user.Id };
+            var file2 = new File { Title = "testFile2", UserId = user.Id };
+            var file3 = new File { Title = "testFile3", UserId = user.Id };
+
             // Add files using userId
-            await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id });
-            await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id });
-            await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id });
+            await context.File.AddAsync(file1);
+            await context.File.AddAsync(file2);
+            await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
 
             var mock = new Mock<ILogger<FileController>>();
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
 
             // Act
-            var result = await controller.getAllFilesByUser(user.Id);
+            var controller = new FileController(context, logger);
 
+            var result = await controller.getAllFilesByUser(user.Id);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<JsonResult>(okResult.Value);
@@ -140,16 +137,15 @@ namespace RC_SpeechToText.Tests
             for (int i = 0; i < data.Value.usernames.Count; i++)
             {
                 string username = data.Value.usernames[i];
-                Assert.Equal(user.Name, username);
+                Assert.Equal("testUser", username);
             }
 
             //Verify that all files has same userId as the user 
             for (int i = 0; i < data.Value.files.Count; i++)
             {
-                int userId = data.Value.files[i].UserId;
-                Assert.Equal(user.Id, userId);
+                int actualUserId = data.Value.files[i].UserId;
+                Assert.Equal(user.Id, actualUserId);
             }
-
         }
 
         /// <summary>
@@ -158,24 +154,22 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestDetails()
         {
-            // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+            
+            var file = new File { Title = "testFile" };
 
             // Add file with title testFile
-            var file = new File { Title = "testFile" };
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
+            
 
             var mock = new Mock<ILogger<FileController>>();
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
-
             // Act
+            var controller = new FileController(context, logger);
             var result = await controller.Details(file.Id);
-
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<File>(okResult.Value);
