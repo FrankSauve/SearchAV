@@ -44,7 +44,7 @@ namespace RC_SpeechToText.Tests
 
             var controller = new SaveEditedTranscriptController(context, logger);
 
-            await controller.SaveEditedTranscript(v.Id + "", v.Transcription, newTranscription);
+            await controller.SaveEditedTranscript(v.Id, newTranscription);
             Assert.AreEqual(v.Transcription, newTranscription);
 
             //Checking new version
