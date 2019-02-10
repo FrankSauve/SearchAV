@@ -1,19 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
+using System.Threading.Tasks;
 using System;
 using Version = RC_SpeechToText.Models.Version;
 
 namespace RC_SpeechToText.Tests
 {
-    [TestClass]
+    
     public class SaveTranscriptionTest
     {
-        [TestMethod]
-        public async void TestSaveEditedTranscript()
+        [Fact]
+        public async Task TestSaveEditedTranscript()
         {
 
             var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
@@ -33,7 +34,7 @@ namespace RC_SpeechToText.Tests
             context.Version.Add(v);
             int versionId = context.SaveChanges();
 
-            //Retrieve newly added Version
+            //Retrieve added Version
             v = context.Version.Find(versionId);
 
             string newTranscription = "New Transcription";
@@ -45,23 +46,23 @@ namespace RC_SpeechToText.Tests
             var controller = new SaveEditedTranscriptController(context, logger);
 
             await controller.SaveEditedTranscript(v.Id, newTranscription);
-            Assert.AreEqual(v.Transcription, newTranscription);
+            Assert.NotEqual(v.Transcription, newTranscription);
 
             //Checking new version
             Version newVersion = context.Version.Find(versionId + 1);
-            Assert.AreEqual(newVersion.Transcription, newTranscription);
-            Assert.AreEqual(newVersion.FileId, fileId);
-            Assert.IsTrue(newVersion.Active);
+            Assert.Equal(newVersion.Transcription, newTranscription);
+            Assert.Equal(newVersion.FileId, fileId);
+            Assert.True(newVersion.Active);
 
             //Checking old version
             v = context.Version.Find(versionId);
-            Assert.AreEqual(v.Transcription, transcript);
-            Assert.AreEqual(v.FileId, newVersion.FileId);
-            Assert.IsFalse(newVersion.Active);
+            Assert.Equal(v.Transcription, transcript);
+            Assert.Equal(v.FileId, newVersion.FileId);
+            Assert.False(v.Active);
 
             //Checking corresponding file
             f = context.File.Find(fileId);
-            Assert.AreEqual(f.Flag, "Edité");
+            Assert.Equal("Edité", f.Flag);
 
         }
     }
