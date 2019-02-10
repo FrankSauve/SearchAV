@@ -104,6 +104,8 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                         <section className="modal-card-body">
                             <p className="has-text-danger">Enregistrement annule! Vous n'avez effectue aucun changements ou vous avez apporte les memes modifications.</p>
                         </section>
+                        <footer className="modal-card-foot">
+                        </footer>
                     </div>
                 </div>
 
