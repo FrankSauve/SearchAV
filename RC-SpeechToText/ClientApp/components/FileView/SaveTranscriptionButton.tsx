@@ -109,7 +109,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     </div>
                 </div>
 
-                <a className="button is-danger" onClick={this.showSaveTranscriptModal}>Save</a>
+                <a className="button is-danger" onClick={this.showSaveTranscriptModal}>Enregistrer</a>
             </div>
         );
     }
