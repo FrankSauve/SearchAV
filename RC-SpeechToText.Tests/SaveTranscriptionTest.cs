@@ -1,41 +1,39 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
+using System.Threading.Tasks;
 using System;
 using Version = RC_SpeechToText.Models.Version;
 
 namespace RC_SpeechToText.Tests
 {
-    [TestClass]
+    
     public class SaveTranscriptionTest
     {
-        [TestMethod]
-        public async void TestSaveEditedTranscript()
+        [Fact]
+        public async Task TestSaveEditedTranscript()
         {
 
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             string transcript = "Transcription";
 
-            //Add File to database
-            File f = new File { Title = "title", DateAdded = DateTime.Now, Flag = "Automatisé" };
-            context.File.Add(f);
-            int fileId = context.SaveChanges();
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = "Automatisé" };
 
-            //Add Version to database
-            Version v = new Version { FileId = fileId, Active = true};
-            v.Transcription = transcript;
-            context.Version.Add(v);
-            int versionId = context.SaveChanges();
+            //AddAsync File to database
+            await context.File.AddAsync(file);
+            await context.SaveChangesAsync();
+            
 
-            //Retrieve newly added Version
-            v = context.Version.Find(versionId);
+            var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
 
+            //AddAsync Version to database
+            await context.Version.AddAsync(version);
+            await context.SaveChangesAsync();
+            
             string newTranscription = "New Transcription";
 
             var mock = new Mock<ILogger<SaveEditedTranscriptController>>();
@@ -44,25 +42,25 @@ namespace RC_SpeechToText.Tests
 
             var controller = new SaveEditedTranscriptController(context, logger);
 
-            await controller.SaveEditedTranscript(v.Id + "", v.Transcription, newTranscription);
-            Assert.AreEqual(v.Transcription, newTranscription);
+            await controller.SaveEditedTranscript(version.Id, newTranscription);
+            Assert.NotEqual(version.Transcription, newTranscription);
 
             //Checking new version
-            Version newVersion = context.Version.Find(versionId + 1);
-            Assert.AreEqual(newVersion.Transcription, newTranscription);
-            Assert.AreEqual(newVersion.FileId, fileId);
-            Assert.IsTrue(newVersion.Active);
+            Version newVersion = context.Version.Find(version.Id + 1);
+            Assert.Equal(newVersion.Transcription, newTranscription);
+            Assert.Equal(newVersion.FileId, file.Id);
+            Assert.True(newVersion.Active);
 
             //Checking old version
-            v = context.Version.Find(versionId);
-            Assert.AreEqual(v.Transcription, transcript);
-            Assert.AreEqual(v.FileId, newVersion.FileId);
-            Assert.IsFalse(newVersion.Active);
+            version = context.Version.Find(version.Id);
+            Assert.Equal(version.Transcription, transcript);
+            Assert.Equal(version.FileId, newVersion.FileId);
+            Assert.False(version.Active);
 
             //Checking corresponding file
-            f = context.File.Find(fileId);
-            Assert.AreEqual(f.Flag, "Edité");
-
+            file = context.File.Find(file.Id);
+            Assert.Equal("Edité", file.Flag);
+            
         }
     }
 }

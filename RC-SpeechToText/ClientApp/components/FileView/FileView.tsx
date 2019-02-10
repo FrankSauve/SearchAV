@@ -5,6 +5,7 @@ import { TranscriptionText } from './TranscriptionText';
 import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
 import { TranscriptionSearch } from './TranscriptionSearch';
+import { SaveTranscriptionButton } from './SaveTranscriptionButton';
 import { Link } from 'react-router-dom';
 import Loading from '../Loading';
 
@@ -12,6 +13,7 @@ interface State {
     fileId: number,
     version: any,
     file: any,
+    editedTranscript: string,
     unauthorized: boolean,
     fileTitle: string,
     description: any,
@@ -27,6 +29,7 @@ export default class FileView extends React.Component<any, State> {
             fileId: this.props.match.params.id,
             version: null,
             file: null,
+            editedTranscript: "",
             unauthorized: false,
             fileTitle: "",
             description: null,
@@ -48,9 +51,9 @@ export default class FileView extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/version/GetByFileId/' + this.state.fileId, config)
+        axios.get('/api/version/GetActiveByFileId/' + this.state.fileId, config)
             .then(res => {
-                this.setState({ version: res.data[0] });
+                this.setState({ version: res.data });
                 this.setState({ loading: false });
             })
             .catch(err => {
@@ -78,16 +81,18 @@ export default class FileView extends React.Component<any, State> {
             });
     }
 
-    public handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
-        var safeSearchTypeValue: string = event.currentTarget.value;
-
-        this.setState({ description: safeSearchTypeValue });
+    public handleTranscriptChange = (event: any) => {
+        this.setState({ editedTranscript: event.target.value });
     }
 
+    public updateVersion = (newVersion: any) => {
+        this.setState({ version: newVersion });
+    };
 
     render() {
         return (
             <div className="container">
+
                 <div className="columns">
                     <div className="column is-one-third mg-top-30">
                         {/* Using title for now, this will have to be change to path eventually */}
@@ -109,12 +114,27 @@ export default class FileView extends React.Component<any, State> {
                     </div>
 
                     <div className="column mg-top-30">
-                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id}/> : null }
-                        {this.state.loading ? <Loading /> : 
-                        this.state.version ? <TranscriptionText text={this.state.version.transcription} /> : null}
+                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
+                        {this.state.loading ? 
+                            <Loading />
+                        : this.state.version ? 
+                                <div>
+                                    <TranscriptionText 
+                                        text={this.state.version.transcription} 
+                                        handleChange={this.handleTranscriptChange} />
+                                    <SaveTranscriptionButton
+                                        version={this.state.version}
+                                        updateVersion={this.updateVersion}
+                                        editedTranscription={this.state.editedTranscript}
+                                    />
+                                </div>
+                        : null}
+                        
                     </div>
+
                     <div className="column mg-top-30">
                     </div>
+
                 </div>
             </div>
 

@@ -22,20 +22,15 @@ namespace RC_SpeechToText.Tests
         public async Task TestGetAutomatedFiles()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-            // Remove all files in DB
-            var files = await context.File.ToListAsync();
-            context.File.RemoveRange(files);
-            await context.SaveChangesAsync();
-
-            // Add user with username testUser
             var user = new User { Email = "test@email.com", Name = "testUser" };
+
+            // AddAsync user with username testUser
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            // Add files using flag
+            // AddAsync files using flag
             await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Automatisé" });
             await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Automatisé" });
             await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
@@ -45,9 +40,8 @@ namespace RC_SpeechToText.Tests
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
-
             // Act
+            var controller = new FileController(context, logger);
             var result = await controller.getAllAutomatedFiles();
 
             // Assert
@@ -67,7 +61,6 @@ namespace RC_SpeechToText.Tests
                 string flag = data.Value.files[i].Flag;
                 Assert.Equal("Automatisé", flag);
             }
-
         }
 
         /// <summary>
@@ -77,20 +70,14 @@ namespace RC_SpeechToText.Tests
         public async Task TestGetEditedFiles()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-            // Remove all files in DB
-            var files = await context.File.ToListAsync();
-            context.File.RemoveRange(files);
-            await context.SaveChangesAsync();
-
-            // Add user with username testUser
             var user = new User { Email = "test@email.com", Name = "testUser" };
+
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            // Add files using flag
+            // AddAsync files using flag
             await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Edité" });
             await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Edité" });
             await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
@@ -100,9 +87,8 @@ namespace RC_SpeechToText.Tests
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
-
             // Act
+            var controller = new FileController(context, logger);
             var result = await controller.getAllEditedFiles();
 
             // Assert
@@ -122,7 +108,6 @@ namespace RC_SpeechToText.Tests
                 string flag = data.Value.files[i].Flag;
                 Assert.Equal("Edité", flag);
             }
-
         }
 
         /// <summary>
@@ -132,32 +117,29 @@ namespace RC_SpeechToText.Tests
         public async Task TestGetReviewedFiles()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<SearchAVContext>().UseInMemoryDatabase().Options;
-            var context = new SearchAVContext(options);
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-            // Remove all files in DB
-            var files = await context.File.ToListAsync();
-            context.File.RemoveRange(files);
-            await context.SaveChangesAsync();
-
-            // Add user with username testUser
+            // AddAsync user with username testUser
             var user = new User { Email = "test@email.com", Name = "testUser" };
             await context.AddAsync(user);
             await context.SaveChangesAsync();
+            
+            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = "Révisé" };
+            var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = "Révisé" };
+            var file3 = new File { Title = "testFile3", UserId = user.Id }; // No flag for testing purposes
 
-            // Add files using flag
-            await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Révisé" });
-            await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Révisé" });
-            await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
+            // AddAsync files using flag
+            await context.File.AddAsync(file1);
+            await context.File.AddAsync(file2);
+            await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
-
+            
             var mock = new Mock<ILogger<FileController>>();
             ILogger<FileController> logger = mock.Object;
             logger = Mock.Of<ILogger<FileController>>();
 
-            var controller = new FileController(context, logger);
-
             // Act
+            var controller = new FileController(context, logger);
             var result = await controller.getAllReviewedFiles();
 
             // Assert
@@ -177,7 +159,6 @@ namespace RC_SpeechToText.Tests
                 string flag = data.Value.files[i].Flag;
                 Assert.Equal("Révisé", flag);
             }
-
         }
     }
 }
