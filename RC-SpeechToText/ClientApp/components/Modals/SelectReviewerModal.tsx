@@ -60,7 +60,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                                     {
                                         //Includes current user's name for testing purposes
                                     }
-                                    const listUsers = <option value={user.id}>{user.name}</option>
+                                    const listUsers = <option value={user.id}>{user.name} | {user.email}</option>
                                     return (
                                         listUsers
                                     )
