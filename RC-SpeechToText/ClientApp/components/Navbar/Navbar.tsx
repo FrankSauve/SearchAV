@@ -42,6 +42,9 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     <Link className="navbar-item" to="/dashboard">
                         <i className="fas fa-angle-left"></i>
                     </Link>
+                    <a className="button is-rounded mg-top-10 mg-left-100"><i className="far fa-envelope"></i> Demander une revision</a>
+                    <a className="button is-rounded mg-top-10 mg-left-10"><i className="fas fa-file-export"></i> Exporter</a>
+                <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save"></i> Enregistrer</a>
                 </div>
             </div>
         );

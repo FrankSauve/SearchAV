@@ -21,6 +21,14 @@ html, body {
     margin-right: 10px;
   }
 
+.mg-left-100 {
+    margin-left: 300px;
+}
+
+.mg-left-10 {
+    margin-left: 10px;
+}
+
 .is-circular {
     border-radius: 50%;
 }
