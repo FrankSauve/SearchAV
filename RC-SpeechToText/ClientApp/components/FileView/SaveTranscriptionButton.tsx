@@ -1,9 +1,13 @@
 ﻿import * as React from 'react';
 import axios from "axios";
 import auth from '../../Utils/auth';
+import { ErrorModal } from '../Modals/ErrorModal';
+import { SuccessModal } from '../Modals/SuccessModal';
+import { ConfirmationModal } from '../Modals/ConfirmationModal';
 
 interface State {
     showSaveTranscriptModal: boolean,
+    showSuccessModal: boolean,
     showErrorModal: boolean,
     unauthorized: boolean
 }
@@ -13,8 +17,8 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
         super(props);
 
         this.state = {
-
             showSaveTranscriptModal: false,
+            showSuccessModal: false,
             showErrorModal: false,
             unauthorized: false
         }
@@ -46,6 +50,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     console.log(res);
                     this.props.updateVersion(res.data);
                     this.hideSaveTranscriptModal();
+                    this.showSuccessModal();
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
@@ -64,11 +69,19 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
         this.setState({ showSaveTranscriptModal: false });
     }
 
-    public showErrorModalModal = () => {
+    public showSuccessModal = () => {
+        this.setState({ showSuccessModal: true });
+    }
+
+    public hideSuccessModal = () => {
+        this.setState({ showSuccessModal: false });
+    }
+
+    public showErrorModal = () => {
         this.setState({ showErrorModal: true });
     }
 
-    public hideErrorModalModal = () => {
+    public hideErrorModal = () => {
         this.setState({ showErrorModal: false });
     }
 
@@ -77,37 +90,28 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
         return (
             <div>
 
-                <div className={`modal ${this.state.showSaveTranscriptModal ? "is-active" : null}`} >
-                    <div className="modal-background"></div>
-                    <div className="modal-card">
-                        <header className="modal-card-head">
-                            <p className="modal-card-title">Sauvegarder la transcription</p>
-                            <button className="delete" aria-label="close" onClick={this.hideSaveTranscriptModal}></button>
-                        </header>
-                        <section className="modal-card-body">
-                            <p>Êtes-vous sûr(e) de vouloir enregistrer les changements effectués à la transcription?</p>
-                        </section>
-                        <footer className="modal-card-foot">
-                            <button className="button is-success" onClick={this.saveEditedTranscription}>Enregistrer</button>
-                            <button className="button" onClick={this.hideSaveTranscriptModal}>Annuler</button>
-                        </footer>
-                    </div>
-                </div>
+                <ConfirmationModal
+                    showModal={this.state.showSaveTranscriptModal}
+                    hideModal={this.hideSaveTranscriptModal}
+                    title="Sauvegarder la transcription"
+                    confirmMessage="Êtes-vous sûr(e) de vouloir enregistrer les changements effectués à la transcription?"
+                    onConfirm={this.saveEditedTranscription}
+                    confirmButton="Enregistrer"
+                />
 
-                <div className={`modal ${this.state.showErrorModal ? "is-active" : null}`} >
-                    <div className="modal-background"></div>
-                    <div className="modal-card">
-                        <header className="modal-card-head">
-                            <p className="modal-card-title">Sauvegarder la transcription</p>
-                            <button className="delete" aria-label="close" onClick={this.hideErrorModalModal}></button>
-                        </header>
-                        <section className="modal-card-body">
-                            <p className="has-text-danger">Enregistrement annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.</p>
-                        </section>
-                        <footer className="modal-card-foot">
-                        </footer>
-                    </div>
-                </div>
+                <SuccessModal
+                    showModal={this.state.showSuccessModal}
+                    hideModal={this.hideSuccessModal}
+                    title="Sauvegarder la transcription"
+                    successMessage="Enregistrement confirmé! Les changements effectués ont été enregistré avec succés."
+                />
+
+                <ErrorModal
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.hideErrorModal}
+                    title="Sauvegarder la transcription"
+                    errorMessage="Enregistrement annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."
+                />
 
                 <a className="button is-link mg-top-10" onClick={this.showSaveTranscriptModal}>Enregistrer</a>
             </div>
