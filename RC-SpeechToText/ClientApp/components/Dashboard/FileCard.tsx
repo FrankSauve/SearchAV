@@ -2,6 +2,10 @@ import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
 import { Link } from 'react-router-dom';
+import { ModifyTitleModal } from '../Modals/ModifyTitleModal';
+import { ModifyDescriptionModal } from '../Modals/ModifyDescriptionModal';
+import { SuccessModal } from '../Modals/SuccessModal';
+import { ErrorModal } from '../Modals/ErrorModal';
 
 interface State {
     title: string,
@@ -11,6 +15,8 @@ interface State {
     showDropdown: boolean,
     showTitleModal: boolean,
     showDescriptionModal: boolean,
+    showErrorDescriptionModal: boolean,
+    showSuccessDescriptionModal: boolean,
     unauthorized: boolean,
 }
 
@@ -26,6 +32,8 @@ export class FileCard extends React.Component<any, State> {
             showDropdown: false,
             showTitleModal: false,
             showDescriptionModal: false,
+            showErrorDescriptionModal: false,
+            showSuccessDescriptionModal: false,
             unauthorized: false
         }
     }
@@ -139,7 +147,7 @@ export class FileCard extends React.Component<any, State> {
         const formData = new FormData();
         formData.append("newDescription", newDescription)
 
-        if (oldDescription != newDescription) {
+        if (oldDescription != newDescription && newDescription != "") {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -151,12 +159,16 @@ export class FileCard extends React.Component<any, State> {
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
                     this.hideDescriptionModal();
+                    this.showSuccessDescriptionModal();
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
                         this.setState({ 'unauthorized': true });
                     }
                 });
+        }
+        else {
+            this.showErrorDescriptionModal();
         }
     }
 
@@ -192,56 +204,25 @@ export class FileCard extends React.Component<any, State> {
         this.setState({ showDescriptionModal: false });
     }
 
+    public showSuccessDescriptionModal = () => {
+        this.setState({ showSuccessDescriptionModal: true });
+    }
+
+    public hideSuccessDescriptionModal = () => {
+        this.setState({ showSuccessDescriptionModal: false });
+    }
+
+    public showErrorDescriptionModal = () => {
+        this.setState({ showErrorDescriptionModal: true });
+    }
+
+    public hideErrorDescriptionModal = () => {
+        this.setState({ showErrorDescriptionModal: false });
+    }
+
     public render() {
         return (
             <div className="column is-3">
-
-                <div className={`modal ${this.state.showTitleModal ? "is-active" : null}`} >
-                    <div className="modal-background"></div>
-                    <div className="modal-card">
-                        <header className="modal-card-head">
-                            <p className="modal-card-title">Modifier le titre</p>
-                            <button className="delete" aria-label="close" onClick={this.hideTitleModal}></button>
-                        </header>
-                        <section className="modal-card-body">
-                            <div className="field">
-                                <div className="control">
-                                    <input className="input is-primary" type="text" placeholder={this.state.title ?
-                                        (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.'))
-                                            : this.state.title) : "Enter title"} defaultValue={this.state.title} onChange={this.handleTitleChange} />
-                                </div>
-                            </div>
-                        </section>
-                        <footer className="modal-card-foot">
-                            <button className="button is-success" onClick={this.saveTitleChange}>Enregistrer</button>
-                            <button className="button" onClick={this.hideTitleModal}>Annuler</button>
-                        </footer>
-                    </div>
-                </div>
-
-                <div className={`modal ${this.state.showDescriptionModal ? "is-active" : null}`} >
-                    <div className="modal-background"></div>
-                    <div className="modal-card">
-                        <header className="modal-card-head">
-                            <p className="modal-card-title">{this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description" }</p>
-                            <button className="delete" aria-label="close" onClick={this.hideDescriptionModal}></button>
-                        </header>
-                        <section className="modal-card-body">
-                            <div className="field">
-                                <div className="control">
-                                    <textarea className="textarea is-primary" type="text" placeholder={this.state.description && this.state.description != "" ?
-                                        this.state.description : "Enter description"} defaultValue={this.state.description ? this.state.description : ""}
-                                        onChange={this.handleDescriptionChange} />
-                                </div>
-                            </div>
-                        </section>
-                        <footer className="modal-card-foot">
-                            <button className="button is-success" onClick={this.saveDescription}>Enregistrer</button>
-                            <button className="button" onClick={this.hideDescriptionModal}>Annuler</button>
-                        </footer>
-                    </div>
-                </div>
-
                 <div className="card mg-top-30 fileCard">
                     <span className="tag is-danger is-rounded">{this.props.flag}</span>
                     <header className="card-header">
@@ -289,6 +270,37 @@ export class FileCard extends React.Component<any, State> {
                         </div>
                     </div>
                 </div>
+
+                <ModifyTitleModal
+                    showModal={this.state.showTitleModal}
+                    hideModal={this.hideTitleModal}
+                    title={this.state.title}
+                    handleTitleChange={this.handleTitleChange}
+                    onSubmit={this.saveTitleChange}
+                />
+
+                <ModifyDescriptionModal
+                    showModal={this.state.showDescriptionModal}
+                    hideModal={this.hideDescriptionModal}
+                    description={this.state.description}
+                    handleDescriptionChange={this.handleDescriptionChange}
+                    onSubmit={this.saveDescription}
+                />
+
+                <SuccessModal
+                    showModal={this.state.showSuccessDescriptionModal}
+                    hideModal={this.hideSuccessDescriptionModal}
+                    title={this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description"}
+                    successMessage="Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succés."
+                />
+
+                <ErrorModal
+                    showModal={this.state.showErrorDescriptionModal}
+                    hideModal={this.hideErrorDescriptionModal}
+                    title={this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description"}
+                    errorMessage="Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."
+                />
+
             </div>
         );
     }
