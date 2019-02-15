@@ -5,6 +5,7 @@ using MediaToolkit.Options;
 using Microsoft.AspNetCore.Mvc;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using System.IO;
 
 namespace RC_SpeechToText.Utils
 {
@@ -53,6 +54,25 @@ namespace RC_SpeechToText.Utils
         public void DeleteFile(string wavFilePath)
         {
             System.IO.File.Delete(wavFilePath);
+        }
+
+        public string CreateThumbnail(string videoFilePath, string fileName)
+        {
+            using (var engine = new Engine())
+            {
+                var outputFilePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\";
+                Directory.CreateDirectory(outputFilePath);
+                var mp4 = new MediaFile { Filename = videoFilePath };
+                var outputFile = new MediaFile { Filename = outputFilePath + fileName + ".jpg" };
+
+                var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
+
+                engine.GetMetadata(mp4);
+                
+                engine.GetThumbnail(mp4, outputFile, options);
+
+                return outputFile.Filename;
+            }
         }
     }
 }

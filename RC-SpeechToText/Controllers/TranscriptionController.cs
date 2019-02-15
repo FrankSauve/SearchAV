@@ -61,6 +61,9 @@ namespace RC_SpeechToText.Controllers
             converter.DeleteFile(convertedFileLocation);
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
 
+            // Create thumbnail
+            converter.CreateThumbnail(filePath, audioFile.FileName);
+
             // Get user id by email
             var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
 
