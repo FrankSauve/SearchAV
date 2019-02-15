@@ -147,3 +147,7 @@ html, body {
     margin-right: 10px;
     margin-top: 10px;
 }
+
+.highlight-text::selection {
+    background: lightblue;
+}
