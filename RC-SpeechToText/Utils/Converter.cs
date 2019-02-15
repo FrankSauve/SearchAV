@@ -56,14 +56,12 @@ namespace RC_SpeechToText.Utils
             System.IO.File.Delete(wavFilePath);
         }
 
-        public string CreateThumbnail(string videoFilePath, string fileName)
+        public string CreateThumbnail(string videoFilePath, string outputFilePath)
         {
             using (var engine = new Engine())
             {
-                var outputFilePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\";
-                Directory.CreateDirectory(outputFilePath);
                 var mp4 = new MediaFile { Filename = videoFilePath };
-                var outputFile = new MediaFile { Filename = outputFilePath + fileName + ".jpg" };
+                var outputFile = new MediaFile { Filename = outputFilePath };
 
                 var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
 
