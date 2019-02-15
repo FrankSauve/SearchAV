@@ -68,7 +68,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.put('/api/file/AddReviewer/' + this.state.fileId + '/' + this.state.reviewerId, config)
+        axios.post('/api/file/AddReviewer/' + this.state.fileId + '/' + this.state.reviewerId, config)
             .then(res => {
                 console.log(res.data);
 

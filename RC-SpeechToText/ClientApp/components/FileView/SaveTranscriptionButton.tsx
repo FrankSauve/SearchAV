@@ -103,14 +103,14 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     showModal={this.state.showSuccessModal}
                     hideModal={this.hideSuccessModal}
                     title="Sauvegarder la transcription"
-                    successMessage="Enregistrement confirmé! Les changements effectués ont été enregistré avec succés."
+                    successMessage="Enregistrement de la transcription confirmé! Les changements effectués ont été enregistré avec succés."
                 />
 
                 <ErrorModal
                     showModal={this.state.showErrorModal}
                     hideModal={this.hideErrorModal}
                     title="Sauvegarder la transcription"
-                    errorMessage="Enregistrement annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."
+                    errorMessage="Enregistrement de la transcription annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."
                 />
 
                 <a className="button is-link mg-top-10" onClick={this.showSaveTranscriptModal}>Enregistrer</a>

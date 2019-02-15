@@ -7,6 +7,9 @@ using Swashbuckle.AspNetCore.Swagger;
 using RC_SpeechToText.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace RC_SpeechToText
 {
@@ -37,7 +40,12 @@ namespace RC_SpeechToText
             });
 
             // Configure Google JWT authentication
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(x => x.UseGoogle(
                     clientId: Configuration["GoogleClientId"]));
 

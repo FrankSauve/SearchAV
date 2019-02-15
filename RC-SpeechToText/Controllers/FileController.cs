@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -178,6 +179,33 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> getUserFilesToReview(int id)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files to review for user with  userId: " + id);
+                var files = await _context.File.Where(f => f.ReviewerId == id).ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES TO REVIEW: " + files.Count);
+
+                var usernames = new List<string>();
+
+                foreach (var file in files)
+                {
+                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILE TITLE: : " + file.Title);
+                    var user = await _context.User.FindAsync(file.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { files, usernames }));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files to review with userId -> " + id);
+                return BadRequest("Get user files to review failed.");
+            }
+        }
+
+        [HttpGet("[action]/{id}")]
         public async Task<IActionResult> Details(int id)
         {
             try
@@ -287,6 +315,32 @@ namespace RC_SpeechToText.Controllers
             {
                 _logger.LogError("Error updating description for file with id: " + file.Id);
                 return BadRequest("Description not updated");
+            }
+
+        }
+
+
+        [HttpPost("[action]/{fileId}/{reviewerId}")]
+        public async Task<IActionResult> AddReviewer(int fileId, int reviewerId)
+        {
+            _logger.LogInformation("AddReviewer for file with id: " + fileId);
+            _logger.LogInformation("reviewerId: " + reviewerId);
+
+            File file = _context.File.Find(fileId);
+            file.ReviewerId = reviewerId;
+
+            try
+            {
+                _context.File.Update(file);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Updated reviewerId for file with id: " + file.Id);
+                _logger.LogInformation("File reviewerId: " + file.ReviewerId);
+                return Ok(file);
+            }
+            catch
+            {
+                _logger.LogError("Error updating reviewerId for file with id: " + file.Id + " and reviewerId: " + reviewerId);
+                return BadRequest("File reviewerId not updated");
             }
 
         }
