@@ -3,9 +3,8 @@ using System.IO;
 using MediaToolkit;
 using MediaToolkit.Model;
 using MediaToolkit.Options;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RC_SpeechToText.Controllers;
+using RC_SpeechToText.Utils;
 
 namespace RC_SpeechToText.Tests
 {
@@ -118,6 +117,26 @@ namespace RC_SpeechToText.Tests
         public void TestWavToMp3()
         {
             GenericConversionTester("wav","mp3");
+        }
+
+        [TestMethod]
+        public void TestCreateThumbnail()
+        {
+            // Arrange
+            var inputFile = @"..\..\..\..\RC-SpeechToText.Tests\TestFiles\demo.mp4";
+            var outputFile = @"..\..\..\..\RC-SpeechToText.Tests\TestFiles\demo.jpg";
+            var converter = new Converter();
+            
+            // Act
+            converter.CreateThumbnail(inputFile, outputFile);
+
+            var thumbnailPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), outputFile));
+            
+            // Assert
+            Assert.IsTrue(File.Exists(thumbnailPath));
+
+            // Delete the thumbnail
+            File.Delete(thumbnailPath);
         }
     }
 }
