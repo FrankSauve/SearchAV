@@ -10,6 +10,7 @@ interface State {
     reviewerId: number,
     reviewerName: string,
     reviewerEmail: string,
+    errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
     unauthorized: boolean
@@ -25,7 +26,8 @@ export class SelectReviewerModal extends React.Component<any, State> {
             fileId: 0,
             reviewerId: 0,
             reviewerName: "",
-            reviewerEmail:"",
+            reviewerEmail: "",
+            errorMessage: "",
             showSuccessModal: false,
             showErrorModal: false,
             unauthorized: false
@@ -62,39 +64,55 @@ export class SelectReviewerModal extends React.Component<any, State> {
 
     public addReviewerToFile = () => {
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.post('/api/file/AddReviewer/' + this.state.fileId + '/' + this.state.reviewerId, config)
-            .then(res => {
-                console.log(res.data);
+        var fileId = this.state.fileId
+        var reviewerId = this.state.reviewerId
 
-                axios.get('/api/user/getUserName/' + this.state.reviewerId, config)
-                    .then(res => {
-                        console.log(res);
-                        this.setState({ 'reviewerName': res.data.name })
-                        this.setState({ 'reviewerEmail': res.data.email })
-                    })
-                    .catch(err => {
-                        if (err.response.status == 401) {
-                            this.setState({ 'unauthorized': true });
-                        }
-                    });
-
-                this.props.hideModal();
-                this.showSuccessModal();
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.hideModal();
-                this.showErrorModal();
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
+        if ((fileId != "" && fileId != 0) && reviewerId != 0) {
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + auth.getAuthToken(),
+                    'content-type': 'application/json'
                 }
-            });
+            }
+            axios.post('/api/file/AddReviewer/' + fileId + '/' + reviewerId, config)
+                .then(res => {
+                    console.log(res.data);
+
+                    axios.get('/api/user/getUserName/' + reviewerId, config)
+                        .then(res => {
+                            console.log(res);
+                            this.setState({ 'reviewerName': res.data.name })
+                            this.setState({ 'reviewerEmail': res.data.email })
+                        })
+                        .catch(err => {
+                            if (err.response.status == 401) {
+                                this.setState({ 'unauthorized': true });
+                            }
+                        });
+
+                    this.props.hideModal();
+                    this.showSuccessModal();
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.setState({ 'errorMessage': "Vous n'etes pas connecté! Veuillez vous connecter s'il vous plait."})
+                    this.props.hideModal();
+                    this.showErrorModal();
+                    if (err.response.status == 401) {
+                        this.setState({ 'unauthorized': true });
+                    }
+                });
+        }
+        else if (fileId == "" || fileId == 0){
+            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Une erreur au niveau du fichier est survenu. Veuillez rafraichir la page s'il vous plait." })
+            this.props.hideModal();
+            this.showErrorModal();
+        }
+        else {
+            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Vous n'avez selectionné aucun réviseur." })
+            this.props.hideModal();
+            this.showErrorModal();
+        }
     };
 
     public handleChange = (event: any) => {
@@ -124,14 +142,14 @@ export class SelectReviewerModal extends React.Component<any, State> {
                 <ErrorModal
                     showModal={this.state.showErrorModal}
                     hideModal={this.hideErrorModal}
-                    title="Choisissez un reviseur"
-                    errorMessage="Envoi de la demande de révision annulé! Vous n'avez choisis aucun réviseur."
+                    title="Choisissez un réviseur"
+                    errorMessage={this.state.errorMessage}
                 />
 
                 <SuccessModal
                     showModal={this.state.showSuccessModal}
                     hideModal={this.hideSuccessModal}
-                    title="Choisissez un reviseur"
+                    title="Choisissez un réviseur"
                     successMessage={`Demande de révision envoyé! ${this.state.reviewerName} (${this.state.reviewerEmail}) sera notifié de votre demande dans les quelques secondes a venir.`}
 />
 
