@@ -174,5 +174,51 @@ namespace RC_SpeechToText.Tests
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<File>(okResult.Value);
         }
+
+        /// <summary>
+        /// Test asking another user to review a file
+        /// </summary>
+        [Fact]
+        public async Task TestAskReview()
+        {
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+
+            var user = new User { Email = "user@email.com", Name = "testUser" };
+            var reviewer = new User { Email = "reviewer@email.com", Name = "testReviewer" };
+
+            // Add user and reviewer with username testUser and testReviewer
+            await context.AddAsync(user);
+            await context.AddAsync(user);
+            await context.SaveChangesAsync();
+
+            // Remove all files in DB
+            var files = await context.File.ToListAsync();
+            context.File.RemoveRange(files);
+            await context.SaveChangesAsync();
+
+
+            var file = new File { Title = "testFile1", UserId = user.Id };
+
+            // Add files using userId
+            await context.File.AddAsync(file);
+            await context.SaveChangesAsync();
+
+            var mock = new Mock<ILogger<FileController>>();
+            ILogger<FileController> logger = mock.Object;
+            logger = Mock.Of<ILogger<FileController>>();
+
+
+            // Act
+            var controller = new FileController(context, logger);
+            var result = await controller.AddReviewer(file.Id, reviewer.Id);
+            
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<File>(okResult.Value);
+
+            //Assert that reviewer has been added to the file
+            Assert.Equal(file.ReviewerId, reviewer.Id);
+        }
+
     }
 }
