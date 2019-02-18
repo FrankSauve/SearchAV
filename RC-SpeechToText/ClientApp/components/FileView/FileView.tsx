@@ -60,6 +60,7 @@ export default class FileView extends React.Component<any, State> {
                 this.setState({ loading: false });
             })
             .catch(err => {
+                console.log(err);
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }
@@ -78,6 +79,7 @@ export default class FileView extends React.Component<any, State> {
                 this.setState({ file: res.data });
             })
             .catch(err => {
+                console.log(err);
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });                
                 }
@@ -138,7 +140,7 @@ export default class FileView extends React.Component<any, State> {
                         {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
                         {this.state.loading ? 
                             <Loading />
-                        : this.state.version ? 
+                        : this.state.version && this.state.file && this.state.user ? 
                                 <div>
                                     <TranscriptionText
                                         text={this.state.version.transcription} 
