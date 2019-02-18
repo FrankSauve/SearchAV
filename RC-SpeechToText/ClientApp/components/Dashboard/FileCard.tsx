@@ -12,6 +12,7 @@ interface State {
     description: string,
     modifiedTitle: string,
     newDescription: string,
+    flag: string,
     showDropdown: boolean,
     showTitleModal: boolean,
     showDescriptionModal: boolean,
@@ -28,13 +29,21 @@ export class FileCard extends React.Component<any, State> {
             title: this.props.title,
             description: this.props.description,
             modifiedTitle: "",
-            newDescription:"",
+            newDescription: "",
+            flag: this.props.flag,
             showDropdown: false,
             showTitleModal: false,
             showDescriptionModal: false,
             showErrorDescriptionModal: false,
             showSuccessDescriptionModal: false,
             unauthorized: false
+        }
+    }
+
+    //Will update if props change
+    public componentDidUpdate(prevProps: any) {
+        if (this.props.flag !== prevProps.flag) {
+            this.setState({ 'flag': this.props.flag });
         }
     }
 
@@ -223,8 +232,8 @@ export class FileCard extends React.Component<any, State> {
     public render() {
         return (
             <div className="column is-3">
-                <div className="card mg-top-30 fileCard">
-                    <span className="tag is-danger is-rounded">{this.props.flag}</span>
+                <div className="card fileCard">
+                    <span className={`tag is-rounded ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success" : "is-info"}`}>{this.state.flag}</span> 
                     <header className="card-header">
                         <p className="card-header-title fileTitle">
                             {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>

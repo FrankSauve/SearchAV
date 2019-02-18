@@ -13,6 +13,7 @@ interface State {
     fileId: number,
     version: any,
     file: any,
+    user: any,
     editedTranscript: string,
     unauthorized: boolean,
     fileTitle: string,
@@ -29,6 +30,7 @@ export default class FileView extends React.Component<any, State> {
             fileId: this.props.match.params.id,
             version: null,
             file: null,
+            user: null,
             editedTranscript: "",
             unauthorized: false,
             fileTitle: "",
@@ -41,6 +43,7 @@ export default class FileView extends React.Component<any, State> {
     public componentDidMount() {
         this.getVersion();
         this.getFile();
+        this.getUser();
     }
 
     public getVersion = () => {
@@ -77,6 +80,24 @@ export default class FileView extends React.Component<any, State> {
             .catch(err => {
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });                
+                }
+            });
+    }
+
+    public getUser = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
+            .then(res => {
+                this.setState({ user: res.data });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
                 }
             });
     }
@@ -119,13 +140,15 @@ export default class FileView extends React.Component<any, State> {
                             <Loading />
                         : this.state.version ? 
                                 <div>
-                                    <TranscriptionText 
+                                    <TranscriptionText
                                         text={this.state.version.transcription} 
                                         handleChange={this.handleTranscriptChange} />
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
                                         editedTranscription={this.state.editedTranscript}
+                                        reviewerId={this.state.file.reviewerId}
+                                        userId={this.state.user.id}
                                     />
                                 </div>
                         : null}

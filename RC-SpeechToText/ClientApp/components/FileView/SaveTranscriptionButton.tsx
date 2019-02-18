@@ -25,7 +25,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
 
     }
 
-    public saveEditedTranscription = () => {
+    public saveTranscription = () => {
         
         var oldTranscript = this.props.version.transcription
         var newTranscript = this.props.editedTranscription
@@ -45,7 +45,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                 },
             };
 
-            axios.post('/api/SaveEditedTranscript/SaveEditedTranscript/' + this.props.version.id, formData, config)
+            axios.post('/api/SaveTranscript/SaveTranscript/' + this.props.userId + '/' + this.props.version.id, formData, config)
                 .then(res => {
                     console.log(res);
                     this.props.updateVersion(res.data);
@@ -87,33 +87,36 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
 
     public render() {
 
+        var title = (this.props.userId == this.props.reviewerId ? "Réviser la transcription" : "Sauvegarder la transcription")
+        var button = (this.props.userId == this.props.reviewerId ? "Réviser" : "Enregistrer")
+
         return (
             <div>
 
                 <ConfirmationModal
                     showModal={this.state.showSaveTranscriptModal}
                     hideModal={this.hideSaveTranscriptModal}
-                    title="Sauvegarder la transcription"
-                    confirmMessage="Êtes-vous sûr(e) de vouloir enregistrer les changements effectués à la transcription?"
-                    onConfirm={this.saveEditedTranscription}
-                    confirmButton="Enregistrer"
+                    title={title}
+                    confirmMessage={this.props.userId == this.props.reviewerId ? "Êtes-vous sûr(e) de vouloir réviser la transcription?" : "Êtes-vous sûr(e) de vouloir enregistrer les changements effectués à la transcription?"}
+                    onConfirm={this.saveTranscription}
+                    confirmButton={button}
                 />
 
                 <SuccessModal
                     showModal={this.state.showSuccessModal}
                     hideModal={this.hideSuccessModal}
-                    title="Sauvegarder la transcription"
-                    successMessage="Enregistrement de la transcription confirmé! Les changements effectués ont été enregistré avec succés."
+                    title={title}
+                    successMessage={this.props.userId == this.props.reviewerId ? "Révision de la transcription confirmé! Les changements effectués ont été enregistré avec succés." : "Enregistrement de la transcription confirmé! Les changements effectués ont été enregistré avec succés."}
                 />
 
                 <ErrorModal
                     showModal={this.state.showErrorModal}
                     hideModal={this.hideErrorModal}
-                    title="Sauvegarder la transcription"
-                    errorMessage="Enregistrement de la transcription annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."
+                    title={title}
+                    errorMessage={this.props.userId == this.props.reviewerId ? "Révision de la transcription annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications." : "Enregistrement de la transcription annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."}
                 />
 
-                <a className="button is-link mg-top-10" onClick={this.showSaveTranscriptModal}>Enregistrer</a>
+                <a className="button is-link mg-top-10" onClick={this.showSaveTranscriptModal}>{button}</a>
             </div>
         );
     }

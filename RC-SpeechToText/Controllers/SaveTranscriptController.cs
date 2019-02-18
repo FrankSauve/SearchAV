@@ -11,21 +11,21 @@ namespace RC_SpeechToText.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
-    public class SaveEditedTranscriptController : Controller
+    public class SaveTranscriptController : Controller
     {
 
         private readonly SearchAVContext _context;
         private readonly ILogger _logger;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
-        public SaveEditedTranscriptController(SearchAVContext context, ILogger<SaveEditedTranscriptController> logger)
+        public SaveTranscriptController(SearchAVContext context, ILogger<SaveTranscriptController> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        [HttpPost("[action]/{versionId}")]
-        public async Task<IActionResult> SaveEditedTranscript(int versionId, string newTranscript)
+        [HttpPost("[action]/{userId}/{versionId}")]
+        public async Task<IActionResult> SaveTranscript(int userId, int versionId, string newTranscript)
         {
             _logger.LogInformation("versionId: " + versionId);
             Version currentVersion = _context.Version.Find(versionId);
@@ -77,7 +77,9 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 File file = await _context.File.FindAsync(newVersion.FileId);
-                file.Flag = "Edité";
+                string flag = (file.ReviewerId == userId ? "Révisé" : "Edité"); //If user is reviewer of file, flag = "Révisé"
+                _logger.LogInformation("FLAG: " + flag);
+                file.Flag = flag;
                 _context.File.Update(file);
                 await _context.SaveChangesAsync();
 
@@ -88,8 +90,7 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogError("Error updating new version with id: " + newVersion.Id);
                 return BadRequest("File flag not updated.");
             }
-
-
         }
+
     }
 }
