@@ -57,6 +57,7 @@ export default class FileView extends React.Component<any, State> {
         axios.get('/api/version/GetActiveByFileId/' + this.state.fileId, config)
             .then(res => {
                 this.setState({ version: res.data });
+                this.setState({ editedTranscript: this.state.version.transcription }); //Will avoid to have empty transcript except if user erase everything
                 this.setState({ loading: false });
             })
             .catch(err => {
