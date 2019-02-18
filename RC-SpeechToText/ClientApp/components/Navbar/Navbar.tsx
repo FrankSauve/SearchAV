@@ -3,13 +3,29 @@ import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import Login from './Login';
 import Logout from './Logout';
+import { SelectReviewerModal } from '../Modals/SelectReviewerModal';
 import auth from '../../Utils/auth'
 
 interface State {
-
+    showModal: boolean
 }
 
 export default class Navbar extends React.Component<RouteComponentProps<{}>, State> {
+    constructor(props: any) {
+        super(props);
+
+        this.state = {
+            showModal: false
+        }
+    }
+
+    public showModal = () => {
+        this.setState({ showModal: true });
+    }
+
+    public hideModal = () => {
+        this.setState({ showModal: false });
+    }
 
     // Shown when the user is logged in
     public renderLoggedIn = () => {
@@ -42,6 +58,9 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     <Link className="navbar-item" to="/dashboard">
                         <i className="fas fa-angle-left"></i>
                     </Link>
+                    <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showModal}><i className="far fa-envelope mg-right-5"></i> Demander une revision</a>
+                    <a className="button is-rounded mg-top-10 mg-left-10"><i className="fas fa-file-export mg-right-5"></i> Exporter</a>
+                    <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> Enregistrer</a>
                 </div>
             </div>
         );
@@ -70,6 +89,11 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                         </a>
                         
                         {this.isInFileViewPage() ? this.renderFileViewNav() : this.renderNormalNav()}
+
+                        <SelectReviewerModal
+                            showModal={this.state.showModal}
+                            hideModal={this.hideModal}
+                        />
                         
 
                             <a role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">

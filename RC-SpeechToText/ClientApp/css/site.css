@@ -21,6 +21,18 @@ html, body {
     margin-right: 10px;
   }
 
+.mg-right-5 {
+    margin-right: 5px;
+}
+
+.mg-left-400 {
+    margin-left: 400px;
+}
+
+.mg-left-10 {
+    margin-left: 10px;
+}
+
 .is-circular {
     border-radius: 50%;
 }

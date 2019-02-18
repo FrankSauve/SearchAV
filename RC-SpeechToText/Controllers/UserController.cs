@@ -58,6 +58,24 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllUsers()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all users");
+                var users = await _context.User.ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USERS FOUND: " + users.Count);
+
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all users");
+                return BadRequest("Get all users failed.");
+            }
+        }
+
         [HttpGet("[action]/{id}")]
         public async Task<IActionResult> getUserName(int id)
         {
