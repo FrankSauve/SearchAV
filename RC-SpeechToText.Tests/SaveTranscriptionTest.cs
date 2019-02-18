@@ -21,7 +21,9 @@ namespace RC_SpeechToText.Tests
 
             string transcript = "Transcription";
 
-            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = "Automatisé" };
+            var user = new User {Id = 1, Email = "user@email.com", Name = "testUser" };
+            var reviewer = new User {Id = 2, Email = "reviewer@email.com", Name = "testReviewer" };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = "Automatisé", UserId = user.Id, ReviewerId = reviewer.Id };
 
             //AddAsync File to database
             await context.File.AddAsync(file);
@@ -34,33 +36,53 @@ namespace RC_SpeechToText.Tests
             await context.Version.AddAsync(version);
             await context.SaveChangesAsync();
             
-            string newTranscription = "New Transcription";
+            string editTranscription = "Test Edit Transcription";
+            string reviewTranscription = "Test Review Transcription";
 
-            var mock = new Mock<ILogger<SaveEditedTranscriptController>>();
-            ILogger<SaveEditedTranscriptController> logger = mock.Object;
-            logger = Mock.Of<ILogger<SaveEditedTranscriptController>>();
+            var mock = new Mock<ILogger<SaveTranscriptController>>();
+            ILogger<SaveTranscriptController> logger = mock.Object;
+            logger = Mock.Of<ILogger<SaveTranscriptController>>();
 
-            var controller = new SaveEditedTranscriptController(context, logger);
+            var controller = new SaveTranscriptController(context, logger);
 
-            await controller.SaveEditedTranscript(version.Id, newTranscription);
-            Assert.NotEqual(version.Transcription, newTranscription);
+            //Editing file
+            await controller.SaveTranscript(user.Id, version.Id, editTranscription);
+            Assert.NotEqual(version.Transcription, editTranscription);
 
-            //Checking new version
-            Version newVersion = context.Version.Find(version.Id + 1);
-            Assert.Equal(newVersion.Transcription, newTranscription);
-            Assert.Equal(newVersion.FileId, file.Id);
-            Assert.True(newVersion.Active);
-
-            //Checking old version
-            version = context.Version.Find(version.Id);
-            Assert.Equal(version.Transcription, transcript);
-            Assert.Equal(version.FileId, newVersion.FileId);
-            Assert.False(version.Active);
+            //Checking edited version
+            Version editedVersion = context.Version.Find(version.Id + 1);
+            Assert.Equal(editedVersion.Transcription, editTranscription);
+            Assert.Equal(editedVersion.FileId, file.Id);
+            Assert.True(editedVersion.Active);
 
             //Checking corresponding file
             file = context.File.Find(file.Id);
             Assert.Equal("Edité", file.Flag);
-            
+
+            //----------------------------------------------------------------------------------------------------------------
+            //Review file
+            await controller.SaveTranscript(reviewer.Id, editedVersion.Id, reviewTranscription);
+            Assert.NotEqual(editedVersion.Transcription, reviewTranscription);
+
+            //Checking new version
+            Version reviewedVersion = context.Version.Find(editedVersion.Id + 1);
+            Assert.Equal(reviewedVersion.Transcription, reviewTranscription);
+            Assert.Equal(reviewedVersion.FileId, file.Id);
+            Assert.True(reviewedVersion.Active);
+            Assert.False(editedVersion.Active);
+
+            //Checking corresponding file
+            file = context.File.Find(file.Id);
+            Assert.Equal("Révisé", file.Flag);
+
+            //-----------------------------------------------------------------------------------------------------------------
+            //Checking old version
+            version = context.Version.Find(version.Id);
+            Assert.Equal(version.Transcription, transcript);
+            Assert.Equal(version.FileId, editedVersion.FileId);
+            Assert.Equal(version.FileId, reviewedVersion.FileId);
+            Assert.False(version.Active);
+
         }
     }
 }
