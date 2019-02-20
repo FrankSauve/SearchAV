@@ -11,35 +11,23 @@ namespace RC_SpeechToText.Services
         /// <returns name="googleResult"></returns>
         public static GoogleResult GoogleSpeechToText(string inputFilePath)
         {
-			try
-			{
-				var speech = SpeechClient.Create();
-				var longOperation = speech.LongRunningRecognize(new RecognitionConfig()
-				{
-					Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-					LanguageCode = "fr-ca",
-					EnableWordTimeOffsets = true // Required to get timestamps
-				}, RecognitionAudio.FromFile(inputFilePath));
+            var speech = SpeechClient.Create();
+            var longOperation = speech.LongRunningRecognize(new RecognitionConfig()
+            {
+                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+                LanguageCode = "fr-ca",
+                EnableWordTimeOffsets = true // Required to get timestamps
+            }, RecognitionAudio.FromFile(inputFilePath));
 
-				longOperation = longOperation.PollUntilCompleted();
-				var response = longOperation.Result;
+            longOperation = longOperation.PollUntilCompleted();
+            var response = longOperation.Result;
 
-				var googleResult = new GoogleResult
-				{
-					GoogleResponse = response.Results[0]
-				};
+            var googleResult = new GoogleResult
+            {
+                GoogleResponse = response.Results[0]
+            };
 
-				return googleResult;
-			}
-			catch (System.Exception e)
-			{
-				var googleResult = new GoogleResult
-				{
-					Error = e.Message
-				};
-
-				return googleResult;
-			}
+            return googleResult;
         }
     }
 }

@@ -4,5 +4,4 @@ using Google.Cloud.Speech.V1;
         public SpeechRecognitionResult GoogleResponse { get; set; }
         public string ManualTranscript { get; set; }
         public double Accuracy { get; set; }
-		public string Error { get; set; }
     }
