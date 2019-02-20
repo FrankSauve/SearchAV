@@ -51,27 +51,48 @@ namespace RC_SpeechToText.Controllers
             // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
             Converter converter = new Converter();
             // Call converter to convert the file to mono and bring back its file path. 
-            string convertedFileLocation = converter.FileToWav(filePath);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
+            var convertedFileLocation = converter.FileToWav(filePath);
+
+			if (convertedFileLocation == null)
+			{
+				return BadRequest("Une erreur ces produite lors de la convertion du fichier à Wav");
+			}
+
+			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
 
             // Call the method that will get the transcription
-            GoogleResult result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
+            var result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
 
-            // Delete the converted file
-            converter.DeleteFile(convertedFileLocation);
+			if (result.Error != null)
+			{
+				return BadRequest("Une erreur ces produite lors de la transcription du fichier: " + result.Error);
+			}
+
+			// Delete the converted file
+			converter.DeleteFile(convertedFileLocation);
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
 
             // Create thumbnail
             var thumbnailPath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\";
             Directory.CreateDirectory(thumbnailPath);
-            converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
+			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
 
-            // Get user id by email
-            var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+			if (thumbnailImage == null)
+			{
+				return BadRequest("Une erreur ces produite lors de la creation du thumbnail");
+			}
 
-            // Create file
-            //TODO: get the type of the object, if it is a Video or an Audio file 
-            var file = new Models.File
+			// Get user id by email
+			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+
+			if (user == null)
+			{
+				return BadRequest("Une erreur ces produite lors de la récupération du user");
+			}
+
+			// Create file
+			//TODO: get the type of the object, if it is a Video or an Audio file 
+			var file = new Models.File
             {
                 Title = audioFile.FileName,
                 FilePath = filePath,
@@ -107,7 +128,6 @@ namespace RC_SpeechToText.Controllers
 
                 await _context.Word.AddAsync(word);
                 await _context.SaveChangesAsync();
-
             }
 
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
