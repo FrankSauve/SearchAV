@@ -5,9 +5,11 @@ import Login from './Login';
 import Logout from './Logout';
 import { SelectReviewerModal } from '../Modals/SelectReviewerModal';
 import auth from '../../Utils/auth'
+import { ExportModal } from '../Modals/ExportModal';
 
 interface State {
-    showModal: boolean
+    showModal: boolean,
+    showExportModal: boolean
 }
 
 export default class Navbar extends React.Component<RouteComponentProps<{}>, State> {
@@ -15,7 +17,8 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         super(props);
 
         this.state = {
-            showModal: false
+            showModal: false,
+            showExportModal: false
         }
     }
 
@@ -25,6 +28,14 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
 
     public hideModal = () => {
         this.setState({ showModal: false });
+    }
+
+    public showExportModal = () => {
+        this.setState({ showExportModal: true });
+    }
+
+    public hideExportModal = () => {
+        this.setState({ showExportModal: false });
     }
 
     // Shown when the user is logged in
@@ -59,9 +70,16 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                         <i className="fas fa-angle-left"></i>
                     </Link>
                     <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showModal}><i className="far fa-envelope mg-right-5"></i> Demander une revision</a>
-                    <a className="button is-rounded mg-top-10 mg-left-10"><i className="fas fa-file-export mg-right-5"></i> Exporter</a>
+                    <a className="button is-rounded mg-top-10 mg-left-10" onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5"></i>Exporter</a>
                     <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> Enregistrer</a>
                 </div>
+
+                <ExportModal
+                    showModal={this.state.showExportModal}
+                    hideModal={this.hideExportModal}
+                    title={"Exporter un fichier"}
+                    onConfirm={this.hideExportModal}
+                />
             </div>
         );
     }
