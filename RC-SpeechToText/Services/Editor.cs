@@ -8,7 +8,7 @@ namespace RC_SpeechToText.Services
     /// <summary>
     /// The 'Concrete Observer' class
     /// </summary>
-    public class Editor : IEmailNotification
+    public class Editor : IUser
     {
         private string _name;
         private string _email;
