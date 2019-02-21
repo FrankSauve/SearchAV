@@ -2,6 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
 import { TranscriptionText } from './TranscriptionText';
+import { TranscriptionHistorique } from './TranscriptionHistorique'; 
 import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
 import { TranscriptionSearch } from './TranscriptionSearch';
@@ -137,7 +138,7 @@ export default class FileView extends React.Component<any, State> {
                                 <div className="card-content"> This file has no description </div></div> ) : null}</p>
                     </div>
 
-                    <div className="column mg-top-30">
+                    <div className="column is-half mg-top-30">
                         {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
                         {this.state.loading ? 
                             <Loading />
@@ -158,8 +159,12 @@ export default class FileView extends React.Component<any, State> {
                         
                     </div>
 
-                    <div className="column mg-top-30">
+                    <div className="column is-one-fifth historique_padding">
+                        <TranscriptionHistorique
+                            />                 
                     </div>
+
+                
 
                 </div>
             </div>
