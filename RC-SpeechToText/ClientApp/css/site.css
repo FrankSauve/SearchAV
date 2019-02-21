@@ -159,3 +159,61 @@ html, body {
     margin-right: 10px;
     margin-top: 10px;
 }
+
+.export-modal-container {
+    background-color: #141425 !important;
+    color: white !important;
+    padding-left: 60px;
+}
+
+.whiteText{
+    color: white !important;
+}
+
+.exportModalCard{
+    width: 500px !important;
+}
+
+.exportModalHeader {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    padding: 40px 20px 20px 20px;
+    position: relative;
+}
+
+.exportModalBody {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: auto;
+    padding: 20px;
+}
+
+.exportModalFooter {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    padding: 0px 0px 40px 20px;
+    position: relative;
+}
+.exportModalDropdown {
+    height: 30px;
+    padding: 5px;
+    width: 200px;
+}
+
+.exportModalLabel{
+    padding-bottom: 10px;
+}
+
+.exportSection{
+    padding-bottom: 10px;
+}
+.exportCheckBox{
+    margin-right: 5px;
+}
+.exportCloseModal {
+    right: 20px !important;
+}
