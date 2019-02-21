@@ -53,48 +53,52 @@ namespace RC_SpeechToText.Controllers
             // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
             Converter converter = new Converter();
             // Call converter to convert the file to mono and bring back its file path. 
-            string convertedFileLocation = converter.FileToWav(filePath);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
+            var convertedFileLocation = converter.FileToWav(filePath);
+
+			if (convertedFileLocation == null)
+			{
+				return BadRequest("Une erreur ces produite lors de la convertion du fichier à Wav");
+			}
+
+			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
 
             // Upload the mono wav file to Google Storage
             var storageObject = await TranscriptionService.UploadFile(_bucketName, convertedFileLocation);
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Uploaded file to Google Storage bucket.");
 
             // Call the method that will get the transcription
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Starting Google transcription.");
-            var response = TranscriptionService.GoogleSpeechToText(_bucketName, storageObject.Name);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Transcription is done.");
+            var result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
 
-            string transcription = "";
-            var words = new List<Word>();
-            foreach(var result in response.Results)
-            {
-                transcription += result.Alternatives[0].Transcript + " ";
-                foreach(var word in result.Alternatives[0].Words)
-                {
-                    words.Add(new Word { Term = word.Word, Timestamp = word.StartTime.ToString() });
-                }
-            }
+			if (result.Error != null)
+			{
+				return BadRequest("Une erreur ces produite lors de la transcription du fichier: " + result.Error);
+			}
 
-            // Delete the object from google storage
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting object from Google Storage bucket.");
-            await TranscriptionService.DeleteObject(_bucketName, storageObject.Name);
-
-            // Delete the converted file
-            converter.DeleteFile(convertedFileLocation);
+			// Delete the converted file
+			converter.DeleteFile(convertedFileLocation);
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
 
             // Create thumbnail
             var thumbnailPath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\";
             Directory.CreateDirectory(thumbnailPath);
-            converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
+			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
 
-            // Get user id by email
-            var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+			if (thumbnailImage == null)
+			{
+				return BadRequest("Une erreur ces produite lors de la creation du thumbnail");
+			}
 
-            // Create file
-            //TODO: get the type of the object, if it is a Video or an Audio file 
-            var file = new Models.File
+			// Get user id by email
+			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+
+			if (user == null)
+			{
+				return BadRequest("Une erreur ces produite lors de la récupération du user");
+			}
+
+			// Create file
+			//TODO: get the type of the object, if it is a Video or an Audio file 
+			var file = new Models.File
             {
                 Title = audioFile.FileName,
                 FilePath = filePath,

@@ -229,21 +229,21 @@ namespace RC_SpeechToText.Controllers
                 var files = await _context.File.ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
 
-                var filesContainDescription = new List<string>();
+				var filesContainDescription = new List<File>();
 
-                foreach (var file in files)
-                {
-                    if (file.Description != null)
-                    {
-                        if (file.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            filesContainDescription.Add(file.Title);
-                        }
-                    }
-                }
+				foreach (var file in files)
+				{
+					if (file.Description != null)
+					{
+						if (file.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+						{
+							filesContainDescription.Add(file);
+						}
+					}
+				}
 
-                return Ok(filesContainDescription);
-            }
+				return Ok(filesContainDescription);
+			}
             catch (Exception ex)
             {
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching files");

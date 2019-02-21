@@ -2,12 +2,15 @@ import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
 import Loading from '../Loading';
+import { ErrorModal } from '../Modals/ErrorModal';
 
 
 interface State {
     file: any,
     loading: boolean,
-    unauthorized: boolean
+    unauthorized: boolean,
+    showErrorTranscribe: boolean,
+    descriptionErrorTranscribe: string
 }
 
 export default class FileInput extends React.Component<any, State> {
@@ -17,7 +20,9 @@ export default class FileInput extends React.Component<any, State> {
         this.state = {
             file: null,
             loading: false,
-            unauthorized: false
+            unauthorized: false,
+            showErrorTranscribe: false,
+            descriptionErrorTranscribe: ""
         }
 
     }
@@ -25,6 +30,16 @@ export default class FileInput extends React.Component<any, State> {
     public toggleLoad = () => {
         (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
+
+    public showErrorModal = (description: string) => {
+        this.setState({ showErrorTranscribe: true });
+        this.setState({ descriptionErrorTranscribe: description });
+    }
+
+    public hideErrorModal = () => {
+        this.setState({ showErrorTranscribe: false });
+        this.setState({ descriptionErrorTranscribe: "" });
+    }
 
     public getGoogleSample = (e:any) => {
 
@@ -48,6 +63,8 @@ export default class FileInput extends React.Component<any, State> {
                 this.toggleLoad();
             })
             .catch(err => {
+                console.log(err)
+                this.showErrorModal(err.response.data)
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }
@@ -58,6 +75,12 @@ export default class FileInput extends React.Component<any, State> {
         
         return (
             <div className="column mg-top-30">
+                <ErrorModal
+                    showModal={this.state.showErrorTranscribe}
+                    hideModal={this.hideErrorModal}
+                    title={"Une erreur est survenu"}
+                    errorMessage={this.state.descriptionErrorTranscribe}
+                />
                 <div className="file is-boxed has-name">
                     <label className="file-label">
                         <input className="file-input" type="file" name="File" onChange={this.getGoogleSample}/>

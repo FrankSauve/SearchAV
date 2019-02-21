@@ -22,14 +22,21 @@ namespace RC_SpeechToText.Utils
                 AudioSampleRate = AudioSampleRate.Hz22050
             };
 
-            using (var engine = new Engine())
-            {
-                engine.GetMetadata(inputFile);
+			try
+			{
+				using (var engine = new Engine())
+				{
+					engine.GetMetadata(inputFile);
 
-                engine.Convert(inputFile, outputFile, conversionOptions);
-            }
-            
-            return StereoToMono(wavFileLocation);
+					engine.Convert(inputFile, outputFile, conversionOptions);
+				}
+
+				return StereoToMono(wavFileLocation);
+			}
+			catch
+			{
+				return null;
+			}
         }
         public string StereoToMono(string wavFileLocation)
         {
@@ -57,19 +64,27 @@ namespace RC_SpeechToText.Utils
 
         public string CreateThumbnail(string videoFilePath, string outputFilePath)
         {
-            using (var engine = new Engine())
-            {
-                var mp4 = new MediaFile { Filename = videoFilePath };
-                var outputFile = new MediaFile { Filename = outputFilePath };
+			try
+			{
+				using (var engine = new Engine())
+				{
+					var mp4 = new MediaFile { Filename = videoFilePath };
+					var outputFile = new MediaFile { Filename = outputFilePath };
 
-                var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
+					var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
 
-                engine.GetMetadata(mp4);
-                
-                engine.GetThumbnail(mp4, outputFile, options);
+					engine.GetMetadata(mp4);
 
-                return outputFile.Filename;
-            }
+					engine.GetThumbnail(mp4, outputFile, options);
+
+					return outputFile.Filename;
+
+				}
+			}
+			catch
+			{
+				return null;
+			}
         }
     }
 }
