@@ -67,11 +67,28 @@ namespace RC_SpeechToText.Controllers
             _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Uploaded file to Google Storage bucket.");
 
             // Call the method that will get the transcription
-            var result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Starting Google transcription.");
+            var googleResult = TranscriptionService.GoogleSpeechToText(_bucketName, storageObject.Name);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Transcription is done.");
 
-			if (result.Error != null)
+            string transcription = "";
+            var words = new List<Word>();
+            foreach (var result in googleResult.GoogleResponse.Results)
+            {
+                transcription += result.Alternatives[0].Transcript + " ";
+                foreach (var word in result.Alternatives[0].Words)
+                {
+                    words.Add(new Word { Term = word.Word, Timestamp = word.StartTime.ToString() });
+                }
+            }
+
+            // Delete the object from google storage
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting object from Google Storage bucket.");
+            await TranscriptionService.DeleteObject(_bucketName, storageObject.Name);
+
+            if (googleResult.Error != null)
 			{
-				return BadRequest("Une erreur ces produite lors de la transcription du fichier: " + result.Error);
+				return BadRequest("Une erreur ces produite lors de la transcription du fichier: " + googleResult.Error);
 			}
 
 			// Delete the converted file
