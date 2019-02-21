@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -21,6 +22,7 @@ namespace RC_SpeechToText.Controllers
         private readonly SearchAVContext _context;
         private readonly ILogger _logger;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
+        private readonly string _bucketName = "rc-retd-stt-dev";
 
         public TranscriptionController(SearchAVContext context, ILogger<TranscriptionController> logger)
         {
@@ -60,12 +62,33 @@ namespace RC_SpeechToText.Controllers
 
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
 
-            // Call the method that will get the transcription
-            var result = TranscriptionService.GoogleSpeechToText(convertedFileLocation);
+            // Upload the mono wav file to Google Storage
+            var storageObject = await TranscriptionService.UploadFile(_bucketName, convertedFileLocation);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Uploaded file to Google Storage bucket.");
 
-			if (result.Error != null)
+            // Call the method that will get the transcription
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Starting Google transcription.");
+            var googleResult = TranscriptionService.GoogleSpeechToText(_bucketName, storageObject.Name);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Transcription is done.");
+
+            string transcription = "";
+            var words = new List<Word>();
+            foreach (var result in googleResult.GoogleResponse.Results)
+            {
+                transcription += result.Alternatives[0].Transcript + " ";
+                foreach (var word in result.Alternatives[0].Words)
+                {
+                    words.Add(new Word { Term = word.Word, Timestamp = word.StartTime.ToString() });
+                }
+            }
+
+            // Delete the object from google storage
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting object from Google Storage bucket.");
+            await TranscriptionService.DeleteObject(_bucketName, storageObject.Name);
+
+            if (googleResult.Error != null)
 			{
-				return BadRequest("Une erreur ces produite lors de la transcription du fichier: " + result.Error);
+				return BadRequest("Une erreur ces produite lors de la transcription du fichier: " + googleResult.Error);
 			}
 
 			// Delete the converted file
@@ -109,7 +132,7 @@ namespace RC_SpeechToText.Controllers
             {
                 UserId = user.Id,
                 FileId = file.Id,
-                Transcription = result.GoogleResponse.Alternatives[0].Transcript,
+                Transcription = transcription,
                 DateModified = DateTime.Now,
                 Active = true
             };
@@ -117,15 +140,9 @@ namespace RC_SpeechToText.Controllers
             await _context.SaveChangesAsync();
 
             //Adding all words and their timestamps to the Word table
-            foreach (Google.Cloud.Speech.V1.WordInfo wordInfo in result.GoogleResponse.Alternatives[0].Words)
+            foreach (var word in words)
             {
-                var word = new Models.Word
-                {
-                    Term = wordInfo.Word,
-                    Timestamp = wordInfo.StartTime.ToString(),
-                    VersionId = version.Id
-                };
-
+                word.VersionId = version.Id;
                 await _context.Word.AddAsync(word);
                 await _context.SaveChangesAsync();
             }
