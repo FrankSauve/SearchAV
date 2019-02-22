@@ -5,10 +5,11 @@ select * from [user]
 alter table [User] add [Job_Tile] VARCHAR (MAX) NULL
 update  [User] set Job_Tile = 'Editor' where ID = 103
 SELECT * FROM [User]
-alter table [File] add [Notified] INT*/
+alter table [File] add [Notified] INT
+update  [file] set notified= 0*/
 
-update  [file] set notified= 0
-select * from [file]
+
+select * from [user]
 
 
 

@@ -8,6 +8,7 @@ using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -106,6 +107,40 @@ namespace RC_SpeechToText.Controllers
             {
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user with email: " + email);
                 return BadRequest("User with EMAIL '" + email + "' not found");
+            }
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> sendMail()
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching names and emails for all editors");
+                var emailList = await _context.User.Where(u => u.Job_Tile == "Editor").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITORS FOUND: " + emailList.Count);
+                var emails = new List<string>();
+
+                foreach (var email in emailList)
+                {
+                    //emails.Add(email.Email);
+                    MailMessage mail = new MailMessage("rcemail1819@gmail.com", email.Email);
+                    SmtpClient client = new SmtpClient();
+                    client.Port = 25;
+                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("rcemail1819@gmail.com", "capstone1819");
+                    client.UseDefaultCredentials = true;
+                    client.Credentials = credentials;
+                    client.Host = "smtp.gmail.com";
+                    mail.Subject = "Testing Subject";
+                    mail.Body = "Testing Body";
+                    client.Send(mail);
+                }
+                return Ok(emailList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching editors");
+                return BadRequest("Get all editors failed.");
             }
         }
     }

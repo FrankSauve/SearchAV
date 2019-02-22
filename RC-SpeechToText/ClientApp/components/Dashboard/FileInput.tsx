@@ -46,6 +46,7 @@ export default class FileInput extends React.Component<any, State> {
         axios.post('/api/transcription/convertandtranscribe', formData, config)
             .then(res => {
                 this.toggleLoad();
+        axios.post("/api/user/sendMail")
             })
             .catch(err => {
                 if (err.response.status == 401) {
