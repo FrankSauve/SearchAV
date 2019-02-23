@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
+using System.Net;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -119,23 +120,32 @@ namespace RC_SpeechToText.Controllers
                 var emailList = await _context.User.Where(u => u.Job_Tile == "Editor").ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITORS FOUND: " + emailList.Count);
                 var emails = new List<string>();
+                
+                var file = await _context.File.FirstOrDefaultAsync(f => f.Notified == 1);
 
                 foreach (var email in emailList)
                 {
-                    //emails.Add(email.Email);
-                    MailMessage mail = new MailMessage("rcemail1819@gmail.com", email.Email);
-                    SmtpClient client = new SmtpClient();
-                    client.Port = 25;
-                    client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    System.Net.NetworkCredential credentials = new System.Net.NetworkCredential("rcemail1819@gmail.com", "capstone1819");
-                    client.UseDefaultCredentials = true;
-                    client.Credentials = credentials;
-                    client.Host = "smtp.gmail.com";
-                    mail.Subject = "Testing Subject";
-                    mail.Body = "Testing Body";
-                    client.Send(mail);
+                    MailMessage mail = new MailMessage();
+                    mail.From = new MailAddress("rcemail1819@gmail.com");
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.Port = 587;
+                    smtp.EnableSsl = true;
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential("rcemail1819@gmail.com", "capstone1819");
+                    smtp.Host = "smtp.gmail.com";
+                    mail.To.Add(new MailAddress(email.Email));
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Test Subject";
+                    mail.Body = "<Link className='info' to={`/FileView/"+file.Id+"`}>Accéder au Fichier</Link>";
+                    smtp.Send(mail);
+                    smtp.Dispose();
+                    file.Notified = 0;
+                    _context.SaveChanges();
+
+
                 }
-                return Ok(emailList);
+                return Ok();
             }
             catch (Exception ex)
             {
