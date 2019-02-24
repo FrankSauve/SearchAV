@@ -1,33 +1,96 @@
 ﻿using Google.Cloud.Speech.V1;
+using Google.Cloud.Storage.V1;
+using RC_SpeechToText.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Services
 {
     public class TranscriptionService
     {
+		/// <summary>
+		/// Transcribe the input file to text using Google Cloud
+		/// </summary>
+		/// <param name="inputFilePath"></param>
+		/// <returns name="googleResult"></returns>
+		public static GoogleResult GoogleSpeechToText(string bucketName, string storageObjectName)
+		{
+			try
+			{
+				var speech = SpeechClient.Create();
+				var longOperation = speech.LongRunningRecognize(new RecognitionConfig()
+				{
+					Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+					LanguageCode = "fr-ca",
+					EnableWordTimeOffsets = true // Required to get timestamps
+				}, RecognitionAudio.FromStorageUri($"gs://{bucketName}/{storageObjectName}"));
+
+                longOperation = longOperation.PollUntilCompleted();
+				var response = longOperation.Result;
+
+                var googleResult = new GoogleResult
+                {
+                    GoogleResponse = response
+				};
+
+				return googleResult;
+			}
+			catch (System.Exception e)
+			{
+				var googleResult = new GoogleResult
+				{
+					Error = e.Message
+				};
+
+				return googleResult;
+			}
+		}
+
         /// <summary>
-        /// Transcribe the input file to text using Google Cloud
+        /// Uploads an object to a Google Cloud Bucket.
         /// </summary>
-        /// <param name="inputFilePath"></param>
-        /// <returns name="googleResult"></returns>
-        public static GoogleResult GoogleSpeechToText(string inputFilePath)
+        /// <param name="bucketName"></param>
+        /// <param name="localPath"></param>
+        /// <param name="objectName"></param>
+        /// <returns></returns>
+        public static async Task<Google.Apis.Storage.v1.Data.Object> UploadFile(string bucketName, string localPath, string objectName = null)
         {
-            var speech = SpeechClient.Create();
-            var longOperation = speech.LongRunningRecognize(new RecognitionConfig()
+            var storage = StorageClient.Create();
+            using (var f = System.IO.File.OpenRead(localPath))
             {
-                Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
-                LanguageCode = "fr-ca",
-                EnableWordTimeOffsets = true // Required to get timestamps
-            }, RecognitionAudio.FromFile(inputFilePath));
+                objectName = objectName ?? Path.GetFileName(localPath);
+                return await storage.UploadObjectAsync(bucketName, objectName, null, f);
+            }
+        }
 
-            longOperation = longOperation.PollUntilCompleted();
-            var response = longOperation.Result;
-
-            var googleResult = new GoogleResult
+        /// <summary>
+        /// Downloads an object from Google Cloud Bucket to the desired local path.
+        /// </summary>
+        /// <param name="bucketName"></param>
+        /// <param name="objectName"></param>
+        /// <param name="localPath"></param>
+        /// <returns></returns>
+        public static async Task DownloadObject(string bucketName, string objectName, string localPath = null)
+        {
+            var storage = StorageClient.Create();
+            localPath = localPath ?? Path.GetFileName(objectName);
+            using (var outputFile = System.IO.File.OpenWrite(localPath))
             {
-                GoogleResponse = response.Results[0]
-            };
+                await storage.DownloadObjectAsync(bucketName, objectName, outputFile);
+            }
+        }
 
-            return googleResult;
+        /// <summary>
+        /// Delete an object from Google Cloud Bucket
+        /// </summary>
+        /// <param name="bucketName"></param>
+        /// <param name="objectNames"></param>
+        public static async Task DeleteObject(string bucketName, string objectName)
+        {
+            var storage = StorageClient.Create();
+            await storage.DeleteObjectAsync(bucketName, objectName);
         }
     }
 }
