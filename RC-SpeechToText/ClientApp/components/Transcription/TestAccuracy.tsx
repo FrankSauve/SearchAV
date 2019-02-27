@@ -94,7 +94,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             },
         }
 
-        axios.post('/api/TranscriptSearch/SearchTranscript', formData, config)
+        axios.post('/api/transcription/SearchTranscript', formData, config)
             .then(res => {
                 this.setState({'timestamps':res.data});
             })
@@ -117,7 +117,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             }
         }
 
-        axios.post('/api/SavingTranscripts/SaveTranscript', formData, config)
+        axios.post('/api/transcription/SaveTranscript', formData, config)
             .then(res => {
                 console.log(res);
             })

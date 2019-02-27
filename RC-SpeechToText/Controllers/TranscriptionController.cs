@@ -1,160 +1,230 @@
 ﻿using System;
-using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using RC_SpeechToText.Utils;
 using RC_SpeechToText.Models;
-using RC_SpeechToText.Services;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Version = RC_SpeechToText.Models.Version;
+using System.Globalization;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace RC_SpeechToText.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]")]
-    public class TranscriptionController : Controller
-    {
-        private readonly SearchAVContext _context;
-        private readonly ILogger _logger;
-        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
-        private readonly string _bucketName = "rc-retd-stt-dev";
+	[Authorize]
+	[Route("api/[controller]")]
+	public class TranscriptionController : Controller
+	{
+		private readonly SearchAVContext _context;
+		private readonly ILogger _logger;
+		private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
-        public TranscriptionController(SearchAVContext context, ILogger<TranscriptionController> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
+		public TranscriptionController(SearchAVContext context, ILogger<TranscriptionController> logger)
+		{
+			_context = context;
+			_logger = logger;
+		}
 
-        /// <summary>
-        /// Generates an automatic transcript using google cloud.
-        /// GET: /api/googletest/speechtotext
-        /// </summary>
-        /// <returns>GoogleResult</returns>
-        [HttpPost("[action]")]
-        public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
-        {
-            // Create the directory
-            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Created directory /Audio");
+		[HttpPost("[action]/{userId}/{versionId}")]
+		public async Task<IActionResult> SaveTranscript(int userId, int versionId, string newTranscript)
+		{
+			_logger.LogInformation("versionId: " + versionId);
+			Version currentVersion = _context.Version.Find(versionId);
 
-            // Saves the file to the audio directory
-            var filePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\" + audioFile.FileName;
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                audioFile.CopyTo(stream);
-            }
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Saved audio file " + audioFile.FileName + " in /audio");
+			_logger.LogInformation("New transcript: " + newTranscript);
+			_logger.LogInformation("Old transcript: " + currentVersion.Transcription);
 
-            // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
-            Converter converter = new Converter();
-            // Call converter to convert the file to mono and bring back its file path. 
-            var convertedFileLocation = converter.FileToWav(filePath);
+			//Deactivate current version 
+			_logger.LogInformation("current version active: " + currentVersion.Active);
+			currentVersion.Active = false;
 
-			if (convertedFileLocation == null)
+			//Update current version in DB
+			try
 			{
-				return BadRequest("Une erreur ces produite lors de la convertion du fichier à Wav");
+				_context.Version.Update(currentVersion);
+				await _context.SaveChangesAsync();
+				_logger.LogInformation("Updated current version with id: " + currentVersion.Id);
+			}
+			catch
+			{
+				_logger.LogError("Error updating current version with id: " + currentVersion.Id);
 			}
 
-			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
-
-            // Upload the mono wav file to Google Storage
-            var storageObject = await TranscriptionService.UploadFile(_bucketName, convertedFileLocation);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Uploaded file to Google Storage bucket.");
-
-            // Call the method that will get the transcription
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Starting Google transcription.");
-            var googleResult = TranscriptionService.GoogleSpeechToText(_bucketName, storageObject.Name);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Transcription is done.");
-
-            string transcription = "";
-            var words = new List<Word>();
-            foreach (var result in googleResult.GoogleResponse.Results)
-            {
-                transcription += result.Alternatives[0].Transcript + " ";
-                foreach (var word in result.Alternatives[0].Words)
-                {
-                    words.Add(new Word { Term = word.Word, Timestamp = word.StartTime.ToString() });
-                }
-            }
-
-            // Delete the object from google storage
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting object from Google Storage bucket.");
-            await TranscriptionService.DeleteObject(_bucketName, storageObject.Name);
-
-            if (googleResult.Error != null)
+			//Create a new version
+			Version newVersion = new Version
 			{
-				return BadRequest("Une erreur ces produite lors de la transcription du fichier: " + googleResult.Error);
+				UserId = currentVersion.UserId,
+				FileId = currentVersion.FileId,
+				DateModified = DateTime.Now,
+				Transcription = newTranscript,
+				Active = true
+			};
+
+			//Add new version to DB
+			try
+			{
+				await _context.Version.AddAsync(newVersion);
+				await _context.SaveChangesAsync();
+				_logger.LogInformation("Added new version with id: " + newVersion.Id);
+				_logger.LogInformation("New version transcript: " + newVersion.Transcription);
+				_logger.LogInformation("New version fileId: " + newVersion.FileId);
+			}
+			catch
+			{
+				_logger.LogError("Error updating new version with id: " + newVersion.Id);
 			}
 
-			// Delete the converted file
-			converter.DeleteFile(convertedFileLocation);
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Deleted " + convertedFileLocation);
-
-            // Create thumbnail
-            var thumbnailPath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\";
-            Directory.CreateDirectory(thumbnailPath);
-			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
-
-			if (thumbnailImage == null)
+			//Find corresponding file and update its flag 
+			try
 			{
-				return BadRequest("Une erreur ces produite lors de la creation du thumbnail");
+				File file = await _context.File.FindAsync(newVersion.FileId);
+				string flag = (file.ReviewerId == userId ? "Révisé" : "Edité"); //If user is reviewer of file, flag = "Révisé"
+				_logger.LogInformation("FLAG: " + flag);
+				file.Flag = flag;
+				_context.File.Update(file);
+				await _context.SaveChangesAsync();
+
+				return Ok(newVersion);
+			}
+			catch
+			{
+				_logger.LogError("Error updating new version with id: " + newVersion.Id);
+				return BadRequest("File flag not updated.");
+			}
+		}
+
+		/// <summary>
+		/// Returns all versions
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("[action]")]
+		public async Task<IActionResult> Index()
+		{
+			try
+			{
+				_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all versions");
+				return Ok(await _context.Version.ToListAsync());
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all versions");
+				return BadRequest("Get all versions failed.");
+			}
+		}
+
+		/// <summary>
+		/// Returns timestamps of searched terms
+		/// </summary>
+		/// <param name="versionId"></param>
+		/// <param name="searchTerms"></param>
+		/// <returns></returns>
+		[HttpGet("[action]/{versionId}/{searchTerms}")]
+		public async Task<IActionResult> SearchTranscript(string searchTerms, int versionId)
+		{
+			try
+			{
+				_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all words for versionId: " + versionId);
+
+				//Ordered by Id to get the words in the same order as transcript
+				var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
+
+				return Ok(PerformSearch(searchTerms, words));
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all words for versionId: " + versionId);
+				return BadRequest("Error fetching active version with fileId: " + versionId);
+			}
+		}
+
+		//Performs the serach on the terms
+		private string PerformSearch(string searchTerms, List<Models.Word> wordInfo)
+		{
+
+			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching for " + searchTerms);
+			//Gets JSON as a string and then deserialize it into an object.
+
+			//Check if the search terms are in the transcript
+			var timeStampOfTerms = new List<string>(); // Saves all instances of words timestamps
+			searchTerms = searchTerms.Trim();
+
+			string[] arrayTerms;
+
+			//Make sure the user did not pass an empty string
+			if (!String.IsNullOrEmpty(searchTerms))
+			{
+				arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
+			}
+			else
+			{
+				return "";
 			}
 
-			// Get user id by email
-			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+			Words[] words = StringToWordList(wordInfo); // For clearer code instead of calling the full variable
+			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching on words: " + wordInfo);
 
-			if (user == null)
+			//For each words check if it is what we were looking for.
+			for (var i = 0; i < words.Length; i++)
 			{
-				return BadRequest("Une erreur ces produite lors de la récupération du user");
+				//If first word of search term is equal to this current word, check if consecutive terms are equal.
+				if (words[i].Word.Equals(arrayTerms[0], StringComparison.InvariantCultureIgnoreCase))
+				{
+					for (var j = 0; j < arrayTerms.Length; j++)
+					{
+						//Make sure j doesn't go out of words range
+						if (j < words.Length)
+						{
+							// If the next words in the sequence aren't the same: break
+							if (!words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase))
+							{
+								break;
+							}
+							//If the last words of the search terms we are looking for are equal, add this timestamp to our current list and increment i by j.
+							else if (words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase) && j == arrayTerms.Length - 1)
+							{
+								//Adding the timestamp in the appropriate format
+								timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"g"));
+								i = i + j;
+							}
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
 			}
 
-			// Create file
-			//TODO: get the type of the object, if it is a Video or an Audio file 
-			var file = new Models.File
-            {
-                Title = audioFile.FileName,
-                FilePath = filePath,
-                Flag = "Automatisé",
-                UserId = user.Id,
-                DateAdded = DateTime.Now,
-                //Description = "" 
-            };
-            await _context.File.AddAsync(file);
-            await _context.SaveChangesAsync();
+			//Getting all timestamps and converting them to string to make it easier when passing to frontend
+			var result = String.Join(", ", timeStampOfTerms.ToArray());
+			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Time stamps of terms: " + timeStampOfTerms);
 
-            // Create version
-            var version = new Models.Version
-            {
-                UserId = user.Id,
-                FileId = file.Id,
-                Transcription = transcription,
-                DateModified = DateTime.Now,
-                Active = true
-            };
-            await _context.Version.AddAsync(version);
-            await _context.SaveChangesAsync();
+			return result;
+		}
 
-            //Adding all words and their timestamps to the Word table
-            foreach (var word in words)
-            {
-                word.VersionId = version.Id;
-                await _context.Word.AddAsync(word);
-                await _context.SaveChangesAsync();
-            }
+		//Converts the new database Model to the one previously used, 
+		//done this way to keep same algorithm used before.
+		private Words[] StringToWordList(List<Word> wordInfo)
+		{
+			List<Words> allWords = new List<Words>();
 
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n Added file with title: " + file.Title + " to the database");
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added version with ID: " + version.Id + " to the database");
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to title/version: " + file.Title + "/" + version.Id + " to the database");
-            // Return the transcription
-            return Ok(version);
-
-        }
-
-        
-    }
+			foreach (Word x in wordInfo)
+			{
+				Regex regex = new Regex(@"([\d.]+)");
+				string match = regex.Match(x.Timestamp).ToString();
+				var wordToAdd = new Words
+				{
+					Word = x.Term,
+					StartTime = new Time
+					{
+						Seconds = Convert.ToDouble(match)
+					},
+				};
+				allWords.Add(wordToAdd);
+			}
+			return allWords.ToArray();
+		}
+	}
 }
