@@ -63,12 +63,12 @@ namespace RC_SpeechToText.Controllers
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Audio file " + audioFile.FileName + " converted to wav at " + convertedFileLocation);
 
 			// Upload the mono wav file to Google Storage
-			var storageObject = await TranscriptionService.UploadFile(_bucketName, convertedFileLocation);
+			var storageObject = await GoogleService.UploadFile(_bucketName, convertedFileLocation);
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Uploaded file to Google Storage bucket.");
 
 			// Call the method that will get the transcription
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Starting Google transcription.");
-			var googleResult = TranscriptionService.GoogleSpeechToText(_bucketName, storageObject.Name);
+			var googleResult = GoogleService.GoogleSpeechToText(_bucketName, storageObject.Name);
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Transcription is done.");
 
 			string transcription = "";
@@ -84,7 +84,7 @@ namespace RC_SpeechToText.Controllers
 
 			// Delete the object from google storage
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting object from Google Storage bucket.");
-			await TranscriptionService.DeleteObject(_bucketName, storageObject.Name);
+			await GoogleService.DeleteObject(_bucketName, storageObject.Name);
 
 			if (googleResult.Error != null)
 			{
