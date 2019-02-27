@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Version = RC_SpeechToText.Models.Version;
 using System.Globalization;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -24,7 +25,27 @@ namespace RC_SpeechToText.Controllers
             _logger = logger;
         }
 
-        [HttpPost("[action]/{userId}/{versionId}")]
+		public async Task<IActionResult> DownloadTranscript(int documentType, string transcript)
+		{ 
+			var exportResult = await Task.Run(() => {
+			   var exportTranscriptionService = new ExportTranscriptionService();
+			   return exportTranscriptionService.CreateWordDocument(transcript);
+			});
+
+			_logger.LogInformation("Downloaded transcript: " + transcript);
+
+			if (exportResult)
+			{
+				return Ok();
+			}
+			else
+			{
+				return BadRequest("Error while trying to download transcription");
+			}
+		}
+
+
+		[HttpPost("[action]/{userId}/{versionId}")]
         public async Task<IActionResult> SaveTranscript(int userId, int versionId, string newTranscript)
         {
             _logger.LogInformation("versionId: " + versionId);

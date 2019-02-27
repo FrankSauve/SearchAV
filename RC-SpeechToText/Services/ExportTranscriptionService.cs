@@ -4,19 +4,27 @@ namespace RC_SpeechToText.Services
 {
     public class ExportTranscriptionService
 	{
-		public void CreateWordDocument(string transcription)
+		public bool CreateWordDocument(string transcription)
 		{
-			Word.Application app = new Word.Application();
-			Word.Document doc = app.Documents.Add();
+			try
+			{
+				Word.Application app = new Word.Application();
+				Word.Document doc = app.Documents.Add();
 
-			object start = 0;
-			object end = transcription.Length;
+				object start = 0;
+				object end = transcription.Length;
 
-			Word.Range range = doc.Range(ref start, ref end);
-			range.Text = transcription;
-			range.Select();
+				Word.Range range = doc.Range(ref start, ref end);
+				range.Text = transcription;
+				range.Select();
 
-			doc.Save();
+				doc.Save();
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 }
