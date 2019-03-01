@@ -25,8 +25,12 @@ namespace RC_SpeechToText.Controllers
             _logger = logger;
         }
 
-		public async Task<IActionResult> DownloadTranscript(int documentType, string transcript)
-		{ 
+		[HttpGet("[action]/{documentType}/{fileId}")]
+		public async Task<IActionResult> DownloadTranscript(int documentType, string fileId)
+		{
+			var version = _context.Version.Find(fileId);
+			var transcript = version.Transcription;
+
 			var exportResult = await Task.Run(() => {
 			   var exportTranscriptionService = new ExportTranscriptionService();
 			   return exportTranscriptionService.CreateWordDocument(transcript);
