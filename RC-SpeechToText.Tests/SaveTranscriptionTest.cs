@@ -39,11 +39,11 @@ namespace RC_SpeechToText.Tests
             string editTranscription = "Test Edit Transcription";
             string reviewTranscription = "Test Review Transcription";
 
-            var mock = new Mock<ILogger<SaveTranscriptController>>();
-            ILogger<SaveTranscriptController> logger = mock.Object;
-            logger = Mock.Of<ILogger<SaveTranscriptController>>();
+            var mock = new Mock<ILogger<TranscriptionController>>();
+            ILogger<TranscriptionController> logger = mock.Object;
+            logger = Mock.Of<ILogger<TranscriptionController>>();
 
-            var controller = new SaveTranscriptController(context, logger);
+            var controller = new TranscriptionController(context, logger);
 
             //Editing file
             await controller.SaveTranscript(user.Id, version.Id, editTranscription);

@@ -29,7 +29,7 @@ export class TranscriptionSearch extends React.Component<any,State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/TranscriptSearch/SearchTranscript/' + this.state.versionId + '/' + this.state.searchTerms , config)
+        axios.get('/api/transcription/SearchTranscript/' + this.state.versionId + '/' + this.state.searchTerms , config)
             .then(res => {
                 this.setState({ timestamps: res.data });
             })
