@@ -8,8 +8,8 @@ SELECT * FROM [User]
 alter table [File] add [Notified] INT
 update  [file] set notified= 0*/
 
-
-select * from [user]
+update  [file] set notified= 1 where id =119;
+select * from [file]
 
 
 

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using System.Net;
+using System.Text;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -119,9 +120,12 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching names and emails for all editors");
                 var emailList = await _context.User.Where(u => u.Job_Tile == "Editor").ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITORS FOUND: " + emailList.Count);
-                var emails = new List<string>();
-                
-                var file = await _context.File.FirstOrDefaultAsync(f => f.Notified == 1);
+
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files with notification set to 1");
+                var fileList = await _context.File.Where(f => f.Notified == 1).ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILES FOUND: " + fileList.Count);
+
+                var body = new StringBuilder();
 
                 foreach (var email in emailList)
                 {
@@ -136,11 +140,15 @@ namespace RC_SpeechToText.Controllers
                     smtp.Host = "smtp.gmail.com";
                     mail.To.Add(new MailAddress(email.Email));
                     mail.IsBodyHtml = true;
-                    mail.Subject = "Test Subject";
-                    mail.Body = "<Link className='info' to={`/FileView/"+file.Id+"`}>Accéder au Fichier</Link>";
+                    mail.Subject = "Nouvelles Transcriptions";
+                    foreach (var file in fileList)
+                    {    
+                        body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>"+ file.Title + "</a><br />");
+                        //file.Notified = 0;
+                    }
+                    mail.Body = "Liste de transcription: " + "<br />" + body.ToString();
                     smtp.Send(mail);
                     smtp.Dispose();
-                    file.Notified = 0;
                     _context.SaveChanges();
 
 

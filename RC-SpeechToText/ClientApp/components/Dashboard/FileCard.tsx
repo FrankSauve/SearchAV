@@ -177,6 +177,16 @@ export class FileCard extends React.Component<any, State> {
                         this.setState({ 'unauthorized': true });
                     }
                 });
+            axios.post('/api/user/sendMail/')
+                .then(res => {
+                })
+                .catch(err => {
+                    console.log(err)
+                    if (err.response.status == 401) {
+                        this.setState({ 'unauthorized': true });
+                    }
+                });
+
         }
         else {
             this.showErrorDescriptionModal();
