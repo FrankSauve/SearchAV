@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,9 +7,6 @@ using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Mail;
-using System.Net;
-using System.Text;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -19,7 +15,7 @@ namespace RC_SpeechToText.Controllers
     public class UserController : Controller
     {
         private readonly SearchAVContext _context;
-        private readonly Microsoft.Extensions.Logging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public UserController(SearchAVContext context, ILogger<UserController> logger)
@@ -51,8 +47,6 @@ namespace RC_SpeechToText.Controllers
                 
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User already exists, logging in as: ID:"+user.Id+" Email:" + user.Email + " Name:" + user.Name);
                 return Ok(user);
-                
-                
             }
             catch(Exception ex)
             {
@@ -62,7 +56,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> getAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
             try
             {
@@ -80,7 +74,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> getUserName(int id)
+        public async Task<IActionResult> GetUserName(int id)
         {
             try
             {
@@ -95,7 +89,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{email}")]
-        public async Task<IActionResult> getUserByEmail(string email)
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
             try
             {
@@ -109,56 +103,6 @@ namespace RC_SpeechToText.Controllers
             {
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user with email: " + email);
                 return BadRequest("User with EMAIL '" + email + "' not found");
-            }
-        }
-
-        [HttpPost("[action]")]
-        public async Task<IActionResult> sendMail()
-        {
-            try
-            {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching names and emails for all editors");
-                var emailList = await _context.User.Where(u => u.Job_Tile == "Editor").ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITORS FOUND: " + emailList.Count);
-
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files with notification set to 1");
-                var fileList = await _context.File.Where(f => f.Notified == 1).ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILES FOUND: " + fileList.Count);
-
-                var body = new StringBuilder();
-
-                foreach (var email in emailList)
-                {
-                    MailMessage mail = new MailMessage();
-                    mail.From = new MailAddress("rcemail1819@gmail.com");
-                    SmtpClient smtp = new SmtpClient();
-                    smtp.Port = 587;
-                    smtp.EnableSsl = true;
-                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential("rcemail1819@gmail.com", "capstone1819");
-                    smtp.Host = "smtp.gmail.com";
-                    mail.To.Add(new MailAddress(email.Email));
-                    mail.IsBodyHtml = true;
-                    mail.Subject = "Nouvelles Transcriptions";
-                    foreach (var file in fileList)
-                    {    
-                        body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>"+ file.Title + "</a><br />");
-                        //file.Notified = 0;
-                    }
-                    mail.Body = "Liste de transcription: " + "<br />" + body.ToString();
-                    smtp.Send(mail);
-                    smtp.Dispose();
-                    _context.SaveChanges();
-
-
-                }
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching editors");
-                return BadRequest("Get all editors failed.");
             }
         }
     }

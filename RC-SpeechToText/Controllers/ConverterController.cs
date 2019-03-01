@@ -151,8 +151,14 @@ namespace RC_SpeechToText.Controllers
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added file with title: " + file.Title + " to the database");
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added version with ID: " + version.Id + " to the database");
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to title/version: " + file.Title + "/" + version.Id + " to the database");
-			// Return the transcription
-			return Ok(version);
+
+            // Send email to user that the transcription is done
+            var emailService = new EmailService();
+            emailService.SendTranscriptionDoneEmail(userEmail, file);
+            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Email sent to: " + userEmail + " with the file id: " + file.Id);
+
+            // Return the transcription
+            return Ok(version);
 		}
 	}
 }
