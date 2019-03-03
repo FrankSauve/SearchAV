@@ -57,6 +57,7 @@ export default class FileTable extends React.Component<any, State> {
                                         filePath = {file.filePath}
                                         dateAdded={file.dateAdded}
                                         number={file.notified}
+                                        type={file.type}
                                         key = {file.id}
                                     />
                         i++; 
