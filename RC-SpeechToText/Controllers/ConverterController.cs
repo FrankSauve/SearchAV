@@ -54,6 +54,8 @@ namespace RC_SpeechToText.Controllers
 			Converter converter = new Converter();
 			// Call converter to convert the file to mono and bring back its file path. 
 			var convertedFileLocation = converter.FileToWav(filePath);
+            //Gets type of file (audio or video)
+            var fileType = converter.GetFileType(filePath);
 
 			if (convertedFileLocation == null)
 			{
@@ -114,7 +116,6 @@ namespace RC_SpeechToText.Controllers
 			}
 
 			// Create file
-			//TODO: get the type of the object, if it is a Video or an Audio file 
 			var file = new Models.File
 			{
 				Title = audioFile.FileName,
@@ -123,6 +124,7 @@ namespace RC_SpeechToText.Controllers
 				UserId = user.Id,
 				DateAdded = DateTime.Now,
 				Notified = 1,
+                Type = fileType,
 				//Description = "" 
 			};
 			await _context.File.AddAsync(file);

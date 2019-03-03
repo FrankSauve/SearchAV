@@ -5,6 +5,7 @@ using MediaToolkit.Options;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.IO;
+using System.Linq;
 
 namespace RC_SpeechToText.Utils
 {
@@ -85,6 +86,29 @@ namespace RC_SpeechToText.Utils
 			{
 				return null;
 			}
+        }
+
+        //Method to determine if file is audio or video
+        public string GetFileType(string inputFilePath)
+        {
+            string ext = Path.GetExtension(@inputFilePath);
+            string[] audioExt =  {".wav", ".mp3", ".aif", ".aac", ".flac", ".mp2"};
+            string[] videoExt = {".mpg", ".mov", ".mp4", ".wmv", ".mkv", ".mpeg"};
+            string type = "";
+            
+            if (audioExt.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            {
+                type = "Audio";
+            }
+            else if (videoExt.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            {
+                type = "Video";
+            }
+            else
+            {
+                type = "N/A";
+            }
+            return type;
         }
     }
 }
