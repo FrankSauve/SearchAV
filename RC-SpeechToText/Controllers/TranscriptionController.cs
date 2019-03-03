@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text.RegularExpressions;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -202,6 +203,38 @@ namespace RC_SpeechToText.Controllers
 			_logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Time stamps of terms: " + timeStampOfTerms);
 
 			return result;
+		}
+
+		[HttpGet("[action]/{fileId}/{documentType}")]
+		public async Task<IActionResult> DownloadTranscript(string documentType, int fileId)
+		{
+			_logger.LogInformation(documentType);
+
+            var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
+            var transcript = version.Transcription;
+
+			var exportResult = await Task.Run(() => {
+				var exportTranscriptionService = new ExportTranscriptionService();
+				if (documentType == "doc")
+				{
+					return exportTranscriptionService.CreateWordDocument(transcript);
+				}
+				else
+				{
+					return false;
+				}
+			});
+
+			_logger.LogInformation("Downloaded transcript: " + transcript);
+
+			if (exportResult)
+			{
+				return Ok();
+			}
+			else
+			{
+				return BadRequest("Error while trying to download transcription");
+			}
 		}
 
 		//Converts the new database Model to the one previously used, 
