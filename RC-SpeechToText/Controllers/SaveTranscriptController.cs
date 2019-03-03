@@ -24,31 +24,7 @@ namespace RC_SpeechToText.Controllers
             _context = context;
             _logger = logger;
         }
-
-		[HttpGet("[action]/{documentType}/{fileId}")]
-		public async Task<IActionResult> DownloadTranscript(int documentType, string fileId)
-		{
-			var version = _context.Version.Find(fileId);
-			var transcript = version.Transcription;
-
-			var exportResult = await Task.Run(() => {
-			   var exportTranscriptionService = new ExportTranscriptionService();
-			   return exportTranscriptionService.CreateWordDocument(transcript);
-			});
-
-			_logger.LogInformation("Downloaded transcript: " + transcript);
-
-			if (exportResult)
-			{
-				return Ok();
-			}
-			else
-			{
-				return BadRequest("Error while trying to download transcription");
-			}
-		}
-
-
+		
 		[HttpPost("[action]/{userId}/{versionId}")]
         public async Task<IActionResult> SaveTranscript(int userId, int versionId, string newTranscript)
         {

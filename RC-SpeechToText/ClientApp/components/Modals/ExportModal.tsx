@@ -41,7 +41,7 @@ export class ExportModal extends React.Component<any, State> {
     }
 
     public showErrorModal = (description: string) => {
-        this.setState({ errorMessage: description })
+        this.setState({ errorMessage: description });
         this.setState({ showErrorModal: true });
     }
 
@@ -56,8 +56,8 @@ export class ExportModal extends React.Component<any, State> {
     }
 
     public saveDocument = () => {
-        var fileId = this.state.fileId
-        var exportSelected = this.state.documentOption
+        var fileId = this.state.fileId;
+        var exportSelected = this.state.documentOption;
 
         if (fileId != "" && fileId != 0 && exportSelected != "" && exportSelected != "0") {
             const config = {
@@ -65,10 +65,10 @@ export class ExportModal extends React.Component<any, State> {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
                     'content-type': 'application/json'
                 }
-            }
-            axios.get('/api/SavingTranscripts/DownloadTranscript' + exportSelected + '/' + fileId, config)
+            };
+            axios.get('/api/transcription/downloadtranscript/' + fileId + '/' + exportSelected, config)
                 .then(res => {
-                    this.props.onConfirm();
+                    this.props.hideModal();
                     this.showSuccessModal();
                 })
                 .catch(err => {
@@ -77,15 +77,30 @@ export class ExportModal extends React.Component<any, State> {
                 });
         } else {
             if (fileId == "" || fileId == 0)
-                this.showErrorModal("Une erreur est survenu lors de la selection du fichier")
+                this.showErrorModal("Une erreur est survenu lors de la selection du fichier");
             if (exportSelected == "" || exportSelected == "0")
-                this.showErrorModal("Choisier le type de document dont vous voulez exporter")
+                this.showErrorModal("Choisier le type de document dont vous voulez exporter");
         }
     }
 
     public render() {
         return (
             <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
+
+                <ErrorModal
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.hideErrorModal}
+                    title="Une erreur est survenu lors de l'export du fichier"
+                    errorMessage={this.state.errorMessage}
+                />
+
+                <SuccessModal
+                    showModal={this.state.showSuccessModal}
+                    hideModal={this.hideSuccessModal}
+                    title="Export du transcript"
+                    successMessage="Document exporté!"
+                />
+
                 <div className="modal-background"></div>
                 <div className="modal-card exportModalCard">
                     <div className="export-modal-container">
@@ -112,20 +127,6 @@ export class ExportModal extends React.Component<any, State> {
                         </footer>
                     </div>
                 </div>
-
-                <ErrorModal
-                    showModal={this.state.showErrorModal}
-                    hideModal={this.hideErrorModal}
-                    title="Une erreur est survenu lors de l'export du fichier"
-                    errorMessage={this.state.errorMessage}
-                />
-
-                <SuccessModal
-                    showModal={this.state.showSuccessModal}
-                    hideModal={this.hideSuccessModal}
-                    title="Export du transcript"
-                    successMessage="Document exporté!"
-                />
             </div>
         );
     }

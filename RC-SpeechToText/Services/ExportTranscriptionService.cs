@@ -12,7 +12,7 @@ namespace RC_SpeechToText.Services
 				Word.Document doc = app.Documents.Add();
 
 				object start = 0;
-				object end = transcription.Length;
+				object end = 0;
 
 				Word.Range range = doc.Range(ref start, ref end);
 				range.Text = transcription;
