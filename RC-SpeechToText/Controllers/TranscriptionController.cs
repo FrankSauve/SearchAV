@@ -210,8 +210,8 @@ namespace RC_SpeechToText.Controllers
 		{
 			_logger.LogInformation(documentType);
 
-			var version = _context.Version.Find(fileId);
-			var transcript = version.Transcription;
+            var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
+            var transcript = version.Transcription;
 
 			var exportResult = await Task.Run(() => {
 				var exportTranscriptionService = new ExportTranscriptionService();
