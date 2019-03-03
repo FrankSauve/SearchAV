@@ -104,6 +104,10 @@ namespace RC_SpeechToText.Utils
             {
                 type = "Video";
             }
+            else
+            {
+                type = "N/A";
+            }
             return type;
         }
     }
