@@ -13,6 +13,7 @@ interface State {
     modifiedTitle: string,
     newDescription: string,
     flag: string,
+    notified: number,
     showDropdown: boolean,
     showTitleModal: boolean,
     showDescriptionModal: boolean,
@@ -31,6 +32,7 @@ export class FileCard extends React.Component<any, State> {
             modifiedTitle: "",
             newDescription: "",
             flag: this.props.flag,
+            notified: this.props.number, 
             showDropdown: false,
             showTitleModal: false,
             showDescriptionModal: false,
@@ -300,14 +302,14 @@ export class FileCard extends React.Component<any, State> {
                     showModal={this.state.showSuccessDescriptionModal}
                     hideModal={this.hideSuccessDescriptionModal}
                     title={this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description"}
-                    successMessage="Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succés."
+                    successMessage="Enregistrement de la description confirmï¿½! Les changements effectuï¿½s ont ï¿½tï¿½ enregistrï¿½ avec succï¿½s."
                 />
 
                 <ErrorModal
                     showModal={this.state.showErrorDescriptionModal}
                     hideModal={this.hideErrorDescriptionModal}
                     title={this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description"}
-                    errorMessage="Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."
+                    errorMessage="Enregistrement de la description annulï¿½! Vous n'avez effectuï¿½ aucun changements ou vous avez apportï¿½ les mï¿½mes modifications."
                 />
 
             </div>

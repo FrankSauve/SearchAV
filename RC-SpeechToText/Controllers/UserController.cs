@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +15,7 @@ namespace RC_SpeechToText.Controllers
     public class UserController : Controller
     {
         private readonly SearchAVContext _context;
-        private readonly Microsoft.Extensions.Logging.ILogger _logger;
+        private readonly ILogger _logger;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public UserController(SearchAVContext context, ILogger<UserController> logger)
@@ -48,8 +47,6 @@ namespace RC_SpeechToText.Controllers
                 
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User already exists, logging in as: ID:"+user.Id+" Email:" + user.Email + " Name:" + user.Name);
                 return Ok(user);
-                
-                
             }
             catch(Exception ex)
             {
@@ -59,7 +56,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> getAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
             try
             {
@@ -77,7 +74,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> getUserName(int id)
+        public async Task<IActionResult> GetUserName(int id)
         {
             try
             {
@@ -92,7 +89,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{email}")]
-        public async Task<IActionResult> getUserByEmail(string email)
+        public async Task<IActionResult> GetUserByEmail(string email)
         {
             try
             {
