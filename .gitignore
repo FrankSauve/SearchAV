@@ -376,3 +376,4 @@ RC-SpeechToText.Tests/TestFiles/demo.flac
 *.wav
 *.ide
 .vs/RC-SpeechToText/v15/.suo
+.vs/RC-SpeechToText/v15/.suo
