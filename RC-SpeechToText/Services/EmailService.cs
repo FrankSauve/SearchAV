@@ -47,5 +47,23 @@ namespace RC_SpeechToText.Services
             smtp.Send(mail);
             smtp.Dispose();
         }
+
+        public void SendReviewDoneEmail(string email, Models.File file, string reviewer)
+        {
+            var body = new StringBuilder();
+
+            var mail = GetMailer();
+            mail.To.Add(new MailAddress(email));
+            mail.IsBodyHtml = true;
+            mail.Subject = "Révision Terminez pour fichier " + file.Title;
+
+            body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
+
+            mail.Body = "Révision complètez par " + reviewer + "<br />" + "Lien pour révision finale: " + "<br />" + body.ToString();
+
+            var smtp = GetSmtpClient();
+            smtp.Send(mail);
+            smtp.Dispose();
+        }
     }
 }
