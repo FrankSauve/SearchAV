@@ -55,11 +55,11 @@ namespace RC_SpeechToText.Services
             var mail = GetMailer();
             mail.To.Add(new MailAddress(email));
             mail.IsBodyHtml = true;
-            mail.Subject = "Révision Terminez pour fichier " + file.Title;
+            mail.Subject = "Révision terminer pour fichier " + file.Title;
 
             body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
 
-            mail.Body = "Révision complètez par " + reviewer + "<br />" + "Lien pour révision finale: " + "<br />" + body.ToString();
+            mail.Body = "Révision complètez par " + reviewer + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
 
             var smtp = GetSmtpClient();
             smtp.Send(mail);

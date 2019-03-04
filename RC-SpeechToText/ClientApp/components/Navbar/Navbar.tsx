@@ -6,12 +6,10 @@ import Logout from './Logout';
 import { SelectReviewerModal } from '../Modals/SelectReviewerModal';
 import auth from '../../Utils/auth'
 import { ExportModal } from '../Modals/ExportModal';
-import { SaveReviewModal } from '../Modals/SaveReviewModal';
 
 interface State {
     showModal: boolean,
     showExportModal: boolean,
-    showSaveReviewModal: boolean
 }
 
 export default class Navbar extends React.Component<RouteComponentProps<{}>, State> {
@@ -20,8 +18,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
 
         this.state = {
             showModal: false,
-            showExportModal: false,
-            showSaveReviewModal: false
+            showExportModal: false
         }
     }
 
@@ -37,17 +34,10 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ showExportModal: true });
     }
 
-    public showSaveReviewModal = () => {
-        this.setState({ showSaveReviewModal: true });
-    }
-
     public hideExportModal = () => {
         this.setState({ showExportModal: false });
     }
 
-    public hideSaveReviewModal = () => {
-        this.setState({ showSaveReviewModal: false });
-    }
 
     // Shown when the user is logged in
     public renderLoggedIn = () => {
@@ -82,7 +72,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     </Link>
                     <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showModal}><i className="far fa-envelope mg-right-5"></i> Demander une revision</a>
                     <a className="button is-rounded mg-top-10 mg-left-10" onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5"></i>Exporter</a>
-                    <a className="button is-rounded is-link mg-top-10 mg-left-10" onClick={this.showSaveReviewModal}><i className="far fa-save mg-right-5"></i> Enregistrer</a>
+                    <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> Enregistrer</a>
                 </div>
 
                 <ExportModal
@@ -92,12 +82,6 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     onConfirm={this.hideExportModal}
                 />
 
-                <SaveReviewModal
-                    showModal={this.state.showSaveReviewModal}
-                    hideModal={this.hideSaveReviewModal}
-                    title={"Sauveguardez un fichier"}
-                    onConfirm={this.hideSaveReviewModal}
-                    />
             </div>
 
 
