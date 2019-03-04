@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RC_SpeechToText.Services
 {
@@ -30,22 +31,36 @@ namespace RC_SpeechToText.Services
             return smtp;
         }
 
-        public void SendTranscriptionDoneEmail(string email, Models.File file)
+        public bool SendTranscriptionDoneEmail(string email, Models.File file)
         {
-            var body = new StringBuilder();
+            if (IsValid(email))
+            {
+                try
+                {
+                    var body = new StringBuilder();
 
-            var mail = GetMailer();
-            mail.To.Add(new MailAddress(email));
-            mail.IsBodyHtml = true;
-            mail.Subject = "Nouvelles Transcriptions";
+                    var mail = GetMailer();
+                    mail.To.Add(new MailAddress(email));
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Nouvelles Transcriptions";
 
-            body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
+                    body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
 
-            mail.Body = "Liste de transcription: " + "<br />" + body.ToString();
+                    mail.Body = "Liste de transcription: " + "<br />" + body.ToString();
 
-            var smtp = GetSmtpClient();
-            smtp.Send(mail);
-            smtp.Dispose();
+                    var smtp = GetSmtpClient();
+                    smtp.Send(mail);
+                    smtp.Dispose();
+                }
+                catch
+                {
+                    return false;
+                }
+                return true;
+            }
+
+            else
+                return false; 
         }
 
         public void SendReviewDoneEmail(string email, Models.File file, string reviewer)
@@ -64,6 +79,11 @@ namespace RC_SpeechToText.Services
             var smtp = GetSmtpClient();
             smtp.Send(mail);
             smtp.Dispose();
+        }
+
+        public bool IsValid(string emailAddress)
+        {
+            return Regex.IsMatch(emailAddress, @"^([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$");
         }
     }
 }
