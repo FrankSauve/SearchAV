@@ -6,10 +6,13 @@ alter table [User] add [Job_Tile] VARCHAR (MAX) NULL
 update  [User] set Job_Tile = 'Editor' where ID = 103
 SELECT * FROM [User]
 alter table [File] add [Notified] INT
-update  [file] set notified= 0*/
+update  [file] set notified= 0
+update  [file] set notified= 1 where id =119;*/
 
-update  [file] set notified= 1 where id =119;
+
 select * from [file]
+
+update  [file] set ReviewerId= 103 where id =123;
 
 
 
