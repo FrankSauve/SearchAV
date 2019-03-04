@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -348,24 +347,5 @@ namespace RC_SpeechToText.Controllers
 
         }
 
-        [HttpPost("[action]/{fileId}/{reviewerId}")]
-        public async Task<IActionResult> SaveReview(int fileId, int reviewerID)
-        {
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching file with file id: " + fileId);
-            var file = await _context.File.FindAsync(reviewerID);
-
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching user with reviewer id: " + reviewerID);
-            var reviewer = await _context.User.FindAsync(reviewerID);
-
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching user who uploaded file with id: " + reviewerID);
-            var uploader = await _context.User.FindAsync(file.UserId);
-
-            var emailService = new EmailService();
-            emailService.SendReviewDoneEmail(uploader.Email, file, reviewer.Name );
-            _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Email sent to: " + uploader.Email + " with the file id: " + file.Id);
-
-            return Ok();
-
-        }
     }
 }
