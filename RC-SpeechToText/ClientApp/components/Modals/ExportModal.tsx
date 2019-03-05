@@ -105,7 +105,7 @@ export class ExportModal extends React.Component<any, State> {
                 <div className="modal-card modalCard">
                     <div className="modal-container">
                         <header className="modalHeader">
-                        <p className="modal-card-title whiteText">{this.props.title}</p>
+                            <i className="fas fa-file-export fontSize2em mg-right-5"></i><p className="modal-card-title whiteText">{this.props.title}</p>
                             <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal} ></button>
                     </header>
                         <section className="modalBody">
