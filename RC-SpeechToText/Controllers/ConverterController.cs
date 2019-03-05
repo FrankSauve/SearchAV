@@ -123,7 +123,6 @@ namespace RC_SpeechToText.Controllers
 				Flag = "Automatisé",
 				UserId = user.Id,
 				DateAdded = DateTime.Now,
-				Notified = 1,
                 Type = fileType,
 				//Description = "" 
 			};
