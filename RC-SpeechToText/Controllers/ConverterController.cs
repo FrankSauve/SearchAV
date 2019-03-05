@@ -123,8 +123,6 @@ namespace RC_SpeechToText.Controllers
 				Flag = "Automatisé",
 				UserId = user.Id,
 				DateAdded = DateTime.Now,
-                //Was initially added to help send email upon transcription
-				//Notified = 1,
                 Type = fileType,
 				//Description = "" 
 			};
