@@ -15,16 +15,30 @@ namespace RC_SpeechToText.Tests
         public void TestSendTranscriptionDoneEmail()
         {
             // Arrange
-            var user = new User { Email = "user@email.com", Name = "testUser" };
-            var user2 = new User { Email = "useremail.com", Name = "testUser" };
-            var reviewer = new User { Email = "reviewer@email.com", Name = "testReviewer" };
-            var file = new File { Title = "testFile1", UserId = user.Id, Id = 1, };
+            var user1 = new User { Email = "user1@email.com", Name = "testUser1" };
+            var user2 = new User { Email = "user2email.com", Name = "testUser2" };
+            var file1 = new File { Title = "testFile1", UserId = user1.Id, Id = 1, };
             //Act
             var emailService = new EmailService();
-            
             //Assert
-            Assert.IsTrue(emailService.SendTranscriptionDoneEmail(user.Email, file));
-            Assert.IsFalse(emailService.SendTranscriptionDoneEmail(user2.Email, file));
+            Assert.IsTrue(emailService.SendTranscriptionDoneEmail(user1.Email, file1));
+            Assert.IsFalse(emailService.SendTranscriptionDoneEmail(user2.Email, file1));
+        }
+
+        [TestMethod]
+        public void SendReviewDoneEmail()
+        {
+            // Arrange
+            var user1 = new User { Email = "user1@email.com", Name = "testUser1" };
+            var user2 = new User { Email = "user2email.com", Name = "testUser2" };
+            var reviewer = new User { Email = "reviewer@email.com", Name = "testReviewer" };
+            var file1 = new File { Title = "testFile1", UserId = user1.Id, Id = 1, };
+            File file2 = new File();
+            //Act
+            var emailService = new EmailService();
+            //Assert
+            Assert.IsTrue(emailService.SendReviewDoneEmail(user1.Email, file1, reviewer.Name));
+            Assert.IsFalse(emailService.SendReviewDoneEmail(user2.Email, file1, reviewer.Name));
         }
     }
 }

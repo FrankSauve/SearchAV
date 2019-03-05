@@ -31,6 +31,7 @@ namespace RC_SpeechToText.Services
             return smtp;
         }
 
+        //Modified method in order to return boolean for testing purposes
         public bool SendTranscriptionDoneEmail(string email, Models.File file)
         {
             if (IsValid(email))
@@ -38,47 +39,55 @@ namespace RC_SpeechToText.Services
                 try
                 {
                     var body = new StringBuilder();
-
                     var mail = GetMailer();
+                    var smtp = GetSmtpClient();
+
                     mail.To.Add(new MailAddress(email));
                     mail.IsBodyHtml = true;
                     mail.Subject = "Nouvelles Transcriptions";
-
                     body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
-
                     mail.Body = "Liste de transcription: " + "<br />" + body.ToString();
-
-                    var smtp = GetSmtpClient();
                     smtp.Send(mail);
                     smtp.Dispose();
                 }
-                catch
+                catch (SmtpException ex)
                 {
                     return false;
                 }
                 return true;
             }
-
             else
-                return false; 
+                return false;
         }
 
-        public void SendReviewDoneEmail(string email, Models.File file, string reviewer)
+        //Modified method in order to return boolean for testing purposes
+        public bool SendReviewDoneEmail(string email, Models.File file, string reviewer)
         {
-            var body = new StringBuilder();
+            if (IsValid(email))
+            {
+                try
+                {
+                    var body = new StringBuilder();
+                    var mail = GetMailer();
+                    var smtp = GetSmtpClient();
 
-            var mail = GetMailer();
-            mail.To.Add(new MailAddress(email));
-            mail.IsBodyHtml = true;
-            mail.Subject = "Révision terminer pour fichier " + file.Title;
+                    mail.To.Add(new MailAddress(email));
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Révision terminer pour fichier " + file.Title;
+                    body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
+                    mail.Body = "Révision complètez par " + reviewer + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
+                    smtp.Send(mail);
+                    smtp.Dispose();
+                }
+                catch (SmtpException ex)
+                {
+                    return false;
+                }
 
-            body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
-
-            mail.Body = "Révision complètez par " + reviewer + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
-
-            var smtp = GetSmtpClient();
-            smtp.Send(mail);
-            smtp.Dispose();
+                return true;
+            }
+            else
+                return false;
         }
 
         public bool IsValid(string emailAddress)
