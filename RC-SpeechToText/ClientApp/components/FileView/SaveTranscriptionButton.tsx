@@ -9,7 +9,8 @@ interface State {
     showSaveTranscriptModal: boolean,
     showSuccessModal: boolean,
     showErrorModal: boolean,
-    unauthorized: boolean
+    unauthorized: boolean,
+    isButtonDisabled: boolean
 }
 
 export class SaveTranscriptionButton extends React.Component<any, State> {
@@ -20,13 +21,14 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
             showSaveTranscriptModal: false,
             showSuccessModal: false,
             showErrorModal: false,
-            unauthorized: false
+            unauthorized: false,
+            isButtonDisabled: false
         }
 
     }
 
     public saveTranscription = () => {
-        
+
         var oldTranscript = this.props.version.transcription
         var newTranscript = this.props.editedTranscription
 
@@ -58,7 +60,9 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     }
                 });
         }
-
+        this.setState({
+            isButtonDisabled: true
+        });
     }
 
     public showSaveTranscriptModal = () => {
@@ -71,6 +75,8 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
 
     public showSuccessModal = () => {
         this.setState({ showSuccessModal: true });
+        this.setState({ isButtonDisabled: false });
+
     }
 
     public hideSuccessModal = () => {
@@ -100,6 +106,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     confirmMessage={this.props.userId == this.props.reviewerId ? "Êtes-vous sûr(e) de vouloir réviser la transcription?" : "Êtes-vous sûr(e) de vouloir enregistrer les changements effectués à la transcription?"}
                     onConfirm={this.saveTranscription}
                     confirmButton={button}
+                    disabled={this.state.isButtonDisabled}
                 />
 
                 <SuccessModal

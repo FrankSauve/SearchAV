@@ -20,7 +20,7 @@ export class ConfirmationModal extends React.Component<any> {
                         <p>{this.props.confirmMessage}</p>
                     </section>
                     <footer className="modal-card-foot">
-                        <button className="button is-success" onClick={this.props.onConfirm}>{this.props.confirmButton}</button>
+                        <button className="button is-success" onClick={this.props.onConfirm} disabled={this.props.disabled}>{this.props.confirmButton}</button>
                         <button className="button" onClick={this.props.hideModal}>Annuler</button>
                     </footer>
                 </div>

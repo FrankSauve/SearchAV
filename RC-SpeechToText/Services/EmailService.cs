@@ -75,7 +75,7 @@ namespace RC_SpeechToText.Services
                     mail.IsBodyHtml = true;
                     mail.Subject = "Révision terminer pour fichier " + file.Title;
                     body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
-                    mail.Body = "Révision complètez par " + reviewer + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
+                    mail.Body = "Révision complètez par " + reviewer + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
                     smtp.Send(mail);
                     smtp.Dispose();
                 }
