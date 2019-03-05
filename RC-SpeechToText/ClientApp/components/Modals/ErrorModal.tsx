@@ -11,16 +11,18 @@ export class ErrorModal extends React.Component<any> {
 
             <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
                 <div className="modal-background"></div>
-                <div className="modal-card">
-                    <header className="modal-card-head">
-                        <p className="modal-card-title">{this.props.title}</p>
-                        <button className="delete" aria-label="close" onClick={this.props.hideModal}></button>
-                    </header>
-                    <section className="modal-card-body">
-                        <p className="has-text-danger">{this.props.errorMessage}</p>
-                    </section>
-                    <footer className="modal-card-foot">
-                    </footer>
+                <div className="modal-card modalCard">
+                    <div className="modal-container">
+                        <header className="modalHeader">
+                            <i className="fas fa-exclamation-triangle mg-right-10"></i><p className="modal-card-title whiteText">{this.props.title}</p>
+                            <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal}></button>
+                        </header>
+                        <section className="modalBody">
+                            <div className="modalSection padding-bottom-10">
+                                <p>{this.props.errorMessage}</p>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </div>
         );

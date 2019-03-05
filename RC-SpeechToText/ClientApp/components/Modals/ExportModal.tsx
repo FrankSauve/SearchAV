@@ -102,17 +102,17 @@ export class ExportModal extends React.Component<any, State> {
                 />
 
                 <div className="modal-background"></div>
-                <div className="modal-card exportModalCard">
-                    <div className="export-modal-container">
-                        <header className="exportModalHeader">
-                        <p className="modal-card-title whiteText">{this.props.title}</p>
-                            <button className="delete exportCloseModal" aria-label="close" onClick={this.props.hideModal} ></button>
+                <div className="modal-card modalCard">
+                    <div className="modal-container">
+                        <header className="modalHeader">
+                            <i className="fas fa-file-export fontSize2em mg-right-5"></i><p className="modal-card-title whiteText">{this.props.title}</p>
+                            <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal} ></button>
                     </header>
-                        <section className="exportModalBody">
-                            <div className="exportSection">
-                                <p className="exportModalLabel">Format de fichier :</p>
+                        <section className="modalBody">
+                            <div className="modalSection">
+                                <p className="padding-bottom-10">Format de fichier :</p>
                             </div>
-                            <div className="exportSection">
+                            <div className="padding-bottom-10">
                                 <select className="exportModalDropdown" onChange={this.handleOptionChange}>
                                     <option value="0">Choisissez un format</option>   
                                     <option value="doc">.DOC</option>
@@ -120,9 +120,9 @@ export class ExportModal extends React.Component<any, State> {
                                     <option value="googleDoc">Google Doc</option>
                                  </select>
                             </div>
-                            <input type="checkbox" value="dw" className="exportCheckBox"></input><span>Incrustrer les sous-titres sur la vidéo</span>
+                            <input type="checkbox" value="dw" className="mg-right-5"></input><span>Incrustrer les sous-titres sur la vidéo</span>
                     </section>
-                        <footer className="exportModalFooter">
+                        <footer className="modalFooter">
                             <button className="button is-success pull-right" onClick={this.saveDocument}>Confirmer</button>
                         </footer>
                     </div>

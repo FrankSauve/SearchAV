@@ -153,34 +153,37 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     successMessage={`Demande de révision envoyé! ${this.state.reviewerName} (${this.state.reviewerEmail}) sera notifié de votre demande dans les quelques secondes a venir.`}
 />
 
-            <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
-                <div className="modal-background"></div>
-                <div className="modal-card">
-                    <header className="modal-card-head">
-                        <p className="modal-card-title">Choisissez un reviseur</p>
-                        <button className="delete" aria-label="close" onClick={this.props.hideModal}></button>
-                    </header>
-                        <section className="modal-card-body">
-                            <div className="select is-multiple">
-                            <select multiple size={8} onChange={this.handleChange}>
-                                {this.state.users.map((user) => {
-                                    {
-                                        //Includes current user's name for testing purposes
-                                    }
-                                    const listUsers = <option value={user.id}>{user.name} | {user.email}</option>
-                                    return (
-                                        listUsers
-                                    )
-                                })}
-                            </select>
+                <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
+                    <div className="modal-background"></div>
+                    <div className="modal-card modalCard">
+                        <div className="modal-container">
+                            <header className="modalHeader">
+                                <i className="fas fa-clipboard-check fontSize2em mg-right-5"></i><p className="modal-card-title whiteText">Choisissez un reviseur</p>
+                                <button className="delete" aria-label="close" onClick={this.props.hideModal}></button>
+                            </header>
+                            <section className="modalBody">
+                                <div className="select is-multiple">
+                                    <select multiple size={8} onChange={this.handleChange}>
+                                        {this.state.users.map((user) => {
+                                            {
+                                                //Includes current user's name for testing purposes
+                                            }
+                                            const listUsers = <option value={user.id}>{user.name} | {user.email}</option>
+                                            return (
+                                                listUsers
+                                            )
+                                        })}
+                                    </select>
+                                </div>
+                            </section>
+                            <footer className="modalFooter">
+                                <button className="button is-success mg-right-5" onClick={this.addReviewerToFile}>Envoyer la demande</button>
+                                <button className="button" onClick={this.props.hideModal}>Annuler</button>
+                            </footer>
                         </div>
-                    </section>
-                    <footer className="modal-card-foot">
-                        <button className="button is-success" onClick={this.addReviewerToFile}>Envoyer la demande</button>
-                        <button className="button" onClick={this.props.hideModal}>Annuler</button>
-                    </footer>
+                    </div>
                 </div>
-                </div>
+            
             </div>
         );
     }

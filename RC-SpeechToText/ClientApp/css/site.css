@@ -33,6 +33,10 @@ html, body {
     margin-left: 10px;
 }
 
+.padding-bottom-10 {
+    padding-bottom: 10px;
+}
+
 .is-circular {
     border-radius: 50%;
 }
@@ -160,7 +164,7 @@ html, body {
     margin-top: 10px;
 }
 
-.export-modal-container {
+.modal-container {
     background-color: #141425 !important;
     color: white !important;
     padding-left: 60px;
@@ -170,11 +174,11 @@ html, body {
     color: white !important;
 }
 
-.exportModalCard{
+.modalCard{
     width: 500px !important;
 }
 
-.exportModalHeader {
+.modalHeader {
     align-items: center;
     display: flex;
     flex-shrink: 0;
@@ -183,14 +187,14 @@ html, body {
     position: relative;
 }
 
-.exportModalBody {
+.modalBody {
     flex-grow: 1;
     flex-shrink: 1;
     overflow: auto;
     padding: 20px;
 }
 
-.exportModalFooter {
+.modalFooter {
     align-items: center;
     display: flex;
     flex-shrink: 0;
@@ -204,16 +208,20 @@ html, body {
     width: 200px;
 }
 
-.exportModalLabel{
-    padding-bottom: 10px;
+.closeModal {
+    right: 20px !important;
 }
 
-.exportSection{
-    padding-bottom: 10px;
+.fa-exclamation-triangle {
+    color: red;
+    font-size: 2em;
 }
-.exportCheckBox{
-    margin-right: 5px;
+
+.fa-check-circle {
+    color: green;
+    font-size: 2em;
 }
-.exportCloseModal {
-    right: 20px !important;
+
+.fontSize2em {
+    font-size: 2em;
 }
