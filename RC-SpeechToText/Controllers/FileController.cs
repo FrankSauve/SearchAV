@@ -256,7 +256,8 @@ namespace RC_SpeechToText.Controllers
 		{
 			if (newTitle != null)
 			{
-				File file = _context.File.Find(id);
+                await VerifyIfTitleExists(newTitle);
+                File file = _context.File.Find(id);
 
 				file.Title = newTitle;
 
@@ -345,6 +346,25 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("File reviewerId not updated");
             }
 
+        }
+
+        public async Task<IActionResult> VerifyIfTitleExists(string title)
+        {
+            var files = await _context.File.ToListAsync();
+            int i = 0;
+            string[] titleList = new string[i];
+            
+            foreach(var file in files)
+            {
+                titleList[i] = file.Title;
+                i++;
+            }
+
+            if (titleList.Contains(title, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("File name already exists");
+            }
+            return Ok();      
         }
     }
 }
