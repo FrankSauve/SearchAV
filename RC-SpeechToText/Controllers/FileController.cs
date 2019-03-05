@@ -256,23 +256,29 @@ namespace RC_SpeechToText.Controllers
 		{
 			if (newTitle != null)
 			{
-                await VerifyIfTitleExists(newTitle);
-                File file = _context.File.Find(id);
+                if (await VerifyIfTitleExists(newTitle))
+                {
+                    return BadRequest("File name already exists");
+                }
+                else
+                {
+                    File file = _context.File.Find(id);
 
-				file.Title = newTitle;
+                    file.Title = newTitle;
 
-				try
-				{
-					_context.File.Update(file);
-					await _context.SaveChangesAsync();
-					_logger.LogInformation("Updated current title for file with id: " + file.Id);
-					return Ok(file);
-				}
-				catch
-				{
-					_logger.LogError("Error updating current title for file with id: " + file.Id);
-					return BadRequest("File title not updated");
-				}
+                    try
+                    {
+                        _context.File.Update(file);
+                        await _context.SaveChangesAsync();
+                        _logger.LogInformation("Updated current title for file with id: " + file.Id);
+                        return Ok(file);
+                    }
+                    catch
+                    {
+                        _logger.LogError("Error updating current title for file with id: " + file.Id);
+                        return BadRequest("File title not updated");
+                    }
+                }
 			}
 			else
 			{
@@ -348,7 +354,7 @@ namespace RC_SpeechToText.Controllers
 
         }
 
-        public async Task<IActionResult> VerifyIfTitleExists(string title)
+        public async Task<bool> VerifyIfTitleExists(string title)
         {
             var files = await _context.File.ToListAsync();
             List<string> titleList = new List<string>();
@@ -360,9 +366,9 @@ namespace RC_SpeechToText.Controllers
 
             if (titleList.Contains(title, StringComparer.OrdinalIgnoreCase))
             {
-                return BadRequest("File name already exists");
+                return true;
             }
-            return Ok();      
+            return false;      
         }
     }
 }
