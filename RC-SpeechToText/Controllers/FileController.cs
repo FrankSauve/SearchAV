@@ -351,13 +351,11 @@ namespace RC_SpeechToText.Controllers
         public async Task<IActionResult> VerifyIfTitleExists(string title)
         {
             var files = await _context.File.ToListAsync();
-            int i = 0;
-            string[] titleList = new string[i];
+            List<string> titleList = new List<string>();
             
             foreach(var file in files)
             {
-                titleList[i] = file.Title;
-                i++;
+                titleList.Add(file.Title);
             }
 
             if (titleList.Contains(title, StringComparer.OrdinalIgnoreCase))
