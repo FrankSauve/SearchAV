@@ -105,8 +105,8 @@ export default class FileView extends React.Component<any, State> {
             });
     }
 
-    public handleTranscriptChange = (event: any) => {
-        this.setState({ editedTranscript: event.target.value });
+    public handleTranscriptChange = (text: string) => {
+        this.setState({ editedTranscript: text });
     }
 
     public updateVersion = (newVersion: any) => {
