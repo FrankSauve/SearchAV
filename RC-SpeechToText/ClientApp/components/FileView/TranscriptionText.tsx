@@ -1,5 +1,9 @@
 import * as React from 'react';
 
+interface State {
+    version: any,
+    errorMessage: string
+}
 
 export class TranscriptionText extends React.Component<any> {
     constructor(props: any) {
