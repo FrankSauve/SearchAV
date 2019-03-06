@@ -256,22 +256,29 @@ namespace RC_SpeechToText.Controllers
 		{
 			if (newTitle != null)
 			{
-				File file = _context.File.Find(id);
+                if (await VerifyIfTitleExists(newTitle))
+                {
+                    return BadRequest("Le nom de fichier existe déjà. Veuillez choisir un nouveau nom.");
+                }
+                else
+                {
+                    File file = _context.File.Find(id);
 
-				file.Title = newTitle;
+                    file.Title = newTitle;
 
-				try
-				{
-					_context.File.Update(file);
-					await _context.SaveChangesAsync();
-					_logger.LogInformation("Updated current title for file with id: " + file.Id);
-					return Ok(file);
-				}
-				catch
-				{
-					_logger.LogError("Error updating current title for file with id: " + file.Id);
-					return BadRequest("File title not updated");
-				}
+                    try
+                    {
+                        _context.File.Update(file);
+                        await _context.SaveChangesAsync();
+                        _logger.LogInformation("Updated current title for file with id: " + file.Id);
+                        return Ok(file);
+                    }
+                    catch
+                    {
+                        _logger.LogError("Error updating current title for file with id: " + file.Id);
+                        return BadRequest("File title not updated");
+                    }
+                }
 			}
 			else
 			{
@@ -345,6 +352,23 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("File reviewerId not updated");
             }
 
+        }
+
+        public async Task<bool> VerifyIfTitleExists(string title)
+        {
+            var files = await _context.File.ToListAsync();
+            List<string> titleList = new List<string>();
+            
+            foreach(var file in files)
+            {
+                titleList.Add(file.Title.Trim());
+            }
+
+            if (titleList.Contains(title.Trim(), StringComparer.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            return false;      
         }
     }
 }
