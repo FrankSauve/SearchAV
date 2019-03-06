@@ -156,6 +156,9 @@ export class FileCard extends React.Component<any, State> {
                         this.showErrorModal("Modifier le titre", "Veuillez vous connecter avant de modifier le titre.");
                         this.setState({ 'unauthorized': true });
                     }
+                    else if (err.response.status == 400) {
+                        this.showErrorModal("Modifier le titre", err.response.data);
+                    }
                 });
         }
         else {
@@ -199,6 +202,10 @@ export class FileCard extends React.Component<any, State> {
         else {
             this.showErrorModal(modalTitle, "Enregistrement de la description annul�! Vous n'avez effectu� aucun changements ou vous avez apport� les m�mes modifications.");
         }
+    }
+
+    rawToWhiteSpace(text: string) {
+        return text.replace(/<br\s*[\/]?>/gi, " ");
     }
 
     public handleTitleChange = (event: any) => {
@@ -296,7 +303,7 @@ export class FileCard extends React.Component<any, State> {
                     </div>
                     <div className="card-content">
                         <div className="content fileContent">
-                            <p className="transcription">{this.props.transcription}</p>
+                            <p className="transcription">{this.rawToWhiteSpace(this.props.transcription)}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
                             {/* <p><b>Description:</b> {this.state.description}</p> */}
