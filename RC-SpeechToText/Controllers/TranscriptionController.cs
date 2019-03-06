@@ -227,14 +227,14 @@ namespace RC_SpeechToText.Controllers
 				}
 				else
 				{
+					_logger.LogInformation("Invalid doc type");
 					return false;
 				}
 			});
 
-			_logger.LogInformation("Downloaded transcript: " + transcript);
-
 			if (exportResult)
 			{
+				_logger.LogInformation("Downloaded transcript: " + transcript);
 				return Ok();
 			}
 			else

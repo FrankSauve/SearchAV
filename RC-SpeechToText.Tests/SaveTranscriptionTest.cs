@@ -7,6 +7,9 @@ using RC_SpeechToText.Models;
 using System.Threading.Tasks;
 using System;
 using Version = RC_SpeechToText.Models.Version;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 
 namespace RC_SpeechToText.Tests
 {
@@ -84,5 +87,39 @@ namespace RC_SpeechToText.Tests
             Assert.False(version.Active);
 
         }
-    }
+
+		[Fact]
+		public async void DownloadTranscriptTest()
+		{
+			var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+
+			var versionMock = new List<Version>
+			{
+				new Version { Active = false, DateModified = null, FileId = 119, Id = 1, Transcription = "version 1", UserId = 1},
+				new Version { Active = true, DateModified = null, FileId = 119, Id = 2, Transcription = "version 2", UserId = 1},
+				new Version { Active = true, DateModified = null, FileId = 120, Id = 3, Transcription = "version <br> 3 <br>", UserId = 2}
+			};
+
+			var mock = new Mock<ILogger<TranscriptionController>>();
+			ILogger<TranscriptionController> logger = mock.Object;
+			logger = Mock.Of<ILogger<TranscriptionController>>();
+
+			var controller = new TranscriptionController(context, logger);
+
+			var fileId = 119;
+			var version = versionMock.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault();
+			Assert.Equal(version.FileId, fileId);
+			Assert.True(version.Active);
+
+			var transcript = version.Transcription.Replace("<br>", "\n");
+			Assert.DoesNotContain(transcript, "<br>");
+			Assert.Contains(transcript, "/n");
+
+			var documentType = "fake type";
+
+			var result = await controller.DownloadTranscript(documentType, fileId);
+			Assert.IsType<BadRequestObjectResult>(result);
+		}
+
+	}
 }
