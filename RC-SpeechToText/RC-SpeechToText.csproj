@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Docs.v1" Version="1.38.0.1513" />
     <PackageReference Include="Google.Cloud.Speech.V1" Version="1.0.1" />
     <PackageReference Include="Google.Cloud.Storage.V1" Version="2.3.0" />
     <PackageReference Include="Hellang.Authentication.JwtBearer.Google" Version="1.2.0" />
@@ -53,6 +54,9 @@
 
   <ItemGroup>
     <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="credentials.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
