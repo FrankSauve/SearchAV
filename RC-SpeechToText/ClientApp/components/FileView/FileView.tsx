@@ -105,8 +105,8 @@ export default class FileView extends React.Component<any, State> {
             });
     }
 
-    public handleTranscriptChange = (event: any) => {
-        this.setState({ editedTranscript: event.target.value });
+    public handleTranscriptChange = (text: string) => {
+        this.setState({ editedTranscript: text });
     }
 
     public updateVersion = (newVersion: any) => {
@@ -144,7 +144,7 @@ export default class FileView extends React.Component<any, State> {
                         : this.state.version && this.state.file && this.state.user ? 
                                 <div>
                                     <TranscriptionText
-                                        text={this.state.version.transcription} 
+                                        version={this.state.version} 
                                         handleChange={this.handleTranscriptChange} />
                                     <SaveTranscriptionButton
                                         version={this.state.version}
