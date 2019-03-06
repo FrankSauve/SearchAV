@@ -258,7 +258,7 @@ namespace RC_SpeechToText.Controllers
 			{
                 if (await VerifyIfTitleExists(newTitle))
                 {
-                    return BadRequest("File name already exists");
+                    return BadRequest("Le nom de fichier existe déjà. Veuillez choisir un nouveau nom.");
                 }
                 else
                 {

@@ -156,6 +156,9 @@ export class FileCard extends React.Component<any, State> {
                         this.showErrorModal("Modifier le titre", "Veuillez vous connecter avant de modifier le titre.");
                         this.setState({ 'unauthorized': true });
                     }
+                    else if (err.response.status == 400) {
+                        this.showErrorModal("Modifier le titre", err.response.data);
+                    }
                 });
         }
         else {
