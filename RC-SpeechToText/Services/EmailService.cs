@@ -90,7 +90,7 @@ namespace RC_SpeechToText.Services
                 return false;
         }
 
-        public bool IsValid(string emailAddress)
+        private bool IsValid(string emailAddress)
         {
             return Regex.IsMatch(emailAddress, @"^([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$");
         }
