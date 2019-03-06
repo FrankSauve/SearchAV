@@ -43,6 +43,22 @@ namespace RC_SpeechToText.Services
 			{
 				var credential = GetUserCredential();
 
+				// Create Google Docs API service.
+				var service = new DocsService(new BaseClientService.Initializer()
+				{
+					HttpClientInitializer = credential,
+					ApplicationName = "SearchAV Radio-Canada",
+				});
+
+				var newDocument = new Document
+				{
+					Title = transcription.Substring(0, 10)
+				};
+
+				DocumentsResource.CreateRequest createRequest = service.Documents.Create(newDocument);
+				Document createdDocument = createRequest.Execute();
+
+
 				return true;
 			}
 			catch

@@ -219,6 +219,10 @@ namespace RC_SpeechToText.Controllers
 				{
 					return exportTranscriptionService.CreateWordDocument(transcript);
 				}
+				else if(documentType == "googleDoc")
+				{
+					return exportTranscriptionService.CreateGoogleDocument(transcript);
+				}
 				else
 				{
 					return false;
