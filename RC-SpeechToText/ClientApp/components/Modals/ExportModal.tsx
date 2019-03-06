@@ -68,7 +68,6 @@ export class ExportModal extends React.Component<any, State> {
             };
             axios.get('/api/transcription/downloadtranscript/' + fileId + '/' + exportSelected, config)
                 .then(res => {
-                    this.props.hideModal();
                     this.showSuccessModal();
                 })
                 .catch(err => {
