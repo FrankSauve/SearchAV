@@ -58,6 +58,8 @@ namespace RC_SpeechToText.Services
 				DocumentsResource.CreateRequest createRequest = service.Documents.Create(newDocument);
 				Document createdDocument = createRequest.Execute();
 
+				DocumentsResource.BatchUpdateRequest batchUpdate = service.Documents.BatchUpdate(GenerateGoogleDocText(transcription), createdDocument.DocumentId);
+				batchUpdate.Execute();
 
 				return true;
 			}
@@ -86,6 +88,33 @@ namespace RC_SpeechToText.Services
 			}
 
 			return credential;
+		}
+
+		private BatchUpdateDocumentRequest GenerateGoogleDocText(string transcription)
+		{
+			var endOfSegment = new EndOfSegmentLocation();
+			var inserttextRequest = new InsertTextRequest
+			{
+				Text = transcription,
+				EndOfSegmentLocation = endOfSegment
+			};
+
+			var request = new Request
+			{
+				InsertText = inserttextRequest
+			};
+
+			var requestList = new List<Request>()
+				{
+					request
+				};
+
+			var updateRequest = new BatchUpdateDocumentRequest
+			{
+				Requests = requestList
+			};
+
+			return updateRequest;
 		}
 	}
 }
