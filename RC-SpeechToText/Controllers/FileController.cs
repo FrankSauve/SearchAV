@@ -361,10 +361,10 @@ namespace RC_SpeechToText.Controllers
             
             foreach(var file in files)
             {
-                titleList.Add(file.Title);
+                titleList.Add(file.Title.Trim());
             }
 
-            if (titleList.Contains(title, StringComparer.OrdinalIgnoreCase))
+            if (titleList.Contains(title.Trim(), StringComparer.OrdinalIgnoreCase))
             {
                 return true;
             }
