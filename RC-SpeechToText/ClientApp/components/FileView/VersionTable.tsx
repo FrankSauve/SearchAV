@@ -8,6 +8,7 @@ interface State {
     versions: any[],
     usernames: string[],
     dates: string[],
+    historyTitle: string[], 
     loading: boolean,
     unauthorized: boolean
 }
@@ -20,6 +21,7 @@ export default class VersionTable extends React.Component<any, State> {
             versions: this.props.versions,
             usernames: this.props.usernames,
             dates: this.props.dates,
+            historyTitle: this.props.historyTitle,
             loading: this.props.loading,
             unauthorized: false
         }
@@ -37,6 +39,10 @@ export default class VersionTable extends React.Component<any, State> {
 
         if (this.props.dates !== prevProps.dates) {
             this.setState({ 'dates': this.props.dates });
+        }
+
+        if (this.props.historyTitle !== prevProps.historyTitle) {
+            this.setState({ 'historyTitle': this.props.historyTitle });
         }
     }
 
@@ -57,6 +63,7 @@ export default class VersionTable extends React.Component<any, State> {
                         const VersionComponent = <Version
                                         version={this.state.versions}
                                         username={this.state.usernames[i]}
+                                        historyTitle={this.state.historyTitle}
                                         dates={this.state.dates}
                                     />
                         i++; 

@@ -12,7 +12,7 @@ interface State {
     unauthorized: boolean
 }
 
-export class TranscriptionHistorique extends React.Component<any> {
+export class TranscriptionHistorique extends React.Component<any, State> {
     constructor(props: any) {
         super(props);
 
@@ -80,11 +80,12 @@ export class TranscriptionHistorique extends React.Component<any> {
                      </div>
                 </div>
                 <div className="box mg-top-30">
-                    {this.state.loading ? <Loading /> : this.state.versions ? <FileTable
-                        files={this.state.files}
+                    {this.state.loading ? <Loading /> : this.state.versions ? <VersionTable
+                        versions={this.state.versions}
                         usernames={this.state.usernames}
+                        dates={this.state.dates}
                         loading={this.state.loading}
-                    /> : <h1 className="title">NO FILES</h1>}
+                    /> : <h1 className="title">NO VERSIONS</h1>}
                 </div>
             </div>
         );

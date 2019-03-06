@@ -8,6 +8,7 @@ namespace RC_SpeechToText.Models
         public int UserId { get; set; }
         public int FileId { get; set; }
         public string Transcription { get; set; }
+        public string HistoryTitle { get; set; }
         public Boolean Active { get; set; }
         public DateTime? DateModified { get; set; }
     }
