@@ -201,6 +201,10 @@ export class FileCard extends React.Component<any, State> {
         }
     }
 
+    rawToWhiteSpace(text: string) {
+        return text.replace(/<br\s*[\/]?>/gi, " ");
+    }
+
     public handleTitleChange = (event: any) => {
         this.setState({ modifiedTitle: event.target.value });
     }
@@ -296,7 +300,7 @@ export class FileCard extends React.Component<any, State> {
                     </div>
                     <div className="card-content">
                         <div className="content fileContent">
-                            <p className="transcription">{this.props.transcription}</p>
+                            <p className="transcription">{this.rawToWhiteSpace(this.props.transcription)}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
                             {/* <p><b>Description:</b> {this.state.description}</p> */}
