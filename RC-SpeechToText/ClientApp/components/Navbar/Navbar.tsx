@@ -38,6 +38,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         this.setState({ showExportModal: false });
     }
 
+
     // Shown when the user is logged in
     public renderLoggedIn = () => {
         return (
@@ -80,7 +81,11 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     title={"Exporter un fichier"}
                     onConfirm={this.hideExportModal}
                 />
+
             </div>
+
+
+
         );
     }
 

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RC_SpeechToText.Services
 {
@@ -30,22 +31,68 @@ namespace RC_SpeechToText.Services
             return smtp;
         }
 
-        public void SendTranscriptionDoneEmail(string email, Models.File file)
+        //Modified method in order to return boolean for testing purposes
+        public bool SendTranscriptionDoneEmail(string email, Models.File file)
         {
-            var body = new StringBuilder();
+            if (IsValid(email))
+            {
+                try
+                {
+                    var body = new StringBuilder();
+                    var mail = GetMailer();
+                    var smtp = GetSmtpClient();
 
-            var mail = GetMailer();
-            mail.To.Add(new MailAddress(email));
-            mail.IsBodyHtml = true;
-            mail.Subject = "Nouvelles Transcriptions";
+                    mail.To.Add(new MailAddress(email));
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Nouvelles Transcriptions";
+                    body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
+                    mail.Body = "Liste de transcription: " + "<br />" + body.ToString();
+                    smtp.Send(mail);
+                    smtp.Dispose();
+                }
+                catch (SmtpException ex)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+                return false;
+        }
 
-            body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
+        //Modified method in order to return boolean for testing purposes
+        public bool SendReviewDoneEmail(string email, Models.File file, string reviewer)
+        {
+            if (IsValid(email))
+            {
+                try
+                {
+                    var body = new StringBuilder();
+                    var mail = GetMailer();
+                    var smtp = GetSmtpClient();
 
-            mail.Body = "Liste de transcription: " + "<br />" + body.ToString();
+                    mail.To.Add(new MailAddress(email));
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Révision terminer pour fichier " + file.Title;
+                    body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
+                    mail.Body = "Révision complètez par " + reviewer + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
+                    smtp.Send(mail);
+                    smtp.Dispose();
+                }
+                catch (SmtpException ex)
+                {
+                    return false;
+                }
 
-            var smtp = GetSmtpClient();
-            smtp.Send(mail);
-            smtp.Dispose();
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private bool IsValid(string emailAddress)
+        {
+            return Regex.IsMatch(emailAddress, @"^([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$");
         }
     }
 }

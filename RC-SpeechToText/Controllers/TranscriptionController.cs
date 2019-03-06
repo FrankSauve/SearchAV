@@ -86,8 +86,18 @@ namespace RC_SpeechToText.Controllers
 				file.Flag = flag;
 				_context.File.Update(file);
 				await _context.SaveChangesAsync();
+                //Send email to user who uploaded file stating that review is done
+                if (flag == "Révisé")
+                {
+                    var uploader = await _context.User.FindAsync(file.UserId);
+                    var reviewer = await _context.User.FindAsync(file.ReviewerId);
+                    var emailSerice = new EmailService();
+                    emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
+                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Email sent to: " + uploader.Email + " with the file id: " + file.Id);
 
-				return Ok(newVersion);
+                }
+
+                return Ok(newVersion);
 			}
 			catch
 			{
