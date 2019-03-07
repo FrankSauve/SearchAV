@@ -96,7 +96,7 @@ namespace RC_SpeechToText.Tests
 			var versionMock = new List<Version>
 			{
 				new Version { Active = false, DateModified = null, FileId = 119, Id = 1, Transcription = "version 1", UserId = 1},
-				new Version { Active = true, DateModified = null, FileId = 119, Id = 2, Transcription = "version 2", UserId = 1},
+				new Version { Active = true, DateModified = null, FileId = 119, Id = 2, Transcription = "version <br> 2", UserId = 1},
 				new Version { Active = true, DateModified = null, FileId = 120, Id = 3, Transcription = "version <br> 3 <br>", UserId = 2}
 			};
 
@@ -104,7 +104,7 @@ namespace RC_SpeechToText.Tests
 			ILogger<TranscriptionController> logger = mock.Object;
 			logger = Mock.Of<ILogger<TranscriptionController>>();
 
-			var controller = new TranscriptionController(context, logger);
+			
 
 			var fileId = 119;
 			var version = versionMock.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault();
@@ -113,10 +113,15 @@ namespace RC_SpeechToText.Tests
 
 			var transcript = version.Transcription.Replace("<br>", "\n");
 			Assert.DoesNotContain(transcript, "<br>");
-			Assert.Contains(transcript, "/n");
+			Assert.Contains("\n", transcript);
+
+			//AddAsync Version to database
+			versionMock.ForEach(async x => await context.Version.AddAsync(x));
+			await context.SaveChangesAsync();
 
 			var documentType = "fake type";
 
+			var controller = new TranscriptionController(context, logger);
 			var result = await controller.DownloadTranscript(documentType, fileId);
 			Assert.IsType<BadRequestObjectResult>(result);
 		}
