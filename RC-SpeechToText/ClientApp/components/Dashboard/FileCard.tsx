@@ -13,12 +13,16 @@ interface State {
     modifiedTitle: string,
     newDescription: string,
     flag: string,
+    notified: number,
     showDropdown: boolean,
     showTitleModal: boolean,
     showDescriptionModal: boolean,
-    showErrorDescriptionModal: boolean,
-    showSuccessDescriptionModal: boolean,
-    unauthorized: boolean,
+    showErrorModal: boolean,
+    showSuccessModal: boolean,
+    modalTitle: string,
+    errorMessage: string,
+    successMessage: string,
+    unauthorized: boolean
 }
 
 export class FileCard extends React.Component<any, State> {
@@ -31,11 +35,15 @@ export class FileCard extends React.Component<any, State> {
             modifiedTitle: "",
             newDescription: "",
             flag: this.props.flag,
+            notified: this.props.number, 
             showDropdown: false,
             showTitleModal: false,
             showDescriptionModal: false,
-            showErrorDescriptionModal: false,
-            showSuccessDescriptionModal: false,
+            showErrorModal: false,
+            showSuccessModal: false,
+            modalTitle: "",
+            errorMessage: "",
+            successMessage: "",
             unauthorized: false
         }
     }
@@ -122,29 +130,41 @@ export class FileCard extends React.Component<any, State> {
 
     public saveTitleChange = () => {
 
+        var oldTitle = this.state.title
         var newTitle = this.state.modifiedTitle
 
-        const formData = new FormData();
-        formData.append("newTitle", newTitle)
+        if (oldTitle != newTitle && newTitle != "") {
+            const formData = new FormData();
+            formData.append("newTitle", newTitle)
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-
-        axios.put('/api/file/ModifyTitle/' + this.props.fileId, formData, config)
-            .then(res => {
-                this.setState({ title: this.state.modifiedTitle });
-                this.hideTitleModal();
-            })
-            .catch(err => {
-                console.log(err);
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + auth.getAuthToken(),
+                    'content-type': 'application/json'
                 }
-            });
+            }
+
+            axios.put('/api/file/ModifyTitle/' + this.props.fileId, formData, config)
+                .then(res => {
+                    this.setState({ title: this.state.modifiedTitle });
+                    this.hideTitleModal();
+                    this.showSuccessModal("Modifier le titre" , "Enregistrement du titre confirmï¿½! Les changements effectuï¿½s ont ï¿½tï¿½ enregistrï¿½ avec succï¿½s.");
+                })
+                .catch(err => {
+                    console.log(err);
+                    if (err.response.status == 401) {
+                        this.showErrorModal("Modifier le titre", "Veuillez vous connecter avant de modifier le titre.");
+                        this.setState({ 'unauthorized': true });
+                    }
+                    else if (err.response.status == 400) {
+                        this.showErrorModal("Modifier le titre", err.response.data);
+                    }
+                });
+        }
+        else {
+            this.showErrorModal("Modifier le titre", "Enregistrement du titre annulï¿½! Vous n'avez effectuï¿½ aucun changements ou vous avez apportï¿½ les mï¿½mes modifications.");
+        }
+        
 
     }
 
@@ -152,6 +172,8 @@ export class FileCard extends React.Component<any, State> {
 
         var oldDescription = this.state.description
         var newDescription = this.state.newDescription
+
+        var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description") 
 
         const formData = new FormData();
         formData.append("newDescription", newDescription)
@@ -168,17 +190,22 @@ export class FileCard extends React.Component<any, State> {
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
                     this.hideDescriptionModal();
-                    this.showSuccessDescriptionModal();
+                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirmï¿½! Les changements effectuï¿½s ont ï¿½tï¿½ enregistrï¿½ avec succï¿½s.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
+                        this.showErrorModal(modalTitle, "Veuillez vous connecter avant de modifier la description.");
                         this.setState({ 'unauthorized': true });
                     }
                 });
         }
         else {
-            this.showErrorDescriptionModal();
+            this.showErrorModal(modalTitle, "Enregistrement de la description annulï¿½! Vous n'avez effectuï¿½ aucun changements ou vous avez apportï¿½ les mï¿½mes modifications.");
         }
+    }
+
+    rawToWhiteSpace(text: string) {
+        return text.replace(/<br\s*[\/]?>/gi, " ");
     }
 
     public handleTitleChange = (event: any) => {
@@ -213,20 +240,24 @@ export class FileCard extends React.Component<any, State> {
         this.setState({ showDescriptionModal: false });
     }
 
-    public showSuccessDescriptionModal = () => {
-        this.setState({ showSuccessDescriptionModal: true });
+    public showSuccessModal = (title: string, description: string) => {
+        this.setState({ successMessage: description });
+        this.setState({ modalTitle: title });
+        this.setState({ showSuccessModal: true });
     }
 
-    public hideSuccessDescriptionModal = () => {
-        this.setState({ showSuccessDescriptionModal: false });
+    public showErrorModal = (title: string, description: string) => {
+        this.setState({ errorMessage: description });
+        this.setState({ modalTitle: title });
+        this.setState({ showErrorModal: true });
+    }
+    
+    public hideSuccessModal = () => {
+        this.setState({ showSuccessModal: false });
     }
 
-    public showErrorDescriptionModal = () => {
-        this.setState({ showErrorDescriptionModal: true });
-    }
-
-    public hideErrorDescriptionModal = () => {
-        this.setState({ showErrorDescriptionModal: false });
+    public hideErrorModal = () => {
+        this.setState({ showErrorModal: false });
     }
 
     public render() {
@@ -272,7 +303,7 @@ export class FileCard extends React.Component<any, State> {
                     </div>
                     <div className="card-content">
                         <div className="content fileContent">
-                            <p className="transcription">{this.props.transcription}</p>
+                            <p className="transcription">{this.rawToWhiteSpace(this.props.transcription)}</p>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
                             {/* <p><b>Description:</b> {this.state.description}</p> */}
@@ -297,17 +328,17 @@ export class FileCard extends React.Component<any, State> {
                 />
 
                 <SuccessModal
-                    showModal={this.state.showSuccessDescriptionModal}
-                    hideModal={this.hideSuccessDescriptionModal}
-                    title={this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description"}
-                    successMessage="Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succés."
+                    showModal={this.state.showSuccessModal}
+                    hideModal={this.hideSuccessModal}
+                    title={this.state.modalTitle}
+                    successMessage={this.state.successMessage}
                 />
 
                 <ErrorModal
-                    showModal={this.state.showErrorDescriptionModal}
-                    hideModal={this.hideErrorDescriptionModal}
-                    title={this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description"}
-                    errorMessage="Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.hideErrorModal}
+                    title={this.state.modalTitle}
+                    errorMessage={this.state.errorMessage}
                 />
 
             </div>

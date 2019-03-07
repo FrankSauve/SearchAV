@@ -5,10 +5,10 @@ import Login from './Login';
 import Logout from './Logout';
 import { SelectReviewerModal } from '../Modals/SelectReviewerModal';
 import auth from '../../Utils/auth'
-import { ExportModal } from '../Modals/ExportModal'; 
+import { ExportModal } from '../Modals/ExportModal';
 
 interface State {
-    showModal: boolean,
+    showReviewModal: boolean,
     showExportModal: boolean
 }
 
@@ -17,17 +17,17 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         super(props);
 
         this.state = {
-            showModal: false,
+            showReviewModal: false,
             showExportModal: false
         }
     }
 
-    public showModal = () => {
-        this.setState({ showModal: true });
+    public showReviewModal = () => {
+        this.setState({ showReviewModal: true });
     }
 
     public hideModal = () => {
-        this.setState({ showModal: false });
+        this.setState({ showReviewModal: false });
     }
 
     public showExportModal = () => {
@@ -37,6 +37,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
     public hideExportModal = () => {
         this.setState({ showExportModal: false });
     }
+
 
     // Shown when the user is logged in
     public renderLoggedIn = () => {
@@ -69,11 +70,9 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     <Link className="navbar-item" to="/dashboard">
                         <i className="fas fa-angle-left"></i>
                     </Link>
-                    <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showModal}><i className="far fa-envelope mg-right-5"></i> Demander une revision</a>
+                    <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showReviewModal}><i className="far fa-envelope mg-right-5"></i> Demander une revision</a>
                     <a className="button is-rounded mg-top-10 mg-left-10" onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5"></i>Exporter</a>
-                    <a className="button is-rounded mg-top-10 mg-left-10" onClick={this.showModal}><i className="fas fa-history mg-right-5"></i>Historique</a>
                     <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> Enregistrer</a>
-
                 </div>
 
                 <ExportModal
@@ -81,9 +80,12 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     hideModal={this.hideExportModal}
                     title={"Exporter un fichier"}
                     onConfirm={this.hideExportModal}
-                />   
+                />
 
             </div>
+
+
+
         );
     }
 
@@ -112,7 +114,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                         {this.isInFileViewPage() ? this.renderFileViewNav() : this.renderNormalNav()}
 
                         <SelectReviewerModal
-                            showModal={this.state.showModal}
+                            showModal={this.state.showReviewModal}
                             hideModal={this.hideModal}
                         />
                         
