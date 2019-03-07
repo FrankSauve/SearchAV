@@ -18,7 +18,7 @@ module.exports = (env) => {
         module: {
             rules: [
                 { test: /\.tsx?$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },
-                { test: /\.scss$/, use: isDevBuild ? ['style-loader', 'css-loader', "sass-loader"] : ExtractTextPlugin.extract({ use: 'css-loader?minimize' }) },
+                { test: /\.(scss|sass)$/, use: ['style-loader', 'css-loader', "sass-loader"] },
                 { test: /\.(png|jpg|jpeg|gif|svg|mp4)$/, use: 'url-loader?limit=25000' }
             ]
         },
@@ -37,7 +37,7 @@ module.exports = (env) => {
         ] : [
             // Plugins that apply in production builds only
             new webpack.optimize.UglifyJsPlugin(),
-            new ExtractTextPlugin('site.css')
+            new ExtractTextPlugin('site.scss')
         ])
     }];
 };
