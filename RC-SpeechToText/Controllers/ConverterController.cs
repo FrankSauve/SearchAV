@@ -124,7 +124,7 @@ namespace RC_SpeechToText.Controllers
 				UserId = user.Id,
 				DateAdded = DateTime.Now,
                 Type = fileType,
-                ThumbnailPath = @"\wwwroot\assets\Thumbnails\" + ".jpg",
+                ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
                 //Description = "" 
             };
 			await _context.File.AddAsync(file);
