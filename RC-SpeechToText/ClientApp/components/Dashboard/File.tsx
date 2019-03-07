@@ -6,7 +6,6 @@ import { FileCard } from './FileCard';
 
 interface State {
     transcription: string,
-    thumbnail: string,
     unauthorized: boolean
 }
 
@@ -16,7 +15,6 @@ export default class File extends React.Component<any, State> {
         super(props);
         this.state = {
             transcription: "",
-            thumbnail: 'assets/Thumbnails/' + this.props.title + '.jpg',
             unauthorized: false
             
         }
@@ -49,7 +47,6 @@ export default class File extends React.Component<any, State> {
     }
 
     public render() {   
-        console.log(this.state.thumbnail);
         return (
             <FileCard
                 fileId={this.props.fileId}
@@ -57,7 +54,7 @@ export default class File extends React.Component<any, State> {
                 description={this.props.description}
                 flag={this.props.flag}
                 username={this.props.username}
-                image={this.props.type == "Audio" ? 'assets/speakerIcon.png' : this.state.thumbnail}
+                image={this.props.type == "Audio" ? 'assets/speakerIcon.png' : this.props.thumbnailPath}
                 transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) + "..." : this.state.transcription : null}
                 date={this.props.dateAdded.substring(0, 10) + " " + this.props.dateAdded.substring(11, 16)}
             />

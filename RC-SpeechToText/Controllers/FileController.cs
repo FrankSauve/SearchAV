@@ -263,7 +263,10 @@ namespace RC_SpeechToText.Controllers
                 else
                 {
                     File file = _context.File.Find(id);
-
+                    if (file.ThumbnailPath != "NULL")
+                    {
+                        file.ThumbnailPath = ModifyThumbnailName(file.Title, newTitle);
+                    }
                     file.Title = newTitle;
 
                     try
@@ -369,6 +372,21 @@ namespace RC_SpeechToText.Controllers
                 return true;
             }
             return false;      
+        }
+
+        private string ModifyThumbnailName(string oldName, string newName)
+        {
+            //Verifies if file exists in the current directory
+            if (System.IO.File.Exists(System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg"))
+            {
+                string oldPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg";
+                string newPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + newName + ".jpg";
+                //Rename file in current directory to new title
+                System.IO.File.Move(oldPath, newPath);
+                return @"\assets\Thumbnails\" + newName + ".jpg";
+            }
+            else
+                return "NULL";
         }
     }
 }
