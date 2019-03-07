@@ -6,11 +6,10 @@ import VersionTable from './VersionTable';
 
 interface State {
     versions: any[],
-    usernames: string[],
-    dates: string[],
     loading: boolean,
     unauthorized: boolean
 }
+
 
 export class TranscriptionHistorique extends React.Component<any, State> {
     constructor(props: any) {
@@ -18,11 +17,14 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
         this.state = {
             versions: [],
-            usernames: [],
-            dates: [],
             loading: false,
             unauthorized: false
         }
+    }
+
+    // Called when the component is rendered
+    public componentDidMount() {
+        this.getAllVersions();
     }
 
     public getAllVersions = () => {
@@ -35,14 +37,11 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/versions/GetbyFileId', config)
+        axios.get('/api/version/GetbyFileId/' + this.props.fileId, config)
             .then(res => {
                 console.log(res.data);
-                this.setState({ 'versions': res.data.value.versions });
-                this.setState({ 'loading': false });
-                this.setState({ 'usernames': res.data.value.usernames });
-                this.setState({ 'dates': res.data.value.dates });
-                this.setState({ loading: false });
+                this.setState({ 'versions': res.data });
+                this.setState({ 'loading': false })
                 console.log(this.state.loading);
             })
             .catch(err => {
@@ -51,20 +50,8 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    };
+   };
 
-    public renderVersionsTable = () => {
-        return (
-            <div>
-                {this.state.versions ? <VersionTable
-                    versions={this.state.versions}
-                    usernames={this.state.usernames}
-                    dates={this.state.dates}
-                    loading={this.state.loading}
-                /> : <h1 className="title">NO Versions</h1>}
-            </div>
-        )
-    }
 
     public render() {
         return (
@@ -73,20 +60,16 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                       <p className="HISTORIQUE"> HISTORIQUE </p>
                 </div>
                 <div className="Rectangle-Copy-6">
-                     <div className="content_historique">
-                            <p className="title_historique_changes"> MODIFICATIONS </p>
-                            <p className="historique_date"> 29-10-2018 11:45 </p>
-                            <p className="historique_username"> John Doe </p>
+                    <div className="content_historique">
+                        {this.state.versions.map((version) => {
+                            const listVersions = <div><p className="title_historique_changes"> MODIFICATIONS </p><p className="historique_date"> {version.dateModified.substr(0, 10)} </p><p className="historique_username"> {version.userId} </p></div>
+                            return (
+                                listVersions
+                            )
+                        })}
                      </div>
                 </div>
-                <div className="box mg-top-30">
-                    {this.state.loading ? <Loading /> : this.state.versions ? <VersionTable
-                        versions={this.state.versions}
-                        usernames={this.state.usernames}
-                        dates={this.state.dates}
-                        loading={this.state.loading}
-                    /> : <h1 className="title">NO VERSIONS</h1>}
-                </div>
+               
             </div>
         );
     }

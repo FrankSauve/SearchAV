@@ -47,6 +47,8 @@ export default class FileView extends React.Component<any, State> {
         this.getUser();
     }
 
+
+
     public getVersion = () => {
         this.setState({ loading: true });
         const config = {
@@ -161,10 +163,9 @@ export default class FileView extends React.Component<any, State> {
 
                     <div className="column is-one-fifth historique_padding">
                         <TranscriptionHistorique
-                            />                 
+                            fileId={this.state.fileId}
+                         />                 
                     </div>
-
-                
 
                 </div>
             </div>
