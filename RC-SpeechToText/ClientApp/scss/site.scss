@@ -1,3 +1,10 @@
+@charset "utf-8";
+
+// Set the is-link color variable
+$link: #212940;
+
+
+@import "~bulma/bulma";
 @import "../../node_modules/video-react/dist/video-react.css";
 
 html, body {
