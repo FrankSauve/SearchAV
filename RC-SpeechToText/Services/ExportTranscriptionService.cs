@@ -78,8 +78,10 @@ namespace RC_SpeechToText.Services
 
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words)
 		{
+			//get each paragraph. Remove all empty string (where <br> are present). Trim the strings
 			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim()).ToList();
 			var timestamps = new List<string>();
+			//Count all the word that have been already passed through. => O(logN^2)
 			var wordPassed = 0;
 
 			foreach(string p in paragraph)
@@ -96,8 +98,14 @@ namespace RC_SpeechToText.Services
 
 		private void GenerateSRTFile(List<string> paragraph, List<string> timestamps)
 		{
+			//TODO: Find a way to prompt the user on the file path
 			TextWriter tw = new StreamWriter(paragraph[0] + ".srt");
 
+			//Write each line as follow:
+			//1 (the paragraph count)
+			//00:00:00,000 --> 00:00:00,000
+			//Paragraph
+			//-blank line-
 			var paragraphCount = 0;
 			foreach(string p in paragraph)
 			{
@@ -113,10 +121,13 @@ namespace RC_SpeechToText.Services
 
 		private List<string> GetParagraphTimestamp(string[] paragraph, List<Models.Word> words)
 		{
+			//Look for the first instance where the paragraph word match & the word db match
 			var firstWord = words.Find(x => x.Term == paragraph.First());
+			//Same but for the last word
 			var lastWord = words.Find(x => x.Term == paragraph.Last().RemovePunctuation());
 			return new List<string>
 			{
+				//Save the time stamp
 				FormatTimestamp(firstWord.Timestamp),
 				FormatTimestamp(lastWord.Timestamp)
 			};
