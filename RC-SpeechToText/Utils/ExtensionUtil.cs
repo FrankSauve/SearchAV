@@ -18,5 +18,19 @@ namespace RC_SpeechToText.Utils
 				return false;
 			}
 		}
+
+		public static List<string> RemoveEmptyString(this List<string> str)
+		{
+			var newStringList = new List<string>();
+			foreach(string s in str)
+			{
+				if(!s.IsNullOrEmpty())
+				{
+					newStringList.Add(s);
+				}
+			}
+
+			return newStringList;
+		}
 	}
 }

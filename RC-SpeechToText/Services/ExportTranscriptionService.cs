@@ -7,6 +7,7 @@ using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using static Google.Apis.Docs.v1.DocsService;
 using Word = Microsoft.Office.Interop.Word;
@@ -74,6 +75,30 @@ namespace RC_SpeechToText.Services
 			{
 				return false;
 			}
+		}
+
+		public bool CreateSRTDocument(string transcription, List<Models.Word> words)
+		{
+			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim());
+			var timestamps = new List<string>();
+			foreach(string p in paragraph)
+			{
+				timestamps.AddRange(GetParagraphTimestamp(p, words));
+			}
+
+			return true;
+		}
+
+		private List<string> GetParagraphTimestamp(string paragraph, List<Models.Word> words)
+		{
+			var paragraphWords = paragraph.Split(" ");
+			var firstWord = words.Find(x => x.Term == paragraphWords[0]);
+			var lastWord = words.Find(x => x.Term == paragraphWords[paragraphWords.Length - 1]);
+			return new List<string>
+			{
+				firstWord.Timestamp,
+				lastWord.Timestamp
+			};
 		}
 
 		private UserCredential GetUserCredential()
