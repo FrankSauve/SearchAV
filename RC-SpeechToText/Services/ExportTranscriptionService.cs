@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using static Google.Apis.Docs.v1.DocsService;
 using Word = Microsoft.Office.Interop.Word;
@@ -98,9 +99,24 @@ namespace RC_SpeechToText.Services
 			var lastWord = words.Find(x => x.Term == paragraph.Last().RemovePunctuation());
 			return new List<string>
 			{
-				firstWord.Timestamp,
-				lastWord.Timestamp
+				FormatTimestamp(firstWord.Timestamp),
+				FormatTimestamp(lastWord.Timestamp)
 			};
+		}
+
+		private string FormatTimestamp(string timestamp)
+		{
+			//getting this "\"4.600s\"", should be this 00:00:04,600
+			var temp = string.Join(string.Empty, Regex.Matches(timestamp, @"\d+").OfType<Match>().Select(m => m.Value));
+
+			for (int i = temp.Count(); i < 9; i++) //there is always 9 numbers
+			{
+				temp = "0" + temp;
+			}
+
+			temp = temp.Insert(2, ":").Insert(5, ":").Insert(8, ",");
+
+			return temp;
 		}
 
 		private UserCredential GetUserCredential()
