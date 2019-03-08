@@ -4,13 +4,11 @@ using Google.Apis.Docs.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using RC_SpeechToText.Utils;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static Google.Apis.Docs.v1.DocsService;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace RC_SpeechToText.Services
@@ -80,9 +78,10 @@ namespace RC_SpeechToText.Services
 
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words)
 		{
-			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim());
+			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim()).ToList();
 			var timestamps = new List<string>();
 			var wordPassed = 0;
+
 			foreach(string p in paragraph)
 			{
 				var paragraphWords = p.Split(" ");
@@ -90,7 +89,26 @@ namespace RC_SpeechToText.Services
 				wordPassed += paragraphWords.Count() - 1;
 			}
 
+			GenerateSRTFile(paragraph, timestamps);
+
 			return true;
+		}
+
+		private void GenerateSRTFile(List<string> paragraph, List<string> timestamps)
+		{
+			TextWriter tw = new StreamWriter(paragraph[0] + ".srt");
+
+			var paragraphCount = 0;
+			foreach(string p in paragraph)
+			{
+				tw.WriteLine(paragraphCount.ToString());
+				tw.WriteLine(timestamps[paragraphCount] + " --> " + timestamps[paragraphCount + 1]);
+				tw.WriteLine(paragraph[paragraphCount]);
+				tw.WriteLine("");
+				paragraphCount++;
+			}
+			tw.Close();
+
 		}
 
 		private List<string> GetParagraphTimestamp(string[] paragraph, List<Models.Word> words)
