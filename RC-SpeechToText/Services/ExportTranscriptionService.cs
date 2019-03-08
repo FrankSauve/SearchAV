@@ -81,19 +81,21 @@ namespace RC_SpeechToText.Services
 		{
 			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim());
 			var timestamps = new List<string>();
+			var wordPassed = 0;
 			foreach(string p in paragraph)
 			{
-				timestamps.AddRange(GetParagraphTimestamp(p, words));
+				var paragraphWords = p.Split(" ");
+				timestamps.AddRange(GetParagraphTimestamp(paragraphWords, words.Skip(wordPassed).ToList()));
+				wordPassed += paragraphWords.Count() - 1;
 			}
 
 			return true;
 		}
 
-		private List<string> GetParagraphTimestamp(string paragraph, List<Models.Word> words)
+		private List<string> GetParagraphTimestamp(string[] paragraph, List<Models.Word> words)
 		{
-			var paragraphWords = paragraph.Split(" ");
-			var firstWord = words.Find(x => x.Term == paragraphWords[0]);
-			var lastWord = words.Find(x => x.Term == paragraphWords[paragraphWords.Length - 1]);
+			var firstWord = words.Find(x => x.Term == paragraph.First());
+			var lastWord = words.Find(x => x.Term == paragraph.Last().RemovePunctuation());
 			return new List<string>
 			{
 				firstWord.Timestamp,

@@ -32,5 +32,21 @@ namespace RC_SpeechToText.Utils
 
 			return newStringList;
 		}
+
+		public static string RemovePunctuation(this string str)
+		{
+			if (string.IsNullOrEmpty(str))
+				return str;
+
+			char[] anyOf = { '.', ',', ';', ':', '?', '!' };
+
+			if (anyOf.Contains(str.Last()))
+			{
+				var newStr = str.Remove(str.Length - 1);
+				return newStr;
+			}
+			else
+				return str;
+		}
 	}
 }
