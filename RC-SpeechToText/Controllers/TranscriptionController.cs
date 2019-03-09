@@ -177,7 +177,6 @@ namespace RC_SpeechToText.Controllers
                                
             var newTranscriptList = newTranscriptNoBr.Split(" ").ToList().Select(str => str.Trim()).ToList();
 
-
             //Removing Empty strings
             newTranscriptList.RemoveAll(x => string.IsNullOrEmpty(x));
 
@@ -186,16 +185,29 @@ namespace RC_SpeechToText.Controllers
 
             var iterateOld = 0;
 
+            //This logic here goes through both old and new transcripts simultaneously and assign new words the transcript of the previous word
             for (int i = 0; i < newTranscriptList.Count; i++) {
                 var currentNewWord = newTranscriptList[i];
                 if (currentNewWord.Equals(oldWords[iterateOld].Term , StringComparison.InvariantCultureIgnoreCase))
                 {
                     newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
-                    iterateOld++;
+                    //Making sure we will not go over the list size
+                    if (iterateOld != oldWords.Count - 1)
+                    {
+                        iterateOld++;
+                    } 
                 }
                 else
                 {
-                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                    //Depending on where we add the word this makes sure the word is given the timestamp of the previous word
+                    if (iterateOld == 0 || iterateOld == oldWords.Count - 1)
+                    {
+                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                    }
+                    else
+                    {
+                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld - 1].Timestamp, VersionId = newVersionId });
+                    }
                 }
             }
 
