@@ -81,7 +81,7 @@ namespace RC_SpeechToText.Controllers
            try
             {
                 await SaveWords(versionId, newVersion.Id, newTranscript);
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to the new version: " + newVersionId + " to the database");
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to the new version: " + newVersion.Id + " to the database");
             }
             catch
             {
@@ -182,34 +182,51 @@ namespace RC_SpeechToText.Controllers
 
             //Have to explicitely create variable to hold the Word objects
             List<Word> newWords = new List<Word>();
-            //Kept to keep track of where 
-            var iterateOld = 0;
 
-            //This logic here goes through both old and new transcripts simultaneously and assign new words the transcript of the previous word
-            for (int i = 0; i < newTranscriptList.Count; i++) {
-                var currentNewWord = newTranscriptList[i];
-                if (currentNewWord.Equals(oldWords[iterateOld].Term , StringComparison.InvariantCultureIgnoreCase))
+            //Here we have 2 cases 1) If the user only edited words 2) If the user kept same words as previous transcript but added new ones
+
+            //If both array are the same size we can assume the user only edited words and can associate the right timestam to the right word
+            if (newTranscriptList.Count == oldWords.Count)
+            {
+                for (int i = 0; i < newTranscriptList.Count; i++)
                 {
-                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
-                    //Making sure we will not go over the list size
-                    if (iterateOld != oldWords.Count - 1)
-                    {
-                        iterateOld++;
-                    } 
+                    newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[i].Timestamp, VersionId = newVersionId });
                 }
-                else
+            }
+            //If both arrays are not the same size we can assume that the user added new words
+            else
+            {
+                //Kept to keep track of where we are in the old list of words
+                var iterateOld = 0;
+
+                //This logic here goes through both old and new transcripts simultaneously and assign new words the transcript of the previous word
+                for (int i = 0; i < newTranscriptList.Count; i++)
                 {
-                    //Depending on where we add the word this makes sure the word is given the timestamp of the previous word
-                    if (iterateOld == 0 || iterateOld == oldWords.Count - 1)
+                    var currentNewWord = newTranscriptList[i];
+                    if (currentNewWord.Equals(oldWords[iterateOld].Term, StringComparison.InvariantCultureIgnoreCase))
                     {
                         newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                        //Making sure we will not go over the list size
+                        if (iterateOld != oldWords.Count - 1)
+                        {
+                            iterateOld++;
+                        }
                     }
                     else
                     {
-                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld - 1].Timestamp, VersionId = newVersionId });
+                        //Depending on where we add the word this makes sure the word is given the timestamp of the previous word
+                        if (iterateOld == 0 || iterateOld == oldWords.Count - 1)
+                        {
+                            newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                        }
+                        else
+                        {
+                            newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld - 1].Timestamp, VersionId = newVersionId });
+                        }
                     }
                 }
             }
+            
 
             return newWords;
         }
