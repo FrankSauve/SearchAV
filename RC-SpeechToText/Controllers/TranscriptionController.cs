@@ -77,16 +77,15 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogError("Error updating new version with id: " + newVersion.Id);
             }
 
-            //This private method will add the words in the database
+            //Calling this method will handle saving the new words in the databse
            try
             {
-
                 await SaveWords(versionId, newVersion.Id, newTranscript);
-             
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to the new version: " + newVersionId + " to the database");
             }
             catch
             {
-                _logger.LogError("Error saving words with id: " + newVersion.Id);
+                _logger.LogError("Error saving new words with id: " + newVersion.Id);
             }
 
             //Find corresponding file and update its flag 
@@ -119,11 +118,11 @@ namespace RC_SpeechToText.Controllers
         }
 
         /// <summary>
-        /// Private method that handles saving words in the database when SaveTranscript is called
+        /// Private method that handles saving new words in the database when SaveTranscript is called
+        /// This makes the transcript still searchable after adding new words
         /// </summary>
         public async Task<IActionResult> SaveWords(int versionId, int newVersionId, string newTranscript)
         {
-         
 
             //Have to explicitly instantiate variable to be able to keep the words.
             List<Word> oldWords = new List<Word>();
@@ -147,7 +146,7 @@ namespace RC_SpeechToText.Controllers
             List<Word> newWords = AddNewTimestamps( oldWords, newTranscript, newVersionId );
 
 
-            //For each word in the old version change its version and put it back in the database to match the new version.
+            //Add all the words of the transcript to the database
             try
             {
                 foreach ( var word in newWords)
@@ -156,12 +155,10 @@ namespace RC_SpeechToText.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to version: " + newVersionId + " to the database");
-
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error adding a word to the database: " + newVersionId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error adding a word to the database associated with new version: " + newVersionId);
                 return BadRequest("Error adding words with versionId: " + newVersionId);
             }
 
@@ -169,20 +166,23 @@ namespace RC_SpeechToText.Controllers
             return Ok();
         }
 
-
+        /// <summary>
+        /// Private method that handles matching the new words to a timestamp
+        /// Returns a list of Word objects with their timestamps and associated versionId
+        /// </summary>
         private List<Word> AddNewTimestamps (List<Word> oldWords,string newTranscript, int newVersionId)
         {
             //Removing all the line skips to have 
             var newTranscriptNoBr = newTranscript.Replace("<br>", " ");
-                               
+            //Changes the new transcript to a list of words to match it against the old words                  
             var newTranscriptList = newTranscriptNoBr.Split(" ").ToList().Select(str => str.Trim()).ToList();
 
             //Removing Empty strings
-            newTranscriptList.RemoveAll(x => string.IsNullOrEmpty(x));
+            newTranscriptList.RemoveAll(str => string.IsNullOrEmpty(str));
 
             //Have to explicitely create variable to hold the Word objects
             List<Word> newWords = new List<Word>();
-
+            //Kept to keep track of where 
             var iterateOld = 0;
 
             //This logic here goes through both old and new transcripts simultaneously and assign new words the transcript of the previous word
