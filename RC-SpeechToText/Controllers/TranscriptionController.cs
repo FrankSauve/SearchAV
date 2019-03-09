@@ -78,7 +78,7 @@ namespace RC_SpeechToText.Controllers
             }
 
             //This private method will add the words in the database
-            try
+           try
             {
 
                 await SaveWords(versionId, newVersion.Id, newTranscript);
@@ -86,7 +86,7 @@ namespace RC_SpeechToText.Controllers
             }
             catch
             {
-                _logger.LogError("Error updating new words with id: " + newVersion.Id);
+                _logger.LogError("Error saving words with id: " + newVersion.Id);
             }
 
             //Find corresponding file and update its flag 
@@ -123,8 +123,10 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         public async Task<IActionResult> SaveWords(int versionId, int newVersionId, string newTranscript)
         {
+         
+
             //Have to explicitly instantiate variable to be able to keep the words.
-            List<Word> words = new List<Word>();
+            List<Word> oldWords = new List<Word>();
 
             //Getting all the words for this versionId
             try
@@ -132,7 +134,7 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all words for versionId: " + versionId);
       
                 //Ordered by Id to get the words in the same order as transcript
-                words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
+                oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
 
             }
             catch (Exception ex)
@@ -141,13 +143,16 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("Error fetching words with versionId: " + versionId);
             }
 
+            //Add timestamps and return the new words
+            List<Word> newWords = AddNewTimestamps( oldWords, newTranscript, newVersionId );
+
 
             //For each word in the old version change its version and put it back in the database to match the new version.
             try
             {
-                foreach (var word in words)
+                foreach ( var word in newWords)
                 {
-                    await _context.Word.AddAsync(new Word { Term = word.Term, Timestamp = word.Timestamp, VersionId = newVersionId });
+                    await _context.Word.AddAsync(word);
                     await _context.SaveChangesAsync();
                 }
 
@@ -162,6 +167,39 @@ namespace RC_SpeechToText.Controllers
 
 
             return Ok();
+        }
+
+
+        private List<Word> AddNewTimestamps (List<Word> oldWords,string newTranscript, int newVersionId)
+        {
+            //Removing all the line skips to have 
+            var newTranscriptNoBr = newTranscript.Replace("<br>", " ");
+                               
+            var newTranscriptList = newTranscriptNoBr.Split(" ").ToList().Select(str => str.Trim()).ToList();
+
+
+            //Removing Empty strings
+            newTranscriptList.RemoveAll(x => string.IsNullOrEmpty(x));
+
+            //Have to explicitely create variable to hold the Word objects
+            List<Word> newWords = new List<Word>();
+
+            var iterateOld = 0;
+
+            for (int i = 0; i < newTranscriptList.Count; i++) {
+                var currentNewWord = newTranscriptList[i];
+                if (currentNewWord.Equals(oldWords[iterateOld].Term , StringComparison.InvariantCultureIgnoreCase))
+                {
+                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                    iterateOld++;
+                }
+                else
+                {
+                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                }
+            }
+
+            return newWords;
         }
 
 
