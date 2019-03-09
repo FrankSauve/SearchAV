@@ -183,7 +183,7 @@ namespace RC_SpeechToText.Controllers
             //Have to explicitely create variable to hold the Word objects
             List<Word> newWords = new List<Word>();
 
-            //Here we have 2 cases 1) If the user only edited words 2) If the user kept same words as previous transcript but added new ones
+            //Here we have 3 cases 1) If the user only edited words 2) If the user only removed words 3) If the user kept same words as previous transcript but added new ones
 
             //If both array are the same size we can assume the user only edited words and can associate the right timestam to the right word
             if (newTranscriptList.Count == oldWords.Count)
@@ -193,7 +193,26 @@ namespace RC_SpeechToText.Controllers
                     newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[i].Timestamp, VersionId = newVersionId });
                 }
             }
-            //If both arrays are not the same size we can assume that the user added new words
+            //If list of old words is larger than the new one we can assume that the user deleted some words
+            else if(newTranscriptList.Count < oldWords.Count)
+            {
+                var iterateOld = 0;
+                for (int i = 0; i < newTranscriptList.Count; i++)
+                {
+                    //When going through the new transcript look through old transcript to find the words that match.
+                    for(int j = iterateOld; j < oldWords.Count; j++)
+                    {
+                        if (newTranscriptList[i].Equals(oldWords[j].Term, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[j].Timestamp, VersionId = newVersionId });
+                            iterateOld = j + 1;
+                            break;
+                        }
+                    }
+                    
+                }
+            }
+            //If list of new words is larger than the old one we can assume that the user added new words
             else
             {
                 //Kept to keep track of where we are in the old list of words
