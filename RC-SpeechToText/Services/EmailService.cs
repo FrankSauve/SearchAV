@@ -52,6 +52,7 @@ namespace RC_SpeechToText.Services
                 }
                 catch (SmtpException ex)
                 {
+                    Console.WriteLine(ex);
                     return false;
                 }
                 return true;
@@ -81,6 +82,7 @@ namespace RC_SpeechToText.Services
                 }
                 catch (SmtpException ex)
                 {
+                    Console.WriteLine(ex);
                     return false;
                 }
 
