@@ -25,8 +25,8 @@ namespace RC_SpeechToText.Services
                 EnableSsl = true,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("rcemail1819@gmail.com", "capstone1819"),
                 Host = "smtp.gmail.com"
+                Credentials = new NetworkCredential("rcemail1819@gmail.com", "capstone1819"),
             };
             return smtp;
         }
