@@ -7,33 +7,60 @@ using System.Threading.Tasks;
 namespace RC_SpeechToText.Services
 {
     public class ModifyTimeStampService
-{
-    public List<Word> ModifyTimestamps(List<Word> oldWords, string newTranscript, int newVersionId)
     {
-        //Removing all the line skips to have 
-        var newTranscriptNoBr = newTranscript.Replace("<br>", " ");
-        //Changes the new transcript to a list of words to match it against the old words                  
-        var newTranscriptList = newTranscriptNoBr.Split(" ").ToList().Select(str => str.Trim()).ToList();
-
-        //Removing Empty strings
-        newTranscriptList.RemoveAll(str => string.IsNullOrEmpty(str));
-
-        //Have to explicitely create variable to hold the Word objects
-        List<Word> newWords = new List<Word>();
-
-        //Here we have 3 cases 1) If the user only edited words 2) If the user only removed words 3) If the user kept same words as previous transcript but added new ones
-
-        //If both array are the same size we can assume the user only edited words and can associate the right timestam to the right word
-        if (newTranscriptList.Count == oldWords.Count)
+        public List<Word> ModifyTimestamps(List<Word> oldWords, string newTranscript, int newVersionId)
         {
+            //Removing all the line skips to have 
+            var newTranscriptNoBr = newTranscript.Replace("<br>", " ");
+            //Changes the new transcript to a list of words to match it against the old words                  
+            var newTranscriptList = newTranscriptNoBr.Split(" ").ToList().Select(str => str.Trim()).ToList();
+
+            //Removing Empty strings
+            newTranscriptList.RemoveAll(str => string.IsNullOrEmpty(str));
+
+            //Have to explicitely create variable to hold the Word objects
+            List<Word> newWords = new List<Word>();
+
+            //Here we have 3 cases 1) If the user only edited words 2) If the user only removed words 3) If the user kept same words as previous transcript but added new ones
+
+            //If both array are the same size we can assume the user only edited words and can associate the right timestam to the right word
+            if (newTranscriptList.Count == oldWords.Count)
+            {
+                newWords = this.HandleEdited(oldWords, newTranscript, newVersionId, newTranscriptList);
+            }
+            //If list of old words is larger than the new one we can assume that the user deleted some words
+            else if (newTranscriptList.Count < oldWords.Count)
+            {
+                newWords = this.HandleDeleted(oldWords, newTranscript, newVersionId, newTranscriptList);
+            }
+            //If list of new words is larger than the old one we can assume that the user added new words
+            else
+            {
+                newWords = this.HandleAdded(oldWords, newTranscript, newVersionId, newTranscriptList);
+            }
+
+
+            return newWords;
+        }
+
+        private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
+        {
+            //Have to explicitely create variable to hold the Word objects
+            List<Word> newWords = new List<Word>();
+
             for (int i = 0; i < newTranscriptList.Count; i++)
             {
                 newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[i].Timestamp, VersionId = newVersionId });
             }
+
+            return newWords;
         }
-        //If list of old words is larger than the new one we can assume that the user deleted some words
-        else if (newTranscriptList.Count < oldWords.Count)
+
+        private List<Word> HandleDeleted(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
         {
+            //Have to explicitely create variable to hold the Word objects
+            List<Word> newWords = new List<Word>();
+
             var iterateOld = 0;
             for (int i = 0; i < newTranscriptList.Count; i++)
             {
@@ -49,10 +76,16 @@ namespace RC_SpeechToText.Services
                 }
 
             }
+
+            return newWords;
         }
-        //If list of new words is larger than the old one we can assume that the user added new words
-        else
+
+        private List<Word> HandleAdded(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
         {
+            //Have to explicitely create variable to hold the Word objects
+            List<Word> newWords = new List<Word>();
+
+
             //Kept to keep track of where we are in the old list of words
             var iterateOld = 0;
 
@@ -82,10 +115,10 @@ namespace RC_SpeechToText.Services
                     }
                 }
             }
+
+            return newWords;
         }
-
-
-        return newWords;
     }
-}
+
+    
 }
