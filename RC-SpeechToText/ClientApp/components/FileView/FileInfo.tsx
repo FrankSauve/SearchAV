@@ -7,6 +7,7 @@ interface State {
     name: string,
     userId: string,
     dateModified: string,
+    dateFormated: string,
     unauthorized: boolean
 
 }
@@ -20,6 +21,7 @@ export class FileInfo extends React.Component<any, State> {
             name: '',
             userId: this.props.userId,
             dateModified: this.props.dateModified,
+            dateFormated: '',
             unauthorized: false
         }
     }
@@ -27,6 +29,7 @@ export class FileInfo extends React.Component<any, State> {
     // Called when the component is rendered
     public componentDidMount() {
         this.getUserFile();
+        this.formatTime();
     }
 
     public getUserFile = () => {
@@ -47,6 +50,24 @@ export class FileInfo extends React.Component<any, State> {
             });
     }
 
+    public formatTime = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/File/FormatTime/' + this.state.dateModified + '/', config)
+            .then(res => {
+                this.setState({ dateFormated: res.data });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    }
+
     public render() {
         return (
             <div className = "columns">
@@ -59,7 +80,7 @@ export class FileInfo extends React.Component<any, State> {
                 </div>
                 <div className="column">
                     <b>Date de modification: </b>
-                    <p> {this.state.dateModified} </p>
+                    <p> {this.state.dateFormated} </p>
                     <b>Import&#233; par: </b>
                     <p>{this.state.name}</p>
 

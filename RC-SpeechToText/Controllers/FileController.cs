@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using RC_SpeechToText.Utils;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -176,6 +177,12 @@ namespace RC_SpeechToText.Controllers
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files with userId -> " + id);
                 return BadRequest("Get user files failed.");
             }
+        }
+
+        [HttpGet("[action]/{date}")]
+        public IActionResult FormatTime(string date)
+        {
+            return Ok(DateTimeUtil.FormatDateCardInfo(date));
         }
 
         [HttpGet("[action]/{id}")]
