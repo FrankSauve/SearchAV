@@ -1,14 +1,13 @@
-﻿using Google.Cloud.Speech.V1;
-using Google.Cloud.Storage.V1;
-using RC_SpeechToText.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Google.Cloud.Speech.V1;
+using Google.Cloud.Storage.V1;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RC_SpeechToText.Services
+namespace RC_SpeechToText.Infrastructure
 {
-    public class GoogleService
+    public class GoogleRepository
 	{
 		/// <summary>
 		/// Transcribe the input file to text using Google Cloud
