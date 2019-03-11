@@ -6,6 +6,7 @@ import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
 import { TranscriptionSearch } from './TranscriptionSearch';
 import { SaveTranscriptionButton } from './SaveTranscriptionButton';
+import { FileInfo } from './FileInfo';
 import { Link } from 'react-router-dom';
 import Loading from '../Loading';
 
@@ -134,7 +135,19 @@ export default class FileView extends React.Component<any, State> {
                             <div className="card-content">
                             <b>Description: </b>{this.state.file.description}
                             </div> </div></div> : <div className="card">
-                                <div className="card-content"> This file has no description </div></div> ) : null}</p>
+                                <div className="card-content"> This file has no description </div></div>) : null}</p>
+
+                        <br/>
+
+                        <p>{this.state.file ? (this.state.file ? <div><div className="card">
+                            <div className="card-content">
+                                {this.state.version ?
+                                    <FileInfo
+                                        thumbnail={this.state.file.thumbnailPath}
+                                        userId={this.state.file.userId}
+                                        dateModified={this.state.version.dateModified}/> : null}
+                            </div> </div></div> : <div className="card">
+                                <div className="card-content"> This file has no extra Info </div></div>) : null}</p>
                     </div>
 
                     <div className="column mg-top-30">
