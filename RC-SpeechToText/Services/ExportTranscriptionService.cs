@@ -99,7 +99,7 @@ namespace RC_SpeechToText.Services
 		private void GenerateSRTFile(List<string> paragraph, List<string> timestamps)
 		{
 			//TODO: Find a way to prompt the user on the file path
-			TextWriter tw = new StreamWriter(paragraph[0] + ".srt");
+			TextWriter tw = new StreamWriter(paragraph[0].Substring(0, 10) + ".srt");
 
 			//Write each line as follow:
 			//1 (the paragraph count)

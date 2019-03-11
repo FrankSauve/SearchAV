@@ -237,8 +237,7 @@ namespace RC_SpeechToText.Controllers
 				}
 				else if(documentType == "srt")
 				{
-					//var words = await _context.Word.Where(v => v.VersionId == version.Id).ToListAsync();
-					var words = await _context.Word.Where(v => v.VersionId == 119).ToListAsync();
+					var words = await _context.Word.Where(v => v.VersionId == version.Id).ToListAsync();
 					if (words.Count > 0)
 						return exportTranscriptionService.CreateSRTDocument(transcript, words);
 					else
