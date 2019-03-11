@@ -139,7 +139,7 @@ export default class FileView extends React.Component<any, State> {
 
                         <br/>
 
-                        <p>{this.state.file ? (this.state.file.description ? <div><div className="card">
+                        <p>{this.state.file ? (this.state.file ? <div><div className="card">
                             <div className="card-content">
                                 {this.state.version ?
                                     <FileInfo
