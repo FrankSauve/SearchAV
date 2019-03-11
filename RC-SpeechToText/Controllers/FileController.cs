@@ -236,6 +236,8 @@ namespace RC_SpeechToText.Controllers
                 var files = await _context.File.ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
 
+                search = search.Trim();
+
 				var filesContainDescription = new List<File>();
 
 				foreach (var file in files)
@@ -245,9 +247,21 @@ namespace RC_SpeechToText.Controllers
 						if (file.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
 						{
 							filesContainDescription.Add(file);
+
+                            //If file is added here we do not want to add it again if it has a title match too
+                            continue;
 						}
 					}
-				}
+                    if (file.Title != null)
+                    {
+                        if (file.Title.Equals(search, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            filesContainDescription.Add(file);
+                        }
+                    }
+                }
+
+               
 
 				return Ok(filesContainDescription);
 			}
