@@ -141,7 +141,11 @@ export default class FileView extends React.Component<any, State> {
 
                         <p>{this.state.file ? (this.state.file.description ? <div><div className="card">
                             <div className="card-content">
-                                {this.state.version ? <FileInfo /> : null}
+                                {this.state.version ?
+                                    <FileInfo
+                                        thumbnail={this.state.file.thumbnailPath}
+                                        userId={this.state.file.userId}
+                                        dateModified={this.state.version.dateModified}/> : null}
                             </div> </div></div> : <div className="card">
                                 <div className="card-content"> This file has no extra Info </div></div>) : null}</p>
                     </div>
