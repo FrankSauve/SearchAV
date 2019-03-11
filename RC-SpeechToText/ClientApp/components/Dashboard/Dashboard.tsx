@@ -274,7 +274,7 @@ export default class Dashboard extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/file/getFilesByDescription/' + this.state.searchTerms, config)
+        axios.get('/api/file/getFilesByDescriptionAndTitle/' + this.state.searchTerms, config)
             .then(res => {
                 this.setState({ files: res.data });
             })
@@ -341,7 +341,7 @@ export default class Dashboard extends React.Component<any, State> {
                         <div>
                             <div className="field is-horizontal">
                                 <a className="button is-link mg-right-10" onClick={this.searchDescription}> Rechercher </a>
-                                <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
+                                <input className="input" type="text" placeholder="Chercher les fichiers par titre ou description" onChange={this.handleSearch} />
                             </div>
                         </div>
 

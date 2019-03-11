@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using RC_SpeechToText.Utils;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -228,7 +229,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{search}")]
-        public async Task<IActionResult> GetFilesByDescription(string search)
+        public async Task<IActionResult> GetFilesByDescriptionAndTitle(string search)
         {
             try
             {
@@ -236,34 +237,8 @@ namespace RC_SpeechToText.Controllers
                 var files = await _context.File.ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
 
-                search = search.Trim();
 
-				var filesContainDescription = new List<File>();
-
-				foreach (var file in files)
-				{
-					if (file.Description != null)
-					{
-						if (file.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-						{
-							filesContainDescription.Add(file);
-
-                            //If file is added here we do not want to add it again if it has a title match too
-                            continue;
-						}
-					}
-                    if (file.Title != null)
-                    {
-                        if (file.Title.Equals(search, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            filesContainDescription.Add(file);
-                        }
-                    }
-                }
-
-               
-
-				return Ok(filesContainDescription);
+				return Ok(SearchService.SearchDescriptionAndTitle(files,search));
 			}
             catch (Exception ex)
             {
