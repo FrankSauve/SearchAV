@@ -71,8 +71,8 @@ export class ExportModal extends React.Component<any, State> {
                     this.showSuccessModal();
                 })
                 .catch(err => {
+                    this.showErrorModal("Une erreur est survenu lors de l'export du fichier")
                     this.setState({ 'unauthorized': true });
-                    this.showErrorModal(err.response.data)
                 });
         } else {
             if (fileId == "" || fileId == 0)
@@ -89,7 +89,7 @@ export class ExportModal extends React.Component<any, State> {
                 <ErrorModal
                     showModal={this.state.showErrorModal}
                     hideModal={this.hideErrorModal}
-                    title="Une erreur est survenu lors de l'export du fichier"
+                    title="Erreur!"
                     errorMessage={this.state.errorMessage}
                 />
 

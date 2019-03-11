@@ -222,25 +222,33 @@ namespace RC_SpeechToText.Controllers
 
             var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
             var rawTranscript = version.Transcription;
-            var transcript = rawTranscript.Replace("<br>", "\n");
+			var transcript = rawTranscript.Replace("<br>", "\n ");
 
 
-            var exportResult = await Task.Run(() => {
-                var exportTranscriptionService = new ExportTranscriptionService();
-                if (documentType == "doc")
-                {
-                    return exportTranscriptionService.CreateWordDocument(transcript);
-                }
-                else if (documentType == "googleDoc")
-                {
-                    return exportTranscriptionService.CreateGoogleDocument(transcript);
-                }
-                else
-                {
-                    _logger.LogInformation("Invalid doc type");
-                    return false;
-                }
-            });
+			var exportResult = await Task.Run(async () => {
+				var exportTranscriptionService = new ExportTranscriptionService();
+				if (documentType == "doc")
+				{
+					return exportTranscriptionService.CreateWordDocument(transcript);
+				}
+				else if(documentType == "googleDoc")
+				{
+					return exportTranscriptionService.CreateGoogleDocument(transcript);
+				}
+				else if(documentType == "srt")
+				{
+					var words = await _context.Word.Where(v => v.VersionId == version.Id).ToListAsync();
+					if (words.Count > 0)
+						return exportTranscriptionService.CreateSRTDocument(transcript, words);
+					else
+						return false;
+				}
+				else
+				{
+					_logger.LogInformation("Invalid doc type");
+					return false;
+				}
+			});
 
             if (exportResult)
             {
