@@ -42,11 +42,7 @@ namespace RC_SpeechToText.Tests
             string editTranscription = "Test Edit Transcription";
             string reviewTranscription = "Test Review Transcription";
 
-            var mock = new Mock<ILogger<TranscriptionController>>();
-            ILogger<TranscriptionController> logger = mock.Object;
-            logger = Mock.Of<ILogger<TranscriptionController>>();
-
-            var controller = new TranscriptionController(context, logger);
+            var controller = new TranscriptionController(context);
 
             //Editing file
             await controller.SaveTranscript(user.Id, version.Id, editTranscription);
@@ -130,12 +126,7 @@ namespace RC_SpeechToText.Tests
 
             string addWordsTranscription = "Un Deux DeuxDeux Trois Quatre Cinq Six Sept Huit";// Added DeuxDeux and Huit
             
-
-            var mock = new Mock<ILogger<TranscriptionController>>();
-            ILogger<TranscriptionController> logger = mock.Object;
-            logger = Mock.Of<ILogger<TranscriptionController>>();
-
-            var controller = new TranscriptionController(context, logger);
+            var controller = new TranscriptionController(context);
 
             //Editing file to add Words
             await controller.SaveTranscript(user.Id, version.Id, addWordsTranscription);
@@ -199,12 +190,7 @@ namespace RC_SpeechToText.Tests
 
             string addWordsTranscription = "Deux Trois Quatre Six";// Removed word Un/Cinq/Sept
 
-
-            var mock = new Mock<ILogger<TranscriptionController>>();
-            ILogger<TranscriptionController> logger = mock.Object;
-            logger = Mock.Of<ILogger<TranscriptionController>>();
-
-            var controller = new TranscriptionController(context, logger);
+            var controller = new TranscriptionController(context);
 
             //Editing file to delete words
             await controller.SaveTranscript(user.Id, version.Id, addWordsTranscription);
@@ -262,12 +248,7 @@ namespace RC_SpeechToText.Tests
 
             string addWordsTranscription = "Uno Deux Trois Quatre Cinqo Six Seven";// Modified word Un/Cinq/Sept
 
-
-            var mock = new Mock<ILogger<TranscriptionController>>();
-            ILogger<TranscriptionController> logger = mock.Object;
-            logger = Mock.Of<ILogger<TranscriptionController>>();
-
-            var controller = new TranscriptionController(context, logger);
+            var controller = new TranscriptionController(context);
 
             //Editing file to modify words
             await controller.SaveTranscript(user.Id, version.Id, addWordsTranscription);
@@ -298,12 +279,6 @@ namespace RC_SpeechToText.Tests
 				new Version { Active = true, DateModified = null, FileId = 120, Id = 3, Transcription = "version <br> 3 <br>", UserId = 2}
 			};
 
-			var mock = new Mock<ILogger<TranscriptionController>>();
-			ILogger<TranscriptionController> logger = mock.Object;
-			logger = Mock.Of<ILogger<TranscriptionController>>();
-
-			
-
 			var fileId = 119;
 			var version = versionMock.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault();
 			Assert.Equal(version.FileId, fileId);
@@ -319,7 +294,7 @@ namespace RC_SpeechToText.Tests
 
 			var documentType = "fake type";
 
-			var controller = new TranscriptionController(context, logger);
+			var controller = new TranscriptionController(context);
 			var result = await controller.DownloadTranscript(documentType, fileId);
 			Assert.IsType<BadRequestObjectResult>(result);
 		}

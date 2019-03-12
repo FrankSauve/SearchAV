@@ -35,13 +35,9 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Automatisé" });
             await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
             await context.SaveChangesAsync();
-
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
+			
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.getAllAutomatedFiles();
 
             // Assert
@@ -83,12 +79,8 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
             await context.SaveChangesAsync();
 
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.getAllEditedFiles();
 
             // Assert
@@ -133,13 +125,9 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file2);
             await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
-            
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
 
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.getAllReviewedFiles();
 
             // Assert

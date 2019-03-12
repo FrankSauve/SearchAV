@@ -27,13 +27,9 @@ namespace RC_SpeechToText.Tests
 
             await context.Version.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new Models.Version { Transcription = "transcription", FileId = 1, UserId = 1}));
             await context.SaveChangesAsync();
-
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
+			
             //Act
-            var controller = new VersionController(context, logger);
+            var controller = new VersionController(context);
             var result = await controller.Index();
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -55,13 +51,9 @@ namespace RC_SpeechToText.Tests
             var version = new Models.Version { Transcription = "transcription", FileId = 1, UserId = 1 };
             await context.Version.AddAsync(version);
             await context.SaveChangesAsync();
-
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
+			
             // Act
-            var controller = new VersionController(context, logger);
+            var controller = new VersionController(context);
             var result = await controller.GetbyFileId(version.FileId);
 
             // Assert

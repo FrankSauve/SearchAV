@@ -25,13 +25,9 @@ namespace RC_SpeechToText.Tests
 
             await context.File.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t }));
             await context.SaveChangesAsync();
-            
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
 
             //Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.Index();
                 
             // Assert
@@ -63,12 +59,8 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(new File { Title = "testFile", UserId = user.Id });
             await context.SaveChangesAsync();
 
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.GetAllWithUsernames();
 
             // Assert
@@ -117,13 +109,8 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
 
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
-
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
 
             var result = await controller.getAllFilesByUser(user.Id);
             // Assert
@@ -161,14 +148,9 @@ namespace RC_SpeechToText.Tests
             // Add file with title testFile
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
-            
-
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
 
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.Details(file.Id);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -202,14 +184,9 @@ namespace RC_SpeechToText.Tests
             // Add files using userId
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
-
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
-
+			
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.AddReviewer(file.Id, reviewer.Id);
             
             // Assert
