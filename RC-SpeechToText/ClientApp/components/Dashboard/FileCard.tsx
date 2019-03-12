@@ -99,7 +99,6 @@ export class FileCard extends React.Component<any, State> {
 
         axios.delete('/api/version/DeleteFileVersions/' + this.props.fileId, config)
             .then(res => {
-                console.log(res.data);
                 this.deleteFile();
             })
             .catch(err => {

@@ -7,6 +7,7 @@ using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -14,13 +15,13 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class VersionController : Controller
     {
-        private readonly SearchAVContext _context;
+		private readonly VersionService _versionService; 
         private readonly ILogger _logger;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public VersionController(SearchAVContext context, ILogger<FileController> logger)
         {
-            _context = context;
+			_versionService = new VersionService(context);
             _logger = logger;
         }
 
@@ -34,7 +35,7 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching all versions");
-                return Ok(await _context.Version.ToListAsync());
+                return Ok(await _versionService.Index());
             }
             catch (Exception ex)
             {
@@ -54,8 +55,7 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching versions with fileId: " + fileId);
-                var versions = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
-                return Ok(versions);
+                return Ok(await _versionService.GetVersionByFileId(fileId));
             }
             catch (Exception ex)
             {
@@ -75,8 +75,7 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching active version with fileId: " + fileId);
-                var version = await _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).FirstOrDefaultAsync();
-                return Ok(version);
+                return Ok(await _versionService.GetFileActiveVersion(fileId));
             }
             catch (Exception ex)
             {
@@ -91,12 +90,9 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting all versions for file with id: " + fileId);
+				await _versionService.DeleteFileVersions(fileId);
 
-                var versionsList = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
-                _context.Version.RemoveRange(versionsList);
-                await _context.SaveChangesAsync();
-
-                return Ok(versionsList);
+				return Ok();
             }
             catch (Exception ex)
             {
