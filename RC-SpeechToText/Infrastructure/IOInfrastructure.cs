@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,28 @@ namespace RC_SpeechToText.Infrastructure
 {
     public class IOInfrastructure
 	{
+		public string CopyAudioToStream(IFormFile audioFile)
+		{
+			// Create the directory
+			Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
+
+			// Saves the file to the audio directory
+			var filePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\" + audioFile.FileName;
+			using (var stream = new FileStream(filePath, FileMode.Create))
+			{
+				audioFile.CopyTo(stream);
+			}
+
+			return filePath;
+		}
+
+		public string GetPathAndCreateDirectory(string path)
+		{
+			var completePath = Directory.GetCurrentDirectory() + path;
+			Directory.CreateDirectory(completePath);
+			return completePath;
+		}
+
 		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps)
 		{
 			//TODO: Find a way to prompt the user on the file path
@@ -28,7 +51,6 @@ namespace RC_SpeechToText.Infrastructure
 				paragraphCount++;
 			}
 			tw.Close();
-
 		}
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
-using System.IO;
 using RC_SpeechToText.Utils;
 using RC_SpeechToText.Models;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Globalization;
-using Google.Cloud.Speech.V1;
 using RC_SpeechToText.Infrastructure;
 
 namespace RC_SpeechToText.Services
@@ -27,15 +25,9 @@ namespace RC_SpeechToText.Services
 
 		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
 		{
-			// Create the directory
-			Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
+			var streamIO = new IOInfrastructure();
 
-			// Saves the file to the audio directory
-			var filePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\" + audioFile.FileName;
-			using (var stream = new FileStream(filePath, FileMode.Create))
-			{
-				audioFile.CopyTo(stream);
-			}
+			var filePath = streamIO.CopyAudioToStream(audioFile);
 
 			// Once we get the file path(of the uploaded file) from the server, we use it to call the converter
 			Converter converter = new Converter();
@@ -46,7 +38,7 @@ namespace RC_SpeechToText.Services
 
 			if (convertedFileLocation == null)
 			{
-				return null;
+				
 			}
 
 			// Upload the mono wav file to Google Storage
@@ -55,10 +47,8 @@ namespace RC_SpeechToText.Services
 			// Call the method that will get the transcription
 			var googleResult = GoogleRepository.GoogleSpeechToText(_bucketName, storageObject.Name);
 
-			var googleResponse = googleResult.GoogleResponse;
-
 			//Persistent to domain model
-			var words = CreateWords(googleResponse);
+			var words = CreateWords(googleResult);
 
 			//Create transcription out of the words
 			var transcription = CreateTranscription(words);
@@ -69,8 +59,7 @@ namespace RC_SpeechToText.Services
 			converter.DeleteFile(convertedFileLocation);
 
 			// Create thumbnail
-			var thumbnailPath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\";
-			Directory.CreateDirectory(thumbnailPath);
+			var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
 			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
 
 			if (thumbnailImage == null)
@@ -140,10 +129,10 @@ namespace RC_SpeechToText.Services
 			return transcription;
 		}
 
-		private List<Word> CreateWords(LongRunningRecognizeResponse googleResponse)
+		private List<Word> CreateWords(GoogleResult googleResponse)
 		{
 			var words = new List<Word>();
-			foreach (var result in googleResponse.Results)
+			foreach (var result in googleResponse.GoogleResponse.Results)
 			{
 				foreach (var word in result.Alternatives[0].Words)
 				{

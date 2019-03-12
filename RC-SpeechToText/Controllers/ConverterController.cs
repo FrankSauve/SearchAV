@@ -1,17 +1,10 @@
-﻿using System;
-using System.Globalization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using RC_SpeechToText.Utils;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace RC_SpeechToText.Controllers
 {

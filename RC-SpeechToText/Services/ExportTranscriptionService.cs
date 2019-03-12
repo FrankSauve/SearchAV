@@ -1,16 +1,8 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Docs.v1;
-using Google.Apis.Docs.v1.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using RC_SpeechToText.Infrastructure;
+﻿using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Utils;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace RC_SpeechToText.Services
 {
