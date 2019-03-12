@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
 using System;
@@ -191,13 +192,14 @@ namespace RC_SpeechToText.Services
 
 		private string ModifyThumbnailName(string oldName, string newName)
 		{
+			var streamIO = new IOInfrastructure();
 			//Verifies if file exists in the current directory
-			if (System.IO.File.Exists(System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg"))
+			if (streamIO.VerifyPathExistInDirectory(@"\wwwroot\assets\Thumbnails\" + oldName + ".jpg"))
 			{
-				string oldPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg";
-				string newPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + newName + ".jpg";
+				string oldPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + oldName + ".jpg");
+				string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + newName + ".jpg");
 				//Rename file in current directory to new title
-				System.IO.File.Move(oldPath, newPath);
+				streamIO.MoveFilePath(oldName, newPath);
 				return @"\assets\Thumbnails\" + newName + ".jpg";
 			}
 			else

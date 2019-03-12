@@ -31,6 +31,21 @@ namespace RC_SpeechToText.Infrastructure
 			return completePath;
 		}
 
+		public string GetPathFromDirectory(string path)
+		{
+			return Directory.GetCurrentDirectory() + path;
+		}
+
+		public bool VerifyPathExistInDirectory(string path)
+		{
+			return File.Exists(Directory.GetCurrentDirectory() + path);
+		}
+
+		public void MoveFilePath(string p1, string p2)
+		{
+			File.Move(p1, p2);
+		}
+
 		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps)
 		{
 			//TODO: Find a way to prompt the user on the file path
