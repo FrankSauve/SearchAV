@@ -41,9 +41,9 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                return Ok(_transcriptionService.Index());
+                return Ok(await _transcriptionService.Index());
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get all versions failed.");
             }
@@ -62,7 +62,7 @@ namespace RC_SpeechToText.Controllers
             {
                 return Ok(await _transcriptionService.SearchTranscript(searchTerms, versionId));
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Error fetching active version with fileId: " + versionId);
             }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
 using System;
-using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using RC_SpeechToText.Utils;
 using RC_SpeechToText.Services;
@@ -29,7 +28,7 @@ namespace RC_SpeechToText.Controllers
 
                 return Ok(files);
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get all files failed.");
             }
@@ -59,7 +58,7 @@ namespace RC_SpeechToText.Controllers
 
                 return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get all automated files failed.");
             }
@@ -74,7 +73,7 @@ namespace RC_SpeechToText.Controllers
 
                 return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get all edited files failed.");
             }
@@ -89,7 +88,7 @@ namespace RC_SpeechToText.Controllers
 
                 return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get all edited files failed.");
             }
@@ -104,7 +103,7 @@ namespace RC_SpeechToText.Controllers
 
                 return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get user files failed.");
             }
@@ -125,7 +124,7 @@ namespace RC_SpeechToText.Controllers
 
                 return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get user files to review failed.");
             }
@@ -138,7 +137,7 @@ namespace RC_SpeechToText.Controllers
 			{ 
                 return Ok(await _fileService.GetFileById(id));
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("File with ID" + id + " not found");
             }
@@ -152,7 +151,7 @@ namespace RC_SpeechToText.Controllers
 				var files = await _fileService.GetAllFiles();
 				return Ok(SearchService.SearchDescriptionAndTitle(files,search));
 			}
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Error retrieving files");
             }

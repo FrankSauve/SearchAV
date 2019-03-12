@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Globalization;
 using RC_SpeechToText.Infrastructure;
 
 namespace RC_SpeechToText.Services
@@ -15,7 +14,6 @@ namespace RC_SpeechToText.Services
 	{
 
 		private readonly SearchAVContext _context;
-		private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 		private readonly string _bucketName = "rc-retd-stt-dev";
 
 		public ConvertionService(SearchAVContext context)
@@ -76,7 +74,7 @@ namespace RC_SpeechToText.Services
 			}
 
 			// Create file
-			var file = new Models.File
+			var file = new File
 			{
 				Title = audioFile.FileName,
 				FilePath = filePath,

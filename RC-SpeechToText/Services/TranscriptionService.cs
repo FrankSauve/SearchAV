@@ -171,7 +171,7 @@ namespace RC_SpeechToText.Services
 				oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
 
 			}
-			catch (Exception ex)
+			catch
 			{
 				return "Error fetching words with versionId: " + versionId;
 			}
@@ -190,7 +190,7 @@ namespace RC_SpeechToText.Services
 				}
 
 			}
-			catch (Exception ex)
+			catch
 			{
 				return "Error adding words with versionId: " + newVersionId;
 			}

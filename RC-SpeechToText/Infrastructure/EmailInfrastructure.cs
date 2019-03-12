@@ -26,7 +26,7 @@ namespace RC_SpeechToText.Infrastructure
 					smtp.Send(mail);
 					smtp.Dispose();
 				}
-				catch (SmtpException ex)
+				catch
 				{
 					return false;
 				}
@@ -55,7 +55,7 @@ namespace RC_SpeechToText.Infrastructure
 					smtp.Send(mail);
 					smtp.Dispose();
 				}
-				catch (SmtpException ex)
+				catch
 				{
 					return false;
 				}

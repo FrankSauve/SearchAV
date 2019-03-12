@@ -1,12 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
@@ -33,7 +29,7 @@ namespace RC_SpeechToText.Controllers
             {
                 return Ok(await _versionService.Index());
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Get all versions failed.");
             }
@@ -51,7 +47,7 @@ namespace RC_SpeechToText.Controllers
             {
                 return Ok(await _versionService.GetVersionByFileId(fileId));
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Error fetching versions with fileId: " + fileId);
             }
@@ -69,7 +65,7 @@ namespace RC_SpeechToText.Controllers
             {
                 return Ok(await _versionService.GetFileActiveVersion(fileId));
             }
-            catch (Exception ex)
+            catch
             {
                 return BadRequest("Error fetching active version with fileId: " + fileId);
             }

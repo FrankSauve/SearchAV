@@ -199,7 +199,7 @@ namespace RC_SpeechToText.Services
 				string oldPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + oldName + ".jpg");
 				string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + newName + ".jpg");
 				//Rename file in current directory to new title
-				streamIO.MoveFilePath(oldName, newPath);
+				streamIO.MoveFilePath(oldPath, newPath);
 				return @"\assets\Thumbnails\" + newName + ".jpg";
 			}
 			else
