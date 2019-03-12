@@ -18,156 +18,27 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class TranscriptionController : Controller
     {
-        private readonly SearchAVContext _context;
+		private readonly TranscriptionService _transcriptionService;
         private readonly ILogger _logger;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public TranscriptionController(SearchAVContext context, ILogger<TranscriptionController> logger)
         {
-            _context = context;
+			_transcriptionService = new TranscriptionService(context);
             _logger = logger;
         }
 
         [HttpPost("[action]/{userId}/{versionId}")]
         public async Task<IActionResult> SaveTranscript(int userId, int versionId, string newTranscript)
         {
-            _logger.LogInformation("versionId: " + versionId);
-            Version currentVersion = _context.Version.Find(versionId);
+			var saveResult = await _transcriptionService.SaveTranscript(userId, versionId, newTranscript);
+			if(saveResult.Error != null)
+			{
+				return BadRequest(saveResult.Error);
+			}
 
-            _logger.LogInformation("New transcript: " + newTranscript);
-            _logger.LogInformation("Old transcript: " + currentVersion.Transcription);
-
-            //Deactivate current version 
-            _logger.LogInformation("current version active: " + currentVersion.Active);
-            currentVersion.Active = false;
-
-            //Update current version in DB
-            try
-            {
-                _context.Version.Update(currentVersion);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Updated current version with id: " + currentVersion.Id);
-            }
-            catch
-            {
-                _logger.LogError("Error updating current version with id: " + currentVersion.Id);
-            }
-
-            //Create a new version
-            Version newVersion = new Version
-            {
-                UserId = currentVersion.UserId,
-                FileId = currentVersion.FileId,
-                DateModified = DateTime.Now,
-                Transcription = newTranscript,
-                Active = true
-            };
-
-            //Add new version to DB
-            try
-            {
-                await _context.Version.AddAsync(newVersion);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Added new version with id: " + newVersion.Id);
-                _logger.LogInformation("New version transcript: " + newVersion.Transcription);
-                _logger.LogInformation("New version fileId: " + newVersion.FileId);
-            }
-            catch
-            {
-                _logger.LogError("Error updating new version with id: " + newVersion.Id);
-            }
-
-            //Calling this method will handle saving the new words in the databse
-           try
-            {
-                await SaveWords(versionId, newVersion.Id, newTranscript);
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Added words related to the new version: " + newVersion.Id + " to the database");
-            }
-            catch
-            {
-                _logger.LogError("Error saving new words with id: " + newVersion.Id);
-            }
-
-            //Find corresponding file and update its flag 
-            try
-            {
-                File file = await _context.File.FindAsync(newVersion.FileId);
-                string flag = (file.ReviewerId == userId ? "Révisé" : "Edité"); //If user is reviewer of file, flag = "Révisé"
-                _logger.LogInformation("FLAG: " + flag);
-                file.Flag = flag;
-                _context.File.Update(file);
-                await _context.SaveChangesAsync();
-                //Send email to user who uploaded file stating that review is done
-                if (flag == "Révisé")
-                {
-                    var uploader = await _context.User.FindAsync(file.UserId);
-                    var reviewer = await _context.User.FindAsync(file.ReviewerId);
-                    var emailSerice = new EmailService();
-                    emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
-                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Email sent to: " + uploader.Email + " with the file id: " + file.Id);
-
-                }
-
-                return Ok(newVersion);
-            }
-            catch
-            {
-                _logger.LogError("Error updating new version with id: " + newVersion.Id);
-                return BadRequest("File flag not updated.");
-            }
+			return Ok(saveResult.Version);
         }
-
-        /// <summary>
-        /// Private method that handles saving new words in the database when SaveTranscript is called
-        /// This makes the transcript still searchable after adding new words
-        /// </summary>
-        private async Task<IActionResult> SaveWords(int versionId, int newVersionId, string newTranscript)
-        {
-
-            //Have to explicitly instantiate variable to be able to keep the words.
-            List<Word> oldWords = new List<Word>();
-
-            //Getting all the words for this versionId
-            try
-            {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all words for versionId: " + versionId);
-      
-                //Ordered by Id to get the words in the same order as transcript
-                oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all words for versionId: " + versionId);
-                return BadRequest("Error fetching words with versionId: " + versionId);
-            }
-
-
-            //Modify timestamps and return the new words
-            var modifyTimeStampService = new ModifyTimeStampService();
-            List<Word> newWords = modifyTimeStampService.ModifyTimestamps( oldWords, newTranscript, newVersionId );
-
-
-            //Add all the words of the transcript to the database
-            try
-            {
-                foreach ( var word in newWords)
-                {
-                    await _context.Word.AddAsync(word);
-                    await _context.SaveChangesAsync();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error adding a word to the database associated with new version: " + newVersionId);
-                return BadRequest("Error adding words with versionId: " + newVersionId);
-            }
-
-
-            return Ok();
-        }
-
         
         /// <summary>
         /// Returns all versions
@@ -179,7 +50,7 @@ namespace RC_SpeechToText.Controllers
             try
             {
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all versions");
-                return Ok(await _context.Version.ToListAsync());
+                return Ok(_transcriptionService.Index());
             }
             catch (Exception ex)
             {
@@ -199,13 +70,7 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all words for versionId: " + versionId);
-
-                //Ordered by Id to get the words in the same order as transcript
-                var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
-                var searchService = new SearchService(); 
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Searching for " + searchTerms);
-                return Ok(searchService.PerformSearch(searchTerms, words));
+                return Ok(await _transcriptionService.SearchTranscript(searchTerms, versionId));
             }
             catch (Exception ex)
             {
@@ -260,7 +125,5 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("Error while trying to download transcription");
             }
         }
-
-        
     }
 }
