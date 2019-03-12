@@ -14,13 +14,10 @@ namespace RC_SpeechToText.Controllers
     public class TranscriptionController : Controller
     {
 		private readonly TranscriptionService _transcriptionService;
-        private readonly ILogger _logger;
-        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
-        public TranscriptionController(SearchAVContext context, ILogger<TranscriptionController> logger)
+        public TranscriptionController(SearchAVContext context)
         {
 			_transcriptionService = new TranscriptionService(context);
-            _logger = logger;
         }
 
         [HttpPost("[action]/{userId}/{versionId}")]
@@ -44,12 +41,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all versions");
                 return Ok(_transcriptionService.Index());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all versions");
                 return BadRequest("Get all versions failed.");
             }
         }
@@ -69,7 +64,6 @@ namespace RC_SpeechToText.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all words for versionId: " + versionId);
                 return BadRequest("Error fetching active version with fileId: " + versionId);
             }
         }

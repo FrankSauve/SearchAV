@@ -15,14 +15,11 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class VersionController : Controller
     {
-		private readonly VersionService _versionService; 
-        private readonly ILogger _logger;
-        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
+		private readonly VersionService _versionService;
 
-        public VersionController(SearchAVContext context, ILogger<FileController> logger)
+        public VersionController(SearchAVContext context)
         {
 			_versionService = new VersionService(context);
-            _logger = logger;
         }
 
         /// <summary>
@@ -34,12 +31,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching all versions");
                 return Ok(await _versionService.Index());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching all versions");
                 return BadRequest("Get all versions failed.");
             }
         }
@@ -54,12 +49,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching versions with fileId: " + fileId);
                 return Ok(await _versionService.GetVersionByFileId(fileId));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching versions with fileId: " + fileId);
                 return BadRequest("Error fetching versions with fileId: " + fileId);
             }
         }
@@ -74,12 +67,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching active version with fileId: " + fileId);
                 return Ok(await _versionService.GetFileActiveVersion(fileId));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching active version with fileId: " + fileId);
                 return BadRequest("Error fetching active version with fileId: " + fileId);
             }
         }
@@ -89,14 +80,11 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting all versions for file with id: " + fileId);
-				await _versionService.DeleteFileVersions(fileId);
-
+                await _versionService.DeleteFileVersions(fileId);
 				return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error all versions for file with id: "+ fileId);
                 return BadRequest(ex);
             }
         }

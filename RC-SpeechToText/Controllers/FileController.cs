@@ -1,11 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Utils;
 using RC_SpeechToText.Services;
 
@@ -16,7 +14,6 @@ namespace RC_SpeechToText.Controllers
     public class FileController : Controller
     {
 		private readonly FileService _fileService;
-        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public FileController(SearchAVContext context)
         {

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Services;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 
@@ -12,13 +11,11 @@ namespace RC_SpeechToText.Controllers
 	[Route("api/[controller]")]
 	public class ConverterController : Controller
 	{
-		private readonly ILogger _logger;
 		private readonly ConvertionService _convertionService;
 
-		public ConverterController(SearchAVContext context, ILogger<ConverterController> logger)
+		public ConverterController(SearchAVContext context)
 		{
 			_convertionService = new ConvertionService(context);
-			_logger = logger;
 		}
 
 		/// <summary>
