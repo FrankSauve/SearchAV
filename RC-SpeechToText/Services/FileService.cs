@@ -17,7 +17,7 @@ namespace RC_SpeechToText.Services
 			_context = context;
 		}
 
-		public async Task<List<File>> Index()
+		public async Task<List<File>> GetAllFiles()
 		{
 			return await _context.File.ToListAsync();
 		}
