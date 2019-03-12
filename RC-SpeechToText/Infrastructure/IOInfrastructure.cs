@@ -9,13 +9,13 @@ namespace RC_SpeechToText.Infrastructure
 {
     public class IOInfrastructure
 	{
-		public string CopyAudioToStream(IFormFile audioFile)
+		public string CopyAudioToStream(IFormFile audioFile, string path)
 		{
 			// Create the directory
-			Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\");
+			Directory.CreateDirectory(Directory.GetCurrentDirectory() + path);
 
 			// Saves the file to the audio directory
-			var filePath = Directory.GetCurrentDirectory() + @"\wwwroot\assets\Audio\" + audioFile.FileName;
+			var filePath = Directory.GetCurrentDirectory() + path + audioFile.FileName;
 			using (var stream = new FileStream(filePath, FileMode.Create))
 			{
 				audioFile.CopyTo(stream);

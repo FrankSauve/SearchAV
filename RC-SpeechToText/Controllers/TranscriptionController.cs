@@ -4,12 +4,7 @@ using RC_SpeechToText.Models;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Version = RC_SpeechToText.Models.Version;
 using System.Globalization;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Text.RegularExpressions;
 using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
@@ -83,47 +78,14 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}/{documentType}")]
         public async Task<IActionResult> DownloadTranscript(string documentType, int fileId)
         {
-            _logger.LogInformation(documentType);
+			var result = await _transcriptionService.DownloadTranscription(documentType, fileId);
 
-            var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
-            var rawTranscript = version.Transcription;
-			var transcript = rawTranscript.Replace("<br>", "\n ");
+			if(result != null)
+			{
+				return BadRequest(result);
+			}
 
-
-			var exportResult = await Task.Run(async () => {
-				var exportTranscriptionService = new ExportTranscriptionService();
-				if (documentType == "doc")
-				{
-					return exportTranscriptionService.CreateWordDocument(transcript);
-				}
-				else if(documentType == "googleDoc")
-				{
-					return exportTranscriptionService.CreateGoogleDocument(transcript);
-				}
-				else if(documentType == "srt")
-				{
-					var words = await _context.Word.Where(v => v.VersionId == version.Id).ToListAsync();
-					if (words.Count > 0)
-						return exportTranscriptionService.CreateSRTDocument(transcript, words);
-					else
-						return false;
-				}
-				else
-				{
-					_logger.LogInformation("Invalid doc type");
-					return false;
-				}
-			});
-
-            if (exportResult)
-            {
-                _logger.LogInformation("Downloaded transcript: " + transcript);
-                return Ok();
-            }
-            else
-            {
-                return BadRequest("Error while trying to download transcription");
-            }
+			return Ok();
         }
     }
 }
