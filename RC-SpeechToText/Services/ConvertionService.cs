@@ -27,7 +27,7 @@ namespace RC_SpeechToText.Services
 		{
 			var streamIO = new IOInfrastructure();
 
-			var filePath = streamIO.CopyAudioToStream(audioFile);
+			var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
 
 			// Once we get the file path(of the uploaded file) from the server, we use it to call the converter
 			Converter converter = new Converter();
@@ -38,7 +38,7 @@ namespace RC_SpeechToText.Services
 
 			if (convertedFileLocation == null)
 			{
-				
+				return null;
 			}
 
 			// Upload the mono wav file to Google Storage
@@ -111,7 +111,7 @@ namespace RC_SpeechToText.Services
 			}
 
 			// Send email to user that the transcription is done
-			var emailService = new EmailService();
+			var emailService = new EmailInfrastructure();
 			emailService.SendTranscriptionDoneEmail(userEmail, file);
 
 			// Return the transcription

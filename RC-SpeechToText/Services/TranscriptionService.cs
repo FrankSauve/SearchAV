@@ -89,7 +89,7 @@ namespace RC_SpeechToText.Services
 				{
 					var uploader = await _context.User.FindAsync(file.UserId);
 					var reviewer = await _context.User.FindAsync(file.ReviewerId);
-					var emailSerice = new EmailService();
+					var emailSerice = new EmailInfrastructure();
 					emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
 
 				}
