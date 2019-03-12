@@ -2,10 +2,10 @@ import * as React from 'react';
 import auth from '../../Utils/auth';
 import axios from 'axios';
 import Loading from '../Loading';
-import VersionTable from './VersionTable';
 
 interface State {
     versions: any[],
+    usernames: string[], 
     loading: boolean,
     unauthorized: boolean
 }
@@ -17,6 +17,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
         this.state = {
             versions: [],
+            usernames: [], 
             loading: false,
             unauthorized: false
         }
@@ -37,10 +38,11 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/version/GetbyFileId/' + this.props.fileId, config)
+        axios.get('/api/version/GetAllWithUserV/' + this.props.fileId, config)
             .then(res => {
                 console.log(res.data);
-                this.setState({ 'versions': res.data });
+                this.setState({ 'versions': res.data.value.versions});
+                this.setState({ 'usernames': res.data.value.usernames });
                 this.setState({ 'loading': false })
                 console.log(this.state.loading);
             })
@@ -54,6 +56,8 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
 
     public render() {
+        var i = 0;
+
         return (
             <div>
                 <div className="Rectangle-Copy-5">
@@ -62,7 +66,8 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 <div className="Rectangle-Copy-6">
                     <div className="content_historique">
                         {this.state.versions.map((version) => {
-                            const listVersions = <div><p className="title_historique_changes"> MODIFICATIONS </p><p className="historique_date"> {version.dateModified.substr(0, 10)} </p><p className="historique_username"> {version.userId} </p></div>
+                            const listVersions = <div><p className="title_historique_changes"> {version.historyTitle} </p><p className="historique_date"> {version.dateModified.substr(0, 10)} + " " + {version.dateModified.substr(11, 16)} </p><p className="historique_username"> {this.state.usernames[i]}</p> <p> </p></div>
+                            i++;
                             return (
                                 listVersions
                             )
