@@ -41,7 +41,7 @@ export default class MyFilesFilter extends React.Component<any, State> {
                 axios.get('/api/file/getAllFilesByUser/' + this.state.userId, config)
                     .then(res => {
                         console.log(res);
-                        this.setState({ 'files': res.data.value.files })
+                        this.setState({ 'files': res.data.files })
                     })
                     .catch(err => {
                         if (err.response.status == 401) {

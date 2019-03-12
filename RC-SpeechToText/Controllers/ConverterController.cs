@@ -40,11 +40,16 @@ namespace RC_SpeechToText.Controllers
 			{
 				ConvertionService convertionService = new ConvertionService(_context);
 				var version = await convertionService.ConvertAndTranscribe(audioFile, userEmail);
+				if(version == null)
+				{
+					return BadRequest("Une erreur s'est produite lors de la transcription");
+				}
+
 				return Ok(version);
 			}
 			catch
 			{
-				return BadRequest("Une erreur s'est produite");
+				return BadRequest("Une erreur s'est produite lors de la transcription");
 			}
 		}
 	}
