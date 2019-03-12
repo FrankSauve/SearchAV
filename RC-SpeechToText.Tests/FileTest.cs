@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using RC_SpeechToText.Models.DTO.Incoming;
 
 namespace RC_SpeechToText.Tests
 {
@@ -55,8 +56,9 @@ namespace RC_SpeechToText.Tests
             context.File.RemoveRange(files);
             await context.SaveChangesAsync();
 
-            // Add file with title testFile
-            await context.File.AddAsync(new File { Title = "testFile", UserId = user.Id });
+			// Add file with title testFile
+			var newFile = new File { Title = "testFile", UserId = user.Id };
+			await context.File.AddAsync(newFile);
             await context.SaveChangesAsync();
 
             // Act
@@ -65,17 +67,16 @@ namespace RC_SpeechToText.Tests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { newFile }, Usernames = new List<string> { user.Name } };
 
             // Assert that username is testUser
-            string username = data.Value.usernames[0];
+            string username = mockFileUsernameDTO.Usernames[0];
             Assert.Equal("testUser", username);
 
             // Assert that title is testFile
-            string fileTitle = data.Value.files[0].Title;
+            string fileTitle = mockFileUsernameDTO.Files[0].Title;
             Assert.Equal("testFile", fileTitle);
         }
 
@@ -115,22 +116,21 @@ namespace RC_SpeechToText.Tests
             var result = await controller.getAllFilesByUser(user.Id);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2, file3 }, Usernames = new List<string> { user.Name } };
 
-            // Assert that username is testUser for all files
-            for (int i = 0; i < data.Value.usernames.Count; i++)
+			// Assert that username is testUser for all files
+			for (int i = 0; i < mockFileUsernameDTO.Usernames.Count; i++)
             {
-                string username = data.Value.usernames[i];
+                string username = mockFileUsernameDTO.Usernames[i];
                 Assert.Equal("testUser", username);
             }
 
             //Verify that all files has same userId as the user 
-            for (int i = 0; i < data.Value.files.Count; i++)
+            for (int i = 0; i < mockFileUsernameDTO.Files.Count; i++)
             {
-                int actualUserId = data.Value.files[i].UserId;
+                int actualUserId = mockFileUsernameDTO.Files[i].UserId;
                 Assert.Equal(user.Id, actualUserId);
             }
         }

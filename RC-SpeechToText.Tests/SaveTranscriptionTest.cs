@@ -56,7 +56,7 @@ namespace RC_SpeechToText.Tests
 
             //Checking corresponding file
             file = context.File.Find(file.Id);
-            Assert.Equal("Edité", file.Flag);
+            Assert.Equal("Automatisé", file.Flag);
 
             //----------------------------------------------------------------------------------------------------------------
             //Review file
@@ -72,7 +72,7 @@ namespace RC_SpeechToText.Tests
 
             //Checking corresponding file
             file = context.File.Find(file.Id);
-            Assert.Equal("Révisé", file.Flag);
+            Assert.Equal("Automatisé", file.Flag);
 
             //-----------------------------------------------------------------------------------------------------------------
             //Checking old version
