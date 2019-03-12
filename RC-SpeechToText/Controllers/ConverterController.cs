@@ -19,12 +19,12 @@ namespace RC_SpeechToText.Controllers
 	[Route("api/[controller]")]
 	public class ConverterController : Controller
 	{
-		private readonly SearchAVContext _context;
 		private readonly ILogger _logger;
+		private readonly ConvertionService _convertionService;
 
 		public ConverterController(SearchAVContext context, ILogger<ConverterController> logger)
 		{
-			_context = context;
+			_convertionService = new ConvertionService(context);
 			_logger = logger;
 		}
 
@@ -38,8 +38,7 @@ namespace RC_SpeechToText.Controllers
 		{
 			try
 			{
-				ConvertionService convertionService = new ConvertionService(_context);
-				var version = await convertionService.ConvertAndTranscribe(audioFile, userEmail);
+				var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail);
 				if(version == null)
 				{
 					return BadRequest("Une erreur s'est produite lors de la transcription");
