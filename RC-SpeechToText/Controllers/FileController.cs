@@ -121,7 +121,6 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                //Get userId from entity
                 var emailClaim = HttpContext.User.Claims;
                 var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
