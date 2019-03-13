@@ -72,9 +72,9 @@ namespace RC_SpeechToText.Services
 			return new FileUsernameDTO { Files = files, Usernames = usernames };
 		}
 
-		public async Task<FileUsernameDTO> GetUserFilesToReview(int id)
+		public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
 		{
-			var files = await _context.File.Where(f => f.ReviewerId == id && f.Flag != "Révisé").ToListAsync();
+			var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != "Révisé").ToListAsync();
 
 			var usernames = new List<string>();
 
