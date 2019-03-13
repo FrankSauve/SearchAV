@@ -91,30 +91,18 @@ export default class Dashboard extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
+        axios.get('/api/file/getAllFilesByUser/', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'userId': res.data.id });
-
-                axios.get('/api/file/getAllFilesByUser/' + this.state.userId, config)
-                    .then(res => {
-                        console.log(res);
-                        this.setState({ 'files': res.data.files })
-                        this.setState({ 'usernames': res.data.usernames })
-                        this.setState({ 'loading': false });
-                        this.setState({ 'isMyFilesFilterActive': true });
-                        this.setState({ 'isAutomatedFilterActive': false });
-                        this.setState({ 'isEditedFilterActive': false });
-                        this.setState({ 'isReviewedFilterActive': false });
-                        this.setState({ 'isFilesToReviewFilterActive': false });
-                        this.setState({ loading: false });
-                    })
-                    .catch(err => {
-                        if (err.response.status == 401) {
-                            this.setState({ 'unauthorized': true });
-                        }
-                    });
-
+                this.setState({ 'files': res.data.files })
+                this.setState({ 'usernames': res.data.usernames })
+                this.setState({ 'loading': false });
+                this.setState({ 'isMyFilesFilterActive': true });
+                this.setState({ 'isAutomatedFilterActive': false });
+                this.setState({ 'isEditedFilterActive': false });
+                this.setState({ 'isReviewedFilterActive': false });
+                this.setState({ 'isFilesToReviewFilterActive': false });
+                this.setState({ loading: false });
             })
             .catch(err => {
                 if (err.response.status == 401) {

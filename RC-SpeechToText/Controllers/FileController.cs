@@ -95,12 +95,15 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
-        [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> getAllFilesByUser(int id)
+        [HttpGet("[action]")]
+        public async Task<IActionResult> getAllFilesByUser()
         {
             try
             {
-                var filesUsernames = await _fileService.GetAllFilesById(id);
+                var emailClaim = HttpContext.User.Claims;
+                var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
+
+                var filesUsernames = await _fileService.GetAllFilesById(emailString);
 
                 return Ok(filesUsernames);
             }

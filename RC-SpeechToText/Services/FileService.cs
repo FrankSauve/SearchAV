@@ -58,9 +58,9 @@ namespace RC_SpeechToText.Services
 			return new FileUsernameDTO { Files = files, Usernames = usernames };
 		}
 
-		public async Task<FileUsernameDTO> GetAllFilesById(int id)
+		public async Task<FileUsernameDTO> GetAllFilesById(string email)
 		{
-			var files = await _context.File.Where(f => f.UserId == id).ToListAsync();
+			var files = await _context.File.Where(f => f.User.Email == email).ToListAsync();
 			var usernames = new List<string>();
 
 			foreach (var file in files)

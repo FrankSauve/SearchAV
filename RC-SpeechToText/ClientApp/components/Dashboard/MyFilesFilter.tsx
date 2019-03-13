@@ -38,7 +38,7 @@ export default class MyFilesFilter extends React.Component<any, State> {
                 console.log(res);
                 this.setState({ 'userId': res.data.id });
 
-                axios.get('/api/file/getAllFilesByUser/' + this.state.userId, config)
+                axios.get('/api/file/getAllFilesByUser/', config)
                     .then(res => {
                         console.log(res);
                         this.setState({ 'files': res.data.files })
