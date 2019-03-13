@@ -28,5 +28,11 @@ namespace RC_SpeechToText.Services
 			_context.Word.RemoveRange(wordList);
 			await _context.SaveChangesAsync();
 		}
+
+        public async Task<List<Word>> GetByVersionId(int versionId)
+        {
+            var words = await _context.Word.Where(w => w.VersionId == versionId).ToListAsync();
+            return words;
+        }
 	}
 }

@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { KeyboardEvent } from 'react';
 import { ChangeEvent } from 'react';
+import axios from 'axios';
+import auth from '../../Utils/auth';
+import HighlightText from './HighlightText';
 
 interface State {
     version: any,
     displayText: string,
     rawText: string,
     errorMessage: string
+    words: any
 }
 
 export class TranscriptionText extends React.Component<any, State> {
@@ -17,8 +21,28 @@ export class TranscriptionText extends React.Component<any, State> {
             version: this.props.version,
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
-            errorMessage: ""
+            errorMessage: "",
+            words: null
         }
+    }
+
+    // Called when the component renders
+    componentDidMount() {
+        this.getWordsByVersionId();
+    }
+
+    public getWordsByVersionId = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/word/GetByVersionId/' + this.props.version.id, config)
+            .then(res => {
+                this.setState({ words: res.data });
+            })
+            .catch(err => console.log(err));
     }
 
     rawToHtml(text: string) {

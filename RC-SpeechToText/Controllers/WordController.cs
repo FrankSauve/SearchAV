@@ -28,13 +28,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Getting all words for version with id: " + versionId);
-                var words = await _context.Word.Where(w => w.VersionId == versionId).ToListAsync();
-                return Ok(words);
+                return Ok(await _wordService.GetByVersionId(versionId));
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error getting all words for version with id: " + versionId);
                 return BadRequest(ex);
             }
         }
