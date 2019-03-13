@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using RC_SpeechToText.Services;
+using RC_SpeechToText.Filters;
 
 namespace RC_SpeechToText.Controllers
 {
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Authorize]
     [Route("api/[controller]")]
     public class TranscriptionController : Controller

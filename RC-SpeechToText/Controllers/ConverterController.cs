@@ -4,10 +4,12 @@ using RC_SpeechToText.Models;
 using RC_SpeechToText.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using RC_SpeechToText.Filters;
 
 namespace RC_SpeechToText.Controllers
 {
-	[Authorize]
+    [ServiceFilter(typeof(LoggingActionFilter))]
+    [Authorize]
 	[Route("api/[controller]")]
 	public class ConverterController : Controller
 	{
