@@ -38,7 +38,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/version/GetAllWithUserV/' + this.props.fileId, config)
+        axios.get('/api/version/GetAllVersionsWithUserName/' + this.props.fileId, config)
             .then(res => {
                 console.log(res.data);
                 this.setState({ 'versions': res.data.value.versions});

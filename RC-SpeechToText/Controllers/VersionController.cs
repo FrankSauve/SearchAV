@@ -50,7 +50,7 @@ namespace RC_SpeechToText.Controllers
         /// <param name="fileId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{fileId}")]
-        public async Task<IActionResult> GetAllWithUserV(int fileId)
+        public async Task<IActionResult> GetAllVersionsWithUserName(int fileId)
         {
             try
             {
