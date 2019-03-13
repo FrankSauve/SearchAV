@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using RC_SpeechToText.Utils;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -177,6 +180,39 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+        [HttpGet("[action]/{date}")]
+        public IActionResult FormatTime(string date)
+        {
+            return Ok(DateTimeUtil.FormatDateCardInfo(date));
+        }
+
+        [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> getUserFilesToReview(int id)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files to review for user with  userId: " + id);
+                var files = await _context.File.Where(f => f.ReviewerId == id && f.Flag != "Révisé").ToListAsync();
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES TO REVIEW: " + files.Count);
+
+                var usernames = new List<string>();
+
+                foreach (var file in files)
+                {
+                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILE TITLE: : " + file.Title);
+                    var user = await _context.User.FindAsync(file.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { files, usernames }));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files to review with userId -> " + id);
+                return BadRequest("Get user files to review failed.");
+            }
+        }
+
         [HttpGet("[action]/{id}")]
         public async Task<IActionResult> Details(int id)
         {
@@ -193,7 +229,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{search}")]
-        public async Task<IActionResult> GetFilesByDescription(string search)
+        public async Task<IActionResult> GetFilesByDescriptionAndTitle(string search)
         {
             try
             {
@@ -201,21 +237,9 @@ namespace RC_SpeechToText.Controllers
                 var files = await _context.File.ToListAsync();
                 _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
 
-                var filesContainDescription = new List<string>();
 
-                foreach (var file in files)
-                {
-                    if (file.Description != null)
-                    {
-                        if (file.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                        {
-                            filesContainDescription.Add(file.Title);
-                        }
-                    }
-                }
-
-                return Ok(filesContainDescription);
-            }
+				return Ok(SearchService.SearchDescriptionAndTitle(files,search));
+			}
             catch (Exception ex)
             {
                 _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching files");
@@ -228,22 +252,32 @@ namespace RC_SpeechToText.Controllers
 		{
 			if (newTitle != null)
 			{
-				File file = _context.File.Find(id);
+                if (await VerifyIfTitleExists(newTitle))
+                {
+                    return BadRequest("Le nom de fichier existe déjà. Veuillez choisir un nouveau nom.");
+                }
+                else
+                {
+                    File file = _context.File.Find(id);
+                    if (file.ThumbnailPath != "NULL")
+                    {
+                        file.ThumbnailPath = ModifyThumbnailName(file.Title, newTitle);
+                    }
+                    file.Title = newTitle;
 
-				file.Title = newTitle;
-
-				try
-				{
-					_context.File.Update(file);
-					await _context.SaveChangesAsync();
-					_logger.LogInformation("Updated current title for file with id: " + file.Id);
-					return Ok(file);
-				}
-				catch
-				{
-					_logger.LogError("Error updating current title for file with id: " + file.Id);
-					return BadRequest("File title not updated");
-				}
+                    try
+                    {
+                        _context.File.Update(file);
+                        await _context.SaveChangesAsync();
+                        _logger.LogInformation("Updated current title for file with id: " + file.Id);
+                        return Ok(file);
+                    }
+                    catch
+                    {
+                        _logger.LogError("Error updating current title for file with id: " + file.Id);
+                        return BadRequest("File title not updated");
+                    }
+                }
 			}
 			else
 			{
@@ -289,6 +323,66 @@ namespace RC_SpeechToText.Controllers
                 return BadRequest("Description not updated");
             }
 
+        }
+
+        //Quick fix for now, does not work without it
+        //TO DO: find a way to remove this
+        [AllowAnonymous]  
+        [HttpPost("[action]/{fileId}/{reviewerId}")]
+        public async Task<IActionResult> AddReviewer(int fileId, int reviewerId)
+        {
+            _logger.LogInformation("AddReviewer for file with id: " + fileId);
+            _logger.LogInformation("reviewerId: " + reviewerId);
+
+            File file = _context.File.Find(fileId);
+            file.ReviewerId = reviewerId;
+
+            try
+            {
+                _context.File.Update(file);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Updated reviewerId for file with id: " + file.Id);
+                _logger.LogInformation("File reviewerId: " + file.ReviewerId);
+                return Ok(file);
+            }
+            catch
+            {
+                _logger.LogError("Error updating reviewerId for file with id: " + file.Id + " and reviewerId: " + reviewerId);
+                return BadRequest("File reviewerId not updated");
+            }
+
+        }
+
+        public async Task<bool> VerifyIfTitleExists(string title)
+        {
+            var files = await _context.File.ToListAsync();
+            List<string> titleList = new List<string>();
+            
+            foreach(var file in files)
+            {
+                titleList.Add(file.Title.Trim());
+            }
+
+            if (titleList.Contains(title.Trim(), StringComparer.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            return false;      
+        }
+
+        private string ModifyThumbnailName(string oldName, string newName)
+        {
+            //Verifies if file exists in the current directory
+            if (System.IO.File.Exists(System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg"))
+            {
+                string oldPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg";
+                string newPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + newName + ".jpg";
+                //Rename file in current directory to new title
+                System.IO.File.Move(oldPath, newPath);
+                return @"\assets\Thumbnails\" + newName + ".jpg";
+            }
+            else
+                return "NULL";
         }
     }
 }

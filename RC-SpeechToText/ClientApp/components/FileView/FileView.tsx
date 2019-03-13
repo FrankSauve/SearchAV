@@ -6,6 +6,7 @@ import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
 import { TranscriptionSearch } from './TranscriptionSearch';
 import { SaveTranscriptionButton } from './SaveTranscriptionButton';
+import { FileInfo } from './FileInfo';
 import { Link } from 'react-router-dom';
 import Loading from '../Loading';
 
@@ -13,6 +14,7 @@ interface State {
     fileId: number,
     version: any,
     file: any,
+    user: any,
     editedTranscript: string,
     unauthorized: boolean,
     fileTitle: string,
@@ -29,6 +31,7 @@ export default class FileView extends React.Component<any, State> {
             fileId: this.props.match.params.id,
             version: null,
             file: null,
+            user: null,
             editedTranscript: "",
             unauthorized: false,
             fileTitle: "",
@@ -41,6 +44,7 @@ export default class FileView extends React.Component<any, State> {
     public componentDidMount() {
         this.getVersion();
         this.getFile();
+        this.getUser();
     }
 
     public getVersion = () => {
@@ -54,9 +58,11 @@ export default class FileView extends React.Component<any, State> {
         axios.get('/api/version/GetActiveByFileId/' + this.state.fileId, config)
             .then(res => {
                 this.setState({ version: res.data });
+                this.setState({ editedTranscript: this.state.version.transcription }); //Will avoid to have empty transcript except if user erase everything
                 this.setState({ loading: false });
             })
             .catch(err => {
+                console.log(err);
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }
@@ -75,14 +81,33 @@ export default class FileView extends React.Component<any, State> {
                 this.setState({ file: res.data });
             })
             .catch(err => {
+                console.log(err);
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });                
                 }
             });
     }
 
-    public handleTranscriptChange = (event: any) => {
-        this.setState({ editedTranscript: event.target.value });
+    public getUser = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
+            .then(res => {
+                this.setState({ user: res.data });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    }
+
+    public handleTranscriptChange = (text: string) => {
+        this.setState({ editedTranscript: text });
     }
 
     public updateVersion = (newVersion: any) => {
@@ -110,23 +135,36 @@ export default class FileView extends React.Component<any, State> {
                             <div className="card-content">
                             <b>Description: </b>{this.state.file.description}
                             </div> </div></div> : <div className="card">
-                                <div className="card-content"> This file has no description </div></div> ) : null}</p>
+                                <div className="card-content"> This file has no description </div></div>) : null}</p>
+
+                        <br/>
+
+                        <p>{this.state.file ? (this.state.file ? <div><div className="card">
+                            <div className="card-content">
+                                {this.state.version ?
+                                    <FileInfo
+                                        thumbnail={this.state.file.thumbnailPath}
+                                        userId={this.state.file.userId}
+                                        dateModified={this.state.version.dateModified}/> : null}
+                            </div> </div></div> : <div className="card">
+                                <div className="card-content"> This file has no extra Info </div></div>) : null}</p>
                     </div>
 
                     <div className="column mg-top-30">
                         {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
                         {this.state.loading ? 
                             <Loading />
-                        : this.state.version ? 
+                        : this.state.version && this.state.file && this.state.user ? 
                                 <div>
-                                    <TranscriptionText 
-                                        text={this.state.version.transcription} 
-                                        handleChange={this.handleTranscriptChange}
-                                        version={this.state.version} />
+                                    <TranscriptionText
+                                        version={this.state.version} 
+                                        handleChange={this.handleTranscriptChange} />
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
                                         editedTranscription={this.state.editedTranscript}
+                                        reviewerId={this.state.file.reviewerId}
+                                        userId={this.state.user.id}
                                     />
                                 </div>
                         : null}

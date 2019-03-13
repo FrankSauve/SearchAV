@@ -12,6 +12,8 @@ namespace RC_SpeechToText.Models
         public string Type { get; set; }
         public string Flag { get; set; }
         public int UserId { get; set; }
+        public int ReviewerId { get; set; }
         public string Description { get; set; }
+        public string ThumbnailPath { get; set; }
     }
 }

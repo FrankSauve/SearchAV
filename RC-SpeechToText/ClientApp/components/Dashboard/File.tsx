@@ -16,6 +16,7 @@ export default class File extends React.Component<any, State> {
         this.state = {
             transcription: "",
             unauthorized: false
+            
         }
     }
 
@@ -53,7 +54,7 @@ export default class File extends React.Component<any, State> {
                 description={this.props.description}
                 flag={this.props.flag}
                 username={this.props.username}
-                image="assets/speakerIcon.png"
+                image={this.props.type == "Audio" ? 'assets/speakerIcon.png' : this.props.thumbnailPath}
                 transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) + "..." : this.state.transcription : null}
                 date={this.props.dateAdded.substring(0, 10) + " " + this.props.dateAdded.substring(11, 16)}
             />

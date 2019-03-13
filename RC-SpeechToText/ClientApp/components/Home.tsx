@@ -1,21 +1,24 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, Redirect } from 'react-router';
 import Login from './Navbar/Login';
+import auth from '../Utils/auth';
 
 interface State {}
 
 export class Home extends React.Component<RouteComponentProps<{}>, State> {
     public render() {
+        
         return (
             <div>
+                {auth.isLoggedIn() ? <Redirect to="/dashboard"/> : null}
                 <section className="hero is-medium is-danger is-bold">
                     <div className="hero-body">
                         <div className="container">
                             <h1 className="title">
-                                SearchAV
+                                STENO
                             </h1>
                             <h2 className="subtitle">
-                                Un projet capstone de Concordia
+                                Transcription automatisé de fichiers audio et vidéos
                             </h2>
                         </div>
                     </div>

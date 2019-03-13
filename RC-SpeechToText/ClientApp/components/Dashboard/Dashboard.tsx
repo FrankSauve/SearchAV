@@ -7,8 +7,8 @@ import AutomatedFilter from './AutomatedFilter';
 import EditedFilter from './EditedFilter';
 import ReviewedFilter from './ReviewedFilter';
 import MyFilesFilter from './MyFilesFilter';
-import { FileDescriptionSearch } from '../FileView/FileDescriptionSearch';
 import Loading from '../Loading';
+import FilesToReviewFilter from './FilesToReviewFilter';
 
 interface State {
     files: any[],
@@ -18,6 +18,8 @@ interface State {
     isEditedFilterActive: boolean,
     isAutomatedFilterActive: boolean,
     isReviewedFilterActive: boolean,
+    searchTerms: string,
+    isFilesToReviewFilterActive: boolean,
     loading: boolean,
     unauthorized: boolean
 }
@@ -35,6 +37,8 @@ export default class Dashboard extends React.Component<any, State> {
             isEditedFilterActive: false,
             isAutomatedFilterActive: false,
             isReviewedFilterActive: false,
+            isFilesToReviewFilterActive: false,
+            searchTerms: '',
             loading: false,
             unauthorized: false
         }
@@ -65,6 +69,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': false });
                 this.setState({ 'isEditedFilterActive': false });
                 this.setState({ 'isReviewedFilterActive': false });
+                this.setState({ 'isFilesToReviewFilterActive': false });
                 this.setState({ loading: false });
                 console.log(this.state.loading);
             })
@@ -101,6 +106,49 @@ export default class Dashboard extends React.Component<any, State> {
                         this.setState({ 'isAutomatedFilterActive': false });
                         this.setState({ 'isEditedFilterActive': false });
                         this.setState({ 'isReviewedFilterActive': false });
+                        this.setState({ 'isFilesToReviewFilterActive': false });
+                        this.setState({ loading: false });
+                    })
+                    .catch(err => {
+                        if (err.response.status == 401) {
+                            this.setState({ 'unauthorized': true });
+                        }
+                    });
+
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    }
+
+    public getUserFilesToReview = () => {
+        this.setState({ loading: true });
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            },
+        };
+
+        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
+            .then(res => {
+                console.log(res);
+                this.setState({ 'userId': res.data.id });
+
+                axios.get('/api/file/getUserFilesToReview/' + this.state.userId, config)
+                    .then(res => {
+                        console.log(res);
+                        this.setState({ 'files': res.data.value.files })
+                        this.setState({ 'usernames': res.data.value.usernames })
+                        this.setState({ 'loading': false });
+                        this.setState({ 'isMyFilesFilterActive': false });
+                        this.setState({ 'isAutomatedFilterActive': false });
+                        this.setState({ 'isEditedFilterActive': false });
+                        this.setState({ 'isReviewedFilterActive': false });
+                        this.setState({ 'isFilesToReviewFilterActive': true });
                         this.setState({ loading: false });
                     })
                     .catch(err => {
@@ -137,6 +185,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': true });
                 this.setState({ 'isEditedFilterActive': false });
                 this.setState({ 'isReviewedFilterActive': false });
+                this.setState({ 'isFilesToReviewFilterActive': false });
                 this.setState({ loading: false });
             })
             .catch(err => {
@@ -166,6 +215,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': false });
                 this.setState({ 'isEditedFilterActive': false });
                 this.setState({ 'isReviewedFilterActive': true });
+                this.setState({ 'isFilesToReviewFilterActive': false });
                 this.setState({ loading: false });
             })
             .catch(err => {
@@ -195,6 +245,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'isAutomatedFilterActive': false });
                 this.setState({ 'isEditedFilterActive': true });
                 this.setState({ 'isReviewedFilterActive': false });
+                this.setState({ 'isFilesToReviewFilterActive': false });
                 this.setState({ loading: false });
             })
             .catch(err => {
@@ -216,6 +267,28 @@ export default class Dashboard extends React.Component<any, State> {
         )
     }
 
+    public searchDescription = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/file/getFilesByDescriptionAndTitle/' + this.state.searchTerms, config)
+            .then(res => {
+                this.setState({ files: res.data });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    }
+
+    public handleSearch = (e: any) => {
+        this.setState({ searchTerms: e.target.value })
+    }
+
     public render() {
         return (
             <div className="container">
@@ -224,6 +297,14 @@ export default class Dashboard extends React.Component<any, State> {
                         <FileInput />
 
                         <br /> <br />
+
+                        <a onClick={this.getUserFilesToReview}>
+                            <FilesToReviewFilter
+                                isActive={this.state.isFilesToReviewFilterActive}
+                            />
+                        </a>
+
+                        <br />
 
                         <a onClick={this.getAutomatedFiles}>
                             <AutomatedFilter
@@ -257,7 +338,13 @@ export default class Dashboard extends React.Component<any, State> {
                     </div>
 
                     <section className="section column">
-                        <FileDescriptionSearch />
+                        <div>
+                            <div className="field is-horizontal">
+                                <a className="button is-link mg-right-10" onClick={this.searchDescription}> Rechercher </a>
+                                <input className="input" type="text" placeholder="Chercher les fichiers par titre ou description" onChange={this.handleSearch} />
+                            </div>
+                        </div>
+
                         <div className="box mg-top-30">
                             {this.state.loading ? <Loading /> : this.state.files ? <FileTable
                                 files={this.state.files}
