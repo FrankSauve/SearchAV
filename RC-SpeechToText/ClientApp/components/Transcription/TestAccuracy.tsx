@@ -117,7 +117,7 @@ export default class Google extends React.Component<RouteComponentProps<{}>, Sta
             }
         }
 
-        axios.post('/api/SavingTranscripts/SaveTranscript', formData, config)
+        axios.post('/api/transcription/SaveTranscript', formData, config)
             .then(res => {
                 console.log(res);
             })
