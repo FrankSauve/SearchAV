@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 
 // Set the is-link color variable
 $link: #212940;
@@ -90,10 +90,10 @@ html, body {
 }
 
 .historique_date {
-    width: 116px;
+    width: 130px;
     height: 20px;
     font-family: Rubik-Regular;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: normal;
     font-style: normal;
     font-stretch: normal;
@@ -103,7 +103,7 @@ html, body {
 }
 
 .historique_username {
-    width: 56px;
+    width: 130px;
     height: 20px;
     font-family: Rubik-Regular;
     font-size: 12px;
