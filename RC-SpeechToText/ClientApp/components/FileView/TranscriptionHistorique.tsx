@@ -66,7 +66,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 <div className="Rectangle-Copy-6">
                     <div className="content_historique">
                         {this.state.versions.map((version) => {
-                            const listVersions = <div><p className="title_historique_changes"> {version.historyTitle} </p><p className="historique_date"> le {version.dateModified.substr(0, 10)} &#224; {version.dateModified.substr(11, 5)} </p><p className="historique_username"> {this.state.usernames[i]}</p> <p> </p></div>
+                            const listVersions = <div><p className="title_historique_changes"> {version.historyTitle} </p><p className="historique_date"> {version.dateModified.substr(0, 10)} {version.dateModified.substr(11, 5)} </p><p className="historique_username"> {this.state.usernames[i]}</p> <p> </p></div>
                             i++;
                             return (
                                 listVersions
