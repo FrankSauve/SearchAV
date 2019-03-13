@@ -22,7 +22,8 @@ export class ModifyTitleModal extends React.Component<any> {
                                 <div className="control">
                                     <input className="input is-primary" type="text" placeholder={this.props.title ?
                                         (this.props.title.lastIndexOf('.') != -1 ? this.props.title.substring(0, this.props.title.lastIndexOf('.'))
-                            </div>
+                                        : this.props.title) : "Enter title"} defaultValue={this.props.title} onChange={this.props.handleTitleChange} />
+                                </div>
                             </div>
                         </section>
                         <footer className="modalFooter">
