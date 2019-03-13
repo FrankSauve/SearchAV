@@ -58,7 +58,7 @@ export default class FileInput extends React.Component<any, State> {
             }
         };
 
-        axios.post('/api/transcription/convertandtranscribe', formData, config)
+        axios.post('/api/converter/convertandtranscribe', formData, config)
             .then(res => {
                 this.toggleLoad();
             })
