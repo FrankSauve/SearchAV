@@ -34,7 +34,7 @@ export default class ReviewedFilter extends React.Component<any, State> {
         axios.get('/api/file/getAllReviewedFiles', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data.value.files })
+                this.setState({ 'files': res.data.files })
             })
             .catch(err => {
                 if (err.response.status == 401) {

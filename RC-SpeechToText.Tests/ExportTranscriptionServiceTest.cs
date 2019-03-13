@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Services;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,12 @@ namespace RC_SpeechToText.Tests
 	{
 
 		private readonly string transcription = "Some transcription in here";
-		private readonly ExportTranscriptionService testService = new ExportTranscriptionService();
 
 		[TestMethod]
 		public void TestSuccessfulCreateWordDocument()
 		{
-			var result = testService.CreateWordDocument(transcription);
+			var wordRepo = new WordRepository();
+			var result = wordRepo.CreateWordDocument(transcription);
 
 			Assert.IsTrue(result);
 		}
@@ -24,7 +25,8 @@ namespace RC_SpeechToText.Tests
 		[TestMethod]
 		public void TestEmptyTranscriptCreateWordDocument()
 		{
-			var result = testService.CreateWordDocument("");
+			var wordRepo = new WordRepository();
+			var result = wordRepo.CreateWordDocument("");
 
 			Assert.IsFalse(result);
 		}
@@ -32,7 +34,8 @@ namespace RC_SpeechToText.Tests
 		[TestMethod]
 		public void TestSuccessfulCreateGoogleDocument()
 		{
-			var result = testService.CreateGoogleDocument(transcription);
+			var googleDocRepo = new GoogleDocumentRepository();
+			var result = googleDocRepo.CreateGoogleDocument(transcription);
 
 			Assert.IsTrue(result);
 		}
@@ -40,7 +43,8 @@ namespace RC_SpeechToText.Tests
 		[TestMethod]
 		public void TestEmptyTranscriptCreateGoogleDocument()
 		{
-			var result = testService.CreateGoogleDocument(null);
+			var googleDocRepo = new GoogleDocumentRepository();
+			var result = googleDocRepo.CreateGoogleDocument(null);
 
 			Assert.IsFalse(result);
 		}

@@ -1,14 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using RC_SpeechToText.Utils;
 using RC_SpeechToText.Services;
 
@@ -18,14 +12,11 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class FileController : Controller
     {
-        private readonly SearchAVContext _context;
-        private readonly ILogger _logger;
-        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
+		private readonly FileService _fileService;
 
-        public FileController(SearchAVContext context, ILogger<FileController> logger)
+        public FileController(SearchAVContext context)
         {
-            _context = context;
-            _logger = logger;
+			_fileService = new FileService(context);
         }
 
         [HttpGet("[action]")]
@@ -33,15 +24,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files");
-                var files = await _context.File.ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILES FOUND: " + files.Count);
+				var files = await _fileService.GetAllFiles();
 
                 return Ok(files);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all files");
                 return BadRequest("Get all files failed.");
             }
         }
@@ -51,23 +39,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching all files");
-                var files = await _context.File.ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
+				var filesUsernames = await _fileService.GetAllWithUsernames();
 
-                var usernames = new List<string>();
-
-                foreach(var file in files)
-                {
-                    var user = await _context.User.FindAsync(file.UserId);
-                    usernames.Add(user.Name);
-                }
-
-                return Ok(Json(new { files, usernames }));
+                return Ok(filesUsernames);
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching all files");
                 return BadRequest(ex);
             }
         }
@@ -77,24 +54,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all automated files");
-                var files = await _context.File.Where(f => f.Flag == "Automatisé").ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t AUTOMATED FILES: " + files.Count);
+				var filesUsernames = await _fileService.GetAllFilesByFlag("Automatisé");
 
-
-                var usernames = new List<string>();
-
-                foreach (var file in files)
-                {
-                    var user = await _context.User.FindAsync(file.UserId);
-                    usernames.Add(user.Name);
-                }
-
-                return Ok(Json(new { files, usernames }));
+                return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all automated files");
                 return BadRequest("Get all automated files failed.");
             }
         }
@@ -104,24 +69,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all edited files");
-                var files = await _context.File.Where(f => f.Flag == "Edité").ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t EDITED FILES: " + files.Count);
+				var filesUsernames = await _fileService.GetAllFilesByFlag("Edité");
 
-
-                var usernames = new List<string>();
-
-                foreach (var file in files)
-                {
-                    var user = await _context.User.FindAsync(file.UserId);
-                    usernames.Add(user.Name);
-                }
-
-                return Ok(Json(new { files, usernames }));
+                return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all edited files");
                 return BadRequest("Get all edited files failed.");
             }
         }
@@ -131,24 +84,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all reviewed files");
-                var files = await _context.File.Where(f => f.Flag == "Révisé").ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t REVIEWED FILES: " + files.Count);
+				var filesUsernames = await _fileService.GetAllFilesByFlag("Révisé");
 
-
-                var usernames = new List<string>();
-
-                foreach (var file in files)
-                {
-                    var user = await _context.User.FindAsync(file.UserId);
-                    usernames.Add(user.Name);
-                }
-
-                return Ok(Json(new { files, usernames }));
+                return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all edited files");
                 return BadRequest("Get all edited files failed.");
             }
         }
@@ -158,24 +99,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files with userId: " + id);
-                var files = await _context.File.Where(f => f.UserId == id).ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES: " + files.Count);
+				var filesUsernames = await _fileService.GetAllFilesById(id);
 
-                var usernames = new List<string>();
-
-                foreach (var file in files)
-                {
-                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILE TITLE: : " + file.Title);
-                    var user = await _context.User.FindAsync(file.UserId);
-                    usernames.Add(user.Name);
-                }
-
-                return Ok(Json(new { files, usernames }));
+                return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files with userId -> " + id);
                 return BadRequest("Get user files failed.");
             }
         }
@@ -191,24 +120,12 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files to review for user with  userId: " + id);
-                var files = await _context.File.Where(f => f.ReviewerId == id && f.Flag != "Révisé").ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USER FILES TO REVIEW: " + files.Count);
+				var filesUsernames = await _fileService.GetUserFilesToReview(id);
 
-                var usernames = new List<string>();
-
-                foreach (var file in files)
-                {
-                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t FILE TITLE: : " + file.Title);
-                    var user = await _context.User.FindAsync(file.UserId);
-                    usernames.Add(user.Name);
-                }
-
-                return Ok(Json(new { files, usernames }));
+                return Ok(filesUsernames);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user files to review with userId -> " + id);
                 return BadRequest("Get user files to review failed.");
             }
         }
@@ -217,13 +134,11 @@ namespace RC_SpeechToText.Controllers
         public async Task<IActionResult> Details(int id)
         {
             try
-            {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching file with id: " + id);
-                return Ok(await _context.File.FindAsync(id));
+			{ 
+                return Ok(await _fileService.GetFileById(id));
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching file with id: " + id);
                 return BadRequest("File with ID" + id + " not found");
             }
         }
@@ -233,16 +148,11 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all files");
-                var files = await _context.File.ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Files size: " + files.Count);
-
-
+				var files = await _fileService.GetAllFiles();
 				return Ok(SearchService.SearchDescriptionAndTitle(files,search));
 			}
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching files");
                 return BadRequest("Error retrieving files");
             }
         }
@@ -250,80 +160,38 @@ namespace RC_SpeechToText.Controllers
         [HttpPut("[action]/{id}")]
 		public async Task<IActionResult> ModifyTitle(int id, string newTitle)
 		{
-			if (newTitle != null)
-			{
-                if (await VerifyIfTitleExists(newTitle))
-                {
-                    return BadRequest("Le nom de fichier existe déjà. Veuillez choisir un nouveau nom.");
-                }
-                else
-                {
-                    File file = _context.File.Find(id);
-                    if (file.ThumbnailPath != "NULL")
-                    {
-                        file.ThumbnailPath = ModifyThumbnailName(file.Title, newTitle);
-                    }
-                    file.Title = newTitle;
+			var file = await _fileService.ModifyTitle(id, newTitle);
 
-                    try
-                    {
-                        _context.File.Update(file);
-                        await _context.SaveChangesAsync();
-                        _logger.LogInformation("Updated current title for file with id: " + file.Id);
-                        return Ok(file);
-                    }
-                    catch
-                    {
-                        _logger.LogError("Error updating current title for file with id: " + file.Id);
-                        return BadRequest("File title not updated");
-                    }
-                }
-			}
-			else
+			if(file.Error != null)
 			{
-				return BadRequest("Title is null");
+				return BadRequest(file.Error);
 			}
+			return Ok(file.File);
 		}
 
         [HttpDelete("[action]/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                var file = new File { Id = id };
-                _context.File.Attach(file);
-                _context.File.Remove(file);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Delete file with id: " + id);
-                return Ok();
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error deleting file with id: " + id);
-                return BadRequest("File with ID" + id + " not found");
-            }
-        }
+			var error = await _fileService.DeleteFile(id);
+
+			if (error != null)
+			{
+				return BadRequest(error);
+			}
+			return Ok();
+		}
 
         [HttpPut("[action]/{id}")]
         public async Task<IActionResult> SaveDescription(int id, string newDescription)
         {
-            File file = _context.File.Find(id);
-            file.Description = newDescription;
+			var file = await _fileService.SaveDescription(id, newDescription);
 
-            try
-            {
-                _context.File.Update(file);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Updated description for file with id: " + file.Id);
-                return Ok(file);
-            }
-            catch
-            {
-                _logger.LogError("Error updating description for file with id: " + file.Id);
-                return BadRequest("Description not updated");
-            }
-
-        }
+			if (file.Error != null)
+			{
+				return BadRequest(file.Error);
+			}
+			return Ok(file.File);
+		}
 
         //Quick fix for now, does not work without it
         //TO DO: find a way to remove this
@@ -331,58 +199,13 @@ namespace RC_SpeechToText.Controllers
         [HttpPost("[action]/{fileId}/{reviewerId}")]
         public async Task<IActionResult> AddReviewer(int fileId, int reviewerId)
         {
-            _logger.LogInformation("AddReviewer for file with id: " + fileId);
-            _logger.LogInformation("reviewerId: " + reviewerId);
+			var file = await _fileService.AddReviewer(fileId, reviewerId);
 
-            File file = _context.File.Find(fileId);
-            file.ReviewerId = reviewerId;
-
-            try
-            {
-                _context.File.Update(file);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Updated reviewerId for file with id: " + file.Id);
-                _logger.LogInformation("File reviewerId: " + file.ReviewerId);
-                return Ok(file);
-            }
-            catch
-            {
-                _logger.LogError("Error updating reviewerId for file with id: " + file.Id + " and reviewerId: " + reviewerId);
-                return BadRequest("File reviewerId not updated");
-            }
-
-        }
-
-        public async Task<bool> VerifyIfTitleExists(string title)
-        {
-            var files = await _context.File.ToListAsync();
-            List<string> titleList = new List<string>();
-            
-            foreach(var file in files)
-            {
-                titleList.Add(file.Title.Trim());
-            }
-
-            if (titleList.Contains(title.Trim(), StringComparer.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-            return false;      
-        }
-
-        private string ModifyThumbnailName(string oldName, string newName)
-        {
-            //Verifies if file exists in the current directory
-            if (System.IO.File.Exists(System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg"))
-            {
-                string oldPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + oldName + ".jpg";
-                string newPath = System.IO.Directory.GetCurrentDirectory() + @"\wwwroot\assets\Thumbnails\" + newName + ".jpg";
-                //Rename file in current directory to new title
-                System.IO.File.Move(oldPath, newPath);
-                return @"\assets\Thumbnails\" + newName + ".jpg";
-            }
-            else
-                return "NULL";
+			if(file.Error != null)
+			{
+				return BadRequest(file.Error);
+			}
+			return Ok(file.File);
         }
     }
 }
