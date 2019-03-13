@@ -41,8 +41,8 @@ export default class HighlightText extends React.Component<any, State> {
             }
         }
         console.log(this.state.selectedTerms);
-        console.log(this.props.version.id)
-        axios.get('/api/TranscriptSearch/SearchTranscript/' + this.props.version.id + '/' + this.state.selectedTerms , config)
+        console.log(this.props.version.id);
+        axios.get('/api/Transcription/SearchTranscript/' + this.props.version.id + '/' + this.state.selectedTerms , config)
             .then(res => {
                 console.log(res.data);
             })
