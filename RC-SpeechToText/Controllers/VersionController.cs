@@ -84,17 +84,9 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching versions and usernames with fileId: " + fileId);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching versions with fileId: " + fileId);
                 var versions = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
-
-                var usernames = new List<string>();
-
-                foreach (var version in versions)
-                {
-                    var user = await _context.User.FindAsync(version.UserId);
-                    usernames.Add(user.Name);
-                }
-
+               
                 return Ok(versions);
             }
             catch (Exception ex)
