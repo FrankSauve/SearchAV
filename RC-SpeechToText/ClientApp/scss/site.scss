@@ -1,7 +1,12 @@
 @charset "utf-8";
 
+// Variables
+$dark-blue: #212940;
+$light-blue: #b9e0f9; 
+
+
 // Set the is-link color variable
-$link: #212940;
+$link: $dark-blue;
 
 
 @import "~bulma/bulma";
@@ -234,5 +239,5 @@ html, body {
 }
 
 .highlight-text::selection {
-    background: lightblue;
+    background: $light-blue;
 }

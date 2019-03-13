@@ -1,16 +1,15 @@
 import * as React from 'react';
-import { KeyboardEvent } from 'react';
 import { ChangeEvent } from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
-import HighlightText from './HighlightText';
 
 interface State {
     version: any,
     displayText: string,
     rawText: string,
     errorMessage: string
-    words: any
+    firstSelectedWord: string,
+    lastSelectedWord: string
 }
 
 export class TranscriptionText extends React.Component<any, State> {
@@ -22,27 +21,47 @@ export class TranscriptionText extends React.Component<any, State> {
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
             errorMessage: "",
-            words: null
+            firstSelectedWord: '',
+            lastSelectedWord: ''
         }
     }
 
     // Called when the component renders
     componentDidMount() {
-        this.getWordsByVersionId();
+        // Add event listener for a click anywhere in the page
+        document.addEventListener('mouseup', this.getHighlightedWords);
     }
 
-    public getWordsByVersionId = () => {
+    // Remove event listener
+    componentWillUnmount() {
+        document.removeEventListener('mouseup', this.getHighlightedWords);
+    }
+
+    public getHighlightedWords = (event: any) => {
+        let s = document.getSelection();
+        let selectedWords = s ? s.toString().split(" ") : null;
+        if(selectedWords){
+            this.setState({firstSelectedWord: selectedWords[0]});
+            this.setState({lastSelectedWord: selectedWords[selectedWords.length - 1]});
+            this.searchTranscript();
+        }
+    }
+
+    public searchTranscript = () => {
         const config = {
             headers: {
                 'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/word/GetByVersionId/' + this.props.version.id, config)
+        console.log(this.props.version.id);
+        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.firstSelectedWord , config)
             .then(res => {
-                this.setState({ words: res.data });
+                console.log(res.data);
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     rawToHtml(text: string) {
@@ -64,13 +83,12 @@ export class TranscriptionText extends React.Component<any, State> {
         return (
             <div>
                 <textarea
-                    className="textarea mg-top-30"
+                    className="textarea mg-top-30 highlight-text"
                     rows={20} //Would be nice to adapt this to the number of lines in the future
                     onChange={this.handleChange}
                     value={this.state.displayText}
                     onBlur={this.handleBlur}
                 />
-                {this.state.words ? <HighlightText version={this.props.version} words={this.state.words} /> : null}
             </div>
         );
     }
