@@ -41,8 +41,8 @@ export class TranscriptionHistorique extends React.Component<any, State> {
         axios.get('/api/version/GetAllVersionsWithUserName/' + this.props.fileId, config)
             .then(res => {
                 console.log(res.data);
-                this.setState({ 'versions': res.data.value.versions});
-                this.setState({ 'usernames': res.data.value.usernames });
+                this.setState({ 'versions': res.data.versions});
+                this.setState({ 'usernames': res.data.usernames });
                 this.setState({ 'loading': false })
                 console.log(this.state.loading);
             })
