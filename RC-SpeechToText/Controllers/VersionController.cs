@@ -7,6 +7,7 @@ using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -18,7 +19,7 @@ namespace RC_SpeechToText.Controllers
         private readonly ILogger _logger;
         private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
-        public VersionController(SearchAVContext context, ILogger<FileController> logger)
+        public VersionController(SearchAVContext context, ILogger<VersionController> logger)
         {
             _context = context;
             _logger = logger;
@@ -33,13 +34,43 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching all versions");
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all versions");
                 return Ok(await _context.Version.ToListAsync());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching all versions");
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all versions");
                 return BadRequest("Get all versions failed.");
+            }
+        }
+
+        /// <summary>
+        /// Returns all versions with the transcriptionId
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
+        [HttpGet("[action]/{fileId}")]
+        public async Task<IActionResult> GetAllWithUserV(int fileId)
+        {
+            try
+            {
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching versions and usernames with fileId: " + fileId);
+                var versions = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
+
+                var usernames = new List<string>();
+
+                foreach (var version in versions)
+                {
+                    var user = await _context.User.FindAsync(version.UserId);
+                    usernames.Add(user.Name);
+                }
+
+                return Ok(Json(new { versions, usernames }));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all files");
+                return BadRequest(ex);
             }
         }
 
@@ -53,13 +84,22 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Fetching versions with fileId: " + fileId);
+                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching versions and usernames with fileId: " + fileId);
                 var versions = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
+
+                var usernames = new List<string>();
+
+                foreach (var version in versions)
+                {
+                    var user = await _context.User.FindAsync(version.UserId);
+                    usernames.Add(user.Name);
+                }
+
                 return Ok(versions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - "+ this.GetType().Name +" \n\t Error fetching versions with fileId: " + fileId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching versions with fileId: " + fileId);
                 return BadRequest("Error fetching versions with fileId: " + fileId);
             }
         }
@@ -100,7 +140,7 @@ namespace RC_SpeechToText.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error all versions for file with id: "+ fileId);
+                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error all versions for file with id: " + fileId);
                 return BadRequest(ex);
             }
         }
