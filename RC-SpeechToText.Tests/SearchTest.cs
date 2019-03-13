@@ -33,14 +33,9 @@ namespace RC_SpeechToText.Tests
             //AddAsync File to database
             await context.File.AddRangeAsync(files);
             await context.SaveChangesAsync();
-
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
-            var controller = new FileController(context, logger);
-
-
+			
+            var controller = new FileController(context);
+			
             //Searching for title1
 
             IActionResult awaitResult = await controller.GetFilesByDescriptionAndTitle("title1");

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Services
 {
@@ -26,17 +25,17 @@ namespace RC_SpeechToText.Services
             //If both array are the same size we can assume the user only edited words and can associate the right timestam to the right word
             if (newTranscriptList.Count == oldWords.Count)
             {
-                newWords = this.HandleEdited(oldWords, newTranscript, newVersionId, newTranscriptList);
+                newWords = HandleEdited(oldWords, newTranscript, newVersionId, newTranscriptList);
             }
             //If list of old words is larger than the new one we can assume that the user deleted some words
             else if (newTranscriptList.Count < oldWords.Count)
             {
-                newWords = this.HandleDeleted(oldWords, newTranscript, newVersionId, newTranscriptList);
+                newWords = HandleDeleted(oldWords, newTranscript, newVersionId, newTranscriptList);
             }
             //If list of new words is larger than the old one we can assume that the user added new words
             else
             {
-                newWords = this.HandleAdded(oldWords, newTranscript, newVersionId, newTranscriptList);
+                newWords = HandleAdded(oldWords, newTranscript, newVersionId, newTranscriptList);
             }
 
 

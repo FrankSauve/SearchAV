@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using Microsoft.Extensions.Logging;
-using System.Globalization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -15,14 +11,11 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class WordController : Controller
     {
-        private readonly SearchAVContext _context;
-        private readonly ILogger _logger;
-        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
+		private readonly WordService _wordService;
 
-        public WordController(SearchAVContext context, ILogger<FileController> logger)
+        public WordController(SearchAVContext context)
         {
-            _context = context;
-            _logger = logger;
+			_wordService = new WordService(context);
         }
 
         /// <summary>
@@ -54,26 +47,13 @@ namespace RC_SpeechToText.Controllers
         [HttpDelete("[action]/{fileId}")]
         public async Task<IActionResult> DeleteWordsByFileId(int fileId)
         {
-
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Deleting all words for file with id: " + fileId);
-
-                var versions = await _context.Version.Where(v => v.FileId == fileId).ToListAsync();
-                var wordList = new List<Word>();
-                foreach(var version in versions)
-                {
-                    var words = await _context.Word.Where(w => w.VersionId == version.Id).ToListAsync();
-                    wordList.AddRange(words);
-                }
-
-                _context.Word.RemoveRange(wordList);
-                await _context.SaveChangesAsync();
+				await _wordService.DeleteWordsByFileId(fileId);
                 return Ok("Delete words from file with id: " + fileId);
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n Error deleting all words for file with id: " + fileId);
                 return BadRequest(ex);
             }
         }

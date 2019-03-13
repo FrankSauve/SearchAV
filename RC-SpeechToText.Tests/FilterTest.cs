@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using RC_SpeechToText.Models.DTO.Incoming;
 
 namespace RC_SpeechToText.Tests
 {
@@ -30,35 +31,34 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            // AddAsync files using flag
-            await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Automatisé" });
-            await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Automatisé" });
-            await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
+			var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = "Automatisé" };
+			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = "Automatisé" };
+			var file3 = new File { Title = "testFile3", UserId = user.Id };
+
+			// AddAsync files using flag
+			await context.File.AddAsync(file1);
+            await context.File.AddAsync(file2);
+            await context.File.AddAsync(file3); //No flag for testing purposes
             await context.SaveChangesAsync();
-
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
-
+			
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.getAllAutomatedFiles();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2 }, Usernames = new List<string> { user.Name } };
 
-            // Verify that we get 2 files 
-            int automatedFiles = data.Value.files.Count;
+			// Verify that we get 2 files 
+			int automatedFiles = mockFileUsernameDTO.Files.Count;
             Assert.Equal(2, automatedFiles);
 
             //Verify the flags
             for (int i = 0; i < automatedFiles; i++)
             {
-                string flag = data.Value.files[i].Flag;
+                string flag = mockFileUsernameDTO.Files[i].Flag;
                 Assert.Equal("Automatisé", flag);
             }
         }
@@ -77,35 +77,34 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            // AddAsync files using flag
-            await context.File.AddAsync(new File { Title = "testFile1", UserId = user.Id, Flag = "Edité" });
-            await context.File.AddAsync(new File { Title = "testFile2", UserId = user.Id, Flag = "Edité" });
-            await context.File.AddAsync(new File { Title = "testFile3", UserId = user.Id }); //No flag for testing purposes
-            await context.SaveChangesAsync();
+			var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = "Edité" };
+			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = "Edité" };
+			var file3 = new File { Title = "testFile3", UserId = user.Id };
 
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
+			// AddAsync files using flag
+			await context.File.AddAsync(file1);
+			await context.File.AddAsync(file2);
+			await context.File.AddAsync(file3); //No flag for testing purposes
+			await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context, logger);
+			// Act
+			var controller = new FileController(context);
             var result = await controller.getAllEditedFiles();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2 }, Usernames = new List<string> { user.Name } };
 
-            // Verify that we get 2 files 
-            int editedFiles = data.Value.files.Count;
+			// Verify that we get 2 files 
+			int editedFiles = mockFileUsernameDTO.Files.Count;
             Assert.Equal(2, editedFiles);
 
             //Verify the flags
             for (int i = 0; i < editedFiles; i++)
             {
-                string flag = data.Value.files[i].Flag;
+                string flag = mockFileUsernameDTO.Files[i].Flag;
                 Assert.Equal("Edité", flag);
             }
         }
@@ -133,30 +132,25 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file2);
             await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
-            
-            var mock = new Mock<ILogger<FileController>>();
-            ILogger<FileController> logger = mock.Object;
-            logger = Mock.Of<ILogger<FileController>>();
 
             // Act
-            var controller = new FileController(context, logger);
+            var controller = new FileController(context);
             var result = await controller.getAllReviewedFiles();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<JsonResult>(okResult.Value);
+            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
 
-            var json = JsonConvert.SerializeObject(okResult.Value);
-            dynamic data = JsonConvert.DeserializeObject<object>(json);
+			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2 }, Usernames = new List<string> { user.Name } };
 
-            // Verify that we get 2 files 
-            int reviewedFiles = data.Value.files.Count;
+			// Verify that we get 2 files 
+			int reviewedFiles = mockFileUsernameDTO.Files.Count;
             Assert.Equal(2, reviewedFiles);
 
             //Verify the flags
             for (int i = 0; i < reviewedFiles; i++)
             {
-                string flag = data.Value.files[i].Flag;
+                string flag = mockFileUsernameDTO.Files[i].Flag;
                 Assert.Equal("Révisé", flag);
             }
         }

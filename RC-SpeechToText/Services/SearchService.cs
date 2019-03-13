@@ -21,7 +21,7 @@ namespace RC_SpeechToText.Services
             string[] arrayTerms;
 
             //Make sure the user did not pass an empty string
-            if (!String.IsNullOrEmpty(searchTerms))
+            if (!string.IsNullOrEmpty(searchTerms))
             {
                 arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
             }
