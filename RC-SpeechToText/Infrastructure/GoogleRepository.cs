@@ -1,14 +1,11 @@
 ﻿using Google.Cloud.Speech.V1;
 using Google.Cloud.Storage.V1;
-using RC_SpeechToText.Models;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RC_SpeechToText.Services
+namespace RC_SpeechToText.Infrastructure
 {
-    public class GoogleService
+    public class GoogleRepository
 	{
 		/// <summary>
 		/// Transcribe the input file to text using Google Cloud
@@ -58,7 +55,7 @@ namespace RC_SpeechToText.Services
 		public static async Task<Google.Apis.Storage.v1.Data.Object> UploadFile(string bucketName, string localPath, string objectName = null)
 		{
 			var storage = StorageClient.Create();
-			using (var f = System.IO.File.OpenRead(localPath))
+			using (var f = File.OpenRead(localPath))
 			{
 				objectName = objectName ?? Path.GetFileName(localPath);
 				return await storage.UploadObjectAsync(bucketName, objectName, null, f);
@@ -76,7 +73,7 @@ namespace RC_SpeechToText.Services
 		{
 			var storage = StorageClient.Create();
 			localPath = localPath ?? Path.GetFileName(objectName);
-			using (var outputFile = System.IO.File.OpenWrite(localPath))
+			using (var outputFile = File.OpenWrite(localPath))
 			{
 				await storage.DownloadObjectAsync(bucketName, objectName, outputFile);
 			}

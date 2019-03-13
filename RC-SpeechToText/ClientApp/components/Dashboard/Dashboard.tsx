@@ -62,8 +62,8 @@ export default class Dashboard extends React.Component<any, State> {
         axios.get('/api/file/GetAllWithUsernames', config)
             .then(res => {
                 console.log(res.data);
-                this.setState({ 'files': res.data.value.files });
-                this.setState({ 'usernames': res.data.value.usernames })
+                this.setState({ 'files': res.data.files });
+                this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 this.setState({ 'isMyFilesFilterActive': false });
                 this.setState({ 'isAutomatedFilterActive': false });
@@ -99,8 +99,8 @@ export default class Dashboard extends React.Component<any, State> {
                 axios.get('/api/file/getAllFilesByUser/' + this.state.userId, config)
                     .then(res => {
                         console.log(res);
-                        this.setState({ 'files': res.data.value.files })
-                        this.setState({ 'usernames': res.data.value.usernames })
+                        this.setState({ 'files': res.data.files })
+                        this.setState({ 'usernames': res.data.usernames })
                         this.setState({ 'loading': false });
                         this.setState({ 'isMyFilesFilterActive': true });
                         this.setState({ 'isAutomatedFilterActive': false });
@@ -141,8 +141,8 @@ export default class Dashboard extends React.Component<any, State> {
                 axios.get('/api/file/getUserFilesToReview/' + this.state.userId, config)
                     .then(res => {
                         console.log(res);
-                        this.setState({ 'files': res.data.value.files })
-                        this.setState({ 'usernames': res.data.value.usernames })
+                        this.setState({ 'files': res.data.files })
+                        this.setState({ 'usernames': res.data.usernames })
                         this.setState({ 'loading': false });
                         this.setState({ 'isMyFilesFilterActive': false });
                         this.setState({ 'isAutomatedFilterActive': false });
@@ -178,8 +178,8 @@ export default class Dashboard extends React.Component<any, State> {
         axios.get('/api/file/getAllAutomatedFiles', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data.value.files })
-                this.setState({ 'usernames': res.data.value.usernames })
+                this.setState({ 'files': res.data.files })
+                this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 this.setState({ 'isMyFilesFilterActive': false });
                 this.setState({ 'isAutomatedFilterActive': true });
@@ -208,8 +208,8 @@ export default class Dashboard extends React.Component<any, State> {
         axios.get('/api/file/getAllReviewedFiles', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data.value.files })
-                this.setState({ 'usernames': res.data.value.usernames })
+                this.setState({ 'files': res.data.files })
+                this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 this.setState({ 'isMyFilesFilterActive': false });
                 this.setState({ 'isAutomatedFilterActive': false });
@@ -238,8 +238,8 @@ export default class Dashboard extends React.Component<any, State> {
         axios.get('/api/file/getAllEditedFiles', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data.value.files })
-                this.setState({ 'usernames': res.data.value.usernames })
+                this.setState({ 'files': res.data.files })
+                this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 this.setState({ 'isMyFilesFilterActive': false });
                 this.setState({ 'isAutomatedFilterActive': false });

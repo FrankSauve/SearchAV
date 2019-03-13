@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using System.Globalization;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
+using RC_SpeechToText.Services;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -14,14 +10,11 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-        private readonly SearchAVContext _context;
-        private readonly ILogger _logger;
-        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
+		private readonly UserService _userService;
 
-        public UserController(SearchAVContext context, ILogger<UserController> logger)
+        public UserController(SearchAVContext context)
         {
-            _context = context;
-            _logger = logger;
+			_userService = new UserService(context);
         }
 
         /// <summary>
@@ -35,23 +28,11 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                if (!await _context.User.AnyAsync(u => u.Email == user.Email))
-                {
-                    // Store in DB
-                    await _context.User.AddAsync(user);
-                    await _context.SaveChangesAsync();
-                    _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User created: ID: "+user.Id+" Email: " + user.Email + " Name: " + user.Name);
-
-                    return Ok(user);
-                }
-                
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User already exists, logging in as: ID:"+user.Id+" Email:" + user.Email + " Name:" + user.Name);
-                return Ok(user);
+                return Ok(await _userService.CreateUser(user));
             }
-            catch(Exception ex)
+            catch
             {
-                _logger.LogError(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n" + ex);
-                return BadRequest(ex);
+                return BadRequest("Create user failed");
             }
         }
 
@@ -60,15 +41,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching all users");
-                var users = await _context.User.ToListAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t USERS FOUND: " + users.Count);
-
-                return Ok(users);
+                return Ok(await _userService.GetAllUsers());
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching all users");
                 return BadRequest("Get all users failed.");
             }
         }
@@ -78,12 +54,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching user with id: " + id);
-                return Ok(await _context.User.FindAsync(id));
+                return Ok(await _userService.GetUserName(id));
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user with id: " + id);
                 return BadRequest("User with ID" + id + " not found");
             }
         }
@@ -93,15 +67,10 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Fetching user with email: " + email);
-                var user = await _context.User.Where(u => u.Email == email).FirstOrDefaultAsync();
-                _logger.LogInformation(DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t User Found! USER ID: " + user.Id);
-
-                return Ok(user);
+                return Ok(await _userService.GetUserByEmail(email));
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError(ex, DateTime.Now.ToString(_dateConfig) + " - " + this.GetType().Name + " \n\t Error fetching user with email: " + email);
                 return BadRequest("User with EMAIL '" + email + "' not found");
             }
         }
