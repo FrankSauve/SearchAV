@@ -48,16 +48,19 @@ export class TranscriptionText extends React.Component<any, State> {
                     break;
                 }
             }
-            //get last non-empty string element
-            for (var i = selectedWords.length-1; i >= 0; i--) {
-                if (selectedWords[i].localeCompare("") != 0) {
-                    this.setState({ lastSelectedWord: selectedWords[i] });
-                    break;
+            //empty string means no selection, therefore only get second word and call the search func if there is at least one word selected
+            if (this.state.firstSelectedWord.localeCompare("") != 0) {
+                //get last non-empty string element
+                for (var i = selectedWords.length - 1; i >= 0; i--) {
+                    if (selectedWords[i].localeCompare("") != 0) {
+                        this.setState({ lastSelectedWord: selectedWords[i] });
+                        break;
+                    }
                 }
-            }
 
-            console.log("firstSelectedWord: " + this.state.firstSelectedWord + ", lastSelectedWord: " + this.state.lastSelectedWord);
-            this.searchTranscript();
+                console.log("firstSelectedWord: " + this.state.firstSelectedWord + ", lastSelectedWord: " + this.state.lastSelectedWord);
+                this.searchTranscript();
+            }
         }
     }
 
