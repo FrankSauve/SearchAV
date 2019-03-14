@@ -23,97 +23,100 @@ namespace RC_SpeechToText.Services
 
 		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
 		{
-			var streamIO = new IOInfrastructure();
-
-			var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
-
-			// Once we get the file path(of the uploaded file) from the server, we use it to call the converter
-			Converter converter = new Converter();
-			// Call converter to convert the file to mono and bring back its file path. 
-			var convertedFileLocation = converter.FileToWav(filePath);
-			//Gets type of file (audio or video)
-			var fileType = converter.GetFileType(filePath);
-
-			if (convertedFileLocation == null)
+			try
 			{
-				return null;
-			}
+				var streamIO = new IOInfrastructure();
 
-			// Upload the mono wav file to Google Storage
-			var storageObject = await GoogleRepository.UploadFile(_bucketName, convertedFileLocation);
+				var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
 
-			// Call the method that will get the transcription
-			var googleResult = GoogleRepository.GoogleSpeechToText(_bucketName, storageObject.Name);
+				// Once we get the file path(of the uploaded file) from the server, we use it to call the converter
+				Converter converter = new Converter();
+				// Call converter to convert the file to mono and bring back its file path. 
+				var convertedFileLocation = converter.FileToWav(filePath);
+				//Gets type of file (audio or video)
+				var fileType = converter.GetFileType(filePath);
 
-			//Persistent to domain model
-			var words = CreateWords(googleResult);
+				if (convertedFileLocation == null)
+				{
+					return null;
+				}
 
-			//Create transcription out of the words
-			var transcription = CreateTranscription(words);
+				// Upload the mono wav file to Google Storage
+				var storageObject = await GoogleRepository.UploadFile(_bucketName, convertedFileLocation);
 
-			await GoogleRepository.DeleteObject(_bucketName, storageObject.Name);
+				// Call the method that will get the transcription
+				var googleResult = GoogleRepository.GoogleSpeechToText(_bucketName, storageObject.Name);
 
-			// Delete the converted file
-			converter.DeleteFile(convertedFileLocation);
+				//Persistent to domain model
+				var words = CreateWords(googleResult);
 
-			// Create thumbnail
-			var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
-			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
+				//Create transcription out of the words
+				var transcription = CreateTranscription(words);
 
-			if (thumbnailImage == null)
-			{
-				return null;
-			}
+				await GoogleRepository.DeleteObject(_bucketName, storageObject.Name);
 
-			// Get user id by email
-			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+				// Delete the converted file
+				converter.DeleteFile(convertedFileLocation);
 
-			if (user == null)
-			{
-				return null;
-			}
+				// Create thumbnail
+				var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
+				var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
 
-			// Create file
-			var file = new File
-			{
-				Title = audioFile.FileName,
-				FilePath = filePath,
-				Flag = "Automatisé",
-				UserId = user.Id,
-				DateAdded = DateTime.Now,
-				Type = fileType,
-				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
-				//Description = "" 
-			};
-			await _context.File.AddAsync(file);
-			await _context.SaveChangesAsync();
+				if (thumbnailImage == null)
+				{
+					return null;
+				}
 
-			// Create version
-			var version = new Models.Version
-			{
-				UserId = user.Id,
-				FileId = file.Id,
-				Transcription = transcription,
-				DateModified = DateTime.Now,
-				Active = true
-			};
-			await _context.Version.AddAsync(version);
-			await _context.SaveChangesAsync();
+				// Get user id by email
+				var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
 
-			//Adding all words and their timestamps to the Word table
-			foreach (var word in words)
-			{
-				word.VersionId = version.Id;
-				await _context.Word.AddAsync(word);
+				if (user == null)
+				{
+					return null;
+				}
+
+				// Create file
+				var file = new File
+				{
+					Title = audioFile.FileName,
+					FilePath = filePath,
+					Flag = "Automatisé",
+					UserId = user.Id,
+					DateAdded = DateTime.Now,
+					Type = fileType,
+					ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
+					//Description = "" 
+				};
+				await _context.File.AddAsync(file);
 				await _context.SaveChangesAsync();
+
+				// Create version
+				var version = new Models.Version
+				{
+					UserId = user.Id,
+					FileId = file.Id,
+					Transcription = transcription,
+					DateModified = DateTime.Now,
+					Active = true
+				};
+				await _context.Version.AddAsync(version);
+				await _context.SaveChangesAsync();
+
+				//Adding all words and their timestamps to the Word table
+				await _context.AddRangeAsync(words);
+				await _context.SaveChangesAsync();
+
+				// Send email to user that the transcription is done
+				var emailService = new EmailInfrastructure();
+				emailService.SendTranscriptionDoneEmail(userEmail, file);
+
+				// Return the transcription
+				return version;
 			}
-
-			// Send email to user that the transcription is done
-			var emailService = new EmailInfrastructure();
-			emailService.SendTranscriptionDoneEmail(userEmail, file);
-
-			// Return the transcription
-			return version;
+			catch (Exception e)
+			{
+				return null;
+			}
 		}
 
 		private string CreateTranscription(List<Word> words)
@@ -129,16 +132,10 @@ namespace RC_SpeechToText.Services
 
 		private List<Word> CreateWords(GoogleResult googleResponse)
 		{
-			var words = new List<Word>();
-			foreach (var result in googleResponse.GoogleResponse.Results)
-			{
-				foreach (var word in result.Alternatives[0].Words)
-				{
-					words.Add(new Word { Term = word.Word, Timestamp = word.StartTime.ToString() });
-				}
-			}
-
-			return words;
+			return googleResponse.GoogleResponse.Results
+				.SelectMany(x => x.Alternatives[0].Words)
+				.Select(word => new Word { Term = word.Word, Timestamp = word.StartTime.ToString()})
+				.ToList();
 		}
 	}
 }
