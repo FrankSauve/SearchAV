@@ -50,11 +50,20 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> getAllAutomatedFiles()
+        [HttpGet("[action]/{flag}")]
+        public async Task<IActionResult> getAllFilesByFlag(string flag)
         {
             try
             {
+                //Should find a better solution to handle accents
+                var automated = Enum.GetName(typeof(FileFlag), 0);
+                var edited = Enum.GetName(typeof(FileFlag), 1);
+                var reviewed = Enum.GetName(typeof(FileFlag), 2);
+
+                //If the flag is not accented we handle it here
+                if(flag != automated && flag != edited && flag != reviewed)
+                    flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
+
                 var filesUsernames = await _fileService.GetAllFilesByFlag("Automatisé");
 
                 return Ok(filesUsernames);
@@ -62,36 +71,6 @@ namespace RC_SpeechToText.Controllers
             catch
             {
                 return BadRequest("Get all automated files failed.");
-            }
-        }
-
-        [HttpGet("[action]")]
-        public async Task<IActionResult> getAllEditedFiles()
-        {
-            try
-            {
-                var filesUsernames = await _fileService.GetAllFilesByFlag("Edité");
-
-                return Ok(filesUsernames);
-            }
-            catch
-            {
-                return BadRequest("Get all edited files failed.");
-            }
-        }
-
-        [HttpGet("[action]")]
-        public async Task<IActionResult> getAllReviewedFiles()
-        {
-            try
-            {
-                var filesUsernames = await _fileService.GetAllFilesByFlag("Révisé");
-
-                return Ok(filesUsernames);
-            }
-            catch
-            {
-                return BadRequest("Get all edited files failed.");
             }
         }
 

@@ -51,6 +51,7 @@ export default class Dashboard extends React.Component<any, State> {
 
     public getAllFiles = () => {
         this.setState({ loading: true });
+        this.deactivateFilters();
 
 
         const config = {
@@ -65,12 +66,6 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'files': res.data.files });
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
-                this.setState({ 'isMyFilesFilterActive': false });
-                this.setState({ 'isAutomatedFilterActive': false });
-                this.setState({ 'isEditedFilterActive': false });
-                this.setState({ 'isReviewedFilterActive': false });
-                this.setState({ 'isFilesToReviewFilterActive': false });
-                this.setState({ loading: false });
                 console.log(this.state.loading);
             })
             .catch(err => {
@@ -83,6 +78,7 @@ export default class Dashboard extends React.Component<any, State> {
 
     public getUserFiles = () => {
         this.setState({ loading: true });
+        this.deactivateFilters();
 
         const config = {
             headers: {
@@ -98,10 +94,6 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 this.setState({ 'isMyFilesFilterActive': true });
-                this.setState({ 'isAutomatedFilterActive': false });
-                this.setState({ 'isEditedFilterActive': false });
-                this.setState({ 'isReviewedFilterActive': false });
-                this.setState({ 'isFilesToReviewFilterActive': false });
                 this.setState({ loading: false });
             })
             .catch(err => {
@@ -113,6 +105,7 @@ export default class Dashboard extends React.Component<any, State> {
 
     public getUserFilesToReview = () => {
         this.setState({ loading: true });
+        this.deactivateFilters();
 
         const config = {
             headers: {
@@ -143,6 +136,7 @@ export default class Dashboard extends React.Component<any, State> {
 
     public getAutomatedFiles = () => {
         this.setState({ loading: true });
+        this.deactivateFilters();
 
         const config = {
             headers: {
@@ -151,48 +145,13 @@ export default class Dashboard extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllAutomatedFiles', config)
+        axios.get('/api/file/getAllFilesByFlag/Automatise', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data.files })
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
-                this.setState({ 'isMyFilesFilterActive': false });
                 this.setState({ 'isAutomatedFilterActive': true });
-                this.setState({ 'isEditedFilterActive': false });
-                this.setState({ 'isReviewedFilterActive': false });
-                this.setState({ 'isFilesToReviewFilterActive': false });
-                this.setState({ loading: false });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    }
-
-    public getReviewedFiles = () => {
-        this.setState({ loading: true });
-
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
-
-        axios.get('/api/file/getAllReviewedFiles', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isMyFilesFilterActive': false });
-                this.setState({ 'isAutomatedFilterActive': false });
-                this.setState({ 'isEditedFilterActive': false });
-                this.setState({ 'isReviewedFilterActive': true });
-                this.setState({ 'isFilesToReviewFilterActive': false });
-                this.setState({ loading: false });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -203,6 +162,7 @@ export default class Dashboard extends React.Component<any, State> {
 
     public getEditedFiles = () => {
         this.setState({ loading: true });
+        this.deactivateFilters();
 
         const config = {
             headers: {
@@ -211,18 +171,39 @@ export default class Dashboard extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllEditedFiles', config)
+        axios.get('/api/file/getAllFilesByFlag/Edite', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data.files })
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
-                this.setState({ 'isMyFilesFilterActive': false });
-                this.setState({ 'isAutomatedFilterActive': false });
                 this.setState({ 'isEditedFilterActive': true });
-                this.setState({ 'isReviewedFilterActive': false });
-                this.setState({ 'isFilesToReviewFilterActive': false });
-                this.setState({ loading: false });
+            })
+            .catch(err => {
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    }
+
+    public getReviewedFiles = () => {
+        this.setState({ loading: true });
+        this.deactivateFilters();
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            },
+        };
+
+        axios.get('/api/file/getAllFilesByFlag/Revise', config)
+            .then(res => {
+                console.log(res);
+                this.setState({ 'files': res.data.files })
+                this.setState({ 'usernames': res.data.usernames })
+                this.setState({ 'loading': false });
+                this.setState({ 'isReviewedFilterActive': true });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -263,6 +244,14 @@ export default class Dashboard extends React.Component<any, State> {
 
     public handleSearch = (e: any) => {
         this.setState({ searchTerms: e.target.value })
+    }
+
+    public deactivateFilters = () => {
+        this.setState({ 'isMyFilesFilterActive': false });
+        this.setState({ 'isAutomatedFilterActive': false });
+        this.setState({ 'isEditedFilterActive': false });
+        this.setState({ 'isReviewedFilterActive': false });
+        this.setState({ 'isFilesToReviewFilterActive': false });
     }
 
     public render() {
