@@ -9,6 +9,7 @@ import ReviewedFilter from './ReviewedFilter';
 import MyFilesFilter from './MyFilesFilter';
 import Loading from '../Loading';
 import FilesToReviewFilter from './FilesToReviewFilter';
+import ListTable from './ListTable';
 
 interface State {
     files: any[],
@@ -346,7 +347,7 @@ export default class Dashboard extends React.Component<any, State> {
                         </div>
 
                         <div className="box mg-top-30">
-                            {this.state.loading ? <Loading /> : this.state.files ? <FileTable
+                            {this.state.loading ? <Loading /> : this.state.files ? <ListTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
