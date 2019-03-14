@@ -59,7 +59,10 @@ namespace RC_SpeechToText.Controllers
                 var edited = Enum.GetName(typeof(FileFlag), 1);
                 var reviewed = Enum.GetName(typeof(FileFlag), 2);
 
-                flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
+                //If the flag is not accented we handle it here
+                if(flag != automated && flag != edited && flag != reviewed)
+                    flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
+
                 var filesUsernames = await _fileService.GetAllFilesByFlag(flag);
 
                 return Ok(filesUsernames);
