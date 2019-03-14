@@ -54,7 +54,7 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-				var filesUsernames = await _fileService.GetAllFilesByFlag("Automatisé");
+				var filesUsernames = await _fileService.GetAllFilesByFlag(Enum.GetName(typeof(FileFlag), 0));
 
                 return Ok(filesUsernames);
             }
@@ -69,7 +69,7 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-				var filesUsernames = await _fileService.GetAllFilesByFlag("Edité");
+				var filesUsernames = await _fileService.GetAllFilesByFlag(Enum.GetName(typeof(FileFlag), 1));
 
                 return Ok(filesUsernames);
             }
@@ -84,7 +84,7 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
-				var filesUsernames = await _fileService.GetAllFilesByFlag("Révisé");
+				var filesUsernames = await _fileService.GetAllFilesByFlag(Enum.GetName(typeof(FileFlag), 2));
 
                 return Ok(filesUsernames);
             }

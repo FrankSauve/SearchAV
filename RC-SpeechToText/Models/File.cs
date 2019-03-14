@@ -16,4 +16,11 @@ namespace RC_SpeechToText.Models
         public string Description { get; set; }
         public string ThumbnailPath { get; set; }
     }
+
+    public enum FileFlag
+    {
+        Automatisé,
+        Edité,
+        Révisé
+    }
 }

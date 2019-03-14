@@ -1,15 +1,11 @@
 ﻿
 using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Moq;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using RC_SpeechToText.Models.DTO.Incoming;
 
 namespace RC_SpeechToText.Tests
@@ -31,8 +27,10 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-			var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = "Automatisé" };
-			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = "Automatisé" };
+            var automatedFlag = Enum.GetName(typeof(FileFlag), 1);
+
+            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = automatedFlag };
+			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = automatedFlag };
 			var file3 = new File { Title = "testFile3", UserId = user.Id };
 
 			// AddAsync files using flag
@@ -59,7 +57,7 @@ namespace RC_SpeechToText.Tests
             for (int i = 0; i < automatedFiles; i++)
             {
                 string flag = mockFileUsernameDTO.Files[i].Flag;
-                Assert.Equal("Automatisé", flag);
+                Assert.Equal(automatedFlag, flag);
             }
         }
 
@@ -77,8 +75,10 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-			var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = "Edité" };
-			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = "Edité" };
+            var editedFlag = Enum.GetName(typeof(FileFlag), 1);
+
+            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = editedFlag };
+			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = editedFlag };
 			var file3 = new File { Title = "testFile3", UserId = user.Id };
 
 			// AddAsync files using flag
@@ -105,7 +105,7 @@ namespace RC_SpeechToText.Tests
             for (int i = 0; i < editedFiles; i++)
             {
                 string flag = mockFileUsernameDTO.Files[i].Flag;
-                Assert.Equal("Edité", flag);
+                Assert.Equal(editedFlag, flag);
             }
         }
 
@@ -123,8 +123,10 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
             
-            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = "Révisé" };
-            var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = "Révisé" };
+            var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
+
+            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = reviewedFlag };
+            var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = reviewedFlag };
             var file3 = new File { Title = "testFile3", UserId = user.Id }; // No flag for testing purposes
 
             // AddAsync files using flag
@@ -151,7 +153,7 @@ namespace RC_SpeechToText.Tests
             for (int i = 0; i < reviewedFiles; i++)
             {
                 string flag = mockFileUsernameDTO.Files[i].Flag;
-                Assert.Equal("Révisé", flag);
+                Assert.Equal(reviewedFlag, flag);
             }
         }
     }

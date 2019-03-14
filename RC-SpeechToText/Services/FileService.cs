@@ -74,7 +74,9 @@ namespace RC_SpeechToText.Services
 
 		public async Task<FileUsernameDTO> GetUserFilesToReview(int id)
 		{
-			var files = await _context.File.Where(f => f.ReviewerId == id && f.Flag != "Révisé").ToListAsync();
+            var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
+
+            var files = await _context.File.Where(f => f.ReviewerId == id && f.Flag != reviewedFlag).ToListAsync();
 
 			var usernames = new List<string>();
 
