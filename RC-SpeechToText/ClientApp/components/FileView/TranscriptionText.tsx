@@ -40,9 +40,23 @@ export class TranscriptionText extends React.Component<any, State> {
     public getHighlightedWords = (event: any) => {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
-        if(selectedWords){
-            this.setState({firstSelectedWord: selectedWords[0]});
-            this.setState({lastSelectedWord: selectedWords[selectedWords.length - 1]});
+        if (selectedWords) {
+            //Get first non-empty string element
+            for (var i = 0; i < selectedWords.length; i++) {
+                if (selectedWords[i].localeCompare("") != 0) {
+                    this.setState({ firstSelectedWord: selectedWords[i] });
+                    break;
+                }
+            }
+            //get last non-empty string element
+            for (var i = selectedWords.length-1; i >= 0; i--) {
+                if (selectedWords[i].localeCompare("") != 0) {
+                    this.setState({ lastSelectedWord: selectedWords[i] });
+                    break;
+                }
+            }
+
+            console.log("firstSelectedWord: " + this.state.firstSelectedWord + ", lastSelectedWord: " + this.state.lastSelectedWord);
             this.searchTranscript();
         }
     }
