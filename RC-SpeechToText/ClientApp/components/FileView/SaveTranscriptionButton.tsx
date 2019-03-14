@@ -47,7 +47,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                 },
             };
 
-            axios.post('/api/Transcription/SaveTranscript/' + this.props.userId + '/' + this.props.version.id, formData, config)
+            axios.post('/api/Transcription/SaveTranscript/' + this.props.version.id, formData, config)
                 .then(res => {
                     console.log(res);
                     this.props.updateVersion(res.data);

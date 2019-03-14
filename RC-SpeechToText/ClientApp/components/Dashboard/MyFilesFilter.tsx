@@ -33,22 +33,10 @@ export default class MyFilesFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
+        axios.get('/api/file/getAllFilesByUser/', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'userId': res.data.id });
-
-                axios.get('/api/file/getAllFilesByUser/' + this.state.userId, config)
-                    .then(res => {
-                        console.log(res);
-                        this.setState({ 'files': res.data.files })
-                    })
-                    .catch(err => {
-                        if (err.response.status == 401) {
-                            this.setState({ 'unauthorized': true });
-                        }
-                    });
-
+                this.setState({ 'files': res.data.files })
             })
             .catch(err => {
                 if (err.response.status == 401) {
