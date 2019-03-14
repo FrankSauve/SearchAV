@@ -15,7 +15,11 @@ export class VideoPlayer extends React.Component<any, State> {
     }
 
     public changeTime = () => {
-        this.state.player.seekTo(11);
+        var hrs = parseInt(this.props.seekTime.substring(0, 1));
+        var mins = parseInt(this.props.seekTime.substring(2, 2) + hrs*60);
+        var secs = parseFloat(this.props.seekTime.substring(5) + mins*60);
+        console.log("seekTime in hours: "+ hrs + ", mins: " + mins + ", secs:" + secs);
+        this.state.player.seekTo(secs);
     }
     
     ref = (player: any) => {

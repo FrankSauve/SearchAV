@@ -58,6 +58,7 @@ export class TranscriptionText extends React.Component<any, State> {
         axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.firstSelectedWord , config)
             .then(res => {
                 console.log(res.data);
+                this.props.handleSeekTime(res.data);
             })
             .catch(err => {
                 console.log(err);
