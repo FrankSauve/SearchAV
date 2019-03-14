@@ -13,6 +13,7 @@ namespace RC_SpeechToText.Services
 			//get each paragraph. Remove all empty string (where <br> are present). Trim the strings
 			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim()).ToList();
 			var timestamps = new List<string>();
+			//Count all the word that have been already passed through. => O(logN^2)
 			var wordPassed = 0;
 
 			foreach(string p in paragraph)
@@ -36,6 +37,7 @@ namespace RC_SpeechToText.Services
 			var lastWord = words.Find(x => x.Term == paragraph.Last().RemovePunctuation());
 			return new List<string>
 			{
+				//Save the time stamp
 				FormatTimestamp(firstWord.Timestamp),
 				FormatTimestamp(lastWord.Timestamp)
 			};
@@ -46,7 +48,7 @@ namespace RC_SpeechToText.Services
 			//getting this "\"4.600s\"", should be this 00:00:04,600
 			var temp = string.Join(string.Empty, Regex.Matches(timestamp, @"\d+").OfType<Match>().Select(m => m.Value));
 
-			for (int i = temp.Count(); i < 9; i++)
+			for (int i = temp.Count(); i < 9; i++) //there is always 9 numbers
 			{
 				temp = "0" + temp;
 			}
