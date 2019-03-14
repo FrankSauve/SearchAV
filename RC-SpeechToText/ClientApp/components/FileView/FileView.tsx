@@ -2,6 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
 import { TranscriptionText } from './TranscriptionText';
+import { TranscriptionHistorique } from './TranscriptionHistorique';
 import { VideoPlayer } from './VideoPlayer';
 import { DescriptionText } from './DescriptionText';
 import { TranscriptionSearch } from './TranscriptionSearch';
@@ -49,6 +50,8 @@ export default class FileView extends React.Component<any, State> {
         this.getUser();
     }
 
+
+
     public getVersion = () => {
         this.setState({ loading: true });
         const config = {
@@ -85,7 +88,7 @@ export default class FileView extends React.Component<any, State> {
             .catch(err => {
                 console.log(err);
                 if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });                
+                    this.setState({ 'unauthorized': true });
                 }
             });
     }
@@ -135,15 +138,15 @@ export default class FileView extends React.Component<any, State> {
                             </div> </div></div> : <div className="card">
                                 <div className="card-content"> This file has no title </div></div>) : null}</p>
 
-                        <br/>
+                        <br />
 
                         <p>{this.state.file ? (this.state.file.description ? <div><div className="card">
                             <div className="card-content">
-                            <b>Description: </b>{this.state.file.description}
+                                <b>Description: </b>{this.state.file.description}
                             </div> </div></div> : <div className="card">
                                 <div className="card-content"> This file has no description </div></div>) : null}</p>
 
-                        <br/>
+                        <br />
 
                         <p>{this.state.file ? (this.state.file ? <div><div className="card">
                             <div className="card-content">
@@ -151,16 +154,16 @@ export default class FileView extends React.Component<any, State> {
                                     <FileInfo
                                         thumbnail={this.state.file.thumbnailPath}
                                         userId={this.state.file.userId}
-                                        dateModified={this.state.version.dateModified}/> : null}
+                                        dateModified={this.state.version.dateModified} /> : null}
                             </div> </div></div> : <div className="card">
                                 <div className="card-content"> This file has no extra Info </div></div>) : null}</p>
                     </div>
 
-                    <div className="column mg-top-30">
+                    <div className="column is-half mg-top-30">
                         {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
-                        {this.state.loading ? 
+                        {this.state.loading ?
                             <Loading />
-                        : this.state.version && this.state.file && this.state.user ? 
+                            : this.state.version && this.state.file && this.state.user ?
                                 <div>
                                     <TranscriptionText
                                         text={this.state.version.transcription}
@@ -175,11 +178,14 @@ export default class FileView extends React.Component<any, State> {
                                         userId={this.state.user.id}
                                     />
                                 </div>
-                        : null}
-                        
+                                : null}
+
                     </div>
 
-                    <div className="column mg-top-30">
+                    <div className="column is-one-fifth historique_padding">
+                        <TranscriptionHistorique
+                            fileId={this.state.fileId}
+                        />
                     </div>
 
                 </div>

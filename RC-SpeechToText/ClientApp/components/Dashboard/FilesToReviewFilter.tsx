@@ -33,22 +33,10 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
+        axios.get('/api/file/getUserFilesToReview/', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'userId': res.data.id });
-
-                axios.get('/api/file/getUserFilesToReview/' + this.state.userId, config)
-                    .then(res => {
-                        console.log(res);
-                        this.setState({ 'files': res.data.files })
-                    })
-                    .catch(err => {
-                        if (err.response.status == 401) {
-                            this.setState({ 'unauthorized': true });
-                        }
-                    });
-
+                this.setState({ 'files': res.data.files })
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -57,7 +45,7 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
             });
     }
 
-    public render() {   
+    public render() {
         return (
             <div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">

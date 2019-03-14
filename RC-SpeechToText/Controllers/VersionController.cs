@@ -11,11 +11,11 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class VersionController : Controller
     {
-		private readonly VersionService _versionService;
+        private readonly VersionService _versionService;
 
         public VersionController(SearchAVContext context)
         {
-			_versionService = new VersionService(context);
+            _versionService = new VersionService(context);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         /// <summary>
-        /// Returns all versions with the transcriptionId
+        /// Returns all versions with the fileId
         /// </summary>
         /// <param name="fileId"></param>
         /// <returns></returns>
@@ -71,13 +71,33 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns all versions with the corresponding user name corresponding to the fileId
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
+        [HttpGet("[action]/{fileId}")]
+        public async Task<IActionResult> GetAllVersionsWithUserName(int fileId)
+        {
+            try
+            {
+                var versionsUsernames = await _versionService.GetAllWithUsernames(fileId);
+
+                return Ok(versionsUsernames);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
         [HttpDelete("[action]/{fileId}")]
         public async Task<IActionResult> DeleteFileVersions(int fileId)
         {
             try
             {
                 await _versionService.DeleteFileVersions(fileId);
-				return Ok();
+                return Ok();
             }
             catch (Exception ex)
             {

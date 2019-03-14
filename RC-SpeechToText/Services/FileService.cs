@@ -30,23 +30,19 @@ namespace RC_SpeechToText.Services
 
 		public async Task<FileUsernameDTO> GetAllWithUsernames()
 		{
-			var files = await _context.File.ToListAsync();
-
-			var usernames = new List<string>();
-
-			foreach (var file in files)
-			{
-				var user = await _context.User.FindAsync(file.UserId);
-				usernames.Add(user.Name);
-			}
-
-			return new FileUsernameDTO { Files = files, Usernames = usernames};
+			var files = await _context.File.Include(q => q.User).ToListAsync();
+			return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
 		}
 
 		public async Task<FileUsernameDTO> GetAllFilesByFlag(string flag)
 		{
-			var files = await _context.File.Where(f => f.Flag == flag).ToListAsync();
+			var files = await _context.File.Where(f => f.Flag == flag).Include(q => q.User).ToListAsync();
+			return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
+		}
 
+		public async Task<FileUsernameDTO> GetAllFilesById(string email)
+		{
+			var files = await _context.File.Where(f => f.User.Email == email).ToListAsync();
 			var usernames = new List<string>();
 
 			foreach (var file in files)
@@ -58,23 +54,11 @@ namespace RC_SpeechToText.Services
 			return new FileUsernameDTO { Files = files, Usernames = usernames };
 		}
 
-		public async Task<FileUsernameDTO> GetAllFilesById(int id)
+		public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
 		{
-			var files = await _context.File.Where(f => f.UserId == id).ToListAsync();
-			var usernames = new List<string>();
+            var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
 
-			foreach (var file in files)
-			{
-				var user = await _context.User.FindAsync(file.UserId);
-				usernames.Add(user.Name);
-			}
-
-			return new FileUsernameDTO { Files = files, Usernames = usernames };
-		}
-
-		public async Task<FileUsernameDTO> GetUserFilesToReview(int id)
-		{
-			var files = await _context.File.Where(f => f.ReviewerId == id && f.Flag != "Révisé").ToListAsync();
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != "Révisé").ToListAsync();
 
 			var usernames = new List<string>();
 
@@ -97,7 +81,7 @@ namespace RC_SpeechToText.Services
 				}
 				else
 				{
-					File file = _context.File.Find(id);
+					var file = _context.File.Find(id);
 
 					if (file.ThumbnailPath != "NULL")
 					{
@@ -107,7 +91,6 @@ namespace RC_SpeechToText.Services
 
 					try
 					{
-						_context.File.Update(file);
 						await _context.SaveChangesAsync();
 						return new FileDTO { File = file, Error = null };
 					}
@@ -146,7 +129,6 @@ namespace RC_SpeechToText.Services
 				var file = _context.File.Find(id);
 				file.Description = newDescription;
 
-				_context.File.Update(file);
 				await _context.SaveChangesAsync();
 				return new FileDTO { File = file, Error = null };
 			}
@@ -163,7 +145,6 @@ namespace RC_SpeechToText.Services
 
 			try
 			{
-				_context.File.Update(file);
 				await _context.SaveChangesAsync();
 				return new FileDTO { File = file, Error = null };
 			}
@@ -175,15 +156,8 @@ namespace RC_SpeechToText.Services
 
 		private async Task<bool> VerifyIfTitleExists(string title)
 		{
-			var files = await _context.File.ToListAsync();
-			List<string> titleList = new List<string>();
-
-			foreach (var file in files)
-			{
-				titleList.Add(file.Title.Trim());
-			}
-
-			if (titleList.Contains(title.Trim(), StringComparer.OrdinalIgnoreCase))
+			var existingFileTitlesCount = await _context.File.CountAsync(x => x.Title.Trim().Equals(title));
+			if (existingFileTitlesCount > 0)
 			{
 				return true;
 			}

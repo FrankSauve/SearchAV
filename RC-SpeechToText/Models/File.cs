@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace RC_SpeechToText.Models
 {
@@ -12,8 +11,17 @@ namespace RC_SpeechToText.Models
         public string Type { get; set; }
         public string Flag { get; set; }
         public int UserId { get; set; }
+        public User User { get; set; }
         public int ReviewerId { get; set; }
+        public User Reviewer { get; set; }
         public string Description { get; set; }
         public string ThumbnailPath { get; set; }
+    }
+
+    public enum FileFlag
+    {
+        Automatisé,
+        Edité,
+        Révisé
     }
 }
