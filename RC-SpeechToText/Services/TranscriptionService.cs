@@ -23,7 +23,7 @@ namespace RC_SpeechToText.Services
 			return await _context.Version.ToListAsync();
 		}
 
-		public async Task<VersionDTO> SaveTranscript(int userId, int versionId, string newTranscript)
+		public async Task<VersionDTO> SaveTranscript(string userEmail, int versionId, string newTranscript)
 		{
 			var currentVersion = _context.Version.Find(versionId);
 
@@ -85,10 +85,9 @@ namespace RC_SpeechToText.Services
             //Find corresponding file and update its flag 
             try
 			{
-				File file = await _context.File.FindAsync(newVersion.FileId);
-				string flag = (file.ReviewerId == userId ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+				File file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
+				string flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? "Révisé" : "Edité"); //If user is reviewer of file, flag = "Révisé"
 				file.Flag = flag;
-				_context.File.Update(file);
 				await _context.SaveChangesAsync();
 				//Send email to user who uploaded file stating that review is done
 				if (flag == reviewedFlag)
@@ -186,15 +185,10 @@ namespace RC_SpeechToText.Services
 			var modifyTimeStampService = new ModifyTimeStampService();
 			List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, newTranscript, newVersionId);
 
-			//Add all the words of the transcript to the database
 			try
 			{
-				foreach (var word in newWords)
-				{
-					await _context.Word.AddAsync(word);
-					await _context.SaveChangesAsync();
-				}
-
+				await _context.Word.AddRangeAsync(newWords);
+				await _context.SaveChangesAsync();
 			}
 			catch
 			{
