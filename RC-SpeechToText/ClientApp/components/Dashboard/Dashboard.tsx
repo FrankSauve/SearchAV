@@ -94,10 +94,6 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 this.setState({ 'isMyFilesFilterActive': true });
-                this.setState({ 'isAutomatedFilterActive': false });
-                this.setState({ 'isEditedFilterActive': false });
-                this.setState({ 'isReviewedFilterActive': false });
-                this.setState({ 'isFilesToReviewFilterActive': false });
                 this.setState({ loading: false });
             })
             .catch(err => {
