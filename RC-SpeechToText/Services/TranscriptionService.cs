@@ -82,7 +82,6 @@ namespace RC_SpeechToText.Services
 				File file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
 				string flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? "Révisé" : "Edité"); //If user is reviewer of file, flag = "Révisé"
 				file.Flag = flag;
-				_context.File.Update(file);
 				await _context.SaveChangesAsync();
 				//Send email to user who uploaded file stating that review is done
 				if (flag == "Révisé")
@@ -180,15 +179,10 @@ namespace RC_SpeechToText.Services
 			var modifyTimeStampService = new ModifyTimeStampService();
 			List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, newTranscript, newVersionId);
 
-			//Add all the words of the transcript to the database
 			try
 			{
-				foreach (var word in newWords)
-				{
-					await _context.Word.AddAsync(word);
-					await _context.SaveChangesAsync();
-				}
-
+				await _context.Word.AddRangeAsync(newWords);
+				await _context.SaveChangesAsync();
 			}
 			catch
 			{
