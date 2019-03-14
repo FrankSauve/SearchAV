@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
+using System.Linq;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -22,16 +23,19 @@ namespace RC_SpeechToText.Controllers
 			_transcriptionService = new TranscriptionService(context);
         }
 
-        [HttpPost("[action]/{userId}/{versionId}")]
-        public async Task<IActionResult> SaveTranscript(int userId, int versionId, string newTranscript)
+        [HttpPost("[action]/{versionId}")]
+        public async Task<IActionResult> SaveTranscript(int versionId, string newTranscript)
         {
-			var saveResult = await _transcriptionService.SaveTranscript(userId, versionId, newTranscript);
+            var emailClaim = HttpContext.User.Claims;
+            var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
+
+            var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
 			if(saveResult.Error != null)
 			{
 				return BadRequest(saveResult.Error);
 			}
-
-			return Ok(saveResult.Version);
+           
+            return Ok(saveResult.Version);
         }
         
         /// <summary>
