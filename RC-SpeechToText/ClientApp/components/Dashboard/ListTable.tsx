@@ -1,5 +1,6 @@
 ﻿import * as React from 'react';
 import { Redirect } from 'react-router-dom';
+import TableImage from './TableImage';
 
 interface State {
     files: any[],
@@ -41,7 +42,7 @@ export default class ListTable extends React.Component<any, State>
                 {this.state.unauthorized ? <Redirect to="/unauthorized" /> : null}
                 {this.state.loading ? progressBar : null}
 
-                <table>
+                <table className='table is-fullwidth'>
                     <th>TITRE</th>
                     <th>DUREE</th>
                     <th>IMPORTE PAR</th>
@@ -53,8 +54,8 @@ export default class ListTable extends React.Component<any, State>
                         i++
                         return (
                             <tr>
-                                <td>{file.title}</td>
-                                <td>12:00:00</td>
+                                <td width='100'><TableImage thumbnailPath={file.thumbnailPath} title={file.title} flag={file.flag} description={file.description} /></td>
+                                <td><p className='tag is-rounded is-link'>12:00:00</p></td>
                                 <td>{this.state.usernames[i]}</td>
                                 <td>29-11-2019 15:00</td>
                                 <td>Button</td>
@@ -63,8 +64,7 @@ export default class ListTable extends React.Component<any, State>
                     })}
                 </table>
             </div>
-
-            )
+        )
     }
 
 }
