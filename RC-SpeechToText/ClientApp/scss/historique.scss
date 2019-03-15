@@ -1,75 +1,28 @@
-.historique_padding {
-    margin-top: 30px;
-}
-
-.Rectangle-Copy-5 {
-    width: 190px;
-    height: 60px;
-    background-color: #212940;
-}
-
-.HISTORIQUE {
-    width: 178.4px;
-    height: 22px;
+.historique-title {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 18px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
     color: #909bb8;
-    padding-left: 14.7px;
-    padding-top: 19px;
-    padding-bottom: 19px;
 }
 
-.Rectangle-Copy-6 {
-    width: 189px;
-    height: 562px;
+#historique-title-box {
+    margin-bottom: 0rem;
+    box-shadow: none;
+    background-color: $link;
+    border-radius: 0px;
+    text-align: center;
+}
+
+#historique-content-box {
+    box-shadow: none;
     background-color: #f4f5f8;
+    border-radius: 0px;
 }
 
-.title_historique_changes {
-    width: 154px;
-    height: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
+.historique-content {
     color: #212940;
+    margin-bottom: 10px;
 }
 
-.historique_date {
-    width: 130px;
-    height: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: #212940;
-}
-
-.historique_username {
-    width: 130px;
-    height: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
+.historique-username {
     font-weight: 500;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: #212940;
-}
-
-.content_historique {
-    padding-left: 17px;
-    padding-top: 16px;
 }
