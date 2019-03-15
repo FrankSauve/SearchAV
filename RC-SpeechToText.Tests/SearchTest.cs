@@ -23,12 +23,14 @@ namespace RC_SpeechToText.Tests
             var reviewer = new User { Id = 2, Email = "reviewer@email.com", Name = "testReviewer" };
             List<File> files = new List<File>();
 
+            var automatedFlag = Enum.GetName(typeof(FileFlag), 0);
+
             //Populating our files table
-            files.Add( new File { Title = "title1", Description = "This is a description test", DateAdded = DateTime.Now, Flag = "Automatisé", UserId = user.Id, ReviewerId = reviewer.Id });
-            files.Add( new File { Title = "title test", Description = "2nd description", DateAdded = DateTime.Now, Flag = "Automatisé", UserId = user.Id, ReviewerId = reviewer.Id });
-            files.Add( new File { Title = "title2", Description = "3rd description", DateAdded = DateTime.Now, Flag = "Automatisé", UserId = user.Id, ReviewerId = reviewer.Id });
-            files.Add( new File { Title = "title3", Description = "Random word in description btgjsp", DateAdded = DateTime.Now, Flag = "Automatisé", UserId = user.Id, ReviewerId = reviewer.Id });
-            files.Add( new File { Title = "title4", Description = "4th description", DateAdded = DateTime.Now, Flag = "Automatisé", UserId = user.Id, ReviewerId = reviewer.Id });
+            files.Add( new File { Title = "title1", Description = "This is a description test", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id });
+            files.Add( new File { Title = "title test", Description = "2nd description", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id });
+            files.Add( new File { Title = "title2", Description = "3rd description", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id });
+            files.Add( new File { Title = "title3", Description = "Random word in description btgjsp", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id });
+            files.Add( new File { Title = "title4", Description = "4th description", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id });
 
             //AddAsync File to database
             await context.File.AddRangeAsync(files);
