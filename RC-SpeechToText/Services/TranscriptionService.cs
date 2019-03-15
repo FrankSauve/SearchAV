@@ -187,7 +187,9 @@ namespace RC_SpeechToText.Services
 
 			try
 			{
-				await _context.Word.AddRangeAsync(newWords);
+				newWords.ForEach(async x => {
+					await _context.Word.AddAsync(x);
+				});
 				await _context.SaveChangesAsync();
 			}
 			catch

@@ -68,11 +68,11 @@ namespace RC_SpeechToText.Services
 					return null;
 				}
 
-                //flag -> Automatisé
-                var automatedFlag = Enum.GetName(typeof(FileFlag), 0);
+				//flag -> Automatisé
+				var automatedFlag = Enum.GetName(typeof(FileFlag), 0);
 
-                // Create file
-                var file = new File
+				// Create file
+				var file = new File
 				{
 					Title = audioFile.FileName,
 					FilePath = filePath,
@@ -95,11 +95,14 @@ namespace RC_SpeechToText.Services
 					DateModified = DateTime.Now,
 					Active = true
 				};
+
 				await _context.Version.AddAsync(version);
-				await _context.SaveChangesAsync();
 
 				//Adding all words and their timestamps to the Word table
-				await _context.AddRangeAsync(words);
+				words.ForEach(async x => {
+					x.VersionId = version.Id;
+					await _context.Word.AddAsync(x);
+				});
 				await _context.SaveChangesAsync();
 
 				// Send email to user that the transcription is done
