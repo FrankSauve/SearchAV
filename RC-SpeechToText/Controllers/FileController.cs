@@ -66,7 +66,7 @@ namespace RC_SpeechToText.Controllers
                 if(flag != automated && flag != edited && flag != reviewed)
                     flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
 
-                var filesUsernames = await _fileService.GetAllFilesByFlag("Automatisé");
+                var filesUsernames = await _fileService.GetAllFilesByFlag(flag);
 
                 return Ok(filesUsernames);
             }
