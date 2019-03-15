@@ -47,7 +47,7 @@ namespace RC_SpeechToText.Models
 						Flag = "Automatisé";
 						break;
 					case FileFlag.Edite:
-						Flag = "Edite";
+						Flag = "Edité";
 						break;
 					case FileFlag.Revise:
 						Flag = "Révisé";
