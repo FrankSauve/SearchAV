@@ -34,7 +34,7 @@ namespace RC_SpeechToText.Services
 			return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
 		}
 
-		public async Task<FileUsernameDTO> GetAllFilesByFlag(string flag)
+		public async Task<FileUsernameDTO> GetAllFilesByFlag(FileFlag flag)
 		{
 			var files = await _context.File.Where(f => f.Flag == flag).Include(q => q.User).ToListAsync();
 			return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
@@ -49,7 +49,7 @@ namespace RC_SpeechToText.Services
 		public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
 		{
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != "Révisé").ToListAsync();
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != FileFlag.Revise).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 

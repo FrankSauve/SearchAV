@@ -85,12 +85,12 @@ namespace RC_SpeechToText.Services
             //Find corresponding file and update its flag 
             try
 			{
-				File file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
-				string flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+				var file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
+				var flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? FileFlag.Revise : FileFlag.Edite); //If user is reviewer of file, flag = "Révisé"
 				file.Flag = flag;
 				await _context.SaveChangesAsync();
 				//Send email to user who uploaded file stating that review is done
-				if (flag == reviewedFlag)
+				if (flag == FileFlag.Revise)
 				{
 					var uploader = await _context.User.FindAsync(file.UserId);
 					var reviewer = await _context.User.FindAsync(file.ReviewerId);

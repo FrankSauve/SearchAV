@@ -9,7 +9,7 @@ namespace RC_SpeechToText.Models
         public string FilePath { get; set; }
         public DateTime? DateAdded { get; set; }
         public string Type { get; set; }
-        public string Flag { get; set; }
+        public FileFlag Flag { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
         public int ReviewerId { get; set; }
@@ -20,8 +20,8 @@ namespace RC_SpeechToText.Models
 
     public enum FileFlag
     {
-        Automatisé,
-        Edité,
-        Révisé
+        Automatise,
+        Edite,
+        Revise
     }
 }

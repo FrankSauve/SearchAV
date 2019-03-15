@@ -55,26 +55,34 @@ namespace RC_SpeechToText.Controllers
         {
             try
             {
+				FileFlag fileFlag;
                 //Should find a better solution to handle accents
-                var automated = Enum.GetName(typeof(FileFlag), 0);
-                var edited = Enum.GetName(typeof(FileFlag), 1);
-                var reviewed = Enum.GetName(typeof(FileFlag), 2);
+                switch (flag)
+				{
+					case "Automatise":
+						fileFlag = FileFlag.Automatise;
+						break;
+					case "Edite":
+						fileFlag = FileFlag.Edite;
+						break;
+					case "Revise":
+						fileFlag = FileFlag.Revise;
+						break;
+					default:
+						throw new NullReferenceException();
+				}
 
-                //If the flag is not accented we handle it here
-                if(flag != automated && flag != edited && flag != reviewed)
-                    flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
-
-                var filesUsernames = await _fileService.GetAllFilesByFlag("Automatisé");
+                var filesUsernames = await _fileService.GetAllFilesByFlag(fileFlag);
 
                 return Ok(filesUsernames);
-            }
-            catch
+			}
+			catch
             {
                 return BadRequest("Get all automated files failed.");
             }
-        }
+		}
 
-        [HttpGet("[action]")]
+		[HttpGet("[action]")]
         public async Task<IActionResult> getAllFilesByUser()
         {
             try
@@ -193,5 +201,5 @@ namespace RC_SpeechToText.Controllers
             }
             return Ok(file.File);
         }
-    }
+	}
 }
