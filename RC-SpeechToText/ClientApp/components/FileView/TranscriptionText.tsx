@@ -7,7 +7,8 @@ interface State {
     version: any,
     displayText: string,
     rawText: string,
-    errorMessage: string
+    errorMessage: string,
+    selection: string,
     firstSelectedWord: string,
     lastSelectedWord: string
 }
@@ -21,6 +22,7 @@ export class TranscriptionText extends React.Component<any, State> {
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
             errorMessage: "",
+            selection: '',
             firstSelectedWord: '',
             lastSelectedWord: ''
         }
@@ -40,7 +42,10 @@ export class TranscriptionText extends React.Component<any, State> {
     public getHighlightedWords = (event: any) => {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
-        if (selectedWords) {
+        if (selectedWords && s) {
+
+            this.setState({selection: s.toString()});
+
             //Get first non-empty string element
             for (var i = 0; i < selectedWords.length; i++) {
                 if (selectedWords[i].localeCompare("") != 0) {
@@ -71,8 +76,11 @@ export class TranscriptionText extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        console.log(this.props.version.id);
-        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.firstSelectedWord , config)
+
+        // Search the entire selection for now
+        // This will probably have to change by having words with timestamps in the frontend
+        // But its an ok temporary solution
+        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.selection , config)
             .then(res => {
                 console.log(res.data);
                 this.props.handleSeekTime(res.data);
