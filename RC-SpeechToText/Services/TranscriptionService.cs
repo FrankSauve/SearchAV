@@ -87,7 +87,7 @@ namespace RC_SpeechToText.Services
 			{
 				var file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
 				var flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? FileFlag.Revise : FileFlag.Edite); //If user is reviewer of file, flag = "Révisé"
-				file.Flag = flag;
+				file.FileFlag = flag;
 				await _context.SaveChangesAsync();
 				//Send email to user who uploaded file stating that review is done
 				if (flag == FileFlag.Revise)

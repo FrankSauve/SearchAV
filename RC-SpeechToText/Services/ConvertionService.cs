@@ -67,16 +67,13 @@ namespace RC_SpeechToText.Services
 				{
 					return null;
 				}
-
-				//flag -> Automatisé
-				var automatedFlag = Enum.GetName(typeof(FileFlag), 0);
-
+				
 				// Create file
 				var file = new File
 				{
 					Title = audioFile.FileName,
 					FilePath = filePath,
-					Flag = FileFlag.Automatise,
+					FileFlag = FileFlag.Automatise,
 					UserId = user.Id,
 					DateAdded = DateTime.Now,
 					Type = fileType,
