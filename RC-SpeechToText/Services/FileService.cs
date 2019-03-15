@@ -49,7 +49,7 @@ namespace RC_SpeechToText.Services
 		public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
 		{
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != "Révisé").ToListAsync();
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
