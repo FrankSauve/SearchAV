@@ -43,33 +43,15 @@ namespace RC_SpeechToText.Services
 		public async Task<FileUsernameDTO> GetAllFilesById(string email)
 		{
 			var files = await _context.File.Where(f => f.User.Email == email).ToListAsync();
-			var usernames = new List<string>();
-
-			foreach (var file in files)
-			{
-				var user = await _context.User.FindAsync(file.UserId);
-				usernames.Add(user.Name);
-			}
-
-			return new FileUsernameDTO { Files = files, Usernames = usernames };
+			return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
 		}
 
 		public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
 		{
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-
-            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != "Révisé").ToListAsync();
-
-			var usernames = new List<string>();
-
-			foreach (var file in files)
-			{
-				var user = await _context.User.FindAsync(file.UserId);
-				usernames.Add(user.Name);
-			}
-
-			return new FileUsernameDTO { Files = files, Usernames = usernames };
-		}
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).ToListAsync();
+            return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
+        }
 
 		public async Task<FileDTO> ModifyTitle(int id, string newTitle)
 		{
