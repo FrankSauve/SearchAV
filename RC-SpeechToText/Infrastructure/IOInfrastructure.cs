@@ -43,6 +43,11 @@ namespace RC_SpeechToText.Infrastructure
 			File.Move(p1, p2);
 		}
 
+		public void DeleteFile(string wavFilePath)
+		{
+			File.Delete(wavFilePath);
+		}
+
 		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps)
 		{
 			//TODO: Find a way to prompt the user on the file path
