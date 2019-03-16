@@ -46,7 +46,8 @@ namespace RC_SpeechToText.Services
 			{
 				UserId = currentVersion.UserId,
 				FileId = currentVersion.FileId,
-				DateModified = DateTime.Now,
+                HistoryTitle = "MODIFICATIONS", 
+                DateModified = DateTime.Now,
 				Transcription = newTranscript,
 				Active = true
 			};
@@ -86,9 +87,9 @@ namespace RC_SpeechToText.Services
             try
 			{
 				File file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
-				string flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
-				file.Flag = flag;
-				await _context.SaveChangesAsync();
+                string flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+                file.Flag = flag;                
+                await _context.SaveChangesAsync();
 				//Send email to user who uploaded file stating that review is done
 				if (flag == reviewedFlag)
 				{
@@ -96,8 +97,8 @@ namespace RC_SpeechToText.Services
 					var reviewer = await _context.User.FindAsync(file.ReviewerId);
 					var emailSerice = new EmailInfrastructure();
 					emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
-
-				}
+                    newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
+                }
 
 				return new VersionDTO { Version = newVersion, Error = null };
 			}

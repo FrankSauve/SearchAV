@@ -93,13 +93,14 @@ namespace RC_SpeechToText.Services
 				await _context.File.AddAsync(file);
 				await _context.SaveChangesAsync();
 
-				// Create version
-				var version = new Models.Version
-				{
-					UserId = user.Id,
-					FileId = file.Id,
-					Transcription = transcription,
-					DateModified = DateTime.Now,
+                // Create version
+                var version = new Models.Version
+                {
+                    UserId = user.Id,
+                    FileId = file.Id,
+                    Transcription = transcription,
+                    HistoryTitle = "CRÉATION DU FICHIER", 
+                    DateModified = DateTime.Now,
 					Active = true
 				};
 				await _context.Version.AddAsync(version);
