@@ -54,9 +54,12 @@ html, body {
     margin-top: 10px;
 }
 
+.file-box {
+    height: 920px;
+    overflow-y: scroll
+}
 
-
-.whiteText{
+.whiteText {
     color: white !important;
 }
 
