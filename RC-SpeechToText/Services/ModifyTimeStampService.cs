@@ -7,7 +7,7 @@ namespace RC_SpeechToText.Services
 {
     public class ModifyTimeStampService
     {
-        public List<Word> ModifyTimestamps(List<Word> oldWords, string newTranscript, int newVersionId)
+        public List<Word> ModifyTimestamps(List<Word> oldWords, string newTranscript, Guid newVersionId)
         {
 			var newTranscriptNoBr = newTranscript
 				.Replace("<br>", " ")
@@ -33,7 +33,7 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
+        private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
             for (int i = 0; i < newTranscriptList.Count; i++)
@@ -43,7 +43,7 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        private List<Word> HandleDeleted(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
+        private List<Word> HandleDeleted(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
 
@@ -65,7 +65,7 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        private List<Word> HandleAdded(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
+        private List<Word> HandleAdded(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
             var iterateOld = 0;

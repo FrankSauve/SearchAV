@@ -22,7 +22,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpPost("[action]/{versionId}")]
-        public async Task<IActionResult> SaveTranscript(int versionId, string newTranscript)
+        public async Task<IActionResult> SaveTranscript(Guid versionId, string newTranscript)
         {
             var emailClaim = HttpContext.User.Claims;
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
@@ -60,7 +60,7 @@ namespace RC_SpeechToText.Controllers
         /// <param name="searchTerms"></param>
         /// <returns></returns>
         [HttpGet("[action]/{versionId}/{searchTerms}")]
-        public async Task<IActionResult> SearchTranscript(string searchTerms, int versionId)
+        public async Task<IActionResult> SearchTranscript(string searchTerms, Guid versionId)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace RC_SpeechToText.Controllers
 
 
         [HttpGet("[action]/{fileId}/{documentType}")]
-        public async Task<IActionResult> DownloadTranscript(string documentType, int fileId)
+        public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
 			var result = await _transcriptionService.DownloadTranscription(documentType, fileId);
 

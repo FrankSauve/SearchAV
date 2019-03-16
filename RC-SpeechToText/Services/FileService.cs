@@ -23,7 +23,7 @@ namespace RC_SpeechToText.Services
 			return await _context.File.ToListAsync();
 		}
 
-		public async Task<File> GetFileById(int id)
+		public async Task<File> GetFileById(Guid id)
 		{
 			return await _context.File.FindAsync(id);
 		}
@@ -71,7 +71,7 @@ namespace RC_SpeechToText.Services
 			return new FileUsernameDTO { Files = files, Usernames = usernames };
 		}
 
-		public async Task<FileDTO> ModifyTitle(int id, string newTitle)
+		public async Task<FileDTO> ModifyTitle(Guid id, string newTitle)
 		{
 			if (newTitle != null)
 			{
@@ -106,7 +106,7 @@ namespace RC_SpeechToText.Services
 			}
 		}
 
-		public async Task<string> DeleteFile(int id)
+		public async Task<string> DeleteFile(Guid id)
 		{
 			try
 			{
@@ -122,7 +122,7 @@ namespace RC_SpeechToText.Services
 			}
 		}
 
-		public async Task<FileDTO> SaveDescription(int id, string newDescription)
+		public async Task<FileDTO> SaveDescription(Guid id, string newDescription)
 		{
 			try
 			{
@@ -138,7 +138,7 @@ namespace RC_SpeechToText.Services
 			}
 		}
 
-		public async Task<FileDTO> AddReviewer(int fileId, int reviewerId)
+		public async Task<FileDTO> AddReviewer(Guid fileId, Guid reviewerId)
 		{
 			var file = _context.File.Find(fileId);
 			file.ReviewerId = reviewerId;

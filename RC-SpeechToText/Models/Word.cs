@@ -7,6 +7,6 @@ namespace RC_SpeechToText.Models
         public Guid Id { get; set; }
         public string Term { get; set; }
         public string Timestamp { get; set; }
-        public int VersionId { get; set; }
+        public Guid VersionId { get; set; }
     }
 }

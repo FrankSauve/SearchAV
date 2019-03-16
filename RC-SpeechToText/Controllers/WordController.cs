@@ -19,7 +19,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpDelete("[action]/{fileId}")]
-        public async Task<IActionResult> DeleteWordsByFileId(int fileId)
+        public async Task<IActionResult> DeleteWordsByFileId(Guid fileId)
         {
             try
             {
