@@ -5,7 +5,7 @@ import auth from '../../Utils/auth';
 interface State {
     thumbnail: string,
     name: string,
-    userId: string,
+    userId: AAGUID,
     dateModified: string,
     dateFormated: string,
     unauthorized: boolean

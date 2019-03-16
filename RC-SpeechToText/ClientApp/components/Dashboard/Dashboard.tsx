@@ -13,7 +13,7 @@ import FilesToReviewFilter from './FilesToReviewFilter';
 interface State {
     files: any[],
     usernames: string[],
-    userId: number,
+    userId: AAGUID,
     isMyFilesFilterActive: boolean,
     isEditedFilterActive: boolean,
     isAutomatedFilterActive: boolean,
@@ -32,7 +32,7 @@ export default class Dashboard extends React.Component<any, State> {
         this.state = {
             files: [],
             usernames: [],
-            userId: 0,
+            userId: "",
             isMyFilesFilterActive: false,
             isEditedFilterActive: false,
             isAutomatedFilterActive: false,

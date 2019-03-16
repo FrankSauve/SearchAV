@@ -4,7 +4,7 @@ import auth from '../../Utils/auth';
 
 interface State {
     files: any[],
-    userId: number,
+    userId: AAGUID,
     unauthorized: boolean
 }
 
@@ -14,7 +14,7 @@ export default class MyFilesFilter extends React.Component<any, State> {
         super(props);
         this.state = {
             files: [],
-            userId: 0,
+            userId: "",
             unauthorized: false
         }
     }

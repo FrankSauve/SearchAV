@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import Loading from '../Loading';
 
 interface State {
-    fileId: number,
+    fileId: AAGUID,
     version: any,
     file: any,
     user: any,

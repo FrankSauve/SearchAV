@@ -6,8 +6,8 @@ import { SuccessModal } from './SuccessModal';
 
 interface State {
     users: any[],
-    fileId: any,
-    reviewerId: number,
+    fileId: AAGUID,
+    reviewerId: AAGUID,
     reviewerName: string,
     reviewerEmail: string,
     errorMessage: string,
@@ -23,8 +23,8 @@ export class SelectReviewerModal extends React.Component<any, State> {
 
         this.state = {
             users: [],
-            fileId: 0,
-            reviewerId: 0,
+            fileId: "",
+            reviewerId: "",
             reviewerName: "",
             reviewerEmail: "",
             errorMessage: "",
@@ -67,7 +67,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
         var fileId = this.state.fileId
         var reviewerId = this.state.reviewerId
 
-        if ((fileId != "" && fileId != 0) && reviewerId != 0) {
+        if ((fileId != "") && reviewerId != "") {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -103,7 +103,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     }
                 });
         }
-        else if (fileId == "" || fileId == 0){
+        else if (fileId == ""){
             this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Une erreur au niveau du fichier est survenu. Veuillez rafraichir la page s'il vous plait." })
             this.props.hideModal();
             this.showErrorModal();
