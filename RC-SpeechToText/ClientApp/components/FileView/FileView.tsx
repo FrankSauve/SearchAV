@@ -65,6 +65,7 @@ export default class FileView extends React.Component<any, State> {
         this.getVersion();
         this.getFile();
         this.getUser();
+        this.setState({ description: this.state.description }); 
         document.addEventListener('mouseup', this.hideDropdown);
     }
 
@@ -72,7 +73,6 @@ export default class FileView extends React.Component<any, State> {
     componentWillUnmount() {
         document.removeEventListener('mouseup', this.hideDropdown);
     }
-
 
     public getVersion = () => {
         this.setState({ loading: true });
@@ -229,43 +229,29 @@ export default class FileView extends React.Component<any, State> {
             <div className="container">
 
                 <div className="columns">
-                    <div className="column is-one-third mg-top-30">
+                    <div className="column is-one-third mg-top-30 has-background-white-smoke">
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} /> : null}
 
-                        
-                        <p>{this.state.file ? (this.state.file.title ? <div><div className="card">
+                        {this.state.file ? <b className="has-text-link">Titre: </b> : null}
+                        {this.state.file ? (this.state.file.title ? <div><div className="card">
                             <div className="card-content">
-                                <b>Titre: </b><br/>{this.state.file.title}
+                                {this.state.file.title}
                             </div> </div></div> : <div className="card">
-                                <div className="card-content"> This file has no title </div></div>) : null}</p>
+                                <div className="card-content"> This file has no title </div></div>) : null}
                         
                         <br />
 
-                        <p>{this.state.file ? (this.state.file.description ? <div><div className="card">
-                            <div className="card-content">
-                                <header >
-                                    <b>Description: </b>
-                                    <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
-                                        <div className="dropdown-trigger">
-                                            <div className="is-black" aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
-                                                <i className="fas fa-ellipsis-v "></i>
-                                            </div>
-                                        </div>
-                                        <div className="dropdown-menu" id="dropdown-menu4" role="menu">
-                                            <div className="dropdown-content">
-                                                <a className="dropdown-item" onClick={this.showDescriptionModal}> Modifier la description </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </header>
-                                <br />{this.state.description}
-                                
-                            </div>
-                            
+                        {this.state.file ? <b className="has-text-link">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit"></i></a></b> : null}
+                        {this.state.file ? (this.state.file.description ? <div>
+                            <div className="card">
+                                <div className="card-content">
+                                {this.state.description}
+                                </div>
+
                             </div></div> : <div className="card">
-                               <div className="card-content"> This file has no description </div></div>) : null}
-                        </p>
+                                <div className="card-content"> This file has no description </div></div>) : null}
+                        
                         <br />
 
                         <p>{this.state.file ? (this.state.file ? <div><div className="card">
