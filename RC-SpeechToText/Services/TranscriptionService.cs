@@ -57,7 +57,7 @@ namespace RC_SpeechToText.Services
 				await _context.Version.AddAsync(newVersion);
 				await _context.SaveChangesAsync();
 			}
-			catch
+			catch (Exception e)
 			{
 				return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
 			}
@@ -71,7 +71,7 @@ namespace RC_SpeechToText.Services
 					return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
 				}
 			}
-			catch
+			catch (Exception e)
 			{
 				return new VersionDTO { Version = null, Error = "Error saving new words with id: " + newVersion.Id };
 			}
@@ -85,8 +85,15 @@ namespace RC_SpeechToText.Services
             //Find corresponding file and update its flag 
             try
 			{
-				File file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
-				string flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+				File file;
+				file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
+				string flag;
+				if (file != null)
+					flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+				else {
+					file = await _context.File.FindAsync(newVersion.FileId);
+					flag = editedFlag;
+				}
 				file.Flag = flag;
 				await _context.SaveChangesAsync();
 				//Send email to user who uploaded file stating that review is done
@@ -101,7 +108,7 @@ namespace RC_SpeechToText.Services
 
 				return new VersionDTO { Version = newVersion, Error = null };
 			}
-			catch
+			catch (Exception e)
 			{
 				return new VersionDTO { Version = null, Error = "File flag not updated." };
 			}
@@ -187,7 +194,9 @@ namespace RC_SpeechToText.Services
 
 			try
 			{
-				await _context.Word.AddRangeAsync(newWords);
+				newWords.ForEach(async x => {
+					await _context.Word.AddAsync(x);
+				});
 				await _context.SaveChangesAsync();
 			}
 			catch
