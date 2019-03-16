@@ -10,7 +10,7 @@ using RC_SpeechToText.Infrastructure;
 
 namespace RC_SpeechToText.Services
 {
-    public class ConvertionService
+	public class ConvertionService
 	{
 
 		private readonly SearchAVContext _context;
@@ -31,32 +31,25 @@ namespace RC_SpeechToText.Services
 
 				// Once we get the file path(of the uploaded file) from the server, we use it to call the converter
 				Converter converter = new Converter();
+
 				// Call converter to convert the file to mono and bring back its file path. 
 				var convertedFileLocation = converter.FileToWav(filePath);
-				//Gets type of file (audio or video)
-				var fileType = converter.GetFileType(filePath);
 
-				if (convertedFileLocation == null)
+				var words = await CreateWords(convertedFileLocation);
+
+				// Delete the converted file
+				streamIO.DeleteFile(convertedFileLocation);
+
+				if (words == null)
 				{
 					return null;
 				}
 
-				// Upload the mono wav file to Google Storage
-				var storageObject = await GoogleRepository.UploadFile(_bucketName, convertedFileLocation);
-
-				// Call the method that will get the transcription
-				var googleResult = GoogleRepository.GoogleSpeechToText(_bucketName, storageObject.Name);
-
-				//Persistent to domain model
-				var words = CreateWords(googleResult);
+				//Gets type of file (audio or video)
+				var fileType = converter.GetFileType(filePath);
 
 				//Create transcription out of the words
 				var transcription = CreateTranscription(words);
-
-				await GoogleRepository.DeleteObject(_bucketName, storageObject.Name);
-
-				// Delete the converted file
-				converter.DeleteFile(convertedFileLocation);
 
 				// Create thumbnail
 				var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
@@ -75,11 +68,8 @@ namespace RC_SpeechToText.Services
 					return null;
 				}
 
-                //flag -> Automatisé
-                var automatedFlag = Enum.GetName(typeof(FileFlag), 0);
-
-                // Create file
-                var file = new File
+				// Create file
+				var file = new File
 				{
 					Title = audioFile.FileName,
 					FilePath = filePath,
@@ -106,7 +96,10 @@ namespace RC_SpeechToText.Services
 				await _context.SaveChangesAsync();
 
 				//Adding all words and their timestamps to the Word table
-				await _context.AddRangeAsync(words);
+				words.ForEach(async x => {
+					x.VersionId = version.Id;
+					await _context.Word.AddAsync(x);
+				});
 				await _context.SaveChangesAsync();
 
 				// Send email to user that the transcription is done
@@ -133,12 +126,28 @@ namespace RC_SpeechToText.Services
 			return transcription;
 		}
 
-		private List<Word> CreateWords(GoogleResult googleResponse)
+		private async Task<List<Word>> CreateWords(string convertedFileLocation)
 		{
-			return googleResponse.GoogleResponse.Results
+			if (convertedFileLocation == null)
+			{
+				return null;
+			}
+
+			// Upload the mono wav file to Google Storage
+			var storageObject = await GoogleRepository.UploadFile(_bucketName, convertedFileLocation);
+
+			// Call the method that will get the transcription
+			var googleResult = GoogleRepository.GoogleSpeechToText(_bucketName, storageObject.Name);
+
+			//Persistent to domain model
+			var words = googleResult.GoogleResponse.Results
 				.SelectMany(x => x.Alternatives[0].Words)
-				.Select(word => new Word { Term = word.Word, Timestamp = word.StartTime.ToString()})
+				.Select(word => new Word { Term = word.Word, Timestamp = word.StartTime.ToString() })
 				.ToList();
+
+			await GoogleRepository.DeleteObject(_bucketName, storageObject.Name);
+
+			return words;
 		}
 	}
 }
