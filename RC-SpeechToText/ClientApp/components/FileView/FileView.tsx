@@ -29,8 +29,6 @@ interface State {
     errorMessage: string,
     successMessage: string,
     showDropdown: boolean,
-    loading: boolean
-    description: any,
     loading: boolean,
     seekTime: string
 }
@@ -57,8 +55,6 @@ export default class FileView extends React.Component<any, State> {
             errorMessage: "",
             successMessage: "",
             showDropdown: false,
-            loading: false
-            description: null,
             loading: false,
             seekTime: '0:00:00.00'
         }
@@ -240,7 +236,7 @@ export default class FileView extends React.Component<any, State> {
                         
                         <p>{this.state.file ? (this.state.file.title ? <div><div className="card">
                             <div className="card-content">
-                                <b>Titre: </b>{this.state.file.title}
+                                <b>Titre: </b><br/>{this.state.file.title}
                             </div> </div></div> : <div className="card">
                                 <div className="card-content"> This file has no title </div></div>) : null}</p>
                         
@@ -263,7 +259,7 @@ export default class FileView extends React.Component<any, State> {
                                         </div>
                                     </div>
                                 </header>
-                                {this.state.description}
+                                <br />{this.state.description}
                                 
                             </div>
                             
