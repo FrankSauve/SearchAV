@@ -74,6 +74,8 @@ namespace RC_SpeechToText.Utils
 
 					var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
 
+					options.VideoAspectRatio = VideoAspectRatio.R16_9;
+
 					engine.GetMetadata(mp4);
 
 					engine.GetThumbnail(mp4, outputFile, options);
