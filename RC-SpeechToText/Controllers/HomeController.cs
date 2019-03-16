@@ -8,6 +8,7 @@ using RC_SpeechToText.Filters;
 
 namespace RC_SpeechToText.Controllers
 {
+    [ServiceFilter(typeof(ControllerExceptionFilter))]
     [ServiceFilter(typeof(LoggingActionFilter))]
     public class HomeController : Controller
     {

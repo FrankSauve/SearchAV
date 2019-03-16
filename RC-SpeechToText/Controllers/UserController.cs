@@ -7,6 +7,7 @@ using RC_SpeechToText.Filters;
 
 namespace RC_SpeechToText.Controllers
 {
+    [ServiceFilter(typeof(ControllerExceptionFilter))]
     [ServiceFilter(typeof(LoggingActionFilter))]
     [AllowAnonymous]
     [Route("api/[controller]")]

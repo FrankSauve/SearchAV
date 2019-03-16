@@ -34,8 +34,9 @@ namespace RC_SpeechToText
 
             services.AddMvc();
  
-
+            //Adding out filters
              services.AddScoped<LoggingActionFilter>();
+            services.AddScoped<ControllerExceptionFilter>();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
