@@ -1,0 +1,23 @@
+.fileCard {
+    position: relative;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(244, 245, 248, 1);
+}
+
+.fileContent {
+    font-size: 15px;
+    color: rgba(33, 41, 64, 1);
+    text-align: left;
+    line-height: 20px;
+}
+
+.fileTitle {
+    font-size: 14px;
+    color: rgba(33, 41, 64, 1);
+    text-align: left;
+}
+
+.card-header-title {
+    overflow:hidden;
+}

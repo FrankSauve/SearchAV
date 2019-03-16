@@ -20,7 +20,8 @@ interface State {
     unauthorized: boolean,
     fileTitle: string,
     description: any,
-    loading: boolean
+    loading: boolean,
+    seekTime: string
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -37,7 +38,8 @@ export default class FileView extends React.Component<any, State> {
             unauthorized: false,
             fileTitle: "",
             description: null,
-            loading: false
+            loading: false,
+            seekTime: '0:00:00.00'
         }
     }
 
@@ -117,6 +119,10 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ version: newVersion });
     };
 
+    public handleSeekTime = (time: string) => {
+        this.setState({ seekTime: time });
+    };
+
     render() {
         return (
             <div className="container">
@@ -124,7 +130,7 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third mg-top-30">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title} /> : null}
+                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} /> : null}
 
                         <p>{this.state.file ? (this.state.file.title ? <div><div className="card">
                             <div className="card-content">
@@ -160,8 +166,10 @@ export default class FileView extends React.Component<any, State> {
                             : this.state.version && this.state.file && this.state.user ?
                                 <div>
                                     <TranscriptionText
+                                        text={this.state.version.transcription}
                                         version={this.state.version}
-                                        handleChange={this.handleTranscriptChange} />
+                                        handleChange={this.handleTranscriptChange}
+                                        handleSeekTime={this.handleSeekTime} />
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
