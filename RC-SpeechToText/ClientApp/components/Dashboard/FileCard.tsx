@@ -315,7 +315,7 @@ export class FileCard extends React.Component<any, State> {
                     </header>
                     <div className="card-image">
                         <div className="hovereffect">
-                            <figure className="image is-4by3">
+                            <figure className="image is-16by9">
                                 <img src={this.props.image} alt="Placeholder image" />
                                 <div className="overlay">
                                     <Link className="info" to={`/FileView/${this.props.fileId}`}>View/Edit</Link>

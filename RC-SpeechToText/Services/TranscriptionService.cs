@@ -79,7 +79,7 @@ namespace RC_SpeechToText.Services
 			}
 		}
 
-		public async Task<string> SearchTranscript(string searchTerms, int versionId)
+		public async Task<string> SearchTranscript(int versionId, string searchTerms)
 		{
 			//Ordered by Id to get the words in the same order as transcript
 			var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
