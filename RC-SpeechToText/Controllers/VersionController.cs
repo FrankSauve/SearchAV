@@ -28,14 +28,9 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                return Ok(await _versionService.Index());
-            }
-            catch
-            {
-                return BadRequest("Get all versions failed.");
-            }
+
+            return Ok(await _versionService.Index());
+
         }
 
         /// <summary>
@@ -46,15 +41,9 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}")]
         public async Task<IActionResult> GetbyFileId(int fileId)
         {
-            try
-            {
-                return Ok(await _versionService.GetVersionByFileId(fileId));
-            }
-            catch
-            {
-                return BadRequest("Error fetching versions with fileId: " + fileId);
-            }
+            return Ok(await _versionService.GetVersionByFileId(fileId));
         }
+
 
         /// <summary>
         /// Returns active version corresponding to the fileId
@@ -64,14 +53,7 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}")]
         public async Task<IActionResult> GetActivebyFileId(int fileId)
         {
-            try
-            {
-                return Ok(await _versionService.GetFileActiveVersion(fileId));
-            }
-            catch
-            {
-                return BadRequest("Error fetching active version with fileId: " + fileId);
-            }
+            return Ok(await _versionService.GetFileActiveVersion(fileId));
         }
 
         /// <summary>
@@ -82,30 +64,18 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}")]
         public async Task<IActionResult> GetAllVersionsWithUserName(int fileId)
         {
-            try
-            {
-                var versionsUsernames = await _versionService.GetAllWithUsernames(fileId);
 
-                return Ok(versionsUsernames);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            var versionsUsernames = await _versionService.GetAllWithUsernames(fileId);
+
+            return Ok(versionsUsernames);
+
         }
 
         [HttpDelete("[action]/{fileId}")]
         public async Task<IActionResult> DeleteFileVersions(int fileId)
         {
-            try
-            {
-                await _versionService.DeleteFileVersions(fileId);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            await _versionService.DeleteFileVersions(fileId);
+            return Ok();
         }
     }
 }
