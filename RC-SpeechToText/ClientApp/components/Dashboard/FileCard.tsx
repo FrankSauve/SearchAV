@@ -136,6 +136,7 @@ export class FileCard extends React.Component<any, State> {
                 console.log(res.data);
                 this.setState({ 'loading': false });
                 this.showSuccessModal("Supprimer le ficher", "Le fichier intitulé '" + this.props.title + "' a été supprimé avec succès!");
+                this.props.updateFiles();
             })
             .catch(err => {
                 if (err.response.status == 401) {
