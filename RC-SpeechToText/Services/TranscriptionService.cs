@@ -60,7 +60,7 @@ namespace RC_SpeechToText.Services
 					flag = editedFlag;
 				}
 				file.Flag = flag;
-				await _context.SaveChangesAsync();
+				
 				//Send email to user who uploaded file stating that review is done
 				if (flag == reviewedFlag)
 				{
@@ -71,7 +71,9 @@ namespace RC_SpeechToText.Services
                     newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
                 }
 
-				return new VersionDTO { Version = newVersion, Error = null };
+                await _context.SaveChangesAsync();
+
+                return new VersionDTO { Version = newVersion, Error = null };
 			}
 			catch (Exception e)
 			{
