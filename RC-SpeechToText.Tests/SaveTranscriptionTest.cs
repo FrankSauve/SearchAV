@@ -47,11 +47,17 @@ namespace RC_SpeechToText.Tests
             
 
             var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
-
+            
             //AddAsync Version to database
             await context.Version.AddAsync(version);
             await context.SaveChangesAsync();
-            
+
+            //Creating words and their timestamps for the original transcript
+            List<Word> words = new List<Word>();
+            words.Add(new Word { Term = "Transcription", Timestamp = "\"1.000s\"", VersionId = version.Id });
+            await context.Word.AddAsync(words[0]);
+            await context.SaveChangesAsync();
+
             string editTranscription = "Test Edit Transcription";
             string reviewTranscription = "Test Review Transcription";
 
