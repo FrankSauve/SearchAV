@@ -145,8 +145,7 @@ namespace RC_SpeechToText.Services
                 await _context.Word.AddAsync(x);
             });
             await _context.SaveChangesAsync();
-        }
-            
+                    
             return null;
         }
 

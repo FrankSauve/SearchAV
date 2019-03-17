@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Tests
 {
@@ -345,8 +346,9 @@ namespace RC_SpeechToText.Tests
 			var documentType = "fake type";
 
 			var controller = new TranscriptionController(context);
-			var result = await controller.DownloadTranscript(documentType, fileId);
-			Assert.IsType<BadRequestObjectResult>(result);
+
+            await Assert.ThrowsAsync<ControllerExceptions>(() => controller.DownloadTranscript(documentType, fileId));
+            
 		}
 
 	}
