@@ -25,42 +25,7 @@ namespace RC_SpeechToText.Services
 
 		public async Task<VersionDTO> SaveTranscript(string userEmail, int versionId, string newTranscript)
 		{
-			var currentVersion = _context.Version.Find(versionId);
-
-			//Deactivate current version 
-			currentVersion.Active = false;
-
-			//Update current version in DB
-			try
-			{
-				_context.Version.Update(currentVersion);
-				await _context.SaveChangesAsync();
-			}
-			catch
-			{
-				return new VersionDTO { Version = null, Error = "Error updating current version with id: " + currentVersion.Id };
-			}
-
-			//Create a new version
-			var newVersion = new Models.Version
-			{
-				UserId = currentVersion.UserId,
-				FileId = currentVersion.FileId,
-				DateModified = DateTime.Now,
-				Transcription = newTranscript,
-				Active = true
-			};
-
-			//Add new version to DB
-			try
-			{
-				await _context.Version.AddAsync(newVersion);
-				await _context.SaveChangesAsync();
-			}
-			catch (Exception e)
-			{
-				return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
-			}
+			var newVersion = await CreateNewVersion(versionId, newTranscript);
 
 			//Calling this method will handle saving the new words in the databse
 			try
@@ -204,6 +169,36 @@ namespace RC_SpeechToText.Services
 				return "Error adding words with versionId: " + newVersionId;
 			}
 			return null;
+		}
+
+		private async Task<Models.Version> CreateNewVersion(int versionId, string newTranscript)
+		{
+			var currentVersion = _context.Version.Find(versionId);
+
+			//Deactivate current version 
+			currentVersion.Active = false;
+
+			//Create a new version
+			var newVersion = new Models.Version
+			{
+				UserId = currentVersion.UserId,
+				FileId = currentVersion.FileId,
+				DateModified = DateTime.Now,
+				Transcription = newTranscript,
+				Active = true
+			};
+
+			//Add new version to DB
+			try
+			{
+				await _context.Version.AddAsync(newVersion);
+				await _context.SaveChangesAsync();
+				return newVersion;
+			}
+			catch (Exception e)
+			{
+				return null;
+			}
 		}
 	}
 }

@@ -25,12 +25,29 @@ namespace RC_SpeechToText.Services
 		{
 			try
 			{
+				// Get user id by email
+				var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+
+				if (user == null)
+				{
+					return null;
+				}
+
 				var streamIO = new IOInfrastructure();
 
 				var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
 
 				// Once we get the file path(of the uploaded file) from the server, we use it to call the converter
 				Converter converter = new Converter();
+
+				// Create thumbnail
+				var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
+				var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
+
+				if (thumbnailImage == null)
+				{
+					return null;
+				}
 
 				// Call converter to convert the file to mono and bring back its file path. 
 				var convertedFileLocation = converter.FileToWav(filePath);
@@ -50,23 +67,6 @@ namespace RC_SpeechToText.Services
 
 				//Create transcription out of the words
 				var transcription = CreateTranscription(words);
-
-				// Create thumbnail
-				var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
-				var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
-
-				if (thumbnailImage == null)
-				{
-					return null;
-				}
-
-				// Get user id by email
-				var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
-
-				if (user == null)
-				{
-					return null;
-				}
 
 				// Create file
 				var file = new File
