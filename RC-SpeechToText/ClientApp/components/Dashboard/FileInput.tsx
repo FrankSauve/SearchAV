@@ -63,8 +63,9 @@ export default class FileInput extends React.Component<any, State> {
                 this.toggleLoad();
             })
             .catch(err => {
-                console.log(err)
-                this.showErrorModal(err.response.data)
+                this.toggleLoad();
+                console.log(err);
+                this.showErrorModal(err.response.data.message)
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }

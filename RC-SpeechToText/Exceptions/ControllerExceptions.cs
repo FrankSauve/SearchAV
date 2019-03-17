@@ -11,7 +11,7 @@ namespace RC_SpeechToText.Exceptions
 
         public ControllerExceptions(string message) : base(message)
         {
-            StatusCode = 400;
+            StatusCode = 500;
         }
         
     }

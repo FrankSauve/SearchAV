@@ -23,8 +23,7 @@ namespace RC_SpeechToText.Services
 
 		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
 		{
-			try
-			{
+			
 				var streamIO = new IOInfrastructure();
 
 				var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
@@ -115,11 +114,7 @@ namespace RC_SpeechToText.Services
 
 				// Return the transcription
 				return version;
-			}
-			catch (Exception e)
-			{
-				return null;
-			}
+						
 		}
 
 		private string CreateTranscription(List<Word> words)

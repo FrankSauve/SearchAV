@@ -37,13 +37,24 @@ namespace RC_SpeechToText.Filters
             //Handling known Controller errors
             if (context.Exception is ControllerExceptions)
             {
-                // Handling controller errors 
+                // Handling custom controller errors 
                 var ex = context.Exception as ControllerExceptions;
                 context.Exception = null;
                 controllerError = new ControllerError(ex.Message, ex.StackTrace);
 
                 context.HttpContext.Response.StatusCode = ex.StatusCode;
 
+            }
+            else if (context.Exception is Google.GoogleApiException)
+            {
+                //Handling GoogleApiExceptions
+                var ex = context.Exception as Google.GoogleApiException;
+                context.Exception = null;
+                var msg = "Il y'a eu un problème avec le service de transcription, veuillez réessayer plus tard.";
+                string stack = ex.StackTrace;
+                controllerError = new ControllerError(msg, stack);
+
+                context.HttpContext.Response.StatusCode = 500;
             }
             else
             {
@@ -55,12 +66,13 @@ namespace RC_SpeechToText.Filters
                 context.HttpContext.Response.StatusCode = 500;
             }
 
-            _logger.LogError("Action Executing with [" +
+            
+            _logger.LogError("{" +
                 "\nIP: " + ip +
                 "\nRoute Called: " + route +
                 "\nArguments: " + argumentsString +
                 "\nException: " + controllerError.message +
-                "\nTrace: " + controllerError.detail + "]"
+                "\nTrace: " + controllerError.detail + "}"
                 );
 
             context.Result = new JsonResult(controllerError);
