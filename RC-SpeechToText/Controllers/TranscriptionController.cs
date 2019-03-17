@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using RC_SpeechToText.Services;
+using System.Linq;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -20,16 +21,19 @@ namespace RC_SpeechToText.Controllers
 			_transcriptionService = new TranscriptionService(context);
         }
 
-        [HttpPost("[action]/{userId}/{versionId}")]
-        public async Task<IActionResult> SaveTranscript(int userId, int versionId, string newTranscript)
+        [HttpPost("[action]/{versionId}")]
+        public async Task<IActionResult> SaveTranscript(int versionId, string newTranscript)
         {
-			var saveResult = await _transcriptionService.SaveTranscript(userId, versionId, newTranscript);
+            var emailClaim = HttpContext.User.Claims;
+            var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
+
+            var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
 			if(saveResult.Error != null)
 			{
 				return BadRequest(saveResult.Error);
 			}
-
-			return Ok(saveResult.Version);
+           
+            return Ok(saveResult.Version);
         }
         
         /// <summary>
@@ -56,11 +60,11 @@ namespace RC_SpeechToText.Controllers
         /// <param name="searchTerms"></param>
         /// <returns></returns>
         [HttpGet("[action]/{versionId}/{searchTerms}")]
-        public async Task<IActionResult> SearchTranscript(string searchTerms, int versionId)
+        public async Task<IActionResult> SearchTranscript(int versionId, string searchTerms)
         {
             try
             {
-                return Ok(await _transcriptionService.SearchTranscript(searchTerms, versionId));
+                return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
             }
             catch
             {

@@ -11,6 +11,8 @@ using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RC_SpeechToText.Models.DTO.Incoming;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace RC_SpeechToText.Tests
 {
@@ -46,7 +48,7 @@ namespace RC_SpeechToText.Tests
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             var user = new User { Email = "test@email.com", Name = "testUser" };
-
+           
             // Add user with username testUser
             await context.AddAsync(user);
             await context.SaveChangesAsync();
@@ -63,6 +65,7 @@ namespace RC_SpeechToText.Tests
 
             // Act
             var controller = new FileController(context);
+           
             var result = await controller.GetAllWithUsernames();
 
             // Assert
@@ -90,6 +93,10 @@ namespace RC_SpeechToText.Tests
 
             var user = new User { Email = "test@email.com", Name = "testUser" };
 
+            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim("email", user.Email)
+            }));
             // Add user with username testUser
             await context.AddAsync(user);
             await context.SaveChangesAsync();
@@ -112,8 +119,12 @@ namespace RC_SpeechToText.Tests
 
             // Act
             var controller = new FileController(context);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = userPrincipal }
+            };
 
-            var result = await controller.getAllFilesByUser(user.Id);
+            var result = await controller.getAllFilesByUser();
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
@@ -170,7 +181,7 @@ namespace RC_SpeechToText.Tests
 
             // Add user and reviewer with username testUser and testReviewer
             await context.AddAsync(user);
-            await context.AddAsync(user);
+            await context.AddAsync(reviewer);
             await context.SaveChangesAsync();
 
             // Remove all files in DB
@@ -187,7 +198,7 @@ namespace RC_SpeechToText.Tests
 			
             // Act
             var controller = new FileController(context);
-            var result = await controller.AddReviewer(file.Id, reviewer.Id);
+            var result = await controller.AddReviewer(file.Id, "reviewer@email.com");
             
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

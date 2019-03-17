@@ -1,0 +1,30 @@
+.historique-title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    color: #909bb8;
+}
+
+#historique-title-box {
+    margin-bottom: 0rem;
+    box-shadow: none;
+    background-color: $link;
+    border-radius: 0px;
+    text-align: center;
+}
+
+#historique-content-box {
+    box-shadow: none;
+    background-color: #f4f5f8;
+    border-radius: 0px;
+    height: 540px;
+    overflow-y: scroll
+}
+
+.historique-content {
+    color: #212940;
+    margin-bottom: 10px;
+}
+
+.historique-username {
+    font-weight: 500;
+}

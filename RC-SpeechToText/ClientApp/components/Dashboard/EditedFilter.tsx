@@ -31,7 +31,7 @@ export default class EditedFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllEditedFiles', config)
+        axios.get('/api/file/getAllFilesByFlag/Edite', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data.files })
