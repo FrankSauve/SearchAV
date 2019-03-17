@@ -1,6 +1,7 @@
 ﻿import * as React from 'react';
 import { Redirect } from 'react-router-dom';
 import TableImage from './TableImage';
+import { Button } from './Button';
 
 interface State {
     files: any[],
@@ -58,7 +59,17 @@ export default class ListTable extends React.Component<any, State>
                                 <td><p className='tag is-rounded is-link'>12:00:00</p></td>
                                 <td>{this.state.usernames[i]}</td>
                                 <td>29-11-2019 15:00</td>
-                                <td>Button</td>
+                                <td>
+                                    <Button
+                                        fileId={file.id}
+                                        title={file.title}
+                                        description={file.description}
+                                        flag={file.flag}
+                                        username={this.state.usernames[i]}
+                                        image={file.type == "Audio" ? 'assets/speakerIcon.png' : file.thumbnailPath}
+                                        date={file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}
+                                    />
+                                </td>
                             </tr>
                         )
                     })}
