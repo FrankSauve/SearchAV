@@ -113,10 +113,6 @@ namespace RC_SpeechToText.Controllers
         {
             var file = await _fileService.ModifyTitle(id, newTitle);
 
-            if (file.Error != null)
-            {
-                throw new ControllerExceptions(file.Error);
-            }
             return Ok(file.File);
         }
 

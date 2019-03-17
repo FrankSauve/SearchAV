@@ -60,7 +60,7 @@ namespace RC_SpeechToText.Services
             {
                 if (await VerifyIfTitleExists(newTitle))
                 {
-                    return new FileDTO { File = null, Error = "Le nom de fichier existe déjà. Veuillez choisir un nouveau nom." };
+                    throw new ControllerExceptions("Le nom de fichier existe déjà. Veuillez choisir un nouveau nom.");
                 }
                 else
                 {
@@ -119,19 +119,12 @@ namespace RC_SpeechToText.Services
 				var file = _context.File.Find(fileId);
 				file.ReviewerId = user.Id;
 
-				try
-				{
-					await _context.SaveChangesAsync();
-					return new FileDTO { File = file, Error = null };
-				}
-				catch
-				{
-					return new FileDTO { File = null, Error = "File reviewerId not updated" };
-				}
-			}
+                await _context.SaveChangesAsync();
+                return new FileDTO { File = file, Error = null };
+            }
 			else
 			{
-				return new FileDTO { File = null, Error = "User not found" };
+                throw new ControllerExceptions("User not found");
 			}
 		}
 
