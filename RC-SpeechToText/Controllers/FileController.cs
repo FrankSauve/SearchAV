@@ -133,10 +133,6 @@ namespace RC_SpeechToText.Controllers
         {
             var file = await _fileService.SaveDescription(id, newDescription);
 
-            if (file.Error != null)
-            {
-                throw new ControllerExceptions(file.Error);
-            }
             return Ok(file.File);
         }
 
@@ -148,10 +144,6 @@ namespace RC_SpeechToText.Controllers
         {
             var file = await _fileService.AddReviewer(fileId, reviewerId);
 
-            if (file.Error != null)
-            {
-                throw new ControllerExceptions(file.Error);
-            }
             return Ok(file.File);
         }
     }
