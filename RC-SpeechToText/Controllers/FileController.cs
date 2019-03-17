@@ -21,7 +21,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetAllFiles()
+        public async Task<IActionResult> Index()
         {
             try
             {
