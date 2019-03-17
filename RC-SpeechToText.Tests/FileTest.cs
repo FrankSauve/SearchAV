@@ -181,7 +181,7 @@ namespace RC_SpeechToText.Tests
 
             // Add user and reviewer with username testUser and testReviewer
             await context.AddAsync(user);
-            await context.AddAsync(user);
+            await context.AddAsync(reviewer);
             await context.SaveChangesAsync();
 
             // Remove all files in DB
@@ -198,7 +198,7 @@ namespace RC_SpeechToText.Tests
 			
             // Act
             var controller = new FileController(context);
-            var result = await controller.AddReviewer(file.Id, reviewer.Id);
+            var result = await controller.AddReviewer(file.Id, reviewer.Email);
             
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
