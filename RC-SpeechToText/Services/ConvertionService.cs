@@ -86,7 +86,8 @@ namespace RC_SpeechToText.Services
 			{
 				UserId = user.Id,
 				FileId = file.Id,
-				Transcription = transcription,
+                HistoryTitle = "CRÉATION DU FICHIER",
+                Transcription = transcription,
 				DateModified = DateTime.Now,
 				Active = true
 			};

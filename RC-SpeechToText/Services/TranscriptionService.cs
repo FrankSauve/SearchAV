@@ -68,8 +68,8 @@ namespace RC_SpeechToText.Services
 					var reviewer = await _context.User.FindAsync(file.ReviewerId);
 					var emailSerice = new EmailInfrastructure();
 					emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
-
-				}
+                    newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
+                }
 
 				return new VersionDTO { Version = newVersion, Error = null };
 			}
@@ -185,7 +185,8 @@ namespace RC_SpeechToText.Services
 				UserId = currentVersion.UserId,
 				FileId = currentVersion.FileId,
 				DateModified = DateTime.Now,
-				Transcription = newTranscript,
+                HistoryTitle = "MODIFICATIONS",
+                Transcription = newTranscript,
 				Active = true
 			};
 
