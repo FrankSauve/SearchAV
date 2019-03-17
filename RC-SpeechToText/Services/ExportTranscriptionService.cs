@@ -8,7 +8,7 @@ namespace RC_SpeechToText.Services
 {
     public class ExportTranscriptionService
 	{
-		public bool CreateSRTDocument(string transcription, List<Models.Word> words)
+		public bool CreateSRTDocument(string transcription, List<Models.Word> words, string fileTitle)
 		{
 			//get each paragraph. Remove all empty string (where <br> are present). Trim the strings
 			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim()).ToList();
@@ -24,7 +24,7 @@ namespace RC_SpeechToText.Services
 			}
 
 			var streamIO = new IOInfrastructure();
-			streamIO.GenerateSRTFile(paragraph, timestamps);
+			streamIO.GenerateSRTFile(paragraph, timestamps, fileTitle);
 
 			return true;
 		}

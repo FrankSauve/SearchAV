@@ -253,7 +253,10 @@ export default class Dashboard extends React.Component<any, State> {
             <div className="container">
                 <div className="columns">
                     <div className="column is-one-fifth">
-                        <FileInput />
+                        <FileInput
+                            getAllFiles={this.getAllFiles}
+                            getAutomatedFiles={this.getAutomatedFiles}
+                        />
 
                         <br /> <br />
 

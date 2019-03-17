@@ -25,42 +25,7 @@ namespace RC_SpeechToText.Services
 
 		public async Task<VersionDTO> SaveTranscript(string userEmail, int versionId, string newTranscript)
 		{
-			var currentVersion = _context.Version.Find(versionId);
-
-			//Deactivate current version 
-			currentVersion.Active = false;
-
-			//Update current version in DB
-			try
-			{
-				_context.Version.Update(currentVersion);
-				await _context.SaveChangesAsync();
-			}
-			catch
-			{
-				return new VersionDTO { Version = null, Error = "Error updating current version with id: " + currentVersion.Id };
-			}
-
-			//Create a new version
-			var newVersion = new Models.Version
-			{
-				UserId = currentVersion.UserId,
-				FileId = currentVersion.FileId,
-				DateModified = DateTime.Now,
-				Transcription = newTranscript,
-				Active = true
-			};
-
-			//Add new version to DB
-			try
-			{
-				await _context.Version.AddAsync(newVersion);
-				await _context.SaveChangesAsync();
-			}
-			catch
-			{
-				return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
-			}
+			var newVersion = await CreateNewVersion(versionId, newTranscript);
 
 			//Calling this method will handle saving the new words in the databse
 			try
@@ -71,7 +36,7 @@ namespace RC_SpeechToText.Services
 					return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
 				}
 			}
-			catch
+			catch (Exception e)
 			{
 				return new VersionDTO { Version = null, Error = "Error saving new words with id: " + newVersion.Id };
 			}
@@ -85,8 +50,15 @@ namespace RC_SpeechToText.Services
             //Find corresponding file and update its flag 
             try
 			{
-				File file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
-				string flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+				File file;
+				file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
+				string flag;
+				if (file != null)
+					flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+				else {
+					file = await _context.File.FindAsync(newVersion.FileId);
+					flag = editedFlag;
+				}
 				file.Flag = flag;
 				await _context.SaveChangesAsync();
 				//Send email to user who uploaded file stating that review is done
@@ -101,7 +73,7 @@ namespace RC_SpeechToText.Services
 
 				return new VersionDTO { Version = newVersion, Error = null };
 			}
-			catch
+			catch (Exception e)
 			{
 				return new VersionDTO { Version = null, Error = "File flag not updated." };
 			}
@@ -117,6 +89,7 @@ namespace RC_SpeechToText.Services
 
 		public async Task<string> DownloadTranscription(string documentType, int fileId)
 		{
+			var fileTitle = _context.File.Where(x => x.Id == fileId).Select(x => x.Title).SingleOrDefault();
 			var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
 			var rawTranscript = version.Transcription;
 			var transcript = rawTranscript.Replace("<br>", "\n ");
@@ -131,7 +104,7 @@ namespace RC_SpeechToText.Services
 				else if (documentType == "googleDoc")
 				{
 					var googleDocRepository = new GoogleDocumentRepository();
-					return googleDocRepository.CreateGoogleDocument(transcript);
+					return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
 				}
 				else if (documentType == "srt")
 				{
@@ -139,7 +112,7 @@ namespace RC_SpeechToText.Services
 					if (words.Count > 0)
 					{
 						var exportTranscriptionService = new ExportTranscriptionService();
-						return exportTranscriptionService.CreateSRTDocument(transcript, words);
+						return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
 					}
 					else
 						return false;
@@ -187,7 +160,9 @@ namespace RC_SpeechToText.Services
 
 			try
 			{
-				await _context.Word.AddRangeAsync(newWords);
+				newWords.ForEach(async x => {
+					await _context.Word.AddAsync(x);
+				});
 				await _context.SaveChangesAsync();
 			}
 			catch
@@ -195,6 +170,36 @@ namespace RC_SpeechToText.Services
 				return "Error adding words with versionId: " + newVersionId;
 			}
 			return null;
+		}
+
+		private async Task<Models.Version> CreateNewVersion(int versionId, string newTranscript)
+		{
+			var currentVersion = _context.Version.Find(versionId);
+
+			//Deactivate current version 
+			currentVersion.Active = false;
+
+			//Create a new version
+			var newVersion = new Models.Version
+			{
+				UserId = currentVersion.UserId,
+				FileId = currentVersion.FileId,
+				DateModified = DateTime.Now,
+				Transcription = newTranscript,
+				Active = true
+			};
+
+			//Add new version to DB
+			try
+			{
+				await _context.Version.AddAsync(newVersion);
+				await _context.SaveChangesAsync();
+				return newVersion;
+			}
+			catch (Exception e)
+			{
+				return null;
+			}
 		}
 	}
 }

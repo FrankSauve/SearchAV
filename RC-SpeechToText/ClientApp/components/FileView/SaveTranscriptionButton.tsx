@@ -57,6 +57,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                 .catch(err => {
                     if (err.response.status == 401) {
                         this.setState({ 'unauthorized': true });
+                        this.showErrorModal();
                     }
                 });
         }
