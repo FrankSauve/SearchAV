@@ -14,25 +14,18 @@ namespace RC_SpeechToText.Controllers
     [Route("api/[controller]")]
     public class WordController : Controller
     {
-		private readonly WordService _wordService;
+        private readonly WordService _wordService;
 
         public WordController(SearchAVContext context)
         {
-			_wordService = new WordService(context);
+            _wordService = new WordService(context);
         }
 
         [HttpDelete("[action]/{fileId}")]
         public async Task<IActionResult> DeleteWordsByFileId(int fileId)
         {
-            try
-            {
-				await _wordService.DeleteWordsByFileId(fileId);
-                return Ok("Delete words from file with id: " + fileId);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            await _wordService.DeleteWordsByFileId(fileId);
+            return Ok("Delete words from file with id: " + fileId);
         }
     }
 }
