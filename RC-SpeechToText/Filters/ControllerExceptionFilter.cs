@@ -33,12 +33,14 @@ namespace RC_SpeechToText.Filters
             var arguments = context.ActionDescriptor.RouteValues;
             var argumentsString = string.Join("; ", arguments.Select(x => x.Key + "=" + x.Value).ToArray());
 
+            Type exceptionType;
             ControllerError controllerError = null;
             //Handling known Controller errors
             if (context.Exception is ControllerExceptions)
             {
                 // Handling custom controller errors 
                 var ex = context.Exception as ControllerExceptions;
+                exceptionType = ex.GetType();
                 context.Exception = null;
                 controllerError = new ControllerError(ex.Message, ex.StackTrace);
 
@@ -49,6 +51,7 @@ namespace RC_SpeechToText.Filters
             {
                 //Handling GoogleApiExceptions
                 var ex = context.Exception as Google.GoogleApiException;
+                exceptionType = ex.GetType();
                 context.Exception = null;
                 var msg = "Il y'a eu un problème avec le service de transcription, veuillez réessayer plus tard.";
                 string stack = ex.StackTrace;
@@ -59,8 +62,10 @@ namespace RC_SpeechToText.Filters
             else
             {
                 // Handling unexpected errors
-                var msg = context.Exception.GetBaseException().Message;
+                var msg = "Un problème est survenu, désolé pour cet inconvénient.";
                 string stack = context.Exception.StackTrace;
+
+                exceptionType = context.Exception.GetType();
 
                 controllerError = new ControllerError(msg, stack);
                 context.HttpContext.Response.StatusCode = 500;
@@ -71,7 +76,7 @@ namespace RC_SpeechToText.Filters
                 "\nIP: " + ip +
                 "\nRoute Called: " + route +
                 "\nArguments: " + argumentsString +
-                "\nException: " + controllerError.message +
+                "\nException: " + exceptionType.ToString() +
                 "\nTrace: " + controllerError.detail + "}"
                 );
 
