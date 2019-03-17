@@ -67,13 +67,13 @@ namespace RC_SpeechToText.Services
 
         }
 
-        public async Task<string> SearchTranscript(string searchTerms, int versionId)
-        {
-            //Ordered by Id to get the words in the same order as transcript
-            var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
-            var searchService = new SearchService();
-            return searchService.PerformSearch(searchTerms, words);
-        }
+		public async Task<string> SearchTranscript(int versionId, string searchTerms)
+		{
+			//Ordered by Id to get the words in the same order as transcript
+			var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
+			var searchService = new SearchService();
+			return searchService.PerformSearch(searchTerms, words);
+		}
 
 		public async Task<string> DownloadTranscription(string documentType, int fileId)
 		{

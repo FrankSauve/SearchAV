@@ -110,21 +110,30 @@ namespace RC_SpeechToText.Services
             }
         }
 
-        public async Task<FileDTO> AddReviewer(int fileId, int reviewerId)
-        {
-            var file = _context.File.Find(fileId);
-            file.ReviewerId = reviewerId;
+		public async Task<FileDTO> AddReviewer(int fileId, string reviewerEmail)
+		{
+			var user = await _context.User.Where(x => x.Email == reviewerEmail).SingleOrDefaultAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return new FileDTO { File = file, Error = null };
-            }
-            catch
-            {
-                throw new ControllerExceptions("File reviewerId not updated");
-            }
-        }
+			if (user != null)
+			{
+				var file = _context.File.Find(fileId);
+				file.ReviewerId = user.Id;
+
+				try
+				{
+					await _context.SaveChangesAsync();
+					return new FileDTO { File = file, Error = null };
+				}
+				catch
+				{
+					return new FileDTO { File = null, Error = "File reviewerId not updated" };
+				}
+			}
+			else
+			{
+				return new FileDTO { File = null, Error = "User not found" };
+			}
+		}
 
         private async Task<bool> VerifyIfTitleExists(string title)
         {
