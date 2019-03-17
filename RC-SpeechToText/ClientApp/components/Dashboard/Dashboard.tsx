@@ -21,6 +21,7 @@ interface State {
     isReviewedFilterActive: boolean,
     searchTerms: string,
     isFilesToReviewFilterActive: boolean,
+    listView: boolean,
     loading: boolean,
     unauthorized: boolean
 }
@@ -39,6 +40,7 @@ export default class Dashboard extends React.Component<any, State> {
             isAutomatedFilterActive: false,
             isReviewedFilterActive: false,
             isFilesToReviewFilterActive: false,
+            listView: false,
             searchTerms: '',
             loading: false,
             unauthorized: false
@@ -257,6 +259,7 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public renderFileTable = () => {
+        this.setState({ 'listView': false });
         return (
             <div>
                 {this.state.files ? <FileTable
@@ -265,6 +268,19 @@ export default class Dashboard extends React.Component<any, State> {
                                 loading={this.state.loading}
                             /> : <h1 className="title">NO FILES</h1>}
            </div>
+        )
+    }
+
+    public renderListView = () => {
+        this.setState({ 'listView': true });
+        return (
+            <div>
+                {this.state.files ? <ListTable
+                    files={this.state.files}
+                    usernames={this.state.usernames}
+                    loading={this.state.loading}
+                /> : <h1 className="title">NO FILES</h1>}
+            </div>
         )
     }
 
@@ -343,11 +359,21 @@ export default class Dashboard extends React.Component<any, State> {
                             <div className="field is-horizontal">
                                 <a className="button is-link mg-right-10" onClick={this.searchDescription}> Rechercher </a>
                                 <input className="input" type="text" placeholder="Chercher les fichiers par titre ou description" onChange={this.handleSearch} />
+                                &nbsp;
+                                <a>< img src="assets/grid.png" onClick={this.renderFileTable} width="40" height="40" /></a>
+                                &nbsp;
+                                <a><img src="assets/list.png" onClick={this.renderListView} width="40" height="40" /></a>
                             </div>
                         </div>
 
                         <div className="box mg-top-30">
-                            {this.state.loading ? <Loading /> : this.state.files ? <ListTable
+                            {this.state.loading ? <Loading /> :
+                                this.state.listView ? <ListTable
+                                    files={this.state.files}
+                                    usernames={this.state.usernames}
+                                    loading={this.state.loading}
+                                /> :
+                                    this.state.files ? <FileTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
