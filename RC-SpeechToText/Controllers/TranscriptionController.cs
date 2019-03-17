@@ -8,6 +8,7 @@ using System.Globalization;
 using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
 using System.Linq;
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -31,11 +32,7 @@ namespace RC_SpeechToText.Controllers
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
             var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
-			if(saveResult.Error != null)
-			{
-				return BadRequest(saveResult.Error);
-			}
-           
+			           
             return Ok(saveResult.Version);
         }
         
@@ -83,7 +80,7 @@ namespace RC_SpeechToText.Controllers
 
 			if(result != null)
 			{
-				return BadRequest(result);
+                throw new ControllerExceptions("Error while trying to download transcription");
 			}
 
 			return Ok();
