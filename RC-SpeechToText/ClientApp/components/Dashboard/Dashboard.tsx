@@ -253,7 +253,10 @@ export default class Dashboard extends React.Component<any, State> {
             <div className="container">
                 <div className="columns">
                     <div className="column is-one-fifth">
-                        <FileInput />
+                        <FileInput
+                            getAllFiles={this.getAllFiles}
+                            getAutomatedFiles={this.getAutomatedFiles}
+                        />
 
                         <br /> <br />
 
@@ -304,7 +307,7 @@ export default class Dashboard extends React.Component<any, State> {
                             </div>
                         </div>
 
-                        <div className="box mg-top-30">
+                        <div className="box file-box mg-top-30">
                             {this.state.loading ? <Loading /> : this.state.files ? <FileTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}

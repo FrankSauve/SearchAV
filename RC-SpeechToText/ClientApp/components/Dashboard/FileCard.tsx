@@ -57,6 +57,7 @@ export class FileCard extends React.Component<any, State> {
 
     // Add event listener for a click anywhere in the page
     componentDidMount() {
+        this.setState({ description: this.state.description }); 
         document.addEventListener('mouseup', this.hideDropdown);
     }
     // Remove event listener

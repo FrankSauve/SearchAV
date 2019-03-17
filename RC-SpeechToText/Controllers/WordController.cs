@@ -21,6 +21,29 @@ namespace RC_SpeechToText.Controllers
             _wordService = new WordService(context);
         }
 
+        /// <summary>
+        /// Get all words with versionId
+        /// </summary>
+        /// <param name="versionId"></param>
+        /// <returns></returns>
+        [HttpGet("[action]/{versionId}")]
+        public async Task<IActionResult> GetByVersionId(int versionId)
+        {
+            try
+            {
+                return Ok(await _wordService.GetByVersionId(versionId));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        /// <summary>
+        /// Delete all words with fileId
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
         [HttpDelete("[action]/{fileId}")]
         public async Task<IActionResult> DeleteWordsByFileId(int fileId)
         {

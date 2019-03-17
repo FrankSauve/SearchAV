@@ -3,12 +3,14 @@ import axios from 'axios';
 import auth from '../../Utils/auth';
 import Loading from '../Loading';
 import { ErrorModal } from '../Modals/ErrorModal';
+import { SuccessModal } from '../Modals/SuccessModal';
 
 
 interface State {
     file: any,
     loading: boolean,
     unauthorized: boolean,
+    showSuccessTranscribe: boolean,
     showErrorTranscribe: boolean,
     descriptionErrorTranscribe: string
 }
@@ -21,6 +23,7 @@ export default class FileInput extends React.Component<any, State> {
             file: null,
             loading: false,
             unauthorized: false,
+            showSuccessTranscribe: false,
             showErrorTranscribe: false,
             descriptionErrorTranscribe: ""
         }
@@ -30,6 +33,14 @@ export default class FileInput extends React.Component<any, State> {
     public toggleLoad = () => {
         (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
+
+    public showSuccessModal = () => {
+        this.setState({ showSuccessTranscribe: true });
+    }
+
+    public hideSuccessModal = () => {
+        this.setState({ showSuccessTranscribe: false });
+    }
 
     public showErrorModal = (description: string) => {
         this.setState({ showErrorTranscribe: true });
@@ -61,6 +72,9 @@ export default class FileInput extends React.Component<any, State> {
         axios.post('/api/converter/convertandtranscribe', formData, config)
             .then(res => {
                 this.toggleLoad();
+                this.showSuccessModal();
+                //Updating files (maybe find a better to do it rather than load all entities every single time a file is uploaded)
+                this.props.getAllFiles(); 
             })
             .catch(err => {
                 this.toggleLoad();
@@ -79,8 +93,14 @@ export default class FileInput extends React.Component<any, State> {
                 <ErrorModal
                     showModal={this.state.showErrorTranscribe}
                     hideModal={this.hideErrorModal}
-                    title={"Une erreur est survenu"}
+                    title={"Échec de l'importation!"}
                     errorMessage={this.state.descriptionErrorTranscribe}
+                />
+                <SuccessModal
+                    showModal={this.state.showSuccessTranscribe}
+                    hideModal={this.hideSuccessModal}
+                    title={"Importation Réussie!"}
+                    successMessage="La transcription de votre fichier a été effectué avec succès. Vous recevrez un courriel dans quelques instants."
                 />
                 <div className="file is-boxed has-name">
                     <label className="file-label">
