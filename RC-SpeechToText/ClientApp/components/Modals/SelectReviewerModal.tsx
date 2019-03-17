@@ -42,7 +42,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
         var fileId = this.state.fileId
         var reviewerEmail = this.state.reviewerEmail
 
-        if (fileId != "" && fileId != 0) {
+        if (fileId != "" && fileId != 0 && reviewerEmail != null && reviewerEmail != "") {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -71,7 +71,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
             this.showErrorModal();
         }
         else {
-            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Vous n'avez selectionné aucun réviseur." })
+            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Vous n'avez écrie aucun réviseur." })
             this.props.hideModal();
             this.showErrorModal();
         }
