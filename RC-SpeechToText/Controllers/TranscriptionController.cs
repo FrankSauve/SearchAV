@@ -62,7 +62,7 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{versionId}/{searchTerms}")]
         public async Task<IActionResult> SearchTranscript(int versionId, string searchTerms)
         {
-            return Ok(await _transcriptionService.SearchTranscript(searchTerms, versionId));
+            return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
         }
 
 
