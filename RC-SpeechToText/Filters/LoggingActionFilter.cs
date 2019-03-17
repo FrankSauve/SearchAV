@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace RC_SpeechToText.Filters
     public class LoggingActionFilter : ActionFilterAttribute
 {
         private readonly ILogger _logger;
+        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public LoggingActionFilter(ILoggerFactory loggerFactory)
     {
@@ -50,33 +52,18 @@ namespace RC_SpeechToText.Filters
             var controllerName = routeInfo["Controller"];
             var controllerAction = routeInfo["Action"];
 
-            _logger.LogInformation("Action Executing with [" +
+            _logger.LogInformation("Action Executed with {" +
+                "\nTime: " + DateTime.Now.ToString(_dateConfig) +
                 "\nIP: " + ip + 
                 "\nEmail: " + email +
                 "\nRoute Called: " + route +
                 "\nController: " + controllerName + "   Action: " + controllerAction +
-                "\nArguments: " + argumentsString + "]"
+                "\nArguments: " + argumentsString + 
+                "\n}"
                 );
 
             base.OnActionExecuting(context);
     }
 
-    public override void OnActionExecuted(ActionExecutedContext context)
-    {
-        _logger.LogInformation("ClassFilter OnActionExecuted");
-        base.OnActionExecuted(context);
-    }
-
-    public override void OnResultExecuting(ResultExecutingContext context)
-    {
-        _logger.LogInformation("ClassFilter OnResultExecuting");
-        base.OnResultExecuting(context);
-    }
-
-    public override void OnResultExecuted(ResultExecutedContext context)
-    {
-        _logger.LogInformation("ClassFilter OnResultExecuted");
-        base.OnResultExecuted(context);
-    }
 }
 }

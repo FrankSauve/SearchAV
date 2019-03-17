@@ -6,6 +6,7 @@ using RC_SpeechToText.Exceptions;
 using RC_SpeechToText.Models.DTO.Incoming;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace RC_SpeechToText.Filters
     public class ControllerExceptionFilter : ExceptionFilterAttribute
 {
         private readonly ILogger _logger;
+        private readonly CultureInfo _dateConfig = new CultureInfo("en-GB");
 
         public ControllerExceptionFilter(ILoggerFactory loggerFactory)
         {
@@ -74,11 +76,13 @@ namespace RC_SpeechToText.Filters
 
             
             _logger.LogError("{" +
+                "\nTime: " + DateTime.  Now.ToString(_dateConfig) +
                 "\nIP: " + ip +
                 "\nRoute Called: " + route +
                 "\nArguments: " + argumentsString +
                 "\nException: " + exceptionType.ToString() +
-                "\nTrace: " + controllerError.detail + "}"
+                "\nTrace: " + controllerError.detail + "" +
+                "\n}"
                 );
 
             context.Result = new JsonResult(controllerError);
