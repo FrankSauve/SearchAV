@@ -120,28 +120,19 @@ namespace RC_SpeechToText.Services
 			}
 		}
 
-		public async Task<FileDTO> AddReviewer(int fileId, string reviwerEmail)
+		public async Task<FileDTO> AddReviewer(int fileId, int reviewerId)
 		{
-			var user = await _context.User.Where(x => x.Email == reviwerEmail).SingleOrDefaultAsync();
+			var file = _context.File.Find(fileId);
+			file.ReviewerId = reviewerId;
 
-			if (user != null)
+			try
 			{
-				var file = _context.File.Find(fileId);
-				file.ReviewerId = user.Id;
-
-				try
-				{
-					await _context.SaveChangesAsync();
-					return new FileDTO { File = file, Error = null };
-				}
-				catch
-				{
-					return new FileDTO { File = null, Error = "File reviewerId not updated" };
-				}
+				await _context.SaveChangesAsync();
+				return new FileDTO { File = file, Error = null };
 			}
-			else
+			catch
 			{
-				return new FileDTO { File = null, Error = "User not found" };
+				return new FileDTO { File = null, Error = "File reviewerId not updated" };
 			}
 		}
 

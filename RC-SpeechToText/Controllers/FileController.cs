@@ -182,10 +182,10 @@ namespace RC_SpeechToText.Controllers
         //Quick fix for now, does not work without it
         //TO DO: find a way to remove this
         [AllowAnonymous]
-        [HttpPost("[action]/{fileId}/{reviewerEmail}")]
-        public async Task<IActionResult> AddReviewer(int fileId, string reviewerEmail)
+        [HttpPost("[action]/{fileId}/{reviewerId}")]
+        public async Task<IActionResult> AddReviewer(int fileId, int reviewerId)
         {
-            var file = await _fileService.AddReviewer(fileId, reviewerEmail);
+            var file = await _fileService.AddReviewer(fileId, reviewerId);
 
             if(file.Error != null)
             {
