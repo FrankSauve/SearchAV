@@ -75,42 +75,42 @@ namespace RC_SpeechToText.Services
             return searchService.PerformSearch(searchTerms, words);
         }
 
-        public async Task<string> DownloadTranscription(string documentType, int fileId)
-        {
-            var fileTitle = _context.File.Where(x => x.Id == fileId).Select(x => x.Title).SingleOrDefault();
-            var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
-            var rawTranscript = version.Transcription;
-            var transcript = rawTranscript.Replace("<br>", "\n ");
+		public async Task<string> DownloadTranscription(string documentType, int fileId)
+		{
+			var fileTitle = _context.File.Where(x => x.Id == fileId).Select(x => x.Title).SingleOrDefault();
+			var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
+			var rawTranscript = version.Transcription;
+			var transcript = rawTranscript.Replace("<br>", "\n ");
 
             var exportResult = await Task.Run(async () =>
             {
 
-                if (documentType == "doc")
-                {
-                    var wordRepository = new WordRepository();
-                    return wordRepository.CreateWordDocument(transcript);
-                }
-                else if (documentType == "googleDoc")
-                {
-                    var googleDocRepository = new GoogleDocumentRepository();
-                    return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
-                }
-                else if (documentType == "srt")
-                {
-                    var words = await _context.Word.Where(v => v.VersionId == version.Id).ToListAsync();
-                    if (words.Count > 0)
-                    {
-                        var exportTranscriptionService = new ExportTranscriptionService();
-                        return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
-                    }
-                    else
-                        return false;
-                }
-                else
-                {
-                    return false;
-                }
-            });
+				if (documentType == "doc")
+				{
+					var wordRepository = new WordRepository();
+					return wordRepository.CreateWordDocument(transcript);
+				}
+				else if (documentType == "googleDoc")
+				{
+					var googleDocRepository = new GoogleDocumentRepository();
+					return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
+				}
+				else if (documentType == "srt")
+				{
+					var words = await _context.Word.Where(v => v.VersionId == version.Id).ToListAsync();
+					if (words.Count > 0)
+					{
+						var exportTranscriptionService = new ExportTranscriptionService();
+						return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
+					}
+					else
+						return false;
+				}
+				else
+				{
+					return false;
+				}
+			});
 
             if (exportResult)
             {

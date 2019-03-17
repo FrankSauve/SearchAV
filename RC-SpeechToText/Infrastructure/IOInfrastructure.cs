@@ -48,10 +48,10 @@ namespace RC_SpeechToText.Infrastructure
 			File.Delete(path);
 		}
 
-		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps)
+		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
 		{
 			//TODO: Find a way to prompt the user on the file path
-			TextWriter tw = new StreamWriter(paragraph[0].Substring(0, 10) + ".srt");
+			TextWriter tw = new StreamWriter(fileTitle + ".srt");
 
 			//Write each line as follow:
 			//1 (the paragraph count)
