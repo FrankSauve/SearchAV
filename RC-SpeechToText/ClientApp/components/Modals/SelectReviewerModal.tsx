@@ -3,12 +3,11 @@ import axios from 'axios';
 import auth from '../../Utils/auth';
 import { ErrorModal } from './ErrorModal';
 import { SuccessModal } from './SuccessModal';
+import { ChangeEvent } from 'react';
 
 interface State {
     users: any[],
     fileId: any,
-    reviewerId: number,
-    reviewerName: string,
     reviewerEmail: string,
     errorMessage: string,
     showSuccessModal: boolean,
@@ -24,8 +23,6 @@ export class SelectReviewerModal extends React.Component<any, State> {
         this.state = {
             users: [],
             fileId: 0,
-            reviewerId: 0,
-            reviewerName: "",
             reviewerEmail: "",
             errorMessage: "",
             showSuccessModal: false,
@@ -38,64 +35,28 @@ export class SelectReviewerModal extends React.Component<any, State> {
     public componentDidMount() {
         var id = window.location.href.split('/')[window.location.href.split('/').length - 1]; //Getting fileId from url
         this.setState({ fileId: id });
-        this.getAllUsers();
     }
-
-    public getAllUsers = () => {
-
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/user/GetAllUsers', config)
-            .then(res => {
-                console.log(res.data);
-                this.setState({ 'users': res.data });
-            })
-            .catch(err => {
-                console.log(err);
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    };
 
     public addReviewerToFile = () => {
 
         var fileId = this.state.fileId
-        var reviewerId = this.state.reviewerId
+        var reviewerEmail = this.state.reviewerEmail
 
-        if ((fileId != "" && fileId != 0) && reviewerId != 0) {
+        if (fileId != "" && fileId != 0) {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
                     'content-type': 'application/json'
                 }
             }
-            axios.post('/api/file/AddReviewer/' + fileId + '/' + reviewerId, config)
-                .then(res => {
-                    console.log(res.data);
-
-                    axios.get('/api/user/getUserName/' + reviewerId, config)
-                        .then(res => {
-                            console.log(res);
-                            this.setState({ 'reviewerName': res.data.name })
-                            this.setState({ 'reviewerEmail': res.data.email })
-                        })
-                        .catch(err => {
-                            if (err.response.status == 401) {
-                                this.setState({ 'unauthorized': true });
-                            }
-                        });
-
-                    this.props.hideModal();
-                    this.showSuccessModal();
-                })
+            axios.post('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
+                .then(() => {
+                        this.props.hideModal();
+                        this.showSuccessModal();
+                    })
                 .catch(err => {
                     console.log(err);
-                    this.setState({ 'errorMessage': "Vous n'etes pas connecté! Veuillez vous connecter s'il vous plait."})
+                    this.setState({ 'errorMessage': "L'usager n'est pas un reviseur valid, s'il vous plait choisir un autre email."})
                     this.props.hideModal();
                     this.showErrorModal();
                     if (err.response.status == 401) {
@@ -115,8 +76,8 @@ export class SelectReviewerModal extends React.Component<any, State> {
         }
     };
 
-    public handleChange = (event: any) => {
-        this.setState({ reviewerId: event.target.value });
+    public handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        this.setState({ reviewerEmail: e.target.value })
     }
 
     public showSuccessModal = () => {
@@ -150,7 +111,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     showModal={this.state.showSuccessModal}
                     hideModal={this.hideSuccessModal}
                     title="Choisissez un réviseur"
-                    successMessage={`Demande de révision envoyé! ${this.state.reviewerName} (${this.state.reviewerEmail}) sera notifié de votre demande dans les quelques secondes a venir.`}
+                    successMessage={`Demande de révision envoyé! ${this.state.reviewerEmail} sera notifié de votre demande dans les quelques secondes a venir.`}
 />
 
                 <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
@@ -158,22 +119,14 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     <div className="modal-card modalCard">
                         <div className="modal-container">
                             <header className="modalHeader">
-                                <i className="fas fa-clipboard-check fontSize2em mg-right-5"></i><p className="modal-card-title whiteText">Choisissez un reviseur</p>
+                                <i className="fas fa-clipboard-check fontSize2em mg-right-5"></i><p className="modal-card-title whiteText">Ecrivez le email du reviseur</p>
                                 <button className="delete" aria-label="close" onClick={this.props.hideModal}></button>
                             </header>
                             <section className="modalBody">
-                                <div className="select is-multiple">
-                                    <select multiple size={8} onChange={this.handleChange}>
-                                        {this.state.users.map((user) => {
-                                            {
-                                                //Includes current user's name for testing purposes
-                                            }
-                                            const listUsers = <option value={user.id}>{user.name} | {user.email}</option>
-                                            return (
-                                                listUsers
-                                            )
-                                        })}
-                                    </select>
+                                <div className="field">
+                                    <div className="control">
+                                        <input className="input is-medium" type="email" placeholder="Email" onChange={this.handleChange} />
+                                    </div>
                                 </div>
                             </section>
                             <footer className="modalFooter">
