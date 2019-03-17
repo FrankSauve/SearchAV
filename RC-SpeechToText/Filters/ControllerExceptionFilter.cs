@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using RC_SpeechToText.Exceptions;
+using RC_SpeechToText.Models.DTO.Incoming;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace RC_SpeechToText.Filters
             var argumentsString = string.Join("; ", arguments.Select(x => x.Key + "=" + x.Value).ToArray());
 
             Type exceptionType;
-            ControllerError controllerError = null;
+            ControllerErrorDTO controllerError = null;
             //Handling known Controller errors
             if (context.Exception is ControllerExceptions)
             {
@@ -42,7 +43,7 @@ namespace RC_SpeechToText.Filters
                 var ex = context.Exception as ControllerExceptions;
                 exceptionType = ex.GetType();
                 context.Exception = null;
-                controllerError = new ControllerError(ex.Message, ex.StackTrace);
+                controllerError = new ControllerErrorDTO(ex.Message, ex.StackTrace);
 
                 context.HttpContext.Response.StatusCode = ex.StatusCode;
 
@@ -55,7 +56,7 @@ namespace RC_SpeechToText.Filters
                 context.Exception = null;
                 var msg = "Il y'a eu un problème avec le service de transcription, veuillez réessayer plus tard.";
                 string stack = ex.StackTrace;
-                controllerError = new ControllerError(msg, stack);
+                controllerError = new ControllerErrorDTO(msg, stack);
 
                 context.HttpContext.Response.StatusCode = 500;
             }
@@ -67,7 +68,7 @@ namespace RC_SpeechToText.Filters
 
                 exceptionType = context.Exception.GetType();
 
-                controllerError = new ControllerError(msg, stack);
+                controllerError = new ControllerErrorDTO(msg, stack);
                 context.HttpContext.Response.StatusCode = 500;
             }
 
