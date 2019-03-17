@@ -75,14 +75,18 @@ export class FileCard extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.delete('/api/word/DeleteByFileId/' + this.props.fileId, config)
+        axios.delete('/api/word/DeleteWordsByFileId/' + this.props.fileId, config)
             .then(res => {
                 console.log(res.status);
                 this.deleteVersion();
             })
             .catch(err => {
                 if (err.response.status == 401) {
+                    this.showErrorModal("Supprimer le ficher", "Veuillez vous connecter avant de supprimer le fichier.");
                     this.setState({ 'unauthorized': true });
+                }
+                else if (err.response.status == 400) {
+                    this.showErrorModal("Supprimer le ficher", err.response.data);
                 }
             });
     }
@@ -100,11 +104,16 @@ export class FileCard extends React.Component<any, State> {
 
         axios.delete('/api/version/DeleteFileVersions/' + this.props.fileId, config)
             .then(res => {
+                console.log(res.status);
                 this.deleteFile();
             })
             .catch(err => {
                 if (err.response.status == 401) {
+                    this.showErrorModal("Supprimer le ficher", "Veuillez vous connecter avant de supprimer le fichier.");
                     this.setState({ 'unauthorized': true });
+                }
+                else if (err.response.status == 400) {
+                    this.showErrorModal("Supprimer le ficher", err.response.data);
                 }
             });
     };
@@ -119,11 +128,15 @@ export class FileCard extends React.Component<any, State> {
         axios.delete('/api/file/Delete/' + this.props.fileId, config)
             .then(res => {
                 console.log(res.data);
-                alert("File deleted");
+                this.showSuccessModal("Supprimer le ficher", "Le fichier intitulé '" + this.props.title + "' a été supprimé avec succès!");
             })
             .catch(err => {
                 if (err.response.status == 401) {
+                    this.showErrorModal("Supprimer le ficher", "Veuillez vous connecter avant de supprimer le fichier.");
                     this.setState({ 'unauthorized': true });
+                }
+                else if (err.response.status == 400) {
+                    this.showErrorModal("Supprimer le ficher", err.response.data);
                 }
             });
     }
