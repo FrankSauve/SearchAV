@@ -276,10 +276,10 @@ export default class Dashboard extends React.Component<any, State> {
         return (
             <div>
                 {this.state.files ? <ListTable
-                    files={this.state.files}
-                    usernames={this.state.usernames}
-                    loading={this.state.loading}
-                /> : <h1 className="title">NO FILES</h1>}
+                                files={this.state.files}
+                                usernames={this.state.usernames}
+                                loading={this.state.loading}
+                            /> : <h1 className="title">NO FILES</h1>}
             </div>
         )
     }

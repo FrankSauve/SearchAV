@@ -1,4 +1,5 @@
 ﻿import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 
 export default class TableImage extends React.Component<any>
@@ -14,7 +15,8 @@ export default class TableImage extends React.Component<any>
                 <article className='media'>
                     <figure className="media-left">
                         <p className='image is-96x96'>
-                            <img src={this.props.thumbnailPath}></img>
+                            <a href={`/FileView/${this.props.fileId}`}><img src={this.props.thumbnailPath}></img></a>
+
                         </p>
                     </figure>
                     <div className="media-content">

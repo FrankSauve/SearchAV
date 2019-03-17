@@ -55,7 +55,14 @@ export default class ListTable extends React.Component<any, State>
                         i++
                         return (
                             <tr>
-                                <td width='100'><TableImage thumbnailPath={file.thumbnailPath} title={file.title} flag={file.flag} description={file.description} /></td>
+                                <td width='100'>
+                                    <TableImage
+                                        fileId={file.id}
+                                        thumbnailPath={file.thumbnailPath == "NULL" ? "assets/speakerIcon.png" : file.thumbnailPath}
+                                        title={file.title}
+                                        flag={file.flag}
+                                        description={file.description} />
+                                </td>
                                 <td><p className='tag is-rounded is-link'>12:00:00</p></td>
                                 <td>{this.state.usernames[i]}</td>
                                 <td>29-11-2019 15:00</td>
