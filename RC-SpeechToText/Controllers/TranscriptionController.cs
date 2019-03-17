@@ -62,14 +62,7 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{versionId}/{searchTerms}")]
         public async Task<IActionResult> SearchTranscript(string searchTerms, int versionId)
         {
-            try
-            {
-                return Ok(await _transcriptionService.SearchTranscript(searchTerms, versionId));
-            }
-            catch
-            {
-                return BadRequest("Error fetching active version with fileId: " + versionId);
-            }
+            return Ok(await _transcriptionService.SearchTranscript(searchTerms, versionId));
         }
 
 
