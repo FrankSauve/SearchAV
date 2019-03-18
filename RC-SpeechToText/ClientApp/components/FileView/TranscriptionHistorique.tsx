@@ -1,7 +1,6 @@
 import * as React from 'react';
 import auth from '../../Utils/auth';
 import axios from 'axios';
-import Loading from '../Loading';
 
 interface State {
     versions: any[],

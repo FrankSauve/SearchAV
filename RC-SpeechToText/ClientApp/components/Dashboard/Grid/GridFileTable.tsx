@@ -1,8 +1,6 @@
 import * as React from 'react';
-import axios from 'axios';
-import File from './File';
+import GridFile from './GridFile';
 import { Redirect } from 'react-router-dom';
-import auth from '../../Utils/auth';
 
 interface State {
     files: any[],
@@ -11,7 +9,7 @@ interface State {
     unauthorized: boolean
 }
 
-export default class FileTable extends React.Component<any, State> {
+export default class GridFileTable extends React.Component<any, State> {
 
     constructor(props: any) {
         super(props);
@@ -53,8 +51,8 @@ export default class FileTable extends React.Component<any, State> {
                 <div className="columns is-multiline">
                     {this.state.files.map((file) => {
                         const FileComponent =
-                          <File 
-                            fileId={file.id}
+                          <GridFile 
+                            file={file}
                             flag={file.flag}
                             title={file.title}
                             description={file.description}
