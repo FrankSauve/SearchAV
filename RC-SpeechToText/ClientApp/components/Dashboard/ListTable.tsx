@@ -45,7 +45,6 @@ export default class ListTable extends React.Component<any, State>
 
                 <table className='table is-fullwidth'>
                     <th>TITRE</th>
-                    <th>DUREE</th>
                     <th>IMPORTE PAR</th>
                     <th>DATE DE MODIFICATION</th>
                     <th></th>
@@ -58,14 +57,13 @@ export default class ListTable extends React.Component<any, State>
                                 <td width='100'>
                                     <TableImage
                                         fileId={file.id}
-                                        thumbnailPath={file.thumbnailPath == "NULL" ? "assets/speakerIcon.png" : file.thumbnailPath}
+                                        thumbnailPath={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         title={file.title}
                                         flag={file.flag}
                                         description={file.description} />
                                 </td>
-                                <td><p className='tag is-rounded is-link'>12:00:00</p></td>
                                 <td>{this.state.usernames[i]}</td>
-                                <td>29-11-2019 15:00</td>
+                                <td>{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
                                 <td>
                                     <Button
                                         fileId={file.id}
