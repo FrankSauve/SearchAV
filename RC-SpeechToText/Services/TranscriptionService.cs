@@ -7,10 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RC_SpeechToText.Services
-{
-    public class TranscriptionService
-    {
+namespace RC_SpeechToText.Services {
+    public class TranscriptionService {
         private readonly SearchAVContext _context;
 
         public TranscriptionService(SearchAVContext context)
@@ -52,7 +50,6 @@ namespace RC_SpeechToText.Services
                 flag = editedFlag;
             }
             file.Flag = flag;
-            await _context.SaveChangesAsync();
             //Send email to user who uploaded file stating that review is done
             if (flag == reviewedFlag)
             {
@@ -60,14 +57,16 @@ namespace RC_SpeechToText.Services
                 var reviewer = await _context.User.FindAsync(file.ReviewerId);
                 var emailSerice = new EmailInfrastructure();
                 emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
+                newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
 
+                await _context.SaveChangesAsync();
             }
-
             return new VersionDTO { Version = newVersion, Error = null };
 
+            
         }
 
-		public async Task<string> SearchTranscript(int versionId, string searchTerms)
+        public async Task<string> SearchTranscript(int versionId, string searchTerms)
 		{
 			//Ordered by Id to get the words in the same order as transcript
 			var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
@@ -149,29 +148,28 @@ namespace RC_SpeechToText.Services
             return null;
         }
 
-    private async Task<Models.Version> CreateNewVersion(int versionId, string newTranscript)
-    {
-        var currentVersion = _context.Version.Find(versionId);
+        private async Task<Models.Version> CreateNewVersion(int versionId, string newTranscript) {
+            var currentVersion = _context.Version.Find(versionId);
 
-        //Deactivate current version 
-        currentVersion.Active = false;
+            //Deactivate current version 
+            currentVersion.Active = false;
 
-        //Create a new version
-        var newVersion = new Models.Version
-        {
-            UserId = currentVersion.UserId,
-            FileId = currentVersion.FileId,
-            DateModified = DateTime.Now,
-            Transcription = newTranscript,
-            Active = true
-        };
+			    //Create a new version
+			    var newVersion = new Models.Version
+			    {
+				    UserId = currentVersion.UserId,
+				    FileId = currentVersion.FileId,
+				    DateModified = DateTime.Now,
+                    HistoryTitle = "MODIFICATIONS",
+                    Transcription = newTranscript,
+				    Active = true
+			    };
 
-        //Add new version to DB
+            //Add new version to DB
 
-        await _context.Version.AddAsync(newVersion);
-        await _context.SaveChangesAsync();
-        return newVersion;
-
+            await _context.Version.AddAsync(newVersion);
+            await _context.SaveChangesAsync();
+            return newVersion;
+            }
     }
-}
 }
