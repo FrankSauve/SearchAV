@@ -4,10 +4,14 @@ using RC_SpeechToText.Models;
 using RC_SpeechToText.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using RC_SpeechToText.Filters;
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Controllers
 {
-	[Authorize]
+    [ServiceFilter(typeof(ControllerExceptionFilter))]
+    [ServiceFilter(typeof(LoggingActionFilter))]
+    [Authorize]
 	[Route("api/[controller]")]
 	public class ConverterController : Controller
 	{
@@ -26,20 +30,15 @@ namespace RC_SpeechToText.Controllers
 		[HttpPost("[action]")]
 		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
 		{
-			try
-			{
+			
 				var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail);
 				if(version == null)
 				{
-					return BadRequest("Une erreur s'est produite lors de la transcription");
+                    throw new ControllerExceptions("Une erreur s'est produite lors de la transcription"); 
 				}
 
 				return Ok(version);
-			}
-			catch
-			{
-				return BadRequest("Une erreur s'est produite lors de la transcription");
-			}
+			
 		}
 	}
 }
