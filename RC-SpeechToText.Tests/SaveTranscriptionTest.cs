@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Tests
 {
@@ -46,11 +47,17 @@ namespace RC_SpeechToText.Tests
             
 
             var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
-
+            
             //AddAsync Version to database
             await context.Version.AddAsync(version);
             await context.SaveChangesAsync();
-            
+
+            //Creating words and their timestamps for the original transcript
+            List<Word> words = new List<Word>();
+            words.Add(new Word { Term = "Transcription", Timestamp = "\"1.000s\"", VersionId = version.Id });
+            await context.Word.AddAsync(words[0]);
+            await context.SaveChangesAsync();
+
             string editTranscription = "Test Edit Transcription";
             string reviewTranscription = "Test Review Transcription";
 
@@ -345,8 +352,9 @@ namespace RC_SpeechToText.Tests
 			var documentType = "fake type";
 
 			var controller = new TranscriptionController(context);
-			var result = await controller.DownloadTranscript(documentType, fileId);
-			Assert.IsType<BadRequestObjectResult>(result);
+
+            await Assert.ThrowsAsync<ControllerExceptions>(() => controller.DownloadTranscript(documentType, fileId));
+            
 		}
 
 	}

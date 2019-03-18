@@ -397,3 +397,5 @@ RC-SpeechToText.Tests/TestFiles/demo.flac
 *.ide
 *.ide
 *.ide
+.vs/config/applicationhost.config
+.vs/RC-SpeechToText/v15/.suo

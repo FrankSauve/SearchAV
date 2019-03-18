@@ -34,6 +34,10 @@ export default class FileTable extends React.Component<any, State> {
         }
     }
 
+    public updateFiles = () => {
+        this.props.getAllFiles();
+    }
+
     public render() {
 
         const progressBar = <img src="assets/loading.gif" alt="Loading..."/>
@@ -48,19 +52,21 @@ export default class FileTable extends React.Component<any, State> {
                 {this.state.loading ? progressBar : null}
                 <div className="columns is-multiline">
                     {this.state.files.map((file) => {
-                        const FileComponent = <File 
-                                        fileId = {file.id}
-                                        flag={file.flag}
-                                        title = {file.title}
-                                        description={file.description}
-                                        username={this.state.usernames[i]}
-                                        filePath={file.filePath}
-                                        thumbnailPath={file.thumbnailPath}
-                                        dateAdded={file.dateAdded}
-                                        number={file.notified}
-                                        type={file.type}
-                                        key = {file.id}
-                                    />
+                        const FileComponent =
+                          <File 
+                            fileId={file.id}
+                            flag={file.flag}
+                            title={file.title}
+                            description={file.description}
+                            username={this.state.usernames[i]}
+                            filePath={file.filePath}
+                            thumbnailPath={file.thumbnailPath}
+                            dateAdded={file.dateAdded}
+                            number={file.notified}
+                            type={file.type}
+                            key={file.id}
+                            updateFiles={this.updateFiles}
+                           />
                         i++; 
                         return(
                             FileComponent

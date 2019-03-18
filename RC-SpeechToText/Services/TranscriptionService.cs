@@ -10,36 +10,29 @@ using System.Threading.Tasks;
 namespace RC_SpeechToText.Services
 {
     public class TranscriptionService
-	{
-		private readonly SearchAVContext _context;
+    {
+        private readonly SearchAVContext _context;
 
-		public TranscriptionService(SearchAVContext context)
-		{
-			_context = context;
-		}
+        public TranscriptionService(SearchAVContext context)
+        {
+            _context = context;
+        }
 
-		public async Task<List<Models.Version>> Index()
-		{
-			return await _context.Version.ToListAsync();
-		}
+        public async Task<List<Models.Version>> Index()
+        {
+            return await _context.Version.ToListAsync();
+        }
 
-		public async Task<VersionDTO> SaveTranscript(string userEmail, int versionId, string newTranscript)
-		{
-			var newVersion = await CreateNewVersion(versionId, newTranscript);
+        public async Task<VersionDTO> SaveTranscript(string userEmail, int versionId, string newTranscript)
+        {
+            var newVersion = await CreateNewVersion(versionId, newTranscript);
 
-			//Calling this method will handle saving the new words in the databse
-			try
-			{
-				var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript);
-				if(resultSaveWords != null)
-				{
-					return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
-				}
-			}
-			catch (Exception e)
-			{
-				return new VersionDTO { Version = null, Error = "Error saving new words with id: " + newVersion.Id };
-			}
+            //Calling this method will handle saving the new words in the databse
+            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript);
+            if (resultSaveWords != null)
+            {
+                return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
+            }
 
             //flag -> Edité
             var editedFlag = Enum.GetName(typeof(FileFlag), 1);
@@ -48,38 +41,31 @@ namespace RC_SpeechToText.Services
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
 
             //Find corresponding file and update its flag 
-            try
-			{
-				File file;
-				file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync( q => q.Id == newVersion.FileId);
-				string flag;
-				if (file != null)
-					flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
-				else {
-					file = await _context.File.FindAsync(newVersion.FileId);
-					flag = editedFlag;
-				}
-				file.Flag = flag;
-				
-				//Send email to user who uploaded file stating that review is done
-				if (flag == reviewedFlag)
-				{
-					var uploader = await _context.User.FindAsync(file.UserId);
-					var reviewer = await _context.User.FindAsync(file.ReviewerId);
-					var emailSerice = new EmailInfrastructure();
-					emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
-                    newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
-                }
+            File file;
+            file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
+            string flag;
+            if (file != null)
+                flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+            else
+            {
+                file = await _context.File.FindAsync(newVersion.FileId);
+                flag = editedFlag;
+            }
+            file.Flag = flag;
+            //Send email to user who uploaded file stating that review is done
+            if (flag == reviewedFlag)
+            {
+                var uploader = await _context.User.FindAsync(file.UserId);
+                var reviewer = await _context.User.FindAsync(file.ReviewerId);
+                var emailSerice = new EmailInfrastructure();
+                emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
+                newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
 
                 await _context.SaveChangesAsync();
 
-                return new VersionDTO { Version = newVersion, Error = null };
-			}
-			catch (Exception e)
-			{
-				return new VersionDTO { Version = null, Error = "File flag not updated." };
-			}
-		}
+            return new VersionDTO { Version = newVersion, Error = null };
+
+        }
 
 		public async Task<string> SearchTranscript(int versionId, string searchTerms)
 		{
@@ -96,7 +82,8 @@ namespace RC_SpeechToText.Services
 			var rawTranscript = version.Transcription;
 			var transcript = rawTranscript.Replace("<br>", "\n ");
 
-			var exportResult = await Task.Run(async () => {
+            var exportResult = await Task.Run(async () =>
+            {
 
 				if (documentType == "doc")
 				{
@@ -125,61 +112,49 @@ namespace RC_SpeechToText.Services
 				}
 			});
 
-			if (exportResult)
-			{
-				return null;
-			}
-			else
-			{
-				return "Error while trying to download transcription";
-			}
-		}
+            if (exportResult)
+            {
+                return null;
+            }
+            else
+            {
+                return "Error while trying to download transcription";
+            }
+        }
 
-		/// <summary>
-		/// Private method that handles saving new words in the database when SaveTranscript is called
-		/// This makes the transcript still searchable after adding new words
-		/// </summary>
-		private async Task<string> SaveWords(int versionId, int newVersionId, string newTranscript)
-		{
-			//Have to explicitly instantiate variable to be able to keep the words.
-			List<Word> oldWords = new List<Word>();
+        /// <summary>
+        /// Private method that handles saving new words in the database when SaveTranscript is called
+        /// This makes the transcript still searchable after adding new words
+        /// </summary>
+        private async Task<string> SaveWords(int versionId, int newVersionId, string newTranscript)
+        {
+            //Have to explicitly instantiate variable to be able to keep the words.
+            List<Word> oldWords = new List<Word>();
 
-			//Getting all the words for this versionId
-			try
-			{
-				//Ordered by Id to get the words in the same order as transcript
-				oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
+            //Getting all the words for this versionId
 
-			}
-			catch
-			{
-				return "Error fetching words with versionId: " + versionId;
-			}
+            //Ordered by Id to get the words in the same order as transcript
+            oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
 
-			//Modify timestamps and return the new words
-			var modifyTimeStampService = new ModifyTimeStampService();
-			List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, newTranscript, newVersionId);
+            //Modify timestamps and return the new words
+            var modifyTimeStampService = new ModifyTimeStampService();
+            List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, newTranscript, newVersionId);
 
-			try
-			{
-				newWords.ForEach(async x => {
-					await _context.Word.AddAsync(x);
-				});
-				await _context.SaveChangesAsync();
-			}
-			catch
-			{
-				return "Error adding words with versionId: " + newVersionId;
-			}
-			return null;
-		}
+            newWords.ForEach(async x =>
+            {
+                await _context.Word.AddAsync(x);
+            });
+            await _context.SaveChangesAsync();
+                    
+            return null;
+        }
 
-		private async Task<Models.Version> CreateNewVersion(int versionId, string newTranscript)
-		{
-			var currentVersion = _context.Version.Find(versionId);
+    private async Task<Models.Version> CreateNewVersion(int versionId, string newTranscript)
+    {
+        var currentVersion = _context.Version.Find(versionId);
 
-			//Deactivate current version 
-			currentVersion.Active = false;
+        //Deactivate current version 
+        currentVersion.Active = false;
 
 			//Create a new version
 			var newVersion = new Models.Version
@@ -192,17 +167,12 @@ namespace RC_SpeechToText.Services
 				Active = true
 			};
 
-			//Add new version to DB
-			try
-			{
-				await _context.Version.AddAsync(newVersion);
-				await _context.SaveChangesAsync();
-				return newVersion;
-			}
-			catch (Exception e)
-			{
-				return null;
-			}
-		}
-	}
+        //Add new version to DB
+
+        await _context.Version.AddAsync(newVersion);
+        await _context.SaveChangesAsync();
+        return newVersion;
+
+    }
+}
 }

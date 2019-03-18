@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using RC_SpeechToText.Services;
+using RC_SpeechToText.Filters;
 using System.Linq;
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Controllers
 {
+    [ServiceFilter(typeof(ControllerExceptionFilter))]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Authorize]
     [Route("api/[controller]")]
     public class TranscriptionController : Controller
@@ -28,11 +32,7 @@ namespace RC_SpeechToText.Controllers
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
             var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
-			if(saveResult.Error != null)
-			{
-				return BadRequest(saveResult.Error);
-			}
-           
+			           
             return Ok(saveResult.Version);
         }
         
@@ -62,14 +62,7 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{versionId}/{searchTerms}")]
         public async Task<IActionResult> SearchTranscript(int versionId, string searchTerms)
         {
-            try
-            {
-                return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
-            }
-            catch
-            {
-                return BadRequest("Error fetching active version with fileId: " + versionId);
-            }
+            return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
         }
 
 
@@ -80,7 +73,7 @@ namespace RC_SpeechToText.Controllers
 
 			if(result != null)
 			{
-				return BadRequest(result);
+                throw new ControllerExceptions("Error while trying to download transcription");
 			}
 
 			return Ok();
