@@ -262,7 +262,7 @@ export class Button extends React.Component<any, State> {
     public render() {
         return (
             <div>
-                <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
+                <div className={`dropdown is-right ${this.state.showDropdown ? "is-active" : null}`} >
                     <div className="dropdown-trigger">
                         <div className="is-black" aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
                             <i className="fas fa-ellipsis-v "></i>

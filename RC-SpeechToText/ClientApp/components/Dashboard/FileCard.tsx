@@ -291,7 +291,7 @@ export class FileCard extends React.Component<any, State> {
                     <header className="card-header">
                         <p className="card-header-title fileTitle">
                             {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>
-                        <div className={`dropdown ${this.state.showDropdown ? "is-active" : null}`} >
+                        <div className={`dropdown is-right ${this.state.showDropdown ? "is-active" : null}`} >
                             <div className="dropdown-trigger">
                                 <div className="is-black" aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
                                     <i className="fas fa-ellipsis-v "></i>
