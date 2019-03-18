@@ -43,7 +43,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{flag}")]
-        public async Task<IActionResult> getAllFilesByFlag(string flag)
+        public async Task<IActionResult> GetAllFilesByFlag(string flag)
         {
             //Should find a better solution to handle accents
             var automated = Enum.GetName(typeof(FileFlag), 0);
@@ -59,7 +59,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> getAllFilesByUser()
+        public async Task<IActionResult> GetAllFilesByUser()
         {
             var emailClaim = HttpContext.User.Claims;
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
@@ -77,7 +77,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> getUserFilesToReview()
+        public async Task<IActionResult> GetUserFilesToReview()
         {
 
             var emailClaim = HttpContext.User.Claims;
