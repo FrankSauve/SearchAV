@@ -312,6 +312,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
+                                getAllFiles={this.getAllFiles}
                             /> : <h1 className="title">NO FILES</h1> }
                         </div>
                     </section>
