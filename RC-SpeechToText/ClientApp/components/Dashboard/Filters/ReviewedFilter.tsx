@@ -1,13 +1,13 @@
 import * as React from 'react';
 import axios from 'axios';
-import auth from '../../Utils/auth';
+import auth from '../../../Utils/auth';
 
 interface State {
     files: any[],
     unauthorized: boolean
 }
 
-export default class EditedFilter extends React.Component<any, State> {
+export default class ReviewedFilter extends React.Component<any, State> {
 
     constructor(props: any) {
         super(props);
@@ -19,10 +19,10 @@ export default class EditedFilter extends React.Component<any, State> {
 
     // Called when the component gets rendered
     public componentDidMount() {
-        this.getEditedFiles();
+        this.getReviewedFiles();
     }
 
-    public getEditedFiles = () => {
+    public getReviewedFiles = () => {
 
         const config = {
             headers: {
@@ -31,7 +31,7 @@ export default class EditedFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllFilesByFlag/Edite', config)
+        axios.get('/api/file/getAllFilesByFlag/Revise', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data.files })
@@ -45,17 +45,16 @@ export default class EditedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
+            <a><div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-primary"}`}>
+                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
                         {this.state.files.length}
                     </p>
-                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-primary"}`}>
+                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
                         FICHIERS<br />
-                        EDITES
-                </p>
+                        REVISES</p>
                 </div>
-            </div>
+            </div></a>
         )
     }
 }

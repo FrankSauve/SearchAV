@@ -1,30 +1,30 @@
 import * as React from 'react';
 import axios from 'axios';
-import auth from '../../Utils/auth';
+import auth from '../../../Utils/auth';
 
 interface State {
     files: any[],
-    userId: number,
-    unauthorized: boolean
+    unauthorized: boolean,
+    loading: boolean
 }
 
-export default class FilesToReviewFilter extends React.Component<any, State> {
+export default class AutomatedFilter extends React.Component<any, State> {
 
     constructor(props: any) {
         super(props);
         this.state = {
             files: [],
-            userId: 0,
-            unauthorized: false
+            unauthorized: false,
+            loading: false
         }
     }
 
     // Called when the component gets rendered
     public componentDidMount() {
-        this.getFilesToReview();
+        this.getAutomatedFiles();
     }
 
-    public getFilesToReview = () => {
+    public getAutomatedFiles = () => {
 
         const config = {
             headers: {
@@ -33,10 +33,10 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getUserFilesToReview/', config)
+        axios.get('/api/file/getAllFilesByFlag/Automatise', config)
             .then(res => {
                 console.log(res);
-                this.setState({ 'files': res.data.files })
+                this.setState({ 'files': res.data.files });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -45,16 +45,16 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
             });
     }
 
-    public render() {
+    public render() {   
         return (
             <div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-danger"}`}>
-                        {this.state.files ? this.state.files.length : 0}
+                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-warning"}`}>
+                        {this.state.files.length}
                     </p>
-                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-danger"}`}>
-                        FICHIERS <br/>
-                        A REVISER
+                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-warning"}`}>
+                        FICHIERS
+                        TRANSCRITS
                 </p>
                 </div>
             </div>

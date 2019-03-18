@@ -1,7 +1,7 @@
 ﻿import * as React from 'react';
 import { Redirect } from 'react-router-dom';
-import TableImage from './TableImage';
-import { Button } from './Button';
+import ListTableImage from './ListTableImage';
+import { DropdownButton } from '../DropdownButton';
 
 interface State {
     files: any[],
@@ -55,7 +55,7 @@ export default class ListTable extends React.Component<any, State>
                         return (
                             <tr>
                                 <td width='100'>
-                                    <TableImage
+                                    <ListTableImage
                                         fileId={file.id}
                                         thumbnailPath={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         title={file.title}
@@ -65,7 +65,7 @@ export default class ListTable extends React.Component<any, State>
                                 <td>{this.state.usernames[i]}</td>
                                 <td>{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
                                 <td>
-                                    <Button
+                                    <DropdownButton
                                         fileId={file.id}
                                         title={file.title}
                                         description={file.description}

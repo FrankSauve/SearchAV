@@ -2,14 +2,14 @@ import * as React from 'react';
 import FileInput from './FileInput';
 import axios from 'axios';
 import auth from '../../Utils/auth';
-import FileTable from './FileTable';
-import AutomatedFilter from './AutomatedFilter';
-import EditedFilter from './EditedFilter';
-import ReviewedFilter from './ReviewedFilter';
-import MyFilesFilter from './MyFilesFilter';
+import GridFileTable from './Grid/GridFileTable';
+import AutomatedFilter from './filters/AutomatedFilter';
+import EditedFilter from './filters/EditedFilter';
+import ReviewedFilter from './filters/ReviewedFilter';
+import MyFilesFilter from './filters/MyFilesFilter';
 import Loading from '../Loading';
-import FilesToReviewFilter from './FilesToReviewFilter';
-import ListTable from './ListTable';
+import FilesToReviewFilter from './filters/FilesToReviewFilter';
+import ListTable from './list/ListTable';
 
 interface State {
     files: any[],
@@ -213,7 +213,7 @@ export default class Dashboard extends React.Component<any, State> {
         this.setState({ 'listView': false });
         return (
             <div>
-                {this.state.files ? <FileTable
+                {this.state.files ? <GridFileTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
@@ -335,7 +335,7 @@ export default class Dashboard extends React.Component<any, State> {
                                     usernames={this.state.usernames}
                                     loading={this.state.loading}
                                 /> :
-                                    this.state.files ? <FileTable
+                                    this.state.files ? <GridFileTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}

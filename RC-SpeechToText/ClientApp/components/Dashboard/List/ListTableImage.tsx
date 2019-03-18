@@ -1,8 +1,6 @@
 ﻿import * as React from 'react';
-import { Link } from 'react-router-dom';
 
-
-export default class TableImage extends React.Component<any>
+export default class ListTableImage extends React.Component<any>
 {
     constructor(props: any) {
         super(props);
