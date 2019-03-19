@@ -14,7 +14,7 @@ export class AddDescriptionModal extends React.Component<any> {
                 <div className="modal-card">
                     <div className="modal-container">
                         <header className="modalHeader">
-                            <i className="fas fa-edit fontSize2em mg-right-5"></i><p className="modal-card-title whiteText"> Ajouter une description </p>
+                            <i className="fas fa-edit fontSize2em mg-right-5"></i><p className="modal-card-title whiteText"> Ajouter une description (optionnel) </p>
                             <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal}></button>
                         </header>
                         <section className="modalBody">
@@ -26,8 +26,7 @@ export class AddDescriptionModal extends React.Component<any> {
                             </div>
                         </section>
                         <footer className="modalFooter">
-                            <button className="button is-success mg-right-5" onClick={this.props.onSubmit}>Enregistrer</button>
-                            <button className="button" onClick={this.props.hideModal}>Annuler</button>
+                            <button className="button is-success mg-right-5" onClick={this.props.onSubmit}>Transcrire le fichier</button>
                         </footer>
                     </div>
                 </div>
