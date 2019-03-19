@@ -75,7 +75,7 @@ namespace RC_SpeechToText.Services
                 var currentNewWord = newTranscriptList[i];
                 if (currentNewWord.Equals(oldWords[iterateOld].Term, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId, Position = i });
                     if (iterateOld != oldWords.Count - 1)
                     {
                         iterateOld++;
@@ -85,11 +85,11 @@ namespace RC_SpeechToText.Services
                 {
                     if (iterateOld == 0 || iterateOld == oldWords.Count - 1)
                     {
-                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId, Position = i });
                     }
                     else
                     {
-                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld - 1].Timestamp, VersionId = newVersionId });
+                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld - 1].Timestamp, VersionId = newVersionId, Position = i });
                     }
                 }
             }
