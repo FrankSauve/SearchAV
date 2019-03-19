@@ -6,6 +6,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System.IO;
 using System.Linq;
+using RC_SpeechToText.Infrastructure;
 
 namespace RC_SpeechToText.Utils
 {
@@ -53,14 +54,10 @@ namespace RC_SpeechToText.Utils
                 WaveFileWriter.CreateWaveFile16(monoFileLocation, mono);
             }
 
-            DeleteFile(wavFileLocation); 
+			var streamIO = new IOInfrastructure();
+			streamIO.DeleteFile(wavFileLocation); 
 
             return monoFileLocation;
-        }
-
-        public void DeleteFile(string wavFilePath)
-        {
-            File.Delete(wavFilePath);
         }
 
         public string CreateThumbnail(string videoFilePath, string outputFilePath)
@@ -73,6 +70,8 @@ namespace RC_SpeechToText.Utils
 					var outputFile = new MediaFile { Filename = outputFilePath };
 
 					var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
+
+					options.VideoAspectRatio = VideoAspectRatio.R16_9;
 
 					engine.GetMetadata(mp4);
 

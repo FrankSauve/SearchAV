@@ -72,16 +72,16 @@ export class FileInfo extends React.Component<any, State> {
         return (
             <div className = "columns">
                 <div className="column">
-                    {<b>Image associ&#233;e: </b>}
+                    {<b className= "has-text-link">Image associ&#233;e: </b>}
 
                     <figure className="image is-4by3">
                         <img src={this.state.thumbnail} alt="Fichier vid&#233;o n'a pas d'image associ&#233;e" />                       
                     </figure>
                 </div>
                 <div className="column">
-                    <b>Date de modification: </b>
+                    <b className="has-text-link">Date de modification: </b>
                     <p> {this.state.dateFormated} </p>
-                    <b>Import&#233; par: </b>
+                    <b className="has-text-link">Import&#233; par: </b>
                     <p>{this.state.name}</p>
 
                 </div>

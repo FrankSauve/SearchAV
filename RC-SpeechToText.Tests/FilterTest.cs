@@ -41,7 +41,7 @@ namespace RC_SpeechToText.Tests
 			
             // Act
             var controller = new FileController(context);
-            var result = await controller.getAllFilesByFlag(automatedFlag);
+            var result = await controller.GetAllFilesByFlag(automatedFlag);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -89,7 +89,7 @@ namespace RC_SpeechToText.Tests
 
 			// Act
 			var controller = new FileController(context);
-            var result = await controller.getAllFilesByFlag(editedFlag);
+            var result = await controller.GetAllFilesByFlag(editedFlag);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -137,7 +137,7 @@ namespace RC_SpeechToText.Tests
 
             // Act
             var controller = new FileController(context);
-            var result = await controller.getAllFilesByFlag(reviewedFlag);
+            var result = await controller.GetAllFilesByFlag(reviewedFlag);
 ;
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

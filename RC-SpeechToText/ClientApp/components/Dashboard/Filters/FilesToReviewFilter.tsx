@@ -1,6 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
-import auth from '../../Utils/auth';
+import auth from '../../../Utils/auth';
 
 interface State {
     files: any[],
@@ -8,7 +8,7 @@ interface State {
     unauthorized: boolean
 }
 
-export default class MyFilesFilter extends React.Component<any, State> {
+export default class FilesToReviewFilter extends React.Component<any, State> {
 
     constructor(props: any) {
         super(props);
@@ -21,10 +21,10 @@ export default class MyFilesFilter extends React.Component<any, State> {
 
     // Called when the component gets rendered
     public componentDidMount() {
-        this.getUserFiles();
+        this.getFilesToReview();
     }
 
-    public getUserFiles = () => {
+    public getFilesToReview = () => {
 
         const config = {
             headers: {
@@ -33,7 +33,7 @@ export default class MyFilesFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllFilesByUser/', config)
+        axios.get('/api/file/getUserFilesToReview/', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data.files })
@@ -45,15 +45,16 @@ export default class MyFilesFilter extends React.Component<any, State> {
             });
     }
 
-    public render() {   
+    public render() {
         return (
             <div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className="title has-text-white-bis">
+                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-danger"}`}>
                         {this.state.files ? this.state.files.length : 0}
                     </p>
-                    <p className="subtitle has-text-white-bis">
-                        MES FICHIERS
+                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-danger"}`}>
+                        FICHIERS <br/>
+                        A REVISER
                 </p>
                 </div>
             </div>

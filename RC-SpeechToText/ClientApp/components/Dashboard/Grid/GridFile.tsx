@@ -1,15 +1,15 @@
 import * as React from 'react';
 import axios from 'axios';
-import auth from '../../Utils/auth';
+import auth from '../../../Utils/auth';
 
-import { FileCard } from './FileCard';
+import { GridFileCard } from './GridFileCard';
 
 interface State {
     transcription: string,
     unauthorized: boolean
 }
 
-export default class File extends React.Component<any, State> {
+export default class GridFile extends React.Component<any, State> {
 
     constructor(props: any) {
         super(props);
@@ -34,7 +34,7 @@ export default class File extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/version/GetActivebyFileId/' + this.props.fileId, config)
+        axios.get('/api/version/GetActivebyFileId/' + this.props.file.Id, config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'transcription': res.data.transcription })
@@ -48,15 +48,16 @@ export default class File extends React.Component<any, State> {
 
     public render() {   
         return (
-            <FileCard
-                fileId={this.props.fileId}
+            <GridFileCard
+                file={this.props.file}
                 title={this.props.title}
                 description={this.props.description}
                 flag={this.props.flag}
                 username={this.props.username}
-                image={this.props.type == "Audio" ? 'assets/speakerIcon.png' : this.props.thumbnailPath}
+                image={this.props.type == "Audio" ? 'assets/audioIcon.png' : this.props.thumbnailPath}
                 transcription={this.state.transcription != null ? this.state.transcription.length > 100 ? this.state.transcription.substring(0, 100) + "..." : this.state.transcription : null}
                 date={this.props.dateAdded.substring(0, 10) + " " + this.props.dateAdded.substring(11, 16)}
+                updateFiles={this.props.updateFiles}
             />
         )
     }

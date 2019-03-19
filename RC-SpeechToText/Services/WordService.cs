@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Models;
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,5 +26,11 @@ namespace RC_SpeechToText.Services
 			_context.Word.RemoveRange(wordList);
 			await _context.SaveChangesAsync();
 		}
+
+        public async Task<List<Word>> GetByVersionId(Guid versionId)
+        {
+            var words = await _context.Word.Where(w => w.VersionId == versionId).ToListAsync();
+            return words;
+        }
 	}
 }

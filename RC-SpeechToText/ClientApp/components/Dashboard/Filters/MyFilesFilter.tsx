@@ -1,28 +1,30 @@
 import * as React from 'react';
 import axios from 'axios';
-import auth from '../../Utils/auth';
+import auth from '../../../Utils/auth';
 
 interface State {
     files: any[],
+    userId: AAGUID,
     unauthorized: boolean
 }
 
-export default class ReviewedFilter extends React.Component<any, State> {
+export default class MyFilesFilter extends React.Component<any, State> {
 
     constructor(props: any) {
         super(props);
         this.state = {
             files: [],
+            userId: "",
             unauthorized: false
         }
     }
 
     // Called when the component gets rendered
     public componentDidMount() {
-        this.getReviewedFiles();
+        this.getUserFiles();
     }
 
-    public getReviewedFiles = () => {
+    public getUserFiles = () => {
 
         const config = {
             headers: {
@@ -31,7 +33,7 @@ export default class ReviewedFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllFilesByFlag/Revise', config)
+        axios.get('/api/file/getAllFilesByUser/', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data.files })
@@ -45,16 +47,16 @@ export default class ReviewedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <a><div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
+            <div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
-                        {this.state.files.length}
+                    <p className="title has-text-white-bis">
+                        {this.state.files ? this.state.files.length : 0}
                     </p>
-                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
-                        FICHIERS<br />
-                        REVISES</p>
+                    <p className="subtitle has-text-white-bis">
+                        MES FICHIERS
+                </p>
                 </div>
-            </div></a>
+            </div>
         )
     }
 }

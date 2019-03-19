@@ -12,7 +12,7 @@ namespace RC_SpeechToText.Infrastructure
 {
     public class GoogleDocumentRepository
 	{
-		public bool CreateGoogleDocument(string transcription)
+		public bool CreateGoogleDocument(string transcription, string fileTitle)
 		{
 			try
 			{
@@ -29,7 +29,7 @@ namespace RC_SpeechToText.Infrastructure
 
 					var newDocument = new Document
 					{
-						Title = transcription.Substring(0, 10)
+						Title = fileTitle
 					};
 
 					DocumentsResource.CreateRequest createRequest = service.Documents.Create(newDocument);

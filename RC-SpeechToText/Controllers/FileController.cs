@@ -6,9 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using RC_SpeechToText.Utils;
 using RC_SpeechToText.Services;
 using System.Linq;
+using RC_SpeechToText.Filters;
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Controllers
 {
+    [ServiceFilter(typeof(ControllerExceptionFilter))]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Authorize]
     [Route("api/[controller]")]
     public class FileController : Controller
@@ -23,73 +27,47 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var files = await _fileService.GetAllFiles();
 
-                return Ok(files);
-            }
-            catch
-            {
-                return BadRequest("Get all files failed.");
-            }
+            var files = await _fileService.GetAllFiles();
+
+            return Ok(files);
+
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllWithUsernames()
         {
-            try
-            {
-                var filesUsernames = await _fileService.GetAllWithUsernames();
+            var filesUsernames = await _fileService.GetAllWithUsernames();
 
-                return Ok(filesUsernames);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex);
-            }
+            return Ok(filesUsernames);
         }
 
         [HttpGet("[action]/{flag}")]
-        public async Task<IActionResult> getAllFilesByFlag(string flag)
+        public async Task<IActionResult> GetAllFilesByFlag(string flag)
         {
-            try
-            {
-                //Should find a better solution to handle accents
-                var automated = Enum.GetName(typeof(FileFlag), 0);
-                var edited = Enum.GetName(typeof(FileFlag), 1);
-                var reviewed = Enum.GetName(typeof(FileFlag), 2);
+            //Should find a better solution to handle accents
+            var automated = Enum.GetName(typeof(FileFlag), 0);
+            var edited = Enum.GetName(typeof(FileFlag), 1);
+            var reviewed = Enum.GetName(typeof(FileFlag), 2);
 
-                //If the flag is not accented we handle it here
-                if(flag != automated && flag != edited && flag != reviewed)
-                    flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
+            //If the flag is not accented we handle it here
+            if (flag != automated && flag != edited && flag != reviewed)
+                flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
 
-                var filesUsernames = await _fileService.GetAllFilesByFlag("Automatisé");
-
-                return Ok(filesUsernames);
-            }
-            catch
-            {
-                return BadRequest("Get all automated files failed.");
-            }
+            var filesUsernames = await _fileService.GetAllFilesByFlag(flag);
+            return Ok(filesUsernames);
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> getAllFilesByUser()
+        public async Task<IActionResult> GetAllFilesByUser()
         {
-            try
-            {
-                var emailClaim = HttpContext.User.Claims;
-                var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
+            var emailClaim = HttpContext.User.Claims;
+            var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
-                var filesUsernames = await _fileService.GetAllFilesById(emailString);
+            var filesUsernames = await _fileService.GetAllFilesById(emailString);
 
-                return Ok(filesUsernames);
-            }
-            catch
-            {
-                return BadRequest("Get user files failed.");
-            }
+            return Ok(filesUsernames);
+
         }
 
         [HttpGet("[action]/{date}")]
@@ -99,48 +77,35 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> getUserFilesToReview()
+        public async Task<IActionResult> GetUserFilesToReview()
         {
-            try
-            {
-                var emailClaim = HttpContext.User.Claims;
-                var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
-                var filesUsernames = await _fileService.GetUserFilesToReview(emailString);
+            var emailClaim = HttpContext.User.Claims;
+            var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
-                return Ok(filesUsernames);
-            }
-            catch
-            {
-                return BadRequest("Get user files to review failed.");
-            }
+            var filesUsernames = await _fileService.GetUserFilesToReview(emailString);
+
+            return Ok(filesUsernames);
+
+
         }
 
         [HttpGet("[action]/{id}")]
         public async Task<IActionResult> Details(Guid id)
         {
-            try
-            {
-                return Ok(await _fileService.GetFileById(id));
-            }
-            catch
-            {
-                return BadRequest("File with ID" + id + " not found");
-            }
+
+            return Ok(await _fileService.GetFileById(id));
+
         }
 
         [HttpGet("[action]/{search}")]
         public async Task<IActionResult> GetFilesByDescriptionAndTitle(string search)
         {
-            try
-            {
-                var files = await _fileService.GetAllFiles();
-                return Ok(SearchService.SearchDescriptionAndTitle(files, search));
-            }
-            catch
-            {
-                return BadRequest("Error retrieving files");
-            }
+
+            var files = await _fileService.GetAllFiles();
+            return Ok(SearchService.SearchDescriptionAndTitle(files, search));
+
+
         }
 
         [HttpPut("[action]/{id}")]
@@ -148,22 +113,14 @@ namespace RC_SpeechToText.Controllers
         {
             var file = await _fileService.ModifyTitle(id, newTitle);
 
-            if (file.Error != null)
-            {
-                return BadRequest(file.Error);
-            }
             return Ok(file.File);
         }
 
         [HttpDelete("[action]/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var error = await _fileService.DeleteFile(id);
+            await _fileService.DeleteFile(id);
 
-            if (error != null)
-            {
-                return BadRequest(error);
-            }
             return Ok();
         }
 
@@ -172,25 +129,17 @@ namespace RC_SpeechToText.Controllers
         {
             var file = await _fileService.SaveDescription(id, newDescription);
 
-            if (file.Error != null)
-            {
-                return BadRequest(file.Error);
-            }
             return Ok(file.File);
         }
 
         //Quick fix for now, does not work without it
         //TO DO: find a way to remove this
         [AllowAnonymous]
-        [HttpPost("[action]/{fileId}/{reviewerId}")]
-        public async Task<IActionResult> AddReviewer(Guid fileId, Guid reviewerId)
+        [HttpPost("[action]/{fileId}/{reviewerEmail}")]
+        public async Task<IActionResult> AddReviewer(Guid fileId, string reviewerEmail)
         {
-            var file = await _fileService.AddReviewer(fileId, reviewerId);
+            var file = await _fileService.AddReviewer(fileId, reviewerEmail);
 
-            if(file.Error != null)
-            {
-                return BadRequest(file.Error);
-            }
             return Ok(file.File);
         }
     }
