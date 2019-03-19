@@ -25,7 +25,7 @@ namespace RC_SpeechToText.Tests
             // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-            await context.Version.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new Models.Version { Transcription = "transcription", FileId = 1, UserId = 1}));
+            await context.Version.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new Models.Version { Transcription = "transcription", FileId = Guid.NewGuid(), UserId = Guid.NewGuid()}));
             await context.SaveChangesAsync();
 			
             //Act
@@ -48,7 +48,7 @@ namespace RC_SpeechToText.Tests
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             // AddAsync file with title testFile
-            var version = new Models.Version { Transcription = "transcription", FileId = 1, UserId = 1 };
+            var version = new Models.Version { Transcription = "transcription", FileId = Guid.NewGuid(), UserId = Guid.NewGuid() };
             await context.Version.AddAsync(version);
             await context.SaveChangesAsync();
 			

@@ -8,5 +8,7 @@ namespace RC_SpeechToText.Models
         public string Term { get; set; }
         public string Timestamp { get; set; }
         public Guid VersionId { get; set; }
+        public int Position { get; set; }
+        public string State { get; set; }
     }
 }
