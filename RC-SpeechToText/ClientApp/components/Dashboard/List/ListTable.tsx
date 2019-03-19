@@ -36,7 +36,7 @@ export default class ListTable extends React.Component<any, State>
 
     public render() {
         const progressBar = <img src="assets/loading.gif" alt="Loading..." />
-        var i = 0;
+        var i = -1;
 
         return (
             <div>
@@ -50,7 +50,6 @@ export default class ListTable extends React.Component<any, State>
                     <th></th>
 
                     {this.state.files.map((file) => {
-
                         i++
                         return (
                             <tr>

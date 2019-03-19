@@ -5,7 +5,7 @@ import auth from '../../Utils/auth';
 interface State {
     timestamps: any,
     searchTerms: string,
-    versionId: number,
+    versionId: AAGUID,
     unauthorized: boolean
 }
 

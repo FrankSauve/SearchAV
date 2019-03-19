@@ -34,7 +34,7 @@ export default class GridFile extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/version/GetActivebyFileId/' + this.props.file.Id, config)
+        axios.get('/api/version/GetActivebyFileId/' + this.props.file.id, config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'transcription': res.data.transcription })

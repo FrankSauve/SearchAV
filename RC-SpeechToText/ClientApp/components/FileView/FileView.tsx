@@ -13,7 +13,7 @@ import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
 
 interface State {
-    fileId: number,
+    fileId: AAGUID,
     version: any,
     file: any,
     user: any,

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using RC_SpeechToText.Models.DTO.Incoming;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace RC_SpeechToText.Tests
 {
@@ -141,7 +142,7 @@ namespace RC_SpeechToText.Tests
             //Verify that all files has same userId as the user 
             for (int i = 0; i < mockFileUsernameDTO.Files.Count; i++)
             {
-                int actualUserId = mockFileUsernameDTO.Files[i].UserId;
+                Guid actualUserId = mockFileUsernameDTO.Files[i].UserId;
                 Assert.Equal(user.Id, actualUserId);
             }
         }

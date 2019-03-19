@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,24 +17,24 @@ namespace RC_SpeechToText.Services
 			_context = context;
 		}
 
-		public async Task<List<Version>> Index()
+		public async Task<List<Models.Version>> Index()
 		{
 			return await _context.Version.ToListAsync();
 		}
 
-		public async Task<List<Version>> GetVersionByFileId(int id)
+		public async Task<List<Models.Version>> GetVersionByFileId(Guid id)
 		{
-			return await _context.Version.Where(v => v.FileId == id).ToListAsync();
+			return await _context.Version.Where(v => Guid.Equals(v.FileId, id)).ToListAsync();
 		}
 
-		public async Task<Version> GetFileActiveVersion(int id)
+		public async Task<Models.Version> GetFileActiveVersion(Guid id)
 		{
-			return await _context.Version.Where(v => v.FileId == id).Where(v => v.Active == true).FirstOrDefaultAsync();
+			return await _context.Version.Where(v => Guid.Equals(v.FileId, id)).Where(v => v.Active == true).FirstOrDefaultAsync();
 		}
 
-        public async Task<VersionUsernameDTO> GetAllWithUsernames(int id)
+        public async Task<VersionUsernameDTO> GetAllWithUsernames(Guid id)
         {
-            var versions = await _context.Version.Where(v => v.FileId == id).ToListAsync();
+            var versions = await _context.Version.Where(v => Guid.Equals(v.FileId, id)).ToListAsync();
 
             var usernames = new List<string>();
 
@@ -46,9 +47,9 @@ namespace RC_SpeechToText.Services
             return new VersionUsernameDTO { Versions = versions, Usernames = usernames };
         }
 
-        public async Task DeleteFileVersions(int id)
+        public async Task DeleteFileVersions(Guid id)
 		{
-			var versionsList = await _context.Version.Where(v => v.FileId == id).ToListAsync();
+			var versionsList = await _context.Version.Where(v => Guid.Equals(v.FileId, id)).ToListAsync();
 			_context.Version.RemoveRange(versionsList);
 			await _context.SaveChangesAsync();
 		}

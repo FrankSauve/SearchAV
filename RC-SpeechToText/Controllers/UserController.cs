@@ -4,6 +4,7 @@ using RC_SpeechToText.Models;
 using Microsoft.AspNetCore.Authorization;
 using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
+using System;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -45,7 +46,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> GetUserName(int id)
+        public async Task<IActionResult> GetUserName(Guid id)
         {
 
             return Ok(await _userService.GetUserName(id));

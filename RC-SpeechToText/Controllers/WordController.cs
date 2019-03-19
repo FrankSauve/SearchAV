@@ -27,7 +27,7 @@ namespace RC_SpeechToText.Controllers
         /// <param name="versionId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{versionId}")]
-        public async Task<IActionResult> GetByVersionId(int versionId)
+        public async Task<IActionResult> GetByVersionId(Guid versionId)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace RC_SpeechToText.Controllers
         /// <param name="fileId"></param>
         /// <returns></returns>
         [HttpDelete("[action]/{fileId}")]
-        public async Task<IActionResult> DeleteWordsByFileId(int fileId)
+        public async Task<IActionResult> DeleteWordsByFileId(Guid fileId)
         {
             await _wordService.DeleteWordsByFileId(fileId);
             return Ok("Delete words from file with id: " + fileId);

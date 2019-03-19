@@ -6,7 +6,7 @@ import { SuccessModal } from './SuccessModal';
 import { EventHandler, ChangeEvent } from 'react';
 
 interface State {
-    fileId: any,
+    fileId: AAGUID,
     errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
@@ -19,7 +19,7 @@ export class ExportModal extends React.Component<any, State> {
         super(props);
 
         this.state = {
-            fileId: 0,
+            fileId: "",
             errorMessage: "",
             showSuccessModal: false,
             showErrorModal: false,
@@ -59,7 +59,7 @@ export class ExportModal extends React.Component<any, State> {
         var fileId = this.state.fileId;
         var exportSelected = this.state.documentOption;
 
-        if (fileId != "" && fileId != 0 && exportSelected != "" && exportSelected != "0") {
+        if (fileId != "" && exportSelected != "" && exportSelected != "0") {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -75,7 +75,7 @@ export class ExportModal extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 });
         } else {
-            if (fileId == "" || fileId == 0)
+            if (fileId == "")
                 this.showErrorModal("Une erreur est survenu lors de la selection du fichier");
             if (exportSelected == "" || exportSelected == "0")
                 this.showErrorModal("Choisier le type de document dont vous voulez exporter");
