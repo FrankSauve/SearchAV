@@ -4,12 +4,15 @@ import auth from '../../Utils/auth';
 import Loading from '../Loading';
 import { ErrorModal } from '../Modals/ErrorModal';
 import { SuccessModal } from '../Modals/SuccessModal';
+import { AddDescriptionModal } from '../Modals/AddDescriptionModal';
 
 
 interface State {
     file: any,
     loading: boolean,
     unauthorized: boolean,
+    descriptionFile: string,
+    showAddDescription: boolean,
     showSuccessTranscribe: boolean,
     showErrorTranscribe: boolean,
     descriptionErrorTranscribe: string
@@ -23,6 +26,8 @@ export default class FileInput extends React.Component<any, State> {
             file: null,
             loading: false,
             unauthorized: false,
+            descriptionFile: "",
+            showAddDescription: false, 
             showSuccessTranscribe: false,
             showErrorTranscribe: false,
             descriptionErrorTranscribe: ""
@@ -33,6 +38,18 @@ export default class FileInput extends React.Component<any, State> {
     public toggleLoad = () => {
         (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
+
+    public showAddDescription = () => {
+        this.setState({ showAddDescription: true }); 
+    } 
+
+    public hideAddDescription = () => {
+        this.setState({ showAddDescription: false }); 
+    }
+
+    public handleDescriptionChange = (event: any) => {
+        this.setState({ descriptionFile: event.target.value });
+    }
 
     public showSuccessModal = () => {
         this.setState({ showSuccessTranscribe: true });
@@ -61,6 +78,7 @@ export default class FileInput extends React.Component<any, State> {
         const formData = new FormData();
         formData.append('audioFile', e.target.files[0]);
         formData.append('userEmail', auth.getEmail()!);
+      //  formData.append('descriptionFile', ); 
 
         const config = {
             headers: {
@@ -102,6 +120,13 @@ export default class FileInput extends React.Component<any, State> {
                     title={"Importation Réussie!"}
                     successMessage="La transcription de votre fichier a été effectué avec succès. Vous recevrez un courriel dans quelques instants."
                 />
+
+                <AddDescriptionModal
+                    showModal={this.state.showAddDescription}
+                    hideModal={this.hideAddDescription}
+                    handleDescriptionChange={this.handleDescriptionChange}
+                />
+
                 <div className="file is-boxed has-name">
                     <label className="file-label">
                         <input className="file-input" type="file" name="File" onChange={this.getGoogleSample}/>
