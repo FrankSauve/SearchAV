@@ -217,6 +217,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
+                                getAllFiles={this.getAllFiles}
                             /> : <h1 className="title">NO FILES</h1>}
            </div>
         )
@@ -230,6 +231,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
+                                getAllFiles={this.getAllFiles}
                             /> : <h1 className="title">NO FILES</h1>}
             </div>
         )
@@ -330,17 +332,7 @@ export default class Dashboard extends React.Component<any, State> {
 
                         <div className="box file-box mg-top-30">
                             {this.state.loading ? <Loading /> :
-                                this.state.listView ? <ListTable
-                                    files={this.state.files}
-                                    usernames={this.state.usernames}
-                                    loading={this.state.loading}
-                                /> :
-                                    this.state.files ? <GridFileTable
-                                files={this.state.files}
-                                usernames={this.state.usernames}
-                                loading={this.state.loading}
-                                getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title">NO FILES</h1> }
+                                this.state.listView ? this.renderListView() : this.renderFileTable()}
                         </div>
                     </section>
 
