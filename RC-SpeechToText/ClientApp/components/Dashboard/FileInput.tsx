@@ -40,7 +40,8 @@ export default class FileInput extends React.Component<any, State> {
     };
 
     public showAddDescription = () => {
-        this.setState({ showAddDescription: true }); 
+        this.setState({ showAddDescription: true });
+        this.getGoogleSample(); 
     } 
 
     public hideAddDescription = () => {
@@ -78,7 +79,7 @@ export default class FileInput extends React.Component<any, State> {
         const formData = new FormData();
         formData.append('audioFile', e.target.files[0]);
         formData.append('userEmail', auth.getEmail()!);
-      //  formData.append('descriptionFile', ); 
+        formData.append('descriptionFile', this.state.descriptionFile); 
 
         const config = {
             headers: {
@@ -129,7 +130,7 @@ export default class FileInput extends React.Component<any, State> {
 
                 <div className="file is-boxed has-name">
                     <label className="file-label">
-                        <input className="file-input" type="file" name="File" onChange={this.getGoogleSample}/>
+                        <input className="file-input" type="file" name="File" onChange={this.showAddDescription}/>
                         <span className="file-cta">
                             <span className="file-icon">
                                 <i className="fas fa-upload"></i>
