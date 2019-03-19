@@ -133,7 +133,7 @@ namespace RC_SpeechToText.Services {
 
             //Getting all the words for this versionId
 
-            //Ordered by Id to get the words in the same order as transcript
+            //Ordered by position to get the words in the same order as transcript
             oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Position).ToListAsync();
 
             //Modify timestamps and return the new words

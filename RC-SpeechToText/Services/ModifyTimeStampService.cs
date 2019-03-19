@@ -54,7 +54,7 @@ namespace RC_SpeechToText.Services
                 {
                     if (newTranscriptList[i].Equals(oldWords[j].Term, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[j].Timestamp, VersionId = newVersionId });
+                        newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[j].Timestamp, VersionId = newVersionId, Position = i });
                         iterateOld = j + 1;
                         break;
                     }
