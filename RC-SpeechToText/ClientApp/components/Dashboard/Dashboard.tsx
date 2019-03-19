@@ -213,12 +213,12 @@ export default class Dashboard extends React.Component<any, State> {
         this.setState({ 'listView': false });
         return (
             <div>
-                {this.state.files ? <GridFileTable
+                {this.state.files.length > 0 ? <GridFileTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
                                 getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title">NO FILES</h1>}
+                            /> : <h1 className="title">AUCUN FICHIERS</h1>}
            </div>
         )
     }
@@ -227,12 +227,12 @@ export default class Dashboard extends React.Component<any, State> {
         this.setState({ 'listView': true });
         return (
             <div>
-                {this.state.files ? <ListTable
+                {this.state.files.length > 0 ? <ListTable
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
                                 getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title">NO FILES</h1>}
+                            /> : <h1 className="title">AUCUN FICHIERS</h1>}
             </div>
         )
     }
