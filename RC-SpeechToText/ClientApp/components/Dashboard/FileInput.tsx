@@ -72,7 +72,7 @@ export default class FileInput extends React.Component<any, State> {
         axios.post('/api/converter/convertandtranscribe', formData, config)
             .then(res => {
                 this.toggleLoad();
-                this.showSuccessModal();
+                this.showSuccessModal()
                 //Updating files (maybe find a better to do it rather than load all entities every single time a file is uploaded)
                 this.props.getAllFiles(); 
             })

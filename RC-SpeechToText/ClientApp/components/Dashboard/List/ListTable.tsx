@@ -34,6 +34,10 @@ export default class ListTable extends React.Component<any, State>
         }
     }
 
+    public updateFiles = () => {
+        this.props.getAllFiles();
+    }
+
     public render() {
         const progressBar = <img src="assets/loading.gif" alt="Loading..." />
         var i = -1;
@@ -59,7 +63,8 @@ export default class ListTable extends React.Component<any, State>
                                         thumbnailPath={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         title={file.title}
                                         flag={file.flag}
-                                        description={file.description} />
+                                        description={file.description}
+                                     />
                                 </td>
                                 <td>{this.state.usernames[i]}</td>
                                 <td>{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
@@ -69,6 +74,7 @@ export default class ListTable extends React.Component<any, State>
                                         title={file.title}
                                         description={file.description}
                                         flag={file.flag}
+                                        updateFiles={this.updateFiles}
                                         username={this.state.usernames[i]}
                                         image={file.type == "Audio" ? 'assets/speakerIcon.png' : file.thumbnailPath}
                                         date={file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}

@@ -5,6 +5,8 @@ import { ModifyTitleModal } from '../Modals/ModifyTitleModal';
 import { ModifyDescriptionModal } from '../Modals/ModifyDescriptionModal';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
+import { LoadingModal } from '../LoadingModal';
+import Loading from '../Loading';
 
 interface State {
     fileId: number,
@@ -21,6 +23,7 @@ interface State {
     modalTitle: string,
     errorMessage: string,
     successMessage: string,
+    loading: boolean,
     unauthorized: boolean
 }
 
@@ -43,6 +46,7 @@ export class DropdownButton extends React.Component<any, State> {
             modalTitle: "",
             errorMessage: "",
             successMessage: "",
+            loading: false,
             unauthorized: false
         }
     }
@@ -66,6 +70,7 @@ export class DropdownButton extends React.Component<any, State> {
     public deleteWords = () => {
 
         console.log("Deleting words");
+        this.setState({ 'loading': true });
 
         const config = {
             headers: {
@@ -73,14 +78,20 @@ export class DropdownButton extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.delete('/api/word/DeleteByFileId/' + this.state.fileId, config)
+        axios.delete('/api/word/DeleteWordsByFileId/' + this.state.fileId, config)
             .then(res => {
                 console.log(res.status);
                 this.deleteVersion();
             })
             .catch(err => {
                 if (err.response.status == 401) {
+                    this.setState({ 'loading': false });
+                    this.showErrorModal("Supprimer le ficher", "Veuillez vous connecter avant de supprimer le fichier.");
                     this.setState({ 'unauthorized': true });
+                }
+                else if (err.response.status == 400) {
+                    this.setState({ 'loading': false });
+                    this.showErrorModal("Supprimer le ficher", err.response.data);
                 }
             });
     }
@@ -98,12 +109,18 @@ export class DropdownButton extends React.Component<any, State> {
 
         axios.delete('/api/version/DeleteFileVersions/' + this.state.fileId, config)
             .then(res => {
-                console.log(res.data);
+                console.log(res.status);
                 this.deleteFile();
             })
             .catch(err => {
                 if (err.response.status == 401) {
+                    this.setState({ 'loading': false });
+                    this.showErrorModal("Supprimer le ficher", "Veuillez vous connecter avant de supprimer le fichier.");
                     this.setState({ 'unauthorized': true });
+                }
+                else if (err.response.status == 400) {
+                    this.setState({ 'loading': false });
+                    this.showErrorModal("Supprimer le ficher", err.response.data);
                 }
             });
     };
@@ -118,11 +135,19 @@ export class DropdownButton extends React.Component<any, State> {
         axios.delete('/api/file/Delete/' + this.state.fileId, config)
             .then(res => {
                 console.log(res.data);
-                alert("File deleted");
+                this.setState({ 'loading': false });
+                this.showSuccessModal("Supprimer le ficher", "Le fichier intitulé '" + this.props.title + "' a été supprimé avec succès!")
+                this.props.updateFiles();
             })
             .catch(err => {
                 if (err.response.status == 401) {
+                    this.setState({ 'loading': false });
+                    this.showErrorModal("Supprimer le ficher", "Veuillez vous connecter avant de supprimer le fichier.");
                     this.setState({ 'unauthorized': true });
+                }
+                else if (err.response.status == 400) {
+                    this.setState({ 'loading': false });
+                    this.showErrorModal("Supprimer le ficher", err.response.data);
                 }
             });
     }
@@ -313,6 +338,10 @@ export class DropdownButton extends React.Component<any, State> {
                     hideModal={this.hideErrorModal}
                     title={this.state.modalTitle}
                     errorMessage={this.state.errorMessage}
+                />
+
+                <LoadingModal
+                    showModal={this.state.loading}
                 />
 
             </div>
