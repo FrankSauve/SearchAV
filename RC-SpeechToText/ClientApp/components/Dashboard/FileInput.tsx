@@ -39,9 +39,9 @@ export default class FileInput extends React.Component<any, State> {
         (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
 
-    public showAddDescription = () => {
+    public showAddDescription = (e: any) => {
+        this.setState({ file: e.target.files[0] });
         this.setState({ showAddDescription: true });
-        this.getGoogleSample(); 
     } 
 
     public hideAddDescription = () => {
@@ -70,14 +70,15 @@ export default class FileInput extends React.Component<any, State> {
         this.setState({ descriptionErrorTranscribe: "" });
     }
 
-    public getGoogleSample = (e:any) => {
+    public getGoogleSample = () => { 
+
+        this.hideAddDescription(); 
+       // this.setState({ showAddDescription: false }); 
 
         this.toggleLoad();
 
-        this.setState({file: e.target.files[0]});
-
         const formData = new FormData();
-        formData.append('audioFile', e.target.files[0]);
+        formData.append('audioFile', this.state.file);
         formData.append('userEmail', auth.getEmail()!);
         formData.append('descriptionFile', this.state.descriptionFile); 
 
@@ -126,11 +127,12 @@ export default class FileInput extends React.Component<any, State> {
                     showModal={this.state.showAddDescription}
                     hideModal={this.hideAddDescription}
                     handleDescriptionChange={this.handleDescriptionChange}
+                    onSubmit={this.getGoogleSample}
                 />
 
                 <div className="file is-boxed has-name">
                     <label className="file-label">
-                        <input className="file-input" type="file" name="File" onChange={this.showAddDescription}/>
+                        <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
                         <span className="file-cta">
                             <span className="file-icon">
                                 <i className="fas fa-upload"></i>
