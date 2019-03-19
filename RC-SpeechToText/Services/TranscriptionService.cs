@@ -96,7 +96,7 @@ namespace RC_SpeechToText.Services {
 				}
 				else if (documentType == "srt")
 				{
-					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).ToListAsync();
+					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
 					if (words.Count > 0)
 
                     {
