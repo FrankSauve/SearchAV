@@ -73,7 +73,6 @@ export default class FileInput extends React.Component<any, State> {
     public getGoogleSample = () => { 
 
         this.hideAddDescription(); 
-       // this.setState({ showAddDescription: false }); 
 
         this.toggleLoad();
 
