@@ -21,7 +21,7 @@ namespace RC_SpeechToText.Services {
             return await _context.Version.ToListAsync();
         }
 
-        public async Task<VersionDTO> SaveTranscript(string userEmail, int versionId, string newTranscript)
+        public async Task<VersionDTO> SaveTranscript(string userEmail, Guid versionId, string newTranscript)
         {
             var newVersion = await CreateNewVersion(versionId, newTranscript);
 
@@ -66,15 +66,15 @@ namespace RC_SpeechToText.Services {
             
         }
 
-        public async Task<string> SearchTranscript(int versionId, string searchTerms)
+        public async Task<string> SearchTranscript(Guid versionId, string searchTerms)
 		{
 			//Ordered by Id to get the words in the same order as transcript
-			var words = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
+			var words = await _context.Word.Where(w => Guid.Equals(w.VersionId,versionId)).OrderBy(w => w.Position).ToListAsync();
 			var searchService = new SearchService();
 			return searchService.PerformSearch(searchTerms, words);
 		}
 
-		public async Task<string> DownloadTranscription(string documentType, int fileId)
+		public async Task<string> DownloadTranscription(string documentType, Guid fileId)
 		{
 			var fileTitle = _context.File.Where(x => x.Id == fileId).Select(x => x.Title).SingleOrDefault();
 			var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
@@ -96,9 +96,10 @@ namespace RC_SpeechToText.Services {
 				}
 				else if (documentType == "srt")
 				{
-					var words = await _context.Word.Where(v => v.VersionId == version.Id).ToListAsync();
+					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
 					if (words.Count > 0)
-					{
+
+                    {
 						var exportTranscriptionService = new ExportTranscriptionService();
 						return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
 					}
@@ -125,15 +126,15 @@ namespace RC_SpeechToText.Services {
         /// Private method that handles saving new words in the database when SaveTranscript is called
         /// This makes the transcript still searchable after adding new words
         /// </summary>
-        private async Task<string> SaveWords(int versionId, int newVersionId, string newTranscript)
+        private async Task<string> SaveWords(Guid versionId, Guid newVersionId, string newTranscript)
         {
             //Have to explicitly instantiate variable to be able to keep the words.
             List<Word> oldWords = new List<Word>();
 
             //Getting all the words for this versionId
 
-            //Ordered by Id to get the words in the same order as transcript
-            oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Id).ToListAsync();
+            //Ordered by position to get the words in the same order as transcript
+            oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Position).ToListAsync();
 
             //Modify timestamps and return the new words
             var modifyTimeStampService = new ModifyTimeStampService();
@@ -148,7 +149,7 @@ namespace RC_SpeechToText.Services {
             return null;
         }
 
-        private async Task<Models.Version> CreateNewVersion(int versionId, string newTranscript) {
+        private async Task<Models.Version> CreateNewVersion(Guid versionId, string newTranscript) {
             var currentVersion = _context.Version.Find(versionId);
 
             //Deactivate current version 

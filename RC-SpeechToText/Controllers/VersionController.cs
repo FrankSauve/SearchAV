@@ -39,7 +39,7 @@ namespace RC_SpeechToText.Controllers
         /// <param name="fileId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{fileId}")]
-        public async Task<IActionResult> GetbyFileId(int fileId)
+        public async Task<IActionResult> GetbyFileId(Guid fileId)
         {
             return Ok(await _versionService.GetVersionByFileId(fileId));
         }
@@ -51,7 +51,7 @@ namespace RC_SpeechToText.Controllers
         /// <param name="fileId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{fileId}")]
-        public async Task<IActionResult> GetActivebyFileId(int fileId)
+        public async Task<IActionResult> GetActivebyFileId(Guid fileId)
         {
             return Ok(await _versionService.GetFileActiveVersion(fileId));
         }
@@ -62,7 +62,7 @@ namespace RC_SpeechToText.Controllers
         /// <param name="fileId"></param>
         /// <returns></returns>
         [HttpGet("[action]/{fileId}")]
-        public async Task<IActionResult> GetAllVersionsWithUserName(int fileId)
+        public async Task<IActionResult> GetAllVersionsWithUserName(Guid fileId)
         {
 
             var versionsUsernames = await _versionService.GetAllWithUsernames(fileId);
@@ -72,7 +72,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpDelete("[action]/{fileId}")]
-        public async Task<IActionResult> DeleteFileVersions(int fileId)
+        public async Task<IActionResult> DeleteFileVersions(Guid fileId)
         {
             await _versionService.DeleteFileVersions(fileId);
             return Ok();

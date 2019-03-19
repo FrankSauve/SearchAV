@@ -91,7 +91,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(Guid id)
         {
 
             return Ok(await _fileService.GetFileById(id));
@@ -109,7 +109,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpPut("[action]/{id}")]
-        public async Task<IActionResult> ModifyTitle(int id, string newTitle)
+        public async Task<IActionResult> ModifyTitle(Guid id, string newTitle)
         {
             var file = await _fileService.ModifyTitle(id, newTitle);
 
@@ -117,7 +117,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpDelete("[action]/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             await _fileService.DeleteFile(id);
 
@@ -125,7 +125,7 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpPut("[action]/{id}")]
-        public async Task<IActionResult> SaveDescription(int id, string newDescription)
+        public async Task<IActionResult> SaveDescription(Guid id, string newDescription)
         {
             var file = await _fileService.SaveDescription(id, newDescription);
 
@@ -136,7 +136,7 @@ namespace RC_SpeechToText.Controllers
         //TO DO: find a way to remove this
         [AllowAnonymous]
         [HttpPost("[action]/{fileId}/{reviewerEmail}")]
-        public async Task<IActionResult> AddReviewer(int fileId, string reviewerEmail)
+        public async Task<IActionResult> AddReviewer(Guid fileId, string reviewerEmail)
         {
             var file = await _fileService.AddReviewer(fileId, reviewerEmail);
 

@@ -7,7 +7,7 @@ namespace RC_SpeechToText.Services
 {
     public class ModifyTimeStampService
     {
-        public List<Word> ModifyTimestamps(List<Word> oldWords, string newTranscript, int newVersionId)
+        public List<Word> ModifyTimestamps(List<Word> oldWords, string newTranscript, Guid newVersionId)
         {
 			var newTranscriptNoBr = newTranscript
 				.Replace("<br>", " ")
@@ -33,17 +33,17 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
+        private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
             for (int i = 0; i < newTranscriptList.Count; i++)
             {
-                newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[i].Timestamp, VersionId = newVersionId });
+                newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[i].Timestamp, VersionId = newVersionId, Position = i });
             }
             return newWords;
         }
 
-        private List<Word> HandleDeleted(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
+        private List<Word> HandleDeleted(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
 
@@ -54,7 +54,7 @@ namespace RC_SpeechToText.Services
                 {
                     if (newTranscriptList[i].Equals(oldWords[j].Term, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[j].Timestamp, VersionId = newVersionId });
+                        newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[j].Timestamp, VersionId = newVersionId, Position = i });
                         iterateOld = j + 1;
                         break;
                     }
@@ -65,7 +65,7 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        private List<Word> HandleAdded(List<Word> oldWords, string newTranscript, int newVersionId, List<string> newTranscriptList)
+        private List<Word> HandleAdded(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
             var iterateOld = 0;
@@ -75,7 +75,7 @@ namespace RC_SpeechToText.Services
                 var currentNewWord = newTranscriptList[i];
                 if (currentNewWord.Equals(oldWords[iterateOld].Term, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                    newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId, Position = i });
                     if (iterateOld != oldWords.Count - 1)
                     {
                         iterateOld++;
@@ -85,11 +85,11 @@ namespace RC_SpeechToText.Services
                 {
                     if (iterateOld == 0 || iterateOld == oldWords.Count - 1)
                     {
-                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId });
+                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld].Timestamp, VersionId = newVersionId, Position = i });
                     }
                     else
                     {
-                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld - 1].Timestamp, VersionId = newVersionId });
+                        newWords.Add(new Word { Term = currentNewWord, Timestamp = oldWords[iterateOld - 1].Timestamp, VersionId = newVersionId, Position = i });
                     }
                 }
             }

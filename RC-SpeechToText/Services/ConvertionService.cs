@@ -95,10 +95,13 @@ namespace RC_SpeechToText.Services
 			await _context.Version.AddAsync(version);
 			await _context.SaveChangesAsync();
 
-			//Adding all words and their timestamps to the Word table
+            //Adding all words and their timestamps to the Word table
+            int i = 0;
 			words.ForEach(async x => {
 				x.VersionId = version.Id;
+                x.Position = i;
 				await _context.Word.AddAsync(x);
+                i++;
 			});
 			await _context.SaveChangesAsync();
 
