@@ -124,7 +124,7 @@ namespace RC_SpeechToText.Tests
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
             };
 
-            var result = await controller.getAllFilesByUser();
+            var result = await controller.GetAllFilesByUser();
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
