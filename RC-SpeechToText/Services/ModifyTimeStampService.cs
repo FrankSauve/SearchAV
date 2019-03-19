@@ -38,7 +38,7 @@ namespace RC_SpeechToText.Services
             List<Word> newWords = new List<Word>();
             for (int i = 0; i < newTranscriptList.Count; i++)
             {
-                newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[i].Timestamp, VersionId = newVersionId });
+                newWords.Add(new Word { Term = newTranscriptList[i], Timestamp = oldWords[i].Timestamp, VersionId = newVersionId, Position = i });
             }
             return newWords;
         }
