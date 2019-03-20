@@ -14,7 +14,7 @@ import ListTable from './list/ListTable';
 interface State {
     files: any[],
     usernames: string[],
-    userId: AAGUID,
+    userId: any,
     isMyFilesFilterActive: boolean,
     isEditedFilterActive: boolean,
     isAutomatedFilterActive: boolean,
@@ -209,8 +209,11 @@ export default class Dashboard extends React.Component<any, State> {
             });
     }
 
-    public renderFileTable = () => {
+    public showFileTable = () => {
         this.setState({ 'listView': false });
+    }
+    
+    public renderFileTable = () => {        
         return (
             <div>
                 {this.state.files.length > 0 ? <GridFileTable
@@ -223,8 +226,10 @@ export default class Dashboard extends React.Component<any, State> {
         )
     }
 
-    public renderListView = () => {
+    public showListView = () => {
         this.setState({ 'listView': true });
+    }
+    public renderListView = () => {
         return (
             <div>
                 {this.state.files.length > 0 ? <ListTable
@@ -324,9 +329,9 @@ export default class Dashboard extends React.Component<any, State> {
                                 <a className="button is-link mg-right-10" onClick={this.searchDescription}> Rechercher </a>
                                 <input className="input" type="text" placeholder="Chercher les fichiers par titre ou description" onChange={this.handleSearch} />
                                 &nbsp;
-                                <a>< img src="assets/grid.png" onClick={this.renderFileTable} width="40" height="40" /></a>
+                                <a>< img src="assets/grid.png" onClick={this.showFileTable} width="40" height="40" /></a>
                                 &nbsp;
-                                <a><img src="assets/list.png" onClick={this.renderListView} width="40" height="40" /></a>
+                                <a><img src="assets/list.png" onClick={this.showListView} width="40" height="40" /></a>
                             </div>
                         </div>
 
