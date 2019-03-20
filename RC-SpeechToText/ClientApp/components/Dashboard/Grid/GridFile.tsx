@@ -51,7 +51,7 @@ export default class GridFile extends React.Component<any, State> {
             <GridFileCard
                 file={this.props.file}
                 title={this.props.title}
-                description={this.props.description}
+                description={this.props.description != null ? this.props.description.length > 100 ? this.props.description.substring(0,100) + "..." : this.props.description : null}
                 flag={this.props.flag}
                 username={this.props.username}
                 image={this.props.type == "Audio" ? 'assets/audioIcon.png' : this.props.thumbnailPath}
