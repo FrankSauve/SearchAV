@@ -96,7 +96,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'files': res.data.files })
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
-                this.setState({ 'isFilesToReviewFilterActive': true });
+                this.setState({ 'isMyFilesFilterActive': true });
             })
             .catch(err => {
                 if (err.response.status == 401) {
@@ -122,7 +122,7 @@ export default class Dashboard extends React.Component<any, State> {
                 this.setState({ 'files': res.data.files })
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ loading: false });
-                this.setState({ 'isMyFilesFilterActive': true });
+                this.setState({ 'isFilesToReviewFilterActive': true });
             })
             .catch(err => {
                 if (err.response.status == 401) {
