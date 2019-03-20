@@ -36,8 +36,37 @@ namespace RC_SpeechToText.Infrastructure
 				return false;
 		}
 
-		//Modified method in order to return boolean for testing purposes
-		public bool SendReviewDoneEmail(string email, Models.File file, string reviewer)
+        public bool SendReviewAskedEmail(string email, Models.File file, string username)
+        {
+            if (IsValid(email))
+            {
+                try
+                {
+                    var body = new StringBuilder();
+                    var mail = GetMailer();
+                    var smtp = GetSmtpClient();
+
+                    mail.To.Add(new MailAddress(email));
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Demande de révision envoyé pour fichier " + file.Title;
+                    body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
+                    mail.Body = "Révision demandé par " + username + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
+                    smtp.Send(mail);
+                    smtp.Dispose();
+                }
+                catch
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        //Modified method in order to return boolean for testing purposes
+        public bool SendReviewDoneEmail(string email, Models.File file, string reviewer)
 		{
 			if (IsValid(email))
 			{

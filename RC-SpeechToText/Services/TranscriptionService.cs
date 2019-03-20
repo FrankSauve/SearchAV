@@ -50,6 +50,7 @@ namespace RC_SpeechToText.Services {
                 flag = editedFlag;
             }
             file.Flag = flag;
+            
             //Send email to user who uploaded file stating that review is done
             if (flag == reviewedFlag)
             {
@@ -58,9 +59,10 @@ namespace RC_SpeechToText.Services {
                 var emailSerice = new EmailInfrastructure();
                 emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
                 newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
-
-                await _context.SaveChangesAsync();
             }
+
+            await _context.SaveChangesAsync();
+
             return new VersionDTO { Version = newVersion, Error = null };
 
             

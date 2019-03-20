@@ -110,16 +110,21 @@ namespace RC_SpeechToText.Services
             }
         }
 
-		public async Task<FileDTO> AddReviewer(Guid fileId, string reviewerEmail)
+		public async Task<FileDTO> AddReviewer(Guid fileId, string userEmail, string reviewerEmail)
 		{
-			var user = await _context.User.Where(x => x.Email == reviewerEmail).SingleOrDefaultAsync();
+			var reviewer = await _context.User.Where(x => x.Email == reviewerEmail).SingleOrDefaultAsync();
 
-			if (user != null)
+			if (reviewer != null)
 			{
 				var file = _context.File.Find(fileId);
-				file.ReviewerId = user.Id;
-
+				file.ReviewerId = reviewer.Id;
                 await _context.SaveChangesAsync();
+
+                //Send email to reviewer
+                var uploader = await _context.User.Where(x => x.Email == userEmail).SingleOrDefaultAsync();
+                var emailSerice = new EmailInfrastructure();
+                emailSerice.SendReviewAskedEmail(reviewer.Email, file, uploader.Name);
+
                 return new FileDTO { File = file, Error = null };
             }
 			else
