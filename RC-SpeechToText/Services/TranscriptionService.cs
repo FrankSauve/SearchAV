@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediaToolkit;
+using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
@@ -86,8 +87,16 @@ namespace RC_SpeechToText.Services {
 
 				if (documentType == "doc")
 				{
-					var wordRepository = new WordRepository();
-					return wordRepository.CreateWordDocument(transcript);
+					using (var engine = new Engine())
+					{
+						var path = "C:\\Users\\Philippe\\Source\\Repos\\SearchAV\\RC-SpeechToText\\wwwroot\\assets\\Audio";
+						var video = "RAD_Vegan.mp4";
+						var subtitle = "RAD_Vegan.srt";
+						//engine.CustomCommand("ffmpeg -i " + path + video + " -i " + path + subtitle + " -c copy -c:s mov_text " + path + "outfile.mp4");
+						var a = @"C:\Users\Philippe\Desktop\ffmpeg-20190319-f8075b2-win64-static\bin ffmpeg -i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.mp4" + " -i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_VeganT.srt" + " -c copy -c:s mov_text "+ @"\wwwroot\assets\Audio\C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\outfile.mp4";
+						engine.CustomCommand(a);
+						return true;
+					}
 				}
 				else if (documentType == "googleDoc")
 				{
