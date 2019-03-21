@@ -45,12 +45,12 @@ export default class ReviewedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <a><div className={`card filters ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
+            <a><div className={`card filters mg-top-5 ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
+                    <p className={`title reviewed ${this.props.isActive ? "has-text-white-bis" : null }`}>
                         {this.state.files.length}
                     </p>
-                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-success"}`}>
+                    <p className={`subtitle reviewed ${this.props.isActive ? "has-text-white-bis" : null }`}>
                         FICHIERS<br />
                         REVISES</p>
                 </div>
