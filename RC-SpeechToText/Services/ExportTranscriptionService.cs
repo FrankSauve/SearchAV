@@ -6,22 +6,57 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Services
 {
     public class ExportTranscriptionService
 	{
-		public bool ExportVideo(string fileTitle, string documentType)
+		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
 		{
 			var splitFileTitle = fileTitle.Split(".");
 			var videoPath = @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\";
 			var subtitlePath = "C\\:/Users/Philippe/Source/Repos/SearchAV/RC-SpeechToText/wwwroot/assets/Audio/";
 			string command;
 
+			if(!File.Exists(videoPath + splitFileTitle[0] + ".srt"))
+			{
+				await Task.Run(() => CreateSRTDocument(transcription, words, fileTitle));
+			}
+
 			if (documentType.Contains("burn"))
-				command = "-i " + videoPath + splitFileTitle[0] + ".mp4 -vf subtitles=\'" + subtitlePath + splitFileTitle[0] + ".srt\'" + " -max_muxing_queue_size 1024 " + videoPath + splitFileTitle[0] + "Burn.mp4";
+			{
+				if (File.Exists(videoPath + splitFileTitle[0] + "Burn.mp4"))
+					File.Delete(videoPath + splitFileTitle[0] + "Burn.mp4");
+
+				command =
+					"-i " +
+					videoPath + splitFileTitle[0] +
+					".mp4 -vf subtitles=\'" +
+					subtitlePath +
+					splitFileTitle[0] +
+					".srt\'" +
+					" -max_muxing_queue_size 1024 " +
+					videoPath +
+					splitFileTitle[0] +
+					"Burn.mp4";
+			}
 			else
-				command = "-i " + videoPath + splitFileTitle[0] + ".mp4 -i " + videoPath + splitFileTitle[0] + ".srt -c copy -c:s mov_text " + videoPath + splitFileTitle[0] + "Normal.mp4";
+			{
+				if (File.Exists(videoPath + splitFileTitle[0] + "Embedded.mp4"))
+					File.Delete(videoPath + splitFileTitle[0] + "Embedded.mp4");
+
+				command =
+					"-i " +
+					videoPath +
+					splitFileTitle[0] +
+					".mp4 -i " +
+					videoPath +
+					splitFileTitle[0] +
+					".srt -c copy -c:s mov_text " +
+					videoPath + splitFileTitle[0] +
+					"Embedded.mp4";
+			}
 
 			var videoProcess = new ProcessStartInfo
 			{

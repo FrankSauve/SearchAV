@@ -111,8 +111,14 @@ namespace RC_SpeechToText.Services {
 				}
 				else if( documentType.Contains("video"))
 				{
-					var exportTranscriptionService = new ExportTranscriptionService();
-					return exportTranscriptionService.ExportVideo(fileTitle, documentType);
+					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
+					if (words.Count > 0)
+					{
+						var exportTranscriptionService = new ExportTranscriptionService();
+						return await exportTranscriptionService.ExportVideo(fileTitle, documentType, transcript, words);
+					}
+					else
+						return false;
 				}
 				else
 				{
