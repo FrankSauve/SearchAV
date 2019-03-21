@@ -5,6 +5,8 @@ using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -39,8 +41,8 @@ namespace RC_SpeechToText.Services {
             //flag -> Révisé
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
 
-            //Find corresponding file and update its flag 
-            File file;
+			//Find corresponding file and update its flag 
+			Models.File file;
             file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
             string flag;
             if (file != null)
@@ -87,16 +89,44 @@ namespace RC_SpeechToText.Services {
 
 				if (documentType == "doc")
 				{
+					var a = @"-i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.mp4" + " -i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.srt" + " -c copy -c:s mov_text " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\outfile.mp4";
 					using (var engine = new Engine())
 					{
 						var path = "C:\\Users\\Philippe\\Source\\Repos\\SearchAV\\RC-SpeechToText\\wwwroot\\assets\\Audio";
 						var video = "RAD_Vegan.mp4";
 						var subtitle = "RAD_Vegan.srt";
 						//engine.CustomCommand("ffmpeg -i " + path + video + " -i " + path + subtitle + " -c copy -c:s mov_text " + path + "outfile.mp4");
-						var a = @"C:\Users\Philippe\Desktop\ffmpeg-20190319-f8075b2-win64-static\bin ffmpeg -i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.mp4" + " -i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_VeganT.srt" + " -c copy -c:s mov_text "+ @"\wwwroot\assets\Audio\C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\outfile.mp4";
+
 						engine.CustomCommand(a);
-						return true;
 					}
+
+					//var startInfo = new ProcessStartInfo();
+
+					//startInfo.CreateNoWindow = false;
+					//startInfo.UseShellExecute = false;
+					//startInfo.FileName = Path.Combine(@"C:\Users\Philippe\Desktop\ffmpeg-20190319-f8075b2-win64-static\bin\", "ffmpeg.exe");
+					//startInfo.Arguments = a;
+					//startInfo.RedirectStandardOutput = true;
+
+					//try
+					//{
+					//	using (Process process = Process.Start(startInfo))
+					//	{
+					//		while (!process.StandardOutput.EndOfStream)
+					//		{
+					//			string line = process.StandardOutput.ReadLine();
+					//			Console.WriteLine(line);
+					//		}
+
+					//		process.WaitForExit();
+					//	}
+					//}
+					//catch (Exception ex)
+					//{
+					//	Console.WriteLine(ex.Message);
+					//}
+					return true;
+
 				}
 				else if (documentType == "googleDoc")
 				{
