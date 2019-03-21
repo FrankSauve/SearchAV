@@ -60,7 +60,7 @@ namespace RC_SpeechToText.Infrastructure
 
 		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
 		{
-			TextWriter tw = new StreamWriter(@"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\" + fileTitle + ".srt");
+			TextWriter tw = new StreamWriter(GetPathFromDirectory(@"\wwwroot\assets\Audio\" + fileTitle + ".srt"));
 
 			//Write each line as follow:
 			//1 (the paragraph count)

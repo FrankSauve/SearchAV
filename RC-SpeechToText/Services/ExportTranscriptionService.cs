@@ -16,8 +16,8 @@ namespace RC_SpeechToText.Services
 		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
 		{
 			var splitFileTitle = fileTitle.Split(".");
-			var videoPath = @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\";
-			var subtitlePath = "C\\:/Users/Philippe/Source/Repos/SearchAV/RC-SpeechToText/wwwroot/assets/Audio/";
+			var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
+			var subtitlePath = GetFfmpegSubtitlePath();
 			string command;
 
 			if(!streamIO.FileExist(videoPath + splitFileTitle[0] + ".srt"))
@@ -63,7 +63,7 @@ namespace RC_SpeechToText.Services
 			{
 				CreateNoWindow = false,
 				UseShellExecute = false,
-				FileName = streamIO.CombinePath(@"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\ffmpeg\bin", "ffmpeg.exe"),
+				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(@"\ffmpeg\bin"), "ffmpeg.exe"),
 				Arguments = command,
 				RedirectStandardOutput = true
 			};
@@ -136,6 +136,14 @@ namespace RC_SpeechToText.Services
 
 			temp = temp.Insert(2, ":").Insert(5, ":").Insert(8, ",");
 			return temp;
+		}
+
+		private string GetFfmpegSubtitlePath()
+		{
+			var subtitlePath = streamIO.GetPathFromDirectory("\\wwwroot\\assets\\Audio\\");
+			var subtitlePathForwardSlash = subtitlePath.Replace("\\", "/");
+			var colonIndex = subtitlePathForwardSlash.IndexOf(":");
+			return subtitlePathForwardSlash.Insert(colonIndex, "\\");
 		}
 	}
 }
