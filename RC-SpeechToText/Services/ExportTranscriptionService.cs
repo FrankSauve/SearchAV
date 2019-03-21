@@ -1,6 +1,9 @@
 ﻿using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Utils;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -8,6 +11,48 @@ namespace RC_SpeechToText.Services
 {
     public class ExportTranscriptionService
 	{
+		public bool ExportVideo(string fileTitle, string documentType)
+		{
+			var splitFileTitle = fileTitle.Split(".");
+			var videoPath = @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\";
+			var subtitlePath = "C\\:/Users/Philippe/Source/Repos/SearchAV/RC-SpeechToText/wwwroot/assets/Audio/";
+			string command;
+
+			if (documentType.Contains("burn"))
+				command = "-i " + videoPath + splitFileTitle[0] + ".mp4 -vf subtitles=\'" + subtitlePath + splitFileTitle[0] + ".srt\'" + " -max_muxing_queue_size 1024 " + videoPath + splitFileTitle[0] + "Burn.mp4";
+			else
+				command = "-i " + videoPath + splitFileTitle[0] + ".mp4 -i " + videoPath + splitFileTitle[0] + ".srt -c copy -c:s mov_text " + videoPath + splitFileTitle[0] + "Normal.mp4";
+
+			var videoProcess = new ProcessStartInfo
+			{
+				CreateNoWindow = false,
+				UseShellExecute = false,
+				FileName = Path.Combine(@"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\ffmpeg\bin", "ffmpeg.exe"),
+				Arguments = command,
+				RedirectStandardOutput = true
+			};
+
+			try
+			{
+				using (Process process = Process.Start(videoProcess))
+				{
+					while (!process.StandardOutput.EndOfStream)
+					{
+						string line = process.StandardOutput.ReadLine();
+						Console.WriteLine(line);
+					}
+
+					process.WaitForExit();
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
+
+
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words, string fileTitle)
 		{
 			//get each paragraph. Remove all empty string (where <br> are present). Trim the strings
