@@ -282,23 +282,17 @@ export default class Dashboard extends React.Component<any, State> {
                             getAutomatedFiles={this.getAutomatedFiles}
                         />
 
-                        <br /> <br />
-
                         <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFiles}>
                             <FilesToReviewFilter
                                 isActive={this.state.isFilesToReviewFilterActive}
                             />
                         </a>
-
-                        <br />
-
+                        
                         <a onClick={!this.state.isAutomatedFilterActive ? this.getAutomatedFiles : this.getAllFiles}>
                             <AutomatedFilter
                                 isActive={this.state.isAutomatedFilterActive}
                             />
                         </a>
-
-                        <br />
 
                         <a onClick={!this.state.isEditedFilterActive ? this.getEditedFiles : this.getAllFiles}>
                             <EditedFilter
@@ -306,15 +300,11 @@ export default class Dashboard extends React.Component<any, State> {
                             />
                         </a>
 
-                        <br />
-
                         <a onClick={!this.state.isReviewedFilterActive ? this.getReviewedFiles : this.getAllFiles}>
                             <ReviewedFilter
                                 isActive={this.state.isReviewedFilterActive}
                             />
                         </a>
-
-                        <br /> <br />
 
                         <a onClick={!this.state.isMyFilesFilterActive ? this.getUserFiles : this.getAllFiles}>
                             <MyFilesFilter
