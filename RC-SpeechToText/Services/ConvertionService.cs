@@ -21,7 +21,7 @@ namespace RC_SpeechToText.Services
 			_context = context;
 		}
 
-		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
+		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile)
 		{
 			// Get user id by email
 			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
@@ -72,7 +72,8 @@ namespace RC_SpeechToText.Services
 				Title = audioFile.FileName,
 				FilePath = filePath,
 				Flag = "Automatisé",
-				UserId = user.Id,
+                Description = descriptionFile, 
+                UserId = user.Id,
 				DateAdded = DateTime.Now,
 				Type = fileType,
 				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
