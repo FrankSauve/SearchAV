@@ -19,7 +19,7 @@ export default class ListTableImage extends React.Component<any>
                     </figure>
                     <div className="media-content">
                         <p>
-                            <strong>{this.props.title}</strong> <small className={`tag is-rounded ${this.props.flag.indexOf("A") == 0 ? "is-danger" : this.props.flag.indexOf("R") == 0 ? "is-success" : "is-info"}`}>{this.props.flag}</small>
+                            <strong>{this.props.title}</strong> <small className={`tag is-rounded flag ${this.props.flag.indexOf("A") == 0 ? "is-danger" : this.props.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.props.flag.toUpperCase()}</small>
                             <br />
                             <br />
                             {this.props.description}
