@@ -31,7 +31,7 @@ export class GridFileCard extends React.Component<any, State> {
         return (
             <div className="column is-3">
                 <div className="card fileCard">
-                    <span className={`tag is-rounded ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success" : "is-info"}`}>{this.state.flag}</span> 
+                    <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.state.flag.toUpperCase()}</span> 
                     <header className="card-header">
                         <p className="card-header-title fileTitle">
                             {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>

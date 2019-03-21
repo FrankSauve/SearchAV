@@ -59,7 +59,9 @@ export default class ListTable extends React.Component<any, State>
                                         thumbnailPath={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         title={file.title}
                                         flag={file.flag}
-                                        description={file.description} />
+                                        description={file.description != null ? file.description.length > 100 ? file.description.substring(0, 100) + "..." : file.description : null}
+                                        transcription={file.transcription != null ? file.transcription.length > 100 ? file.transcription.substring(0, 100) + "..." : file.transcription : null}
+                                    />
                                 </td>
                                 <td>{this.state.usernames[i]}</td>
                                 <td>{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
@@ -70,7 +72,7 @@ export default class ListTable extends React.Component<any, State>
                                         description={file.description}
                                         flag={file.flag}
                                         username={this.state.usernames[i]}
-                                        image={file.type == "Audio" ? 'assets/speakerIcon.png' : file.thumbnailPath}
+                                        image={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         date={file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}
                                     />
                                 </td>

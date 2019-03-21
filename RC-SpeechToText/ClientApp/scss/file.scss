@@ -23,6 +23,64 @@
     overflow:hidden;
 }
 
+.flag {
+    font-size:11px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+
+.reviewed-flag {
+    color: #9ef5c3;
+}
+
+.file-box {
+    height: 620px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.transcription {
+    font-size: 13px;
+    color: rgba(33, 41, 64, 1);
+    line-height: 16px;
+}
+
+.search-div {
+    background-color: $link;
+    left: 360px;
+    height: 60px;
+    width: 899px;
+}
+
+.search-title{
+    font-size: 18px;
+    margin-top:15px;
+    margin-left: 30px;
+}
+
+.search-field{
+    position:absolute;
+    margin-top:10px;
+    left:660px;
+    background-color:$link;
+}
+
+.search-input {
+    background-color: $link;
+    border: 1px solid #8893ae;
+    border-radius: 22px;
+    width: 361px;
+    color: #909bb8;
+}
+
+.search-input:focus {
+    border: 1px solid #8893ae;
+    border-radius: 22px;
+}
+
+.no-files{
+    margin-top: 5px;
+}
+
 .hovereffect {
     width: 100%;
     height: 100%;
