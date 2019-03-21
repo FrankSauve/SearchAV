@@ -89,42 +89,44 @@ namespace RC_SpeechToText.Services {
 
 				if (documentType == "doc")
 				{
-					var a = @"-i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.mp4" + " -i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.srt" + " -c copy -c:s mov_text " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\outfile.mp4";
-					using (var engine = new Engine())
+					var c = "-i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.mp4" + " -vf subtitles=" + "\'C\\:/Users/Philippe/Source/Repos/SearchAV/RC-SpeechToText/wwwroot/assets/Audio/RAD_Vegan.srt\'" + " -max_muxing_queue_size 1024 " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\outfile.mp4";
+					var b = "-i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.mp4" + " -vf subtitles=" + "C\\:\\\\Users\\\\Philippe\\\\Source\\\\Repos\\\\SearchAV\\\\RC-SpeechToText\\\\wwwroot\\\\assets\\\\Audio\\\\RAD_Vegan.srt" + " -max_muxing_queue_size 1024 " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\outfile.mp4";
+					var a = "-i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.mp4" + " -i " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\RAD_Vegan.srt" + " -c copy -c:s mov_text " + @"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\outfile.mp4";
+					//using (var engine = new Engine())
+					//{
+					//	var path = "C:\\Users\\Philippe\\Source\\Repos\\SearchAV\\RC-SpeechToText\\wwwroot\\assets\\Audio";
+					//	var video = "RAD_Vegan.mp4";
+					//	var subtitle = "RAD_Vegan.srt";
+					//	//engine.CustomCommand("ffmpeg -i " + path + video + " -i " + path + subtitle + " -c copy -c:s mov_text " + path + "outfile.mp4");
+
+					//	engine.CustomCommand(b);
+					//}
+
+					var startInfo = new ProcessStartInfo();
+
+					startInfo.CreateNoWindow = false;
+					startInfo.UseShellExecute = false;
+					startInfo.FileName = Path.Combine(@"C:\Users\Philippe\Desktop\ffmpeg-20190319-f8075b2-win64-static\bin\", "ffmpeg.exe");
+					startInfo.Arguments = c;
+					startInfo.RedirectStandardOutput = true;
+
+					try
 					{
-						var path = "C:\\Users\\Philippe\\Source\\Repos\\SearchAV\\RC-SpeechToText\\wwwroot\\assets\\Audio";
-						var video = "RAD_Vegan.mp4";
-						var subtitle = "RAD_Vegan.srt";
-						//engine.CustomCommand("ffmpeg -i " + path + video + " -i " + path + subtitle + " -c copy -c:s mov_text " + path + "outfile.mp4");
+						using (Process process = Process.Start(startInfo))
+						{
+							while (!process.StandardOutput.EndOfStream)
+							{
+								string line = process.StandardOutput.ReadLine();
+								Console.WriteLine(line);
+							}
 
-						engine.CustomCommand(a);
+							process.WaitForExit();
+						}
 					}
-
-					//var startInfo = new ProcessStartInfo();
-
-					//startInfo.CreateNoWindow = false;
-					//startInfo.UseShellExecute = false;
-					//startInfo.FileName = Path.Combine(@"C:\Users\Philippe\Desktop\ffmpeg-20190319-f8075b2-win64-static\bin\", "ffmpeg.exe");
-					//startInfo.Arguments = a;
-					//startInfo.RedirectStandardOutput = true;
-
-					//try
-					//{
-					//	using (Process process = Process.Start(startInfo))
-					//	{
-					//		while (!process.StandardOutput.EndOfStream)
-					//		{
-					//			string line = process.StandardOutput.ReadLine();
-					//			Console.WriteLine(line);
-					//		}
-
-					//		process.WaitForExit();
-					//	}
-					//}
-					//catch (Exception ex)
-					//{
-					//	Console.WriteLine(ex.Message);
-					//}
+					catch (Exception ex)
+					{
+						Console.WriteLine(ex.Message);
+					}
 					return true;
 
 				}
