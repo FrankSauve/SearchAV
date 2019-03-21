@@ -1,13 +1,94 @@
 ﻿using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Utils;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Services
 {
     public class ExportTranscriptionService
 	{
+		private IOInfrastructure streamIO = new IOInfrastructure();
+
+		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
+		{
+			var splitFileTitle = fileTitle.Split(".");
+			var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
+			var subtitlePath = GetFfmpegSubtitlePath();
+			string command;
+
+			if(!streamIO.FileExist(videoPath + splitFileTitle[0] + ".srt"))
+			{
+				await Task.Run(() => CreateSRTDocument(transcription, words, fileTitle));
+			}
+
+			if (documentType.Contains("burn"))
+			{
+				if(streamIO.FileExist(videoPath + splitFileTitle[0] + "Burn.mp4"))
+					streamIO.DeleteFile(videoPath + splitFileTitle[0] + "Burn.mp4");
+
+				command =
+					"-i " +
+					videoPath + splitFileTitle[0] +
+					".mp4 -vf subtitles=\'" +
+					subtitlePath +
+					splitFileTitle[0] +
+					".srt\'" +
+					" -max_muxing_queue_size 1024 " +
+					videoPath +
+					splitFileTitle[0] +
+					"Burn.mp4";
+			}
+			else
+			{
+				if (streamIO.FileExist(videoPath + splitFileTitle[0] + "Embedded.mp4"))
+					streamIO.DeleteFile(videoPath + splitFileTitle[0] + "Embedded.mp4");
+
+				command =
+					"-i " +
+					videoPath +
+					splitFileTitle[0] +
+					".mp4 -i " +
+					videoPath +
+					splitFileTitle[0] +
+					".srt -c copy -c:s mov_text " +
+					videoPath + splitFileTitle[0] +
+					"Embedded.mp4";
+			}
+
+			var videoProcess = new ProcessStartInfo
+			{
+				CreateNoWindow = false,
+				UseShellExecute = false,
+				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(@"\ffmpeg\bin"), "ffmpeg.exe"),
+				Arguments = command,
+				RedirectStandardOutput = true
+			};
+
+			try
+			{
+				using (Process process = Process.Start(videoProcess))
+				{
+					while (!process.StandardOutput.EndOfStream)
+					{
+						string line = process.StandardOutput.ReadLine();
+						Console.WriteLine(line);
+					}
+
+					process.WaitForExit();
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
+
+
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words, string fileTitle)
 		{
 			//get each paragraph. Remove all empty string (where <br> are present). Trim the strings
@@ -23,8 +104,8 @@ namespace RC_SpeechToText.Services
 				wordPassed += paragraphWords.Count() - 1;
 			}
 
-			var streamIO = new IOInfrastructure();
-			streamIO.GenerateSRTFile(paragraph, timestamps, fileTitle);
+			var splitFileTitle = fileTitle.Split(".");
+			streamIO.GenerateSRTFile(paragraph, timestamps, splitFileTitle[0]);
 
 			return true;
 		}
@@ -55,6 +136,14 @@ namespace RC_SpeechToText.Services
 
 			temp = temp.Insert(2, ":").Insert(5, ":").Insert(8, ",");
 			return temp;
+		}
+
+		private string GetFfmpegSubtitlePath()
+		{
+			var subtitlePath = streamIO.GetPathFromDirectory("\\wwwroot\\assets\\Audio\\");
+			var subtitlePathForwardSlash = subtitlePath.Replace("\\", "/");
+			var colonIndex = subtitlePathForwardSlash.IndexOf(":");
+			return subtitlePathForwardSlash.Insert(colonIndex, "\\");
 		}
 	}
 }

@@ -28,6 +28,11 @@ namespace RC_SpeechToText.Infrastructure
 			return completePath;
 		}
 
+		public bool FileExist(string path)
+		{
+			return File.Exists(path);
+		}
+
 		public string GetPathFromDirectory(string path)
 		{
 			return Directory.GetCurrentDirectory() + path;
@@ -43,6 +48,11 @@ namespace RC_SpeechToText.Infrastructure
 			File.Move(p1, p2);
 		}
 
+		public string CombinePath(string p1, string p2)
+		{
+			return Path.Combine(p1, p2);
+		}
+
 		public void DeleteFile(string path)
 		{
 			File.Delete(path);
@@ -50,8 +60,7 @@ namespace RC_SpeechToText.Infrastructure
 
 		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
 		{
-			//TODO: Find a way to prompt the user on the file path
-			TextWriter tw = new StreamWriter(fileTitle + ".srt");
+			TextWriter tw = new StreamWriter(GetPathFromDirectory(@"\wwwroot\assets\Audio\" + fileTitle + ".srt"));
 
 			//Write each line as follow:
 			//1 (the paragraph count)

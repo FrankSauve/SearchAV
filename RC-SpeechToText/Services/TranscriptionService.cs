@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediaToolkit;
+using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,8 +41,8 @@ namespace RC_SpeechToText.Services {
             //flag -> Révisé
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
 
-            //Find corresponding file and update its flag 
-            File file;
+			//Find corresponding file and update its flag 
+			Models.File file;
             file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
             string flag;
             if (file != null)
@@ -102,6 +105,17 @@ namespace RC_SpeechToText.Services {
                     {
 						var exportTranscriptionService = new ExportTranscriptionService();
 						return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
+					}
+					else
+						return false;
+				}
+				else if( documentType.Contains("video"))
+				{
+					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
+					if (words.Count > 0)
+					{
+						var exportTranscriptionService = new ExportTranscriptionService();
+						return await exportTranscriptionService.ExportVideo(fileTitle, documentType, transcript, words);
 					}
 					else
 						return false;
