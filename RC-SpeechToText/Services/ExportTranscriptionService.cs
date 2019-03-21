@@ -24,7 +24,9 @@ namespace RC_SpeechToText.Services
 			}
 
 			var streamIO = new IOInfrastructure();
-			streamIO.GenerateSRTFile(paragraph, timestamps, fileTitle);
+
+			var splitFileTitle = fileTitle.Split(".");
+			streamIO.GenerateSRTFile(paragraph, timestamps, splitFileTitle[0]);
 
 			return true;
 		}

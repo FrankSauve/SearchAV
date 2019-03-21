@@ -50,8 +50,7 @@ namespace RC_SpeechToText.Infrastructure
 
 		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
 		{
-			//TODO: Find a way to prompt the user on the file path
-			TextWriter tw = new StreamWriter(fileTitle + ".srt");
+			TextWriter tw = new StreamWriter(@"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\wwwroot\assets\Audio\" + fileTitle + ".srt");
 
 			//Write each line as follow:
 			//1 (the paragraph count)
