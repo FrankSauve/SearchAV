@@ -3,7 +3,6 @@ using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,6 +11,8 @@ namespace RC_SpeechToText.Services
 {
     public class ExportTranscriptionService
 	{
+		private IOInfrastructure streamIO = new IOInfrastructure();
+
 		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
 		{
 			var splitFileTitle = fileTitle.Split(".");
@@ -19,15 +20,15 @@ namespace RC_SpeechToText.Services
 			var subtitlePath = "C\\:/Users/Philippe/Source/Repos/SearchAV/RC-SpeechToText/wwwroot/assets/Audio/";
 			string command;
 
-			if(!File.Exists(videoPath + splitFileTitle[0] + ".srt"))
+			if(!streamIO.FileExist(videoPath + splitFileTitle[0] + ".srt"))
 			{
 				await Task.Run(() => CreateSRTDocument(transcription, words, fileTitle));
 			}
 
 			if (documentType.Contains("burn"))
 			{
-				if (File.Exists(videoPath + splitFileTitle[0] + "Burn.mp4"))
-					File.Delete(videoPath + splitFileTitle[0] + "Burn.mp4");
+				if(streamIO.FileExist(videoPath + splitFileTitle[0] + "Burn.mp4"))
+					streamIO.DeleteFile(videoPath + splitFileTitle[0] + "Burn.mp4");
 
 				command =
 					"-i " +
@@ -43,8 +44,8 @@ namespace RC_SpeechToText.Services
 			}
 			else
 			{
-				if (File.Exists(videoPath + splitFileTitle[0] + "Embedded.mp4"))
-					File.Delete(videoPath + splitFileTitle[0] + "Embedded.mp4");
+				if (streamIO.FileExist(videoPath + splitFileTitle[0] + "Embedded.mp4"))
+					streamIO.DeleteFile(videoPath + splitFileTitle[0] + "Embedded.mp4");
 
 				command =
 					"-i " +
@@ -62,7 +63,7 @@ namespace RC_SpeechToText.Services
 			{
 				CreateNoWindow = false,
 				UseShellExecute = false,
-				FileName = Path.Combine(@"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\ffmpeg\bin", "ffmpeg.exe"),
+				FileName = streamIO.CombinePath(@"C:\Users\Philippe\Source\Repos\SearchAV\RC-SpeechToText\ffmpeg\bin", "ffmpeg.exe"),
 				Arguments = command,
 				RedirectStandardOutput = true
 			};
@@ -102,8 +103,6 @@ namespace RC_SpeechToText.Services
 				timestamps.AddRange(GetParagraphTimestamp(paragraphWords, words.Skip(wordPassed).ToList()));
 				wordPassed += paragraphWords.Count() - 1;
 			}
-
-			var streamIO = new IOInfrastructure();
 
 			var splitFileTitle = fileTitle.Split(".");
 			streamIO.GenerateSRTFile(paragraph, timestamps, splitFileTitle[0]);

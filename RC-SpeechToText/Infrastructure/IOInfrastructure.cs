@@ -28,6 +28,11 @@ namespace RC_SpeechToText.Infrastructure
 			return completePath;
 		}
 
+		public bool FileExist(string path)
+		{
+			return File.Exists(path);
+		}
+
 		public string GetPathFromDirectory(string path)
 		{
 			return Directory.GetCurrentDirectory() + path;
@@ -41,6 +46,11 @@ namespace RC_SpeechToText.Infrastructure
 		public void MoveFilePath(string p1, string p2)
 		{
 			File.Move(p1, p2);
+		}
+
+		public string CombinePath(string p1, string p2)
+		{
+			return Path.Combine(p1, p2);
 		}
 
 		public void DeleteFile(string path)
