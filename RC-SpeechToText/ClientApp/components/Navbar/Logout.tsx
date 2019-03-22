@@ -34,7 +34,7 @@ export default class Logout extends React.Component<any, State> {
     public render() {
         return (
             <div>
-                <button className="button is-light" onClick={this.onLogout}>Logout</button>
+                <button className="button is-white" onClick={this.onLogout}>Quitter</button>
                 {this.state.redirectToHome ? <Redirect to="/"/> : null}
             </div>
             
