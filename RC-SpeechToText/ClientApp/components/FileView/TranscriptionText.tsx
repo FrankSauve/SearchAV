@@ -59,17 +59,16 @@ export class TranscriptionText extends React.Component<any, State> {
     
     public highlightWords = () =>{
         //this.setState({displayText : this.rawToCleansedHtml(this.props.version.transcription)});
-        let s1 = this.rawToCleansedHtml(this.props.version.transcription);
         let s = "tribunaux";
-        let str = this.state.displayText.split(s);
-        let str2 = [];
-        if(str.length !=1) {
-            for( let i=0 ; i<str.length; i++ ){
-                str2.push(str[i]);
-                if(i!=str.length-1){
-                    str2.push("<span style='background-color: lightblue'>");
-                    str2.push(s);
-                    str2.push("</span>");
+        let textArray = this.state.displayText.split(s);
+        let hTextArray = [];
+        if(textArray.length !=1) {
+            for( let i=0 ; i<textArray.length; i++ ){
+                hTextArray.push(textArray[i]);
+                if(i!=textArray.length-1){
+                    hTextArray.push("<span style='background-color: lightblue'>");
+                    hTextArray.push(s);
+                    hTextArray.push("</span>");
                 }
                 
             }
@@ -77,10 +76,10 @@ export class TranscriptionText extends React.Component<any, State> {
         else{
             //Do nothing since no words are highlighted
         }
-        let s2 = str2.join("");
-        console.log("s2 = " + s2);
-        console.log("cleansed s2 = " + this.rawToCleansedHtml(s2));
-        this.setState({displayText: s2});
+        let highlightedText = hTextArray.join("");
+        console.log("highlightedText = " + highlightedText);
+        console.log("cleansed highlightedText = " + this.rawToCleansedHtml(highlightedText));
+        this.setState({displayText: highlightedText});
     };
 
     public getHighlightedWords = (event: any) => {
