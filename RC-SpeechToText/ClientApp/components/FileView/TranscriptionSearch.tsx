@@ -28,21 +28,22 @@ export class TranscriptionSearch extends React.Component<any,State> {
                 'Authorization': 'Bearer ' + auth.getAuthToken(),
                 'content-type': 'application/json'
             }
-        }
+        };
         axios.get('/api/transcription/SearchTranscript/' + this.state.versionId + '/' + this.state.searchTerms , config)
             .then(res => {
                 this.setState({ timestamps: res.data });
+                this.props.handleSeekTime(this.state.timestamps);
             })
             .catch(err => {
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    }
+    };
 
     public handleSearch = (e: any) => {
         this.setState({ searchTerms: e.target.value })
-    }
+    };
 
     public render() {
         return (

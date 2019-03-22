@@ -157,7 +157,7 @@ export default class FileView extends React.Component<any, State> {
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
                     this.hideDescriptionModal();
-                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
+                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirmï¿½! Les changements effectuï¿½s ont ï¿½tï¿½ enregistrï¿½ avec succï¿½s.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
@@ -167,7 +167,7 @@ export default class FileView extends React.Component<any, State> {
                 });
         }
         else {
-            this.showErrorModal(modalTitle, "Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
+            this.showErrorModal(modalTitle, "Enregistrement de la description annulï¿½! Vous n'avez effectuï¿½ aucun changements ou vous avez apportï¿½ les mï¿½mes modifications.");
         }
     }
 
@@ -266,7 +266,7 @@ export default class FileView extends React.Component<any, State> {
                     </div>
 
                     <div className="column is-half mg-top-30">
-                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
+                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} handleSeekTime={this.handleSeekTime} /> : null}
                         {this.state.loading ?
                             <Loading />
                             : this.state.version && this.state.file && this.state.user ?
