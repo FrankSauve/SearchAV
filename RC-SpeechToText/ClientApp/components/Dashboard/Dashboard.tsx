@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Redirect } from 'react-router-dom';
 import FileInput from './FileInput';
 import axios from 'axios';
 import auth from '../../Utils/auth';
@@ -74,6 +75,8 @@ export default class Dashboard extends React.Component<any, State> {
             .catch(err => {
                 console.log(err);
                 if (err.response.status == 401) {
+                    // Logs out if the user's JWT is expired
+                    auth.removeAuthToken();
                     this.setState({ 'unauthorized': true });
                 }
             });
@@ -284,6 +287,7 @@ export default class Dashboard extends React.Component<any, State> {
 
         return (
             <div className="container">
+                {this.state.unauthorized ? <Redirect to="/"/> : null}
                 <div className="columns">
                     <div className="column is-one-fifth">
                         <FileInput
