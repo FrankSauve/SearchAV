@@ -105,6 +105,20 @@ export default class FileInput extends React.Component<any, State> {
             });
     };
 
+    onDrag = (e: any) => {
+        e.preventDefault();
+    }
+
+    onDragOver = (e: any) => {
+        e.preventDefault();
+    }
+
+    onDrop = (e: any) => {
+        e.preventDefault();
+    }
+
+
+
     public render() {
         
         return (
@@ -129,7 +143,11 @@ export default class FileInput extends React.Component<any, State> {
                     onSubmit={this.getGoogleSample}
                 />
 
-                <div className="file is-boxed has-name">
+                <div className="file is-boxed has-name"
+                    onDrop={e => this.onDrop(e)}
+                    onDrag={(e => this.onDrag(e))}
+                    onDragOver={(e => this.onDragOver(e))}
+                >
                     <label className="file-label">
                         <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
                         <span className="file-cta">
