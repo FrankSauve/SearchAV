@@ -221,7 +221,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
                                 getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title">AUCUN FICHIERS</h1>}
+                        /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
            </div>
         )
     }
@@ -237,7 +237,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
                                 getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title">AUCUN FICHIERS</h1>}
+                            /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
             </div>
         )
     }
@@ -260,6 +260,12 @@ export default class Dashboard extends React.Component<any, State> {
             });
     }
 
+    public handleKeyPress = (e: any) => {
+        if (e.key === 'Enter') {
+            this.searchDescription();
+        }
+    }
+
     public handleSearch = (e: any) => {
         this.setState({ searchTerms: e.target.value })
     }
@@ -273,6 +279,9 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public render() {
+
+        var fileType = this.state.isAutomatedFilterActive ? "TRANSCRITS" : this.state.isEditedFilterActive ? "EDITES" : this.state.isReviewedFilterActive ? "REVISES" : this.state.isFilesToReviewFilterActive ? "A REVISER" : "" 
+
         return (
             <div className="container">
                 <div className="columns">
@@ -282,23 +291,17 @@ export default class Dashboard extends React.Component<any, State> {
                             getAutomatedFiles={this.getAutomatedFiles}
                         />
 
-                        <br /> <br />
-
                         <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFiles}>
                             <FilesToReviewFilter
                                 isActive={this.state.isFilesToReviewFilterActive}
                             />
                         </a>
-
-                        <br />
-
+                        
                         <a onClick={!this.state.isAutomatedFilterActive ? this.getAutomatedFiles : this.getAllFiles}>
                             <AutomatedFilter
                                 isActive={this.state.isAutomatedFilterActive}
                             />
                         </a>
-
-                        <br />
 
                         <a onClick={!this.state.isEditedFilterActive ? this.getEditedFiles : this.getAllFiles}>
                             <EditedFilter
@@ -306,15 +309,11 @@ export default class Dashboard extends React.Component<any, State> {
                             />
                         </a>
 
-                        <br />
-
                         <a onClick={!this.state.isReviewedFilterActive ? this.getReviewedFiles : this.getAllFiles}>
                             <ReviewedFilter
                                 isActive={this.state.isReviewedFilterActive}
                             />
                         </a>
-
-                        <br /> <br />
 
                         <a onClick={!this.state.isMyFilesFilterActive ? this.getUserFiles : this.getAllFiles}>
                             <MyFilesFilter
@@ -324,18 +323,25 @@ export default class Dashboard extends React.Component<any, State> {
                     </div>
 
                     <section className="section column">
-                        <div>
-                            <div className="field is-horizontal">
-                                <a className="button is-link mg-right-10" onClick={this.searchDescription}> Rechercher </a>
-                                <input className="input" type="text" placeholder="Chercher les fichiers par titre ou description" onChange={this.handleSearch} />
+                        <div className="search-div">
+                            <div className="field is-horizontal mg-top-10">
+                                <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
+                                <div className="search-field">
+                                    <p className="control has-icons-right">
+                                        <input className="input is-rounded search-input" type="text" onChange={this.handleSearch} onKeyPress={this.handleKeyPress}/>
+                                        <span className="icon is-small is-right">
+                                            <a onClick={this.searchDescription}><i className="fas fa-search is-cadet-grey"></i></a>
+                                        </span>
+                                    </p>
+                                </div>
                                 &nbsp;
-                                <a>< img src="assets/grid.png" onClick={this.showFileTable} width="40" height="40" /></a>
+                                <a onClick={this.showFileTable}><i className={`fas fa-th view-icon ${this.state.listView ? "is-cadet-grey" : "is-white"}`}></i></a>
                                 &nbsp;
-                                <a><img src="assets/list.png" onClick={this.showListView} width="40" height="40" /></a>
+                                <a onClick={this.showListView}><i className={`fas fa-th-list view-icon ${this.state.listView ? "is-white" : "is-cadet-grey"}`}></i></a>
                             </div>
                         </div>
 
-                        <div className="box file-box mg-top-30">
+                        <div className="file-box mg-top-10">
                             {this.state.loading ? <Loading /> :
                                 this.state.listView ? this.renderListView() : this.renderFileTable()}
                         </div>
