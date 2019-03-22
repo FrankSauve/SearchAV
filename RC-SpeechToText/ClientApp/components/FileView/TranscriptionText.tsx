@@ -27,16 +27,29 @@ export class TranscriptionText extends React.Component<any, State> {
             lastSelectedWord: ''
         }
     }
-
+    
     // Called when the component renders
     componentDidMount() {
         // Add event listener for a click anywhere in the page
         document.addEventListener('mouseup', this.getHighlightedWords);
+
+        // Add onBlur and onInput to the contentEditable div
+        let transcription = document.querySelector('#transcription');
+        if (transcription){
+            transcription.addEventListener('input', (e) => this.handleChange(e));
+            transcription.addEventListener('blur', this.handleBlur);
+        }
     }
 
     // Remove event listener
     componentWillUnmount() {
         document.removeEventListener('mouseup', this.getHighlightedWords);
+        // Remove onBlur and onInput to the contentEditable div
+        let transcription = document.querySelector('#transcription');
+        if (transcription){
+            transcription.removeEventListener('input', (e) => this.handleChange(e));
+            transcription.removeEventListener('blur', this.handleBlur);
+        }
     }
 
     public getHighlightedWords = (event: any) => {
@@ -99,7 +112,7 @@ export class TranscriptionText extends React.Component<any, State> {
         this.props.handleChange(this.state.rawText)
     }
 
-    public handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    public handleChange = (e: any) => {
         var a = e.target.value.replace(/(?:\r\n|\r|\n)/g, '<br>')
         this.setState({ rawText: a });
         this.setState({ displayText: e.target.value })
@@ -108,13 +121,17 @@ export class TranscriptionText extends React.Component<any, State> {
     public render() {
         return (
             <div>
-                <textarea
+                <div id="transcription" className="mg-top-30 highlight-text" contentEditable={true}>
+                    {this.state.displayText}
+                    
+                </div>
+                {/* <textarea
                     className="textarea mg-top-30 highlight-text"
                     rows={20} //Would be nice to adapt this to the number of lines in the future
                     onChange={this.handleChange}
                     value={this.state.displayText}
                     onBlur={this.handleBlur}
-                />
+                /> */}
             </div>
         );
     }
