@@ -77,30 +77,9 @@ export class TranscriptionText extends React.Component<any, State> {
                 }
 
                 console.log("firstSelectedWord: " + this.state.firstSelectedWord + ", lastSelectedWord: " + this.state.lastSelectedWord);
-                this.searchTranscript();
+                this.props.searchTranscript(this.state.selection, false);
             }
         }
-    }
-
-    public searchTranscript = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-
-        // Search the entire selection for now
-        // This will probably have to change by having words with timestamps in the frontend
-        // But its an ok temporary solution
-        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.selection , config)
-            .then(res => {
-                console.log(res.data);
-                this.props.handleSeekTime(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            });
     }
 
     rawToHtml(text: string) {

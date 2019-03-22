@@ -21,35 +21,17 @@ export class TranscriptionSearch extends React.Component<any,State> {
         }
     }
 
-    
-    public searchTranscript = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        };
-        axios.get('/api/transcription/SearchTranscript/' + this.state.versionId + '/' + this.state.searchTerms , config)
-            .then(res => {
-                this.setState({ timestamps: res.data });
-                this.props.handleSeekTime(this.state.timestamps);
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    };
-
     public handleSearch = (e: any) => {
-        this.setState({ searchTerms: e.target.value })
+        this.setState({ searchTerms: e.target.value });
+        let a = this.props.searchTranscript(this.state.searchTerms, true);
+        this.setState({timestamps: a});
     };
 
     public render() {
         return (
             <div>
                 <div className="field is-horizontal">
-                    <a className="button is-link mg-right-10" onClick={this.searchTranscript}> Rechercher </a>
+                    <a className="button is-link mg-right-10" onClick={this.handleSearch}> Rechercher </a>
                     <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
                 </div>
                 {this.state.timestamps ?  <p> Résultats : {this.state.timestamps} </p> : null}

@@ -169,7 +169,35 @@ export default class FileView extends React.Component<any, State> {
         else {
             this.showErrorModal(modalTitle, "Enregistrement de la description annul�! Vous n'avez effectu� aucun changements ou vous avez apport� les m�mes modifications.");
         }
+    };
+
+    public searchTranscript = (selection : string, returnData : boolean) => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        };
+
+        // Search the entire selection for now
+        // This will probably have to change by having words with timestamps in the frontend
+        // But its an ok temporary solution
+        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + selection , config)
+            .then(res => {
+                console.log(res.data);
+                this.handleSeekTime(res.data);
+                if(returnData){
+                    return res.data;
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
+
+    public handleSeekTime = (time: string) => {
+        this.setState({ seekTime: time });
+    };
 
     public handleTranscriptChange = (text: string) => {
         this.setState({ editedTranscript: text });
@@ -219,11 +247,6 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ showDropdown: false });
     }
 
-
-    public handleSeekTime = (time: string) => {
-        this.setState({ seekTime: time });
-    };
-
     render() {
         return (
             <div className="container">
@@ -266,7 +289,7 @@ export default class FileView extends React.Component<any, State> {
                     </div>
 
                     <div className="column is-half mg-top-30">
-                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} handleSeekTime={this.handleSeekTime} /> : null}
+                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} handleSeekTime={this.handleSeekTime} searchTranscript={this.searchTranscript} /> : null}
                         {this.state.loading ?
                             <Loading />
                             : this.state.version && this.state.file && this.state.user ?
@@ -275,7 +298,8 @@ export default class FileView extends React.Component<any, State> {
                                         text={this.state.version.transcription}
                                         version={this.state.version}
                                         handleChange={this.handleTranscriptChange}
-                                        handleSeekTime={this.handleSeekTime} />
+                                        handleSeekTime={this.handleSeekTime}
+                                        searchTranscript={this.searchTranscript}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
