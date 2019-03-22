@@ -77,8 +77,8 @@ namespace RC_SpeechToText.Services
 				DateAdded = DateTime.Now,
 				Type = fileType,
 				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
-				//Description = "" 
-			};
+                Duration = audioFile.Length
+            };
 			await _context.File.AddAsync(file);
 			await _context.SaveChangesAsync();
 

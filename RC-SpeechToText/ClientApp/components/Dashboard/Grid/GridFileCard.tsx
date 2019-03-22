@@ -28,6 +28,7 @@ export class GridFileCard extends React.Component<any, State> {
     }
 
     public render() {
+        console.log(this.props.file)
         return (
             <div className="column is-3">
                 <div className="card fileCard">
@@ -51,9 +52,12 @@ export class GridFileCard extends React.Component<any, State> {
                         <div className="hovereffect">
                             <figure className="image is-16by9">
                                 <img src={this.props.image} alt="Placeholder image" />
+                                <div className="time-on-thumbnail-rectangle">
+                                    <p className="time-on-thumbnail-police"></p>
+                                </div>
                                 <div className="overlay">
                                     <Link className="info" to={`/FileView/${this.props.file.id}`}>View/Edit</Link>
-                                </div>
+                                </div>                                
                             </figure>
                         </div>
                     </div>
