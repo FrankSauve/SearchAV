@@ -26,7 +26,7 @@ namespace RC_SpeechToText.Services {
 
         public async Task<VersionDTO> SaveTranscript(string userEmail, Guid versionId, string newTranscript)
         {
-            var newVersion = await CreateNewVersion(versionId, newTranscript);
+            var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
 
             //Calling this method will handle saving the new words in the databse
             var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript);
@@ -163,7 +163,7 @@ namespace RC_SpeechToText.Services {
             return null;
         }
 
-        private async Task<Models.Version> CreateNewVersion(Guid versionId, string newTranscript) {
+        private async Task<Models.Version> CreateNewVersion(Guid versionId, string newTranscript, string userEmail) {
             var currentVersion = _context.Version.Find(versionId);
 
             //Deactivate current version 
@@ -172,7 +172,7 @@ namespace RC_SpeechToText.Services {
 			    //Create a new version
 			    var newVersion = new Models.Version
 			    {
-				    UserId = currentVersion.UserId,
+				    UserId = await _context.User.Where(u => u.Email == userEmail).Select(u => u.Id).FirstOrDefaultAsync(),
 				    FileId = currentVersion.FileId,
 				    DateModified = DateTime.Now,
                     HistoryTitle = "MODIFICATIONS",
