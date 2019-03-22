@@ -279,7 +279,7 @@ export class DropdownButton extends React.Component<any, State> {
                                 <i className="fas fa-edit mg-right-5"></i>
                                 Modifier la description
                                 </a> : <a className="dropdown-item" onClick={this.showDescriptionModal}>
-                                <i className="fas fa-edit mg-right-5"></i>
+                                <i className="fas fa-plus-square mg-right-5"></i>
                                 Ajouter une description
                                 </a>}
 
