@@ -18,17 +18,9 @@ export default class Logout extends React.Component<any, State> {
         }
     }
 
-    componentDidMount() {
-        // Logout when the window/tab is closed
-        window.addEventListener("beforeunload", (e) => {
-            e.preventDefault();
-            this.onLogout();
-        })
-    }
-
     public onLogout = () => {
         auth.removeAuthToken();
-        this.setState({'redirectToHome': true})
+        this.setState({'redirectToHome': true});
     };
 
     public render() {
