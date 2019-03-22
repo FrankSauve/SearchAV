@@ -30,7 +30,8 @@ interface State {
     successMessage: string,
     showDropdown: boolean,
     loading: boolean,
-    seekTime: string
+    seekTime: string,
+    selection: string
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -56,7 +57,8 @@ export default class FileView extends React.Component<any, State> {
             successMessage: "",
             showDropdown: false,
             loading: false,
-            seekTime: '0:00:00.00'
+            seekTime: '0:00:00.00',
+            selection: ''
         }
     }
 
@@ -94,7 +96,7 @@ export default class FileView extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    }
+    };
 
     public getFile = () => {
         const config = {
@@ -114,7 +116,7 @@ export default class FileView extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    }
+    };
 
 
     public getUser = () => {
@@ -133,14 +135,14 @@ export default class FileView extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    }
+    };
 
     public saveDescription = () => {
 
-        var oldDescription = this.state.description
-        var newDescription = this.state.newDescription
+        var oldDescription = this.state.description;
+        var newDescription = this.state.newDescription;
 
-        var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description")
+        var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description");
 
         const formData = new FormData();
         formData.append("newDescription", newDescription)
@@ -151,7 +153,7 @@ export default class FileView extends React.Component<any, State> {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
                     'content-type': 'application/json'
                 }
-            }
+            };
 
             axios.put('/api/file/saveDescription/' + this.state.fileId, formData, config)
                 .then(res => {
@@ -193,7 +195,11 @@ export default class FileView extends React.Component<any, State> {
             .catch(err => {
                 console.log(err);
             });
-    }
+    };
+    
+    public handleSelectionChange = (sel : string) =>{
+        this.setState({selection: sel});
+    };
 
     public handleSeekTime = (time: string) => {
         this.setState({ seekTime: time });
@@ -201,51 +207,51 @@ export default class FileView extends React.Component<any, State> {
 
     public handleTranscriptChange = (text: string) => {
         this.setState({ editedTranscript: text });
-    }
+    };
 
     public updateVersion = (newVersion: any) => {
         this.setState({ version: newVersion });
-    }
+    };
 
     public showDescriptionModal = () => {
         this.setState({ showDescriptionModal: true });
-    }
+    };
 
     public hideDescriptionModal = () => {
         this.setState({ showDescriptionModal: false });
-    }
+    };
 
     public showSuccessModal = (title: string, description: string) => {
         this.setState({ successMessage: description });
         this.setState({ modalTitle: title });
         this.setState({ showSuccessModal: true });
-    }
+    };
 
     public showErrorModal = (title: string, description: string) => {
         this.setState({ errorMessage: description });
         this.setState({ modalTitle: title });
         this.setState({ showErrorModal: true });
-    }
+    };
 
     public handleDescriptionChange = (event: any) => {
         this.setState({ newDescription: event.target.value });
-    }
+    };
 
     public hideSuccessModal = () => {
         this.setState({ showSuccessModal: false });
-    }
+    };
 
     public hideErrorModal = () => {
         this.setState({ showErrorModal: false });
-    }
+    };
 
     public showDropdown = () => {
         this.setState({ showDropdown: true });
-    }
+    };
 
     public hideDropdown = () => {
         this.setState({ showDropdown: false });
-    }
+    };
 
     render() {
         return (
@@ -299,7 +305,9 @@ export default class FileView extends React.Component<any, State> {
                                         version={this.state.version}
                                         handleChange={this.handleTranscriptChange}
                                         handleSeekTime={this.handleSeekTime}
-                                        searchTranscript={this.searchTranscript}/>
+                                        searchTranscript={this.searchTranscript}
+                                        selection={this.state.selection}
+                                        handleSelectionChange={this.handleSelectionChange}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}

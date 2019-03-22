@@ -8,7 +8,6 @@ interface State {
     displayText: string,
     rawText: string,
     errorMessage: string,
-    selection: string,
     firstSelectedWord: string,
     lastSelectedWord: string
 }
@@ -22,7 +21,6 @@ export class TranscriptionText extends React.Component<any, State> {
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
             errorMessage: "",
-            selection: '',
             firstSelectedWord: '',
             lastSelectedWord: ''
         }
@@ -52,12 +50,41 @@ export class TranscriptionText extends React.Component<any, State> {
         }
     }
 
+    componentDidUpdate(prevProps : any, prevState : any) {
+        // only call for the change in time if the data has changed
+        if (prevProps.selection !== this.props.selection) {
+            this.highlightWords();
+        }
+    }
+    
+    public highlightWords = () =>{
+        //this.setState({displayText : this.rawToCleansedHtml(this.props.version.transcription)});
+        let s1 = this.rawToCleansedHtml(this.props.version.transcription);
+        let s = "tribunaux";
+        let str = this.state.displayText.split(s);
+        let str2 = [];
+        if(str.length !=1) {
+            for( let i=0 ; i<str.length; i++ ){
+                str2.push(str[i]);
+                str2.push("<span className='highlight'>");
+                str2.push(s);
+                str2.push("</span>");
+            }
+        }
+        else{
+            //Do nothing since no words are highlighted
+        }
+        let s2 = str2.join("");
+        console.log("s2 = " + s2);
+    };
+
     public getHighlightedWords = (event: any) => {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
         if (selectedWords && s) {
 
-            this.setState({selection: s.toString()});
+            this.props.handleSelectionChange(s.toString());
+            //this.setState({selection: s.toString()});
 
             //Get first non-empty string element
             for (var i = 0; i < selectedWords.length; i++) {
@@ -77,9 +104,14 @@ export class TranscriptionText extends React.Component<any, State> {
                 }
 
                 console.log("firstSelectedWord: " + this.state.firstSelectedWord + ", lastSelectedWord: " + this.state.lastSelectedWord);
-                this.props.searchTranscript(this.state.selection, false);
+                this.props.searchTranscript(this.props.selection, false);
             }
         }
+    };
+
+    rawToCleansedHtml(text: string) {
+        let a = this.rawToHtml(text);
+        return a.replace(/<span[^>]+\>/i,'');
     }
 
     rawToHtml(text: string) {
@@ -89,13 +121,15 @@ export class TranscriptionText extends React.Component<any, State> {
     public handleBlur = () => {
         console.log('Returning:', this.state.rawText);
         this.props.handleChange(this.state.rawText)
-    }
+    };
 
     public handleChange = (e: any) => {
-        var a = e.target.value.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        let a = e.target.value.replace(/(?:\r\n|\r|\n)/g, '<br>')
         this.setState({ rawText: a });
         this.setState({ displayText: e.target.value })
-    }
+    };
+    
+    
 
     public render() {
         return (
