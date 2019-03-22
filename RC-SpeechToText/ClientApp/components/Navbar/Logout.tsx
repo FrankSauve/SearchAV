@@ -26,7 +26,7 @@ export default class Logout extends React.Component<any, State> {
     public render() {
         return (
             <div>
-                <button className="button is-white" onClick={this.onLogout}>Quitter</button>
+                <a className="dropdown-item" onClick={this.onLogout}>Quitter</a>
                 {this.state.redirectToHome ? <Redirect to="/"/> : null}
             </div>
             
