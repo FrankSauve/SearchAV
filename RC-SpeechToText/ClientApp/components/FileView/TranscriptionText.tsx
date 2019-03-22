@@ -66,9 +66,12 @@ export class TranscriptionText extends React.Component<any, State> {
         if(str.length !=1) {
             for( let i=0 ; i<str.length; i++ ){
                 str2.push(str[i]);
-                str2.push("<span className='highlight'>");
-                str2.push(s);
-                str2.push("</span>");
+                if(i!=str.length-1){
+                    str2.push("<span className='highlight'>");
+                    str2.push(s);
+                    str2.push("</span>");
+                }
+                
             }
         }
         else{
@@ -76,6 +79,7 @@ export class TranscriptionText extends React.Component<any, State> {
         }
         let s2 = str2.join("");
         console.log("s2 = " + s2);
+        console.log("cleansed s2 = " + this.rawToCleansedHtml(s2));
     };
 
     public getHighlightedWords = (event: any) => {
@@ -111,7 +115,8 @@ export class TranscriptionText extends React.Component<any, State> {
 
     rawToCleansedHtml(text: string) {
         let a = this.rawToHtml(text);
-        return a.replace(/<span[^>]+\>/i,'');
+        a = a.replace(/<span[^>]+\>/i,'');
+        return a.replace(/<\/span>/i,'');
     }
 
     rawToHtml(text: string) {
