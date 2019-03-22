@@ -67,7 +67,7 @@ export class TranscriptionText extends React.Component<any, State> {
             for( let i=0 ; i<str.length; i++ ){
                 str2.push(str[i]);
                 if(i!=str.length-1){
-                    str2.push("<span className='highlight'>");
+                    str2.push("<span style='background-color: lightblue'>");
                     str2.push(s);
                     str2.push("</span>");
                 }
@@ -80,6 +80,7 @@ export class TranscriptionText extends React.Component<any, State> {
         let s2 = str2.join("");
         console.log("s2 = " + s2);
         console.log("cleansed s2 = " + this.rawToCleansedHtml(s2));
+        this.setState({displayText: s2});
     };
 
     public getHighlightedWords = (event: any) => {
@@ -139,10 +140,11 @@ export class TranscriptionText extends React.Component<any, State> {
     public render() {
         return (
             <div>
-                <div id="transcription" className="mg-top-30 highlight-text" contentEditable={true}>
-                    {this.state.displayText}
-                    
-                </div>
+                <div 
+                    id="transcription" 
+                    className="mg-top-30 highlight-text" 
+                    contentEditable={true}
+                    dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
                 {/* <textarea
                     className="textarea mg-top-30 highlight-text"
                     rows={20} //Would be nice to adapt this to the number of lines in the future
