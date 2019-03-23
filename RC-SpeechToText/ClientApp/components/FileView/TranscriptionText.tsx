@@ -44,6 +44,7 @@ export class TranscriptionText extends React.Component<any, State> {
     componentWillUnmount() {
         document.removeEventListener('mouseup', this.getHighlightedWords);
         document.addEventListener('mousedown', this.clearHighlights);
+        
         // Remove onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
         if (transcription){
@@ -53,7 +54,7 @@ export class TranscriptionText extends React.Component<any, State> {
     }
 
     componentDidUpdate(prevProps : any, prevState : any) {
-        // only call for the change in time if the data has changed
+        // check if the button on TranscriptionSearch was pressed
         if (this.props.textSearch && (prevProps.textSearch !== this.props.textSearch)) {
             this.clearHighlights();
             this.highlightWords(this.props.selection);
@@ -61,14 +62,17 @@ export class TranscriptionText extends React.Component<any, State> {
         }
     }
     
+    // remove all span tags from the page
     public clearHighlights = () =>{
         this.setState({displayText:this.rawToCleansedHtml(this.state.displayText)});
     };
     
+    // Highlights occurences of a string sel by inserting span tags into the displayText
     public highlightWords = (sel: string) =>{
         let s = sel;
         let textArray = this.rawToCleansedHtml(this.state.displayText).split(s);
         let hTextArray = [];
+        // Iterate over the array of strings gathered from splitting based on sel, and insert span tags between them
         if(textArray.length !=1 && textArray.length !=0 && this.state.displayText.indexOf(s) != -1) {
             for( let i=0 ; i<textArray.length; i++ ){
                 hTextArray.push(textArray[i]);
@@ -80,21 +84,16 @@ export class TranscriptionText extends React.Component<any, State> {
                 
             }
             let highlightedText = hTextArray.join("");
-            console.log("highlightedText = " + highlightedText);
-            console.log("cleansed highlightedText = " + this.rawToCleansedHtml(highlightedText));
             this.setState({displayText: highlightedText});
-        }
-        else{
-            //Do nothing since no words are highlighted
         }
     };
 
+    // Retrieves the words selected via mouse and calls FileView's searchTranscript method with them
     public getHighlightedWords = (event: any) => {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
         if (selectedWords && s) {
             this.props.handleSelectionChange(s.toString());
-            //this.setState({selection: s.toString()});
 
             //Get first non-empty string element
             for (var i = 0; i < selectedWords.length; i++) {
@@ -103,7 +102,7 @@ export class TranscriptionText extends React.Component<any, State> {
                     break;
                 }
             }
-            //empty string means no selection, therefore only get second word and call the search func if there is at least one word selected
+            //call the search func if there is at least one word selected
             if (this.state.firstSelectedWord.localeCompare("") != 0) {
                 //get last non-empty string element
                 for (var i = selectedWords.length - 1; i >= 0; i--) {
@@ -119,12 +118,14 @@ export class TranscriptionText extends React.Component<any, State> {
         }
     };
 
+    // removes all br and span tags from a string
     rawToCleansedHtml(text: string) {
         let a = this.rawToHtml(text);
         a = a.replace(/<span[^>]+\>/gi,'');
         return a.replace(/<\/span>/gi,'');
     }
 
+    // removes all br tags from a string
     rawToHtml(text: string) {
         return text.replace(/<br\s*[\/]?>/gi, "\n");
     }
@@ -150,13 +151,6 @@ export class TranscriptionText extends React.Component<any, State> {
                     className="mg-top-30 highlight-text" 
                     contentEditable={true}
                     dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
-                {/* <textarea
-                    className="textarea mg-top-30 highlight-text"
-                    rows={20} //Would be nice to adapt this to the number of lines in the future
-                    onChange={this.handleChange}
-                    value={this.state.displayText}
-                    onBlur={this.handleBlur}
-                /> */}
             </div>
         );
     }

@@ -175,6 +175,7 @@ export default class FileView extends React.Component<any, State> {
         }
     };
 
+    // Searches the transcript for the selection, and updates the seekTime var with its timestamp
     public searchTranscript = (selection : string, returnData : boolean) => {
         const config = {
             headers: {
