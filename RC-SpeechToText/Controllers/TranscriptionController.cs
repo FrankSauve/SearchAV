@@ -56,7 +56,9 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]")]
         public IActionResult Testing()
         {
-            return Ok(ModifyTimeStampService.CommonWords());
+            var oldTrans = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et tincidunt felis, ut aliquam metus. Praesent imperdiet nibh non tellus gravida fringilla. Donec tempus tristique porttitor. Aenean pulvinar, nisl vitae.";
+            var newTrans = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dunt felis, ut aliquam metus. Praesent imperdiet nibh non kjhde jgravida fringilla. Donec tempus tristique porttitor.  pulvinar, nisl vitae.";
+            return Ok(ModifyTimeStampService.CommonWords(oldTrans, newTrans));
         }
 
         /// <summary>

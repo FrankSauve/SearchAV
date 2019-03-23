@@ -33,13 +33,13 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        static public List<string> CommonWords()
+        static public List<string> CommonWords(string oldTranscript, string newTranscript)
         {
 
             var string1 = "su au bout du processus je suis un etre human vegan je suis un peu comme un superheros qui mange de la malbouffe";
             var string2 = "su au bout du processus je edited un added added added suis un peu comme un superheros qui mange";
 
-            var str1List = string1
+            var oldTransList = oldTranscript
                 .Replace("<br>", " ")
                 .Replace(".", " ")
                 .Replace(",", " ")
@@ -48,7 +48,7 @@ namespace RC_SpeechToText.Services
                 .Where(x => !string.IsNullOrEmpty(x))
                 .ToList();
 
-            var str2List = string2
+            var newTransList = newTranscript
                .Replace("<br>", " ")
                .Replace(".", " ")
                .Replace(",", " ")
@@ -58,16 +58,16 @@ namespace RC_SpeechToText.Services
                .ToList();
 
 
-            var subSeqTable = new int[str1List.Count + 1, str2List.Count + 1];
+            var subSeqTable = new int[oldTransList.Count + 1, newTransList.Count + 1];
 
             //Filling up the longest subsequence table.
-            for (int i = 0; i <= str1List.Count; i++)
+            for (int i = 0; i <= oldTransList.Count; i++)
             {
-                for (int j = 0; j <= str2List.Count; j++)
+                for (int j = 0; j <= newTransList.Count; j++)
                 {
                     if (i == 0 || j == 0)
                         subSeqTable[i, j] = 0;
-                    else if (str1List[i - 1].Equals(str2List[j - 1], StringComparison.InvariantCultureIgnoreCase))
+                    else if (oldTransList[i - 1].Equals(newTransList[j - 1], StringComparison.InvariantCultureIgnoreCase))
                         subSeqTable[i, j] = subSeqTable[i - 1, j - 1] + 1;
                     else
                         subSeqTable[i, j] = Math.Max(subSeqTable[i - 1, j], subSeqTable[i, j - 1]);
@@ -75,18 +75,20 @@ namespace RC_SpeechToText.Services
             }
 
 
+            //Saving the positions as well as the words to match them to old timestamps
             var longestCommonSub = new List<string>();
             var commonSubPosition1 = new List<int>();
             var commonSubPosition2 = new List<int>();
 
-            var c1 = str1List.Count;
-            var c2 = str2List.Count;
+            var c1 = oldTransList.Count;
+            var c2 = newTransList.Count;
 
+            //Going through the table and saving words/positions
             while (c1 > 0 && c2 > 0)
             {
-                if (str1List[c1 - 1].Equals(str2List[c2 - 1], StringComparison.InvariantCultureIgnoreCase))
+                if (oldTransList[c1 - 1].Equals(newTransList[c2 - 1], StringComparison.InvariantCultureIgnoreCase))
                 {
-                    longestCommonSub.Add(str1List[c1 - 1]);
+                    longestCommonSub.Add(oldTransList[c1 - 1]);
                     commonSubPosition1.Add(c1 - 1);
                     commonSubPosition2.Add(c2 - 1);
                     c1--;
