@@ -63,7 +63,7 @@ export class TranscriptionText extends React.Component<any, State> {
         let s = sel;
         let textArray = this.rawToCleansedHtml(this.state.displayText).split(s);
         let hTextArray = [];
-        if(textArray.length !=1) {
+        if(textArray.length !=1 && textArray.length !=0 && this.state.displayText.indexOf(s) != -1) {
             for( let i=0 ; i<textArray.length; i++ ){
                 hTextArray.push(textArray[i]);
                 if(i!=textArray.length-1){
@@ -73,14 +73,14 @@ export class TranscriptionText extends React.Component<any, State> {
                 }
                 
             }
+            let highlightedText = hTextArray.join("");
+            console.log("highlightedText = " + highlightedText);
+            console.log("cleansed highlightedText = " + this.rawToCleansedHtml(highlightedText));
+            this.setState({displayText: highlightedText});
         }
         else{
             //Do nothing since no words are highlighted
         }
-        let highlightedText = hTextArray.join("");
-        console.log("highlightedText = " + highlightedText);
-        console.log("cleansed highlightedText = " + this.rawToCleansedHtml(highlightedText));
-        this.setState({displayText: highlightedText});
     };
 
     public getHighlightedWords = (event: any) => {
