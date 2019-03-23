@@ -326,7 +326,7 @@ export default class Dashboard extends React.Component<any, State> {
                         </a>
                     </div>
 
-                    <section className="section column">
+                    <section className="section column tile-container">
                         <div className="search-div">
                             <div className="field is-horizontal mg-top-10">
                                 <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
