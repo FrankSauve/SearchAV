@@ -20,13 +20,13 @@ export default class Logout extends React.Component<any, State> {
 
     public onLogout = () => {
         auth.removeAuthToken();
-        this.setState({'redirectToHome': true})
+        this.setState({'redirectToHome': true});
     };
 
     public render() {
         return (
             <div>
-                <button className="button is-light" onClick={this.onLogout}>Logout</button>
+                <a className="dropdown-item" onClick={this.onLogout}>Quitter</a>
                 {this.state.redirectToHome ? <Redirect to="/"/> : null}
             </div>
             

@@ -43,14 +43,14 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetAllFilesById(string email)
         {
-            var files = await _context.File.Where(f => f.User.Email == email).ToListAsync();
+            var files = await _context.File.Where(f => f.User.Email == email).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
         public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
         {
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).ToListAsync();
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
