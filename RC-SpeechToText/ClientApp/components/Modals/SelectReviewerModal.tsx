@@ -24,7 +24,6 @@ export class SelectReviewerModal extends React.Component<any, State> {
         this.state = {
             users: [],
             fileId: "",
-            userEmail: "",
             reviewerEmail: "",
             errorMessage: "",
             showSuccessModal: false,
@@ -35,28 +34,8 @@ export class SelectReviewerModal extends React.Component<any, State> {
 
     // Called when the component gets rendered
     public componentDidMount() {
-        this.getUser();
         var id = window.location.href.split('/')[window.location.href.split('/').length - 1]; //Getting fileId from url
         this.setState({ fileId: id });
-    }
-
-    public getUser = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/user/getUserByEmail/' + auth.getEmail(), config)
-            .then(res => {
-                console.log("USER: " + res.data.email);
-                this.setState({ userEmail: res.data.email });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
     }
 
     public addReviewerToFile = () => {
@@ -75,7 +54,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     'content-type': 'application/json'
                 }
             }
-            axios.post('/api/file/AddReviewer/' + fileId + '/' + this.state.userEmail + '/' + reviewerEmail, config)
+            axios.post('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
                 .then(() => {
                     this.props.hideModal();
                     this.showSuccessModal();
