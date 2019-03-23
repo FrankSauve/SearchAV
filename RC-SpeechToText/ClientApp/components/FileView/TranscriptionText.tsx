@@ -52,15 +52,16 @@ export class TranscriptionText extends React.Component<any, State> {
 
     componentDidUpdate(prevProps : any, prevState : any) {
         // only call for the change in time if the data has changed
-        if (prevProps.selection !== this.props.selection) {
-            this.highlightWords();
+        if (this.props.textSearch && (prevProps.textSearch !== this.props.textSearch)) {
+            this.setState({displayText:this.rawToCleansedHtml(this.state.displayText)});
+            this.highlightWords(this.props.selection);
+            this.props.handleTextSearch(false);
         }
     }
     
-    public highlightWords = () =>{
-        //this.setState({displayText : this.rawToCleansedHtml(this.props.version.transcription)});
-        let s = "tribunaux";
-        let textArray = this.state.displayText.split(s);
+    public highlightWords = (sel: string) =>{
+        let s = sel;
+        let textArray = this.rawToCleansedHtml(this.state.displayText).split(s);
         let hTextArray = [];
         if(textArray.length !=1) {
             for( let i=0 ; i<textArray.length; i++ ){
@@ -115,8 +116,8 @@ export class TranscriptionText extends React.Component<any, State> {
 
     rawToCleansedHtml(text: string) {
         let a = this.rawToHtml(text);
-        a = a.replace(/<span[^>]+\>/i,'');
-        return a.replace(/<\/span>/i,'');
+        a = a.replace(/<span[^>]+\>/gi,'');
+        return a.replace(/<\/span>/gi,'');
     }
 
     rawToHtml(text: string) {

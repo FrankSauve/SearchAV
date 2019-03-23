@@ -31,7 +31,8 @@ interface State {
     showDropdown: boolean,
     loading: boolean,
     seekTime: string,
-    selection: string
+    selection: string,
+    textSearch: boolean
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -58,7 +59,8 @@ export default class FileView extends React.Component<any, State> {
             showDropdown: false,
             loading: false,
             seekTime: '0:00:00.00',
-            selection: ''
+            selection: '',
+            textSearch: false
         }
     }
 
@@ -189,6 +191,7 @@ export default class FileView extends React.Component<any, State> {
                 console.log(res.data);
                 this.handleSeekTime(res.data);
                 if(returnData){
+                    this.handleTextSearch(true);
                     return res.data;
                 }
             })
@@ -199,6 +202,10 @@ export default class FileView extends React.Component<any, State> {
     
     public handleSelectionChange = (sel : string) =>{
         this.setState({selection: sel});
+    };
+    
+    public handleTextSearch = (b: boolean) =>{
+        this.setState({textSearch: b});
     };
 
     public handleSeekTime = (time: string) => {
@@ -295,7 +302,13 @@ export default class FileView extends React.Component<any, State> {
                     </div>
 
                     <div className="column is-half mg-top-30">
-                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} handleSeekTime={this.handleSeekTime} searchTranscript={this.searchTranscript} /> : null}
+                        {this.state.version ? 
+                            <TranscriptionSearch 
+                                versionId={this.state.version.id} 
+                                handleSeekTime={this.handleSeekTime} 
+                                searchTranscript={this.searchTranscript} 
+                                selection={this.state.selection}
+                                handleSelectionChange={this.handleSelectionChange} /> : null}
                         {this.state.loading ?
                             <Loading />
                             : this.state.version && this.state.file && this.state.user ?
@@ -307,7 +320,9 @@ export default class FileView extends React.Component<any, State> {
                                         handleSeekTime={this.handleSeekTime}
                                         searchTranscript={this.searchTranscript}
                                         selection={this.state.selection}
-                                        handleSelectionChange={this.handleSelectionChange}/>
+                                        handleSelectionChange={this.handleSelectionChange}
+                                        textSearch={this.state.textSearch}
+                                        handleTextSearch={this.handleTextSearch}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}

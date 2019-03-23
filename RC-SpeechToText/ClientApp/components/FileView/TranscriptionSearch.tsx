@@ -20,11 +20,17 @@ export class TranscriptionSearch extends React.Component<any,State> {
             unauthorized: false
         }
     }
+    
+    public handleChange = (e: any) =>{
+        this.setState({searchTerms: e.target.value});
+    };
 
-    public handleSearch = (e: any) => {
-        this.setState({ searchTerms: e.target.value });
-        let a = this.props.searchTranscript(this.state.searchTerms, true);
-        this.setState({timestamps: a});
+    public handleSearch = () => {
+        if(this.state.searchTerms!='' && this.state.searchTerms != null){
+            this.props.handleSelectionChange(this.state.searchTerms);
+            let a = this.props.searchTranscript(this.props.selection, true);
+            this.setState({timestamps: a});
+        }
     };
 
     public render() {
@@ -32,7 +38,7 @@ export class TranscriptionSearch extends React.Component<any,State> {
             <div>
                 <div className="field is-horizontal">
                     <a className="button is-link mg-right-10" onClick={this.handleSearch}> Rechercher </a>
-                    <input className="input" type="text" placeholder="Your search terms" onChange={this.handleSearch} />
+                    <input className="input" type="text" placeholder="Your search terms" onChange={this.handleChange} />
                 </div>
                 {this.state.timestamps ?  <p> Résultats : {this.state.timestamps} </p> : null}
             </div>
