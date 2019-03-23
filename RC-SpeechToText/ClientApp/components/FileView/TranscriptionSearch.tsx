@@ -28,7 +28,7 @@ export class TranscriptionSearch extends React.Component<any,State> {
     public handleSearch = () => {
         if(this.state.searchTerms!='' && this.state.searchTerms != null){
             this.props.handleSelectionChange(this.state.searchTerms);
-            let a = this.props.searchTranscript(this.props.selection, true);
+            let a = this.props.searchTranscript(this.state.searchTerms, true);
             this.setState({timestamps: a});
         }
     };
