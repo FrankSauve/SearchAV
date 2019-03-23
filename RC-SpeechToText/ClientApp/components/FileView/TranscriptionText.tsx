@@ -30,6 +30,7 @@ export class TranscriptionText extends React.Component<any, State> {
     componentDidMount() {
         // Add event listener for a click anywhere in the page
         document.addEventListener('mouseup', this.getHighlightedWords);
+        document.addEventListener('mousedown', this.clearHighlights);
 
         // Add onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
@@ -38,10 +39,11 @@ export class TranscriptionText extends React.Component<any, State> {
             transcription.addEventListener('blur', this.handleBlur);
         }
     }
-
+    
     // Remove event listener
     componentWillUnmount() {
         document.removeEventListener('mouseup', this.getHighlightedWords);
+        document.addEventListener('mousedown', this.clearHighlights);
         // Remove onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
         if (transcription){
@@ -53,11 +55,15 @@ export class TranscriptionText extends React.Component<any, State> {
     componentDidUpdate(prevProps : any, prevState : any) {
         // only call for the change in time if the data has changed
         if (this.props.textSearch && (prevProps.textSearch !== this.props.textSearch)) {
-            this.setState({displayText:this.rawToCleansedHtml(this.state.displayText)});
+            this.clearHighlights();
             this.highlightWords(this.props.selection);
             this.props.handleTextSearch(false);
         }
     }
+    
+    public clearHighlights = () =>{
+        this.setState({displayText:this.rawToCleansedHtml(this.state.displayText)});
+    };
     
     public highlightWords = (sel: string) =>{
         let s = sel;
@@ -87,7 +93,6 @@ export class TranscriptionText extends React.Component<any, State> {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
         if (selectedWords && s) {
-
             this.props.handleSelectionChange(s.toString());
             //this.setState({selection: s.toString()});
 
