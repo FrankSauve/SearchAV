@@ -53,6 +53,12 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+        [HttpGet("[action]")]
+        public IActionResult Testing()
+        {
+            return Ok(ModifyTimeStampService.CommonWords());
+        }
+
         /// <summary>
         /// Returns timestamps of searched terms
         /// </summary>
