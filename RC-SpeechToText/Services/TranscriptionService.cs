@@ -149,10 +149,10 @@ namespace RC_SpeechToText.Services {
 
             //Ordered by position to get the words in the same order as transcript
             oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Position).ToListAsync();
-
+            var oldTranscript =  _context.Version.Where(v => v.Id == versionId).Select(v => v.Transcription).SingleOrDefault();
             //Modify timestamps and return the new words
             var modifyTimeStampService = new ModifyTimeStampService();
-            List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, newTranscript, newVersionId);
+            List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, oldTranscript, newTranscript, newVersionId);
 
             newWords.ForEach(async x =>
             {

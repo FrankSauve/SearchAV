@@ -7,16 +7,14 @@ namespace RC_SpeechToText.Services
 {
     public class ModifyTimeStampService
     {
-        public List<Word> ModifyTimestamps(List<Word> oldWords, string newTranscript, Guid newVersionId)
+        public List<Word> ModifyTimestamps(List<Word> oldWords, string oldTranscript, string newTranscript, Guid newVersionId)
         {
-			var newTranscriptNoBr = newTranscript
-				.Replace("<br>", " ")
-				.Split(" ")
-				.Select(str => str.Trim())
-				.Where(x => !string.IsNullOrEmpty(x))
-				.ToList();
-			
+
+            var longestCommonSequence = CommonWords(oldTranscript,newTranscript);
+
             List<Word> newWords = new List<Word>();
+
+            var newTranscriptNoBr = longestCommonSequence.newTranscriptionTerms;
 
             if (newTranscriptNoBr.Count == oldWords.Count)
             {
@@ -33,11 +31,8 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        static public List<string> CommonWords(string oldTranscript, string newTranscript)
+        private CommonSubsequence CommonWords(string oldTranscript, string newTranscript)
         {
-
-            var string1 = "su au bout du processus je suis un etre human vegan je suis un peu comme un superheros qui mange de la malbouffe";
-            var string2 = "su au bout du processus je edited un added added added suis un peu comme un superheros qui mange";
 
             var oldTransList = oldTranscript
                 .Replace("<br>", " ")
@@ -109,7 +104,13 @@ namespace RC_SpeechToText.Services
             commonSubPosition1.Reverse();
             commonSubPosition2.Reverse();
 
-            return longestCommonSub;
+            var commonSubsequenceInfo = new CommonSubsequence {
+                longestCommonSub = longestCommonSub,
+                oldTransPositions = commonSubPosition1,
+                newTransPosition = commonSubPosition2,
+                newTranscriptionTerms = newTransList
+            };
+            return commonSubsequenceInfo;
         }
 
         private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
