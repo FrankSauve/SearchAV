@@ -30,7 +30,6 @@ export class GridFileCard extends React.Component<any, State> {
     }
 
     public render() {
-        console.log(this.props.file)
         return (
             <div className="column is-3">
                 <div className="card fileCard">
