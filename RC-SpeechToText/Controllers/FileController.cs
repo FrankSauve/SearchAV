@@ -131,8 +131,8 @@ namespace RC_SpeechToText.Controllers
 
             return Ok(file.File);
         }
-
-        [HttpPost("[action]/{fileId}/{reviewerEmail}")]
+        
+        [HttpGet("[action]/{fileId}/{reviewerEmail}")]
         public async Task<IActionResult> AddReviewer(Guid fileId, string reviewerEmail)
         {
             var emailClaim = HttpContext.User.Claims;

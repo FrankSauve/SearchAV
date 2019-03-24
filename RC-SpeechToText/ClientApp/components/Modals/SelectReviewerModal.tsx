@@ -8,7 +8,6 @@ import { ChangeEvent } from 'react';
 interface State {
     users: any[],
     fileId: any,
-    userEmail: any,
     reviewerEmail: string,
     errorMessage: string,
     showSuccessModal: boolean,
@@ -53,8 +52,8 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
                     'content-type': 'application/json'
                 }
-            }
-            axios.post('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
+            };
+            axios.get('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
                 .then(() => {
                     this.props.hideModal();
                     this.showSuccessModal();

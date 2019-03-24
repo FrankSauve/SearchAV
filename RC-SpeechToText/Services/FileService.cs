@@ -113,8 +113,8 @@ namespace RC_SpeechToText.Services
 		public async Task<FileDTO> AddReviewer(Guid fileId, string userEmail, string reviewerEmail)
 		{
 
-            var file = await _context.File.Where(f => f.Id == fileId).Include(q => q.User).Include(q => q.Reviewer).FirstOrDefaultAsync();
-            var reviewer = file.Reviewer;
+            var file = await _context.File.Where(f => f.Id == fileId).Include(q => q.User).FirstOrDefaultAsync();
+            var reviewer = await _context.User.Where(u => u.Email == reviewerEmail).FirstOrDefaultAsync();
 
 			if (reviewer != null)
 			{

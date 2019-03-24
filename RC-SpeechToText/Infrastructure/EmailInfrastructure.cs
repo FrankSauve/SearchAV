@@ -48,7 +48,7 @@ namespace RC_SpeechToText.Infrastructure
 
                     mail.To.Add(new MailAddress(email));
                     mail.IsBodyHtml = true;
-                    mail.Subject = "Demande de révision envoyé pour fichier " + file.Title;
+                    mail.Subject = "Demande de révision envoyé pour le fichier " + file.Title;
                     body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
                     mail.Body = "Révision demandé par " + username + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
                     smtp.Send(mail);
