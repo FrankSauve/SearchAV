@@ -54,9 +54,7 @@ namespace RC_SpeechToText.Services
 
 			var words = await CreateWords(convertedFileLocation);
 
-            //Get the duration of the file before deleting it
-            //var duration = streamIO.getDuration(convertedFileLocation); 
-
+            //Get the duration of the file
             var duration = GetSoundLength(filePath); 
 
             // Delete the converted file
@@ -84,7 +82,7 @@ namespace RC_SpeechToText.Services
 				DateAdded = DateTime.Now,
 				Type = fileType,
 				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
-                //Duration = duration
+                Duration = duration
             };
 			await _context.File.AddAsync(file);
 			await _context.SaveChangesAsync();
@@ -120,7 +118,8 @@ namespace RC_SpeechToText.Services
 			return version;
 		}
 
-        public static string GetSoundLength(string fileName)
+        //this method gets the duration of the file and formats it to hh:mm:ss. 
+        private string GetSoundLength(string fileName)
         {
             ShellFile so = ShellFile.FromFilePath(fileName);
             double.TryParse(so.Properties.System.Media.Duration.Value.ToString(), out double nanoseconds);
