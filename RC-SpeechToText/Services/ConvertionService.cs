@@ -7,8 +7,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using RC_SpeechToText.Infrastructure;
-using System.Text;
-using System.Runtime.InteropServices;
+using Microsoft.WindowsAPICodePack.Shell;
+
 
 namespace RC_SpeechToText.Services
 {
@@ -57,7 +57,7 @@ namespace RC_SpeechToText.Services
             //Get the duration of the file before deleting it
             //var duration = streamIO.getDuration(convertedFileLocation); 
 
-            var duration = GetSoundLength(convertedFileLocation); 
+            var duration = GetSoundLength(filePath); 
 
             // Delete the converted file
             streamIO.DeleteFile(convertedFileLocation);
@@ -120,24 +120,15 @@ namespace RC_SpeechToText.Services
 			return version;
 		}
 
-        [DllImport("winmm.dll")]
-        private static extern uint MciSendString(
-            string command,
-            StringBuilder returnValue,
-            int returnLength,
-            IntPtr winHandle);
-
-        public static int GetSoundLength(string fileName)
+        public static string GetSoundLength(string fileName)
         {
-            StringBuilder lengthBuf = new StringBuilder(32);
+            ShellFile so = ShellFile.FromFilePath(fileName);
+            double.TryParse(so.Properties.System.Media.Duration.Value.ToString(), out double nanoseconds);
+            var milliseconds = (nanoseconds * 0.0001);
+            TimeSpan ts = TimeSpan.FromMilliseconds(milliseconds);
+            var duration = ts.ToString(@"hh\:mm\:ss");
 
-            MciSendString(string.Format("open \"{0}\" type waveaudio alias wave", fileName), null, 0, IntPtr.Zero);
-            MciSendString("status wave length", lengthBuf, lengthBuf.Capacity, IntPtr.Zero);
-            MciSendString("close wave", null, 0, IntPtr.Zero);
-
-            int.TryParse(lengthBuf.ToString(), out int length);
-
-            return length;
+            return duration; 
         }
 
         private string CreateTranscription(List<Word> words)

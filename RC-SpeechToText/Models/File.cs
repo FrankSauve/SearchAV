@@ -16,7 +16,7 @@ namespace RC_SpeechToText.Models
         public User Reviewer { get; set; }
         public string Description { get; set; }
         public string ThumbnailPath { get; set; }
-        public TimeSpan Duration { get; set; }
+        public string Duration { get; set; }
     }
 
     public enum FileFlag
