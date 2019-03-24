@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
-using NReco.VideoInfo; 
+//using NReco.VideoInfo;
 
 namespace RC_SpeechToText.Infrastructure
 {
@@ -60,18 +60,19 @@ namespace RC_SpeechToText.Infrastructure
 			File.Delete(path);
 		}
 
-        public TimeSpan getDuration(string path)
-        {
-            var ffProbe = new NReco.VideoInfo.FFProbe();
+        //public TimeSpan getDuration(string path)
+        //{
+        //    var ffProbe = new NReco.VideoInfo.FFProbe();
 
-            var test = File.Exists(path);
-        
-            var videoInfo = ffProbe.GetMediaInfo(path);
+        //    var test = File.Exists(path);
 
-            return videoInfo.Duration;
-        }
+        //    var videoInfo = ffProbe.GetMediaInfo(path);
 
-		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
+        //    return videoInfo.Duration;
+        //}
+
+
+        public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
 		{
 			TextWriter tw = new StreamWriter(GetPathFromDirectory(@"\wwwroot\assets\Audio\" + fileTitle + ".srt"));
 

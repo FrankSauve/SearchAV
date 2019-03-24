@@ -7,6 +7,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using RC_SpeechToText.Infrastructure;
+using System.Text;
+using System.Runtime.InteropServices;
 
 namespace RC_SpeechToText.Services
 {
@@ -53,7 +55,9 @@ namespace RC_SpeechToText.Services
 			var words = await CreateWords(convertedFileLocation);
 
             //Get the duration of the file before deleting it
-            var duration = streamIO.getDuration(convertedFileLocation); 
+            //var duration = streamIO.getDuration(convertedFileLocation); 
+
+            var duration = GetSoundLength(convertedFileLocation); 
 
             // Delete the converted file
             streamIO.DeleteFile(convertedFileLocation);
@@ -80,7 +84,7 @@ namespace RC_SpeechToText.Services
 				DateAdded = DateTime.Now,
 				Type = fileType,
 				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
-                Duration = duration
+                //Duration = duration
             };
 			await _context.File.AddAsync(file);
 			await _context.SaveChangesAsync();
@@ -116,7 +120,27 @@ namespace RC_SpeechToText.Services
 			return version;
 		}
 
-		private string CreateTranscription(List<Word> words)
+        [DllImport("winmm.dll")]
+        private static extern uint MciSendString(
+            string command,
+            StringBuilder returnValue,
+            int returnLength,
+            IntPtr winHandle);
+
+        public static int GetSoundLength(string fileName)
+        {
+            StringBuilder lengthBuf = new StringBuilder(32);
+
+            MciSendString(string.Format("open \"{0}\" type waveaudio alias wave", fileName), null, 0, IntPtr.Zero);
+            MciSendString("status wave length", lengthBuf, lengthBuf.Capacity, IntPtr.Zero);
+            MciSendString("close wave", null, 0, IntPtr.Zero);
+
+            int.TryParse(lengthBuf.ToString(), out int length);
+
+            return length;
+        }
+
+        private string CreateTranscription(List<Word> words)
 		{
 			string transcription = "";
 			foreach (var word in words)
