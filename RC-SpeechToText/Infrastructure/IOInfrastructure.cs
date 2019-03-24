@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.IO;
+using System;
+using NReco.VideoInfo; 
 
 namespace RC_SpeechToText.Infrastructure
 {
@@ -57,6 +59,17 @@ namespace RC_SpeechToText.Infrastructure
 		{
 			File.Delete(path);
 		}
+
+        public TimeSpan getDuration(string path)
+        {
+            var ffProbe = new NReco.VideoInfo.FFProbe();
+
+            var test = File.Exists(path);
+        
+            var videoInfo = ffProbe.GetMediaInfo(path);
+
+            return videoInfo.Duration;
+        }
 
 		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
 		{

@@ -52,8 +52,11 @@ namespace RC_SpeechToText.Services
 
 			var words = await CreateWords(convertedFileLocation);
 
-			// Delete the converted file
-			streamIO.DeleteFile(convertedFileLocation);
+            //Get the duration of the file before deleting it
+            var duration = streamIO.getDuration(convertedFileLocation); 
+
+            // Delete the converted file
+            streamIO.DeleteFile(convertedFileLocation);
 
 			if (words == null)
 			{
@@ -77,7 +80,7 @@ namespace RC_SpeechToText.Services
 				DateAdded = DateTime.Now,
 				Type = fileType,
 				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
-                Duration = audioFile.Length
+                Duration = duration
             };
 			await _context.File.AddAsync(file);
 			await _context.SaveChangesAsync();
