@@ -113,7 +113,7 @@ namespace RC_SpeechToText.Services
 		public async Task<FileDTO> AddReviewer(Guid fileId, string userEmail, string reviewerEmail)
 		{
 
-            var file = await _context.File.Where(f => f.Id == fileId).Include(q => q.User).FirstOrDefaultAsync();
+            var file = await _context.File.Where(f => f.Id == fileId).FirstOrDefaultAsync();
             var reviewer = await _context.User.Where(u => u.Email == reviewerEmail).FirstOrDefaultAsync();
 
 			if (reviewer != null)
@@ -122,9 +122,9 @@ namespace RC_SpeechToText.Services
                 await _context.SaveChangesAsync();
 
                 //Send email to reviewer
-                var uploader = file.User;
+                var askingUser = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
                 var emailSerice = new EmailInfrastructure();
-                emailSerice.SendReviewAskedEmail(reviewer.Email, file, uploader.Name);
+                emailSerice.SendReviewAskedEmail(reviewer.Email, file, askingUser.Name);
 
                 return new FileDTO { File = file, Error = null };
             }

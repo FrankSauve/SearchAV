@@ -48,9 +48,9 @@ namespace RC_SpeechToText.Infrastructure
 
                     mail.To.Add(new MailAddress(email));
                     mail.IsBodyHtml = true;
-                    mail.Subject = "Demande de révision envoyé pour le fichier " + file.Title;
+                    mail.Subject = "Demande de révision envoyée pour le fichier " + file.Title;
                     body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
-                    mail.Body = "Révision demandé par " + username + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
+                    mail.Body = "Révision demandée par " + username + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
                     smtp.Send(mail);
                     smtp.Dispose();
                 }
@@ -78,9 +78,9 @@ namespace RC_SpeechToText.Infrastructure
 
 					mail.To.Add(new MailAddress(email));
 					mail.IsBodyHtml = true;
-					mail.Subject = "Révision terminer pour fichier " + file.Title;
+					mail.Subject = "Révision terminée pour le fichier " + file.Title;
 					body.AppendLine("<a href='http://localhost:59723/FileView/" + file.Id + "'>" + file.Title + "</a><br />");
-					mail.Body = "Révision complètez par " + reviewer + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
+					mail.Body = "Révision complètée par " + reviewer + "." + "<br />" + "Cliquez sur ce lien pour accèder au fichier: " + "<br />" + body.ToString();
 					smtp.Send(mail);
 					smtp.Dispose();
 				}
