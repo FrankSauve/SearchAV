@@ -11,10 +11,15 @@ namespace RC_SpeechToText.Services
         {
 
             var longestCommonSequence = CommonWords(oldTranscript,newTranscript);
+            var newWords2 = CreateNewWords(oldWords, longestCommonSequence.newTranscriptionTerms,
+                longestCommonSequence.newTransPosition, longestCommonSequence.oldTransPositions, newVersionId);
 
+
+            //Old logic to be deleted after implementation of new save algorithm
             List<Word> newWords = new List<Word>();
 
             var newTranscriptNoBr = longestCommonSequence.newTranscriptionTerms;
+
 
             if (newTranscriptNoBr.Count == oldWords.Count)
             {
@@ -113,6 +118,24 @@ namespace RC_SpeechToText.Services
             return commonSubsequenceInfo;
         }
 
+        private List<Word> CreateNewWords(List<Word> oldWords, List<string> newTransTerms, List<int> newTransPos, List<int> oldTransPos, Guid newVersionId)
+        {
+            List<Word> newWords = new List<Word>();
+            var counter = 0;
+            for (int i = 0; i<newTransTerms.Count; i++)
+            {
+                //Keeping info from kept words
+                if (counter < newTransPos.Count && i == newTransPos[counter])
+                {
+                    var oldWord = oldWords[oldTransPos[counter]];
+                    newWords.Add(new Word { Term = oldWord.Term, Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
+                    counter++;
+                }
+                
+            }
+
+            return newWords;
+        }
         private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
