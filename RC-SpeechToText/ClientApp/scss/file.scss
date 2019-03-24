@@ -32,10 +32,26 @@
     color: #9ef5c3;
 }
 
-.file-box {
-    height: 620px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+// Laptop screen
+@media only screen and (max-width: 1400px){
+    .file-box {
+        height: 620px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+}
+
+// Desktop screen
+@media only screen and (min-width: 1400px){
+    .file-box {
+        height: 800px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+}
+
+.dropdown-item {
+    padding-right: 0rem !important;
 }
 
 .transcription {
@@ -48,7 +64,6 @@
     background-color: $link;
     left: 360px;
     height: 60px;
-    width: 899px;
 }
 
 .search-title{
