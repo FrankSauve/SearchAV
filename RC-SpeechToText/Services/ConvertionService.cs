@@ -55,7 +55,7 @@ namespace RC_SpeechToText.Services
 			var words = await CreateWords(convertedFileLocation);
 
             //Get the duration of the file
-            var duration = GetSoundLength(filePath); 
+            var duration = GetFileDuration(filePath); 
 
             // Delete the converted file
             streamIO.DeleteFile(convertedFileLocation);
@@ -119,7 +119,7 @@ namespace RC_SpeechToText.Services
 		}
 
         //this method gets the duration of the file and formats it to hh:mm:ss. 
-        private string GetSoundLength(string fileName)
+        private string GetFileDuration(string fileName)
         {
             ShellFile so = ShellFile.FromFilePath(fileName);
             double.TryParse(so.Properties.System.Media.Duration.Value.ToString(), out double nanoseconds);
