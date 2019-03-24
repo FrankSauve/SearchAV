@@ -115,6 +115,8 @@ export default class FileInput extends React.Component<any, State> {
 
     onDrop = (e: any) => {
         e.preventDefault();
+        this.setState({ file: e.dataTransfer.files[0] })
+        this.setState({ showAddDescription: true });
     }
 
 
