@@ -64,13 +64,13 @@ export class TranscriptionText extends React.Component<any, State> {
     
     // remove all span tags from the page
     public clearHighlights = () =>{
-        this.setState({displayText:this.rawToCleansedHtml(this.state.displayText)});
+        this.setState({displayText:this.rawToUnspannedHtml(this.state.displayText)});
     };
     
     // Highlights occurences of a string sel by inserting span tags into the displayText
     public highlightWords = (sel: string) =>{
         let s = sel;
-        let textArray = this.rawToCleansedHtml(this.state.displayText).split(s);
+        let textArray = this.rawToUnspannedHtml(this.state.displayText).split(s);
         let hTextArray = [];
         // Iterate over the array of strings gathered from splitting based on sel, and insert span tags between them
         if(textArray.length !=1 && textArray.length !=0 && this.state.displayText.indexOf(s) != -1) {
@@ -118,11 +118,11 @@ export class TranscriptionText extends React.Component<any, State> {
         }
     };
 
-    // removes all br and span tags from a string
-    rawToCleansedHtml(text: string) {
-        let a = this.rawToHtml(text);
-        a = a.replace(/<span[^>]+\>/gi,'');
-        return a.replace(/<\/span>/gi,'');
+    // removes all span tags from a string
+    rawToUnspannedHtml(text: string) {
+        let a = text;
+        a = a.replace(/<span[^>]+\>/g,'');
+        return a.replace(/<\/span>/g,'');
     }
 
     // removes all br tags from a string
