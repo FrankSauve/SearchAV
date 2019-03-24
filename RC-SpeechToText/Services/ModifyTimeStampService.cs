@@ -122,6 +122,7 @@ namespace RC_SpeechToText.Services
         {
             List<Word> newWords = new List<Word>();
             var counter = 0;
+            var counterEdited = 1;
             for (int i = 0; i<newTransTerms.Count; i++)
             {
                 //Keeping info from kept words
@@ -130,8 +131,16 @@ namespace RC_SpeechToText.Services
                     var oldWord = oldWords[oldTransPos[counter]];
                     newWords.Add(new Word { Term = oldWord.Term, Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
                     counter++;
+                    counterEdited = 1;
                 }
-                
+                //Next three else/if handle when words have been replaced by other words
+                else if (counter > 0 && counter < (newTransPos.Count) && (newTransPos[counter] - newTransPos[counter-1]) > 1 && (newTransPos[counter] - newTransPos[counter-1]) == (oldTransPos[counter] - oldTransPos[counter-1]))
+                {
+                    var oldWord = oldWords[oldTransPos[counter-1]+counterEdited];
+                    newWords.Add(new Word { Term = newTransTerms[i], Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
+                    counterEdited++;
+                }
+
             }
 
             return newWords;
