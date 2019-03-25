@@ -7,6 +7,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using RC_SpeechToText.Infrastructure;
+using Microsoft.WindowsAPICodePack.Shell;
+
 
 namespace RC_SpeechToText.Services
 {
@@ -52,8 +54,11 @@ namespace RC_SpeechToText.Services
 
 			var words = await CreateWords(convertedFileLocation);
 
-			// Delete the converted file
-			streamIO.DeleteFile(convertedFileLocation);
+            //Get the duration of the file
+            var duration = GetFileDuration(filePath); 
+
+            // Delete the converted file
+            streamIO.DeleteFile(convertedFileLocation);
 
 			if (words == null)
 			{
@@ -77,8 +82,8 @@ namespace RC_SpeechToText.Services
 				DateAdded = DateTime.Now,
 				Type = fileType,
 				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
-				//Description = "" 
-			};
+                Duration = duration
+            };
 			await _context.File.AddAsync(file);
 			await _context.SaveChangesAsync();
 
@@ -113,7 +118,19 @@ namespace RC_SpeechToText.Services
 			return version;
 		}
 
-		private string CreateTranscription(List<Word> words)
+        //this method gets the duration of the file and formats it to hh:mm:ss. 
+        private string GetFileDuration(string fileName)
+        {
+            ShellFile so = ShellFile.FromFilePath(fileName);
+            double.TryParse(so.Properties.System.Media.Duration.Value.ToString(), out double nanoseconds);
+            var milliseconds = (nanoseconds * 0.0001);
+            TimeSpan ts = TimeSpan.FromMilliseconds(milliseconds);
+            var duration = ts.ToString(@"hh\:mm\:ss");
+
+            return duration; 
+        }
+
+        private string CreateTranscription(List<Word> words)
 		{
 			string transcription = "";
 			foreach (var word in words)

@@ -5,6 +5,7 @@ import { DropdownButton} from '../DropdownButton';
 interface State {
     title: string,
     description: string,
+    duration: string, 
     modifiedTitle: string,
     newDescription: string,
     flag: string,
@@ -17,6 +18,7 @@ export class GridFileCard extends React.Component<any, State> {
         this.state = {
             title: this.props.title,
             description: this.props.description,
+            duration: this.props.duration, 
             modifiedTitle: "",
             newDescription: "",
             flag: this.props.flag,
@@ -51,9 +53,12 @@ export class GridFileCard extends React.Component<any, State> {
                         <div className="hovereffect">
                             <figure className="image is-16by9">
                                 <img src={this.props.image} alt="Placeholder image" />
+                                <div className="time-on-thumbnail-rectangle">
+                                    <p className="time-on-thumbnail-police">{this.state.duration}</p>
+                                </div>
                                 <div className="overlay">
                                     <Link className="info" to={`/FileView/${this.props.file.id}`}>View/Edit</Link>
-                                </div>
+                                </div>                                
                             </figure>
                         </div>
                     </div>
