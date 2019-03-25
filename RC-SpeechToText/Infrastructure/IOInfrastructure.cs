@@ -58,7 +58,7 @@ namespace RC_SpeechToText.Infrastructure
 			File.Delete(path);
 		}
 
-		public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
+        public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
 		{
 			TextWriter tw = new StreamWriter(GetPathFromDirectory(@"\wwwroot\assets\Audio\" + fileTitle + ".srt"));
 

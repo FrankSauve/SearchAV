@@ -45,6 +45,7 @@ export default class ListTable extends React.Component<any, State>
 
                 <table className='table is-fullwidth'>
                     <th>TITRE</th>
+                    <th>DUREE</th>
                     <th>IMPORTE PAR</th>
                     <th>DATE DE MODIFICATION</th>
                     <th></th>
@@ -63,6 +64,7 @@ export default class ListTable extends React.Component<any, State>
                                         transcription={file.transcription != null ? file.transcription.length > 100 ? file.transcription.substring(0, 100) + "..." : file.transcription : null}
                                     />
                                 </td>
+                                <td>{file.duration}</td>
                                 <td>{this.state.usernames[i]}</td>
                                 <td>{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
                                 <td>
