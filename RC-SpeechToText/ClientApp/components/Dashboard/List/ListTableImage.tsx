@@ -48,22 +48,27 @@ export default class ListTableImage extends React.Component<any, State>
         return text.replace(/<br\s*[\/]?>/gi, " ");
     }
 
+    removeExtension(title: string) {
+        var titleNoExtension = title.lastIndexOf('.') != -1 ? title.substring(0, title.lastIndexOf('.')) : title;
+        return titleNoExtension;
+    }
+
     public render() {
         return (
             <div>
                 <article className='media'>
                     <figure className="media-left">
-                        <p className='image is-96x96'>
+                        <p className='image is-96x96 list-view-image'>
                             <a href={`/FileView/${this.props.fileId}`}><img src={this.props.thumbnailPath} alt="Placeholder image"></img></a>
 
                         </p>
                     </figure>
                     <div className="media-content">
                         <p>
-                            <strong>{this.props.title}</strong> <small className={`tag is-rounded flag ${this.props.flag.indexOf("A") == 0 ? "is-danger" : this.props.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.props.flag.toUpperCase()}</small>
+                            <strong className="title-list-view">{this.removeExtension(this.props.title)}</strong> <small className={`tag is-rounded flag ${this.props.flag.indexOf("A") == 0 ? "is-danger" : this.props.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.props.flag.toUpperCase()}</small>
                             <br />
                             <br />
-                            <p className="transcription">{this.props.description ? this.rawToWhiteSpace(this.props.description) : this.state.transcription.length > 100 ? this.rawToWhiteSpace(this.state.transcription.substring(0, 100)) + " ..." : this.rawToWhiteSpace(this.state.transcription)}</p>
+                            <p className="transcription-list-view">{this.props.description ? this.rawToWhiteSpace(this.props.description) : this.state.transcription.length > 100 ? this.rawToWhiteSpace(this.state.transcription.substring(0, 100)) + " ..." : this.rawToWhiteSpace(this.state.transcription)}</p>
                         </p>
                     </div>
                 </article>

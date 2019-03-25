@@ -116,6 +116,13 @@ html, body {
     font-size: 2em;
 }
 
+th {
+    font-family: Roboto;
+    font-size: 14px;
+    color: $link;
+    text-align: left;
+}
+
 .highlight-text {
   overflow-y: auto;
   overflow-x: hidden;

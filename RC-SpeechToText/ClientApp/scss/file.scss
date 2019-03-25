@@ -33,8 +33,24 @@
     color: #9ef5c3;
 }
 
+.title-list-view {
+    font-family: Roboto;
+    font-size: 14px;
+    color: $link;
+    text-align: left;
+}
+
+.list-table-image{
+    width: 50%;
+}
+
+.list-view-image {
+    height: 45px;
+    width: 78px;
+}
+
 // Laptop screen
-@media only screen and (max-width: 1400px){
+@media only screen and (max-width: 1400px) {
     .file-box {
         height: 620px;
         overflow-y: scroll;
@@ -60,6 +76,45 @@
     color: $link;
     height: 156px;
     line-height: 16px;
+}
+
+.list-view-cell{
+    height:60px;
+}
+
+.transcription-list-view {
+    font-size: 12px;
+    color: $link;
+    line-height: 16px;
+    height: 35px;
+    width: 90%;
+    margin-top: -18px;
+    font-family: Roboto;
+}
+
+.list-view-username {
+    width: 14%;
+    font-family: Roboto;
+    font-size: 14px;
+    color: $link;
+    text-align: left;
+    line-height: 20px;
+}
+
+.list-view-duration {
+    font-family: Roboto;
+    font-size: 13px;
+    color: $link;
+    text-align: left;
+    line-height: 20px;
+}
+
+.list-view-date {
+    font-family: Roboto;
+    font-size: 13px;
+    color: $link;
+    text-align: left;
+    line-height: 20px;
 }
 
 .search-div {
