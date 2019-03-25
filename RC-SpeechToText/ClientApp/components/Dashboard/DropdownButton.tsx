@@ -296,16 +296,23 @@ export class DropdownButton extends React.Component<any, State> {
                     <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                         <div className="dropdown-content">
                             <a className="dropdown-item" onClick={this.showTitleModal}>
+                                <i className="fas fa-edit mg-right-5"></i>
                                 Modifier le titre
-                                    </a>
-                            <a className="dropdown-item" onClick={this.deleteWords}>
-                                Effacer le fichier
-                                    </a>
+                            </a>
+
                             {this.props.description ? <a className="dropdown-item" onClick={this.showDescriptionModal}>
+                                <i className="fas fa-edit mg-right-5"></i>
                                 Modifier la description
-                                    </a> : <a className="dropdown-item" onClick={this.showDescriptionModal}>
-                                    Ajouter une description
-                                    </a>}
+                                </a> : <a className="dropdown-item" onClick={this.showDescriptionModal}>
+                                <i className="fas fa-plus-square mg-right-5"></i>
+                                Ajouter une description
+                                </a>}
+
+                            <a className="dropdown-item" onClick={this.deleteWords}>
+                                <i className="fa fa-trash mg-right-5" aria-hidden="true"></i>
+                                Effacer le fichier
+                            </a>
+                            
                         </div>
                     </div>
                 </div>

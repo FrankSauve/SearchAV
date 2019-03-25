@@ -43,14 +43,14 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetAllFilesById(string email)
         {
-            var files = await _context.File.Where(f => f.User.Email == email).ToListAsync();
+            var files = await _context.File.Where(f => f.User.Email == email).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
         public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
         {
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).ToListAsync();
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
@@ -110,16 +110,22 @@ namespace RC_SpeechToText.Services
             }
         }
 
-		public async Task<FileDTO> AddReviewer(Guid fileId, string reviewerEmail)
+		public async Task<FileDTO> AddReviewer(Guid fileId, string userEmail, string reviewerEmail)
 		{
-			var user = await _context.User.Where(x => x.Email == reviewerEmail).SingleOrDefaultAsync();
 
-			if (user != null)
+            var file = await _context.File.Where(f => f.Id == fileId).FirstOrDefaultAsync();
+            var reviewer = await _context.User.Where(u => u.Email == reviewerEmail).FirstOrDefaultAsync();
+
+			if (reviewer != null)
 			{
-				var file = _context.File.Find(fileId);
-				file.ReviewerId = user.Id;
-
+				file.ReviewerId = reviewer.Id;
                 await _context.SaveChangesAsync();
+
+                //Send email to reviewer
+                var askingUser = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+                var emailSerice = new EmailInfrastructure();
+                emailSerice.SendReviewAskedEmail(reviewer.Email, file, askingUser.Name);
+
                 return new FileDTO { File = file, Error = null };
             }
 			else

@@ -10,6 +10,8 @@ interface State {
     errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
+    hideBurnSubtitleRadioButton: boolean,
+    burnVideoInput: boolean,
     unauthorized: boolean,
     documentOption: string
 }
@@ -23,6 +25,8 @@ export class ExportModal extends React.Component<any, State> {
             errorMessage: "",
             showSuccessModal: false,
             showErrorModal: false,
+            hideBurnSubtitleRadioButton: true,
+            burnVideoInput: false,
             unauthorized: false,
             documentOption: ""
         }
@@ -30,6 +34,16 @@ export class ExportModal extends React.Component<any, State> {
 
     public handleOptionChange = (e: ChangeEvent<HTMLSelectElement>) => {
         this.setState({ documentOption: e.target.value });
+        if (e.target.value == "video") {
+            this.setState({ hideBurnSubtitleRadioButton: false });
+        }
+        else {
+            this.setState({ hideBurnSubtitleRadioButton: true });
+        }
+    }
+
+    public handleBurnVideoChange = (e: ChangeEvent<HTMLInputElement>) => {
+        this.setState({ burnVideoInput: e.target.checked });
     }
 
     public showSuccessModal = () => {
@@ -58,6 +72,9 @@ export class ExportModal extends React.Component<any, State> {
     public saveDocument = () => {
         var fileId = this.state.fileId;
         var exportSelected = this.state.documentOption;
+
+        if (this.state.burnVideoInput && this.state.documentOption == "video")
+            exportSelected += "burn"
 
         if (fileId != "" && exportSelected != "" && exportSelected != "0") {
             const config = {
@@ -117,9 +134,10 @@ export class ExportModal extends React.Component<any, State> {
                                     <option value="doc">.DOC</option>
                                     <option value="srt">.SRT</option>
                                     <option value="googleDoc">Google Doc</option>
+                                    <option value="video">Video</option>
                                  </select>
                             </div>
-                            <input type="checkbox" value="dw" className="mg-right-5"></input><span>Incrustrer les sous-titres sur la vidéo</span>
+                            <input type="checkbox" value="burn" className="mg-right-5" onChange={this.handleBurnVideoChange} hidden={this.state.hideBurnSubtitleRadioButton}></input><span hidden={this.state.hideBurnSubtitleRadioButton}>Incrustrer les sous-titres sur la vidéo</span>
                     </section>
                         <footer className="modalFooter">
                             <button className="button is-success pull-right" onClick={this.saveDocument}>Confirmer</button>

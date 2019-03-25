@@ -28,10 +28,10 @@ namespace RC_SpeechToText.Controllers
 		/// </summary>
 		/// <returns>GoogleResult</returns>
 		[HttpPost("[action]")]
-		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail)
+		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile)
 		{
 			
-				var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail);
+				var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, descriptionFile);
 				if(version == null)
 				{
                     throw new ControllerExceptions("Une erreur s'est produite lors de la transcription"); 

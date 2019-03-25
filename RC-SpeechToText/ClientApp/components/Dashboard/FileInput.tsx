@@ -4,12 +4,15 @@ import auth from '../../Utils/auth';
 import Loading from '../Loading';
 import { ErrorModal } from '../Modals/ErrorModal';
 import { SuccessModal } from '../Modals/SuccessModal';
+import { AddDescriptionModal } from '../Modals/AddDescriptionModal';
 
 
 interface State {
     file: any,
     loading: boolean,
     unauthorized: boolean,
+    descriptionFile: string,
+    showAddDescription: boolean,
     showSuccessTranscribe: boolean,
     showErrorTranscribe: boolean,
     descriptionErrorTranscribe: string
@@ -23,6 +26,8 @@ export default class FileInput extends React.Component<any, State> {
             file: null,
             loading: false,
             unauthorized: false,
+            descriptionFile: "",
+            showAddDescription: false, 
             showSuccessTranscribe: false,
             showErrorTranscribe: false,
             descriptionErrorTranscribe: ""
@@ -33,6 +38,19 @@ export default class FileInput extends React.Component<any, State> {
     public toggleLoad = () => {
         (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
+
+    public showAddDescription = (e: any) => {
+        this.setState({ file: e.target.files[0] });
+        this.setState({ showAddDescription: true });
+    } 
+
+    public hideAddDescription = () => {
+        this.setState({ showAddDescription: false }); 
+    }
+
+    public handleDescriptionChange = (event: any) => {
+        this.setState({ descriptionFile: event.target.value });
+    }
 
     public showSuccessModal = () => {
         this.setState({ showSuccessTranscribe: true });
@@ -52,15 +70,16 @@ export default class FileInput extends React.Component<any, State> {
         this.setState({ descriptionErrorTranscribe: "" });
     }
 
-    public getGoogleSample = (e:any) => {
+    public getGoogleSample = () => { 
+
+        this.hideAddDescription(); 
 
         this.toggleLoad();
 
-        this.setState({file: e.target.files[0]});
-
         const formData = new FormData();
-        formData.append('audioFile', e.target.files[0]);
+        formData.append('audioFile', this.state.file);
         formData.append('userEmail', auth.getEmail()!);
+        formData.append('descriptionFile', this.state.descriptionFile); 
 
         const config = {
             headers: {
@@ -89,7 +108,7 @@ export default class FileInput extends React.Component<any, State> {
     public render() {
         
         return (
-            <div className="column mg-top-30">
+            <div className="column mg-top-30 no-padding">
                 <ErrorModal
                     showModal={this.state.showErrorTranscribe}
                     hideModal={this.hideErrorModal}
@@ -102,19 +121,26 @@ export default class FileInput extends React.Component<any, State> {
                     title={"Importation Réussie!"}
                     successMessage="La transcription de votre fichier a été effectué avec succès. Vous recevrez un courriel dans quelques instants."
                 />
+
+                <AddDescriptionModal
+                    showModal={this.state.showAddDescription}
+                    hideModal={this.hideAddDescription}
+                    handleDescriptionChange={this.handleDescriptionChange}
+                    onSubmit={this.getGoogleSample}
+                />
+
                 <div className="file is-boxed has-name">
-                    <label className="file-label">
-                        <input className="file-input" type="file" name="File" onChange={this.getGoogleSample}/>
-                        <span className="file-cta">
+                    <label className="file-label no-padding">
+                        <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
+                        <span className="file-cta no-border">
                             <span className="file-icon">
-                                <i className="fas fa-upload"></i>
+                                <i className="fas fa-cloud-upload-alt"></i>
                             </span>
                             {this.state.loading ? <Loading/> : 
                                 <span className="file-label">
-                                    <br/>
-                                    Ajouter un fichier...
-                                    <br/>
-                                    <br/>
+                                    <div className="file-input-text">Glisser les fichier ici</div>
+                                    <div className="file-input-text">ou</div>
+                                    <button className="button is-link button-parcourir">Parcourir</button>
                                 </span>
                             }
                         </span>
