@@ -8,19 +8,20 @@
 
 .fileContent {
     font-size: 15px;
-    color: rgba(33, 41, 64, 1);
+    color: $link;
     text-align: left;
     line-height: 20px;
 }
 
 .fileTitle {
     font-size: 14px;
-    color: rgba(33, 41, 64, 1);
+    color: $link;
     text-align: left;
 }
 
 .card-header-title {
     overflow:hidden;
+    height: 56px;
 }
 
 .flag {
@@ -54,9 +55,10 @@
     padding-right: 0rem !important;
 }
 
-.transcription {
+.transcription-grid-view {
     font-size: 13px;
-    color: rgba(33, 41, 64, 1);
+    color: $link;
+    height: 156px;
     line-height: 16px;
 }
 
