@@ -70,13 +70,24 @@
     font-size: 18px;
     margin-top:15px;
     margin-left: 30px;
+    width:35%
 }
 
-.search-field{
-    position:absolute;
-    margin-top:10px;
-    left:660px;
-    background-color:$link;
+.search-field {
+    margin-top: 10px;
+    left: 660px;
+    background-color: $link;
+    width: 340px;
+    float: right;
+    padding-right: 25px;
+}
+
+.tile-container {
+    padding-right: 10px !important;
+}
+.right-side {
+    position: relative;
+    width: 100%;
 }
 
 .search-input {
@@ -86,6 +97,13 @@
     width: 361px;
     color: #909bb8;
 }
+
+.view-icon{
+    position: inherit !important;
+    padding-right: 25px;
+}
+
+
 
 .search-input:focus {
     border: 1px solid #8893ae;
