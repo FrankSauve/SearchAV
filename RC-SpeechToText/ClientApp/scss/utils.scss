@@ -99,6 +99,13 @@ html, body {
     font-size: 2em;
 }
 
+.highlight-text {
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 10vh;
+  max-height: 55vh;
+}
+
 .highlight-text::selection {
     background: $light-blue;
 } 
