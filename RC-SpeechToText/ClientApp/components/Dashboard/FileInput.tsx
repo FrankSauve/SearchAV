@@ -134,7 +134,7 @@ export default class FileInput extends React.Component<any, State> {
                         <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
                         <span className="file-cta no-border">
                             <span className="file-icon">
-                                <i className="fas fa-upload"></i>
+                                <i className="fas fa-cloud-upload-alt"></i>
                             </span>
                             {this.state.loading ? <Loading/> : 
                                 <span className="file-label">
