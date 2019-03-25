@@ -76,6 +76,7 @@ export default class ListTable extends React.Component<any, State>
                                         username={this.state.usernames[i]}
                                         image={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         date={file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}
+                                        listView={true}
                                     />
                                 </td>
                             </tr>

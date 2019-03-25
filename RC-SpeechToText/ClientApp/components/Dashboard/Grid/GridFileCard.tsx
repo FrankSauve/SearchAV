@@ -39,13 +39,14 @@ export class GridFileCard extends React.Component<any, State> {
                             {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>
                         
                             <DropdownButton
-                                        fileId={this.props.file.id}
-                                        title={this.props.file.title}
-                                        description={this.props.file.description}
-                                        flag={this.props.file.flag}
-                                        username={this.props.username}
-                                        image={this.props.file.type == "Audio" ? 'assets/speakerIcon.png' : this.props.file.thumbnailPath}
-                                        date={this.props.file.dateAdded.substring(0, 10) + " " + this.props.file.dateAdded.substring(11, 16)}
+                                fileId={this.props.file.id}
+                                title={this.props.file.title}
+                                description={this.props.file.description}
+                                flag={this.props.file.flag}
+                                username={this.props.username}
+                                image={this.props.file.type == "Audio" ? 'assets/speakerIcon.png' : this.props.file.thumbnailPath}
+                                date={this.props.file.dateAdded.substring(0, 10) + " " + this.props.file.dateAdded.substring(11, 16)}
+                                listView={false}
                             />
 
                     </header>

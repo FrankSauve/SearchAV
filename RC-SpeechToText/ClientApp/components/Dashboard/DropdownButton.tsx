@@ -265,7 +265,7 @@ export class DropdownButton extends React.Component<any, State> {
                 <div className={`dropdown is-right ${this.state.showDropdown ? "is-active" : null}`} >
                     <div className="dropdown-trigger">
                         <div aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
-                            <i className={`fas fa-ellipsis-v ${this.state.showDropdown ? "is-link" : "is-cadet-grey"}`}></i>
+                            <i className={`fas fa-ellipsis-v ${this.props.listView ? "list-view-dropdown" : "grid-view-dropdown"} ${this.state.showDropdown ? "is-link" : "is-cadet-grey"}`}></i>
                         </div>
                     </div>
                     <div className="dropdown-menu" id="dropdown-menu4" role="menu">
