@@ -4,6 +4,8 @@ import auth from '../../Utils/auth';
 import { ErrorModal } from './ErrorModal';
 import { SuccessModal } from './SuccessModal';
 import { ChangeEvent } from 'react';
+import { LoadingModal } from '../LoadingModal';
+import Loading from '../Loading';
 
 interface State {
     users: any[],
@@ -12,6 +14,7 @@ interface State {
     errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
+    loading: boolean,
     unauthorized: boolean
 }
 
@@ -22,11 +25,12 @@ export class SelectReviewerModal extends React.Component<any, State> {
 
         this.state = {
             users: [],
-            fileId: 0,
+            fileId: "",
             reviewerEmail: "",
             errorMessage: "",
             showSuccessModal: false,
             showErrorModal: false,
+            loading: false,
             unauthorized: false
         }
     }
@@ -38,41 +42,47 @@ export class SelectReviewerModal extends React.Component<any, State> {
     }
 
     public addReviewerToFile = () => {
+        this.props.hideModal();
+        this.setState({ loading: true });
 
         var fileId = this.state.fileId
         var reviewerEmail = this.state.reviewerEmail
 
-        if (fileId != "" && fileId != 0 && reviewerEmail != null && reviewerEmail != "") {
+        //Quick fix: Sometimes component is rendered before url changes
+        if (fileId == "dashboard" || fileId == "" || fileId == null)
+            fileId = window.location.href.split('/')[window.location.href.split('/').length - 1];
+
+        if (fileId != "" && fileId != null && reviewerEmail != null && reviewerEmail != "") {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
                     'content-type': 'application/json'
                 }
-            }
-            axios.post('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
+            };
+            axios.get('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
                 .then(() => {
-                    this.props.hideModal();
+                    this.setState({ loading: false });
                     this.showSuccessModal();
                     this.setState({ reviewerEmail : ""})
                 })
                 .catch(err => {
                     console.log(err);
-                    this.setState({ 'errorMessage': "L'usager n'est pas un reviseur valid, s'il vous plait choisir un autre email." })
-                    this.props.hideModal();
+                    this.setState({ 'errorMessage': "Le courriel ne correspond a aucun utilisateur enregistre dans le systeme! Veuillez entrer un autre courriel valide." })
+                    this.setState({ loading: false });
                     this.showErrorModal();
                     if (err.response.status == 401) {
                         this.setState({ 'unauthorized': true });
                     }
                 });
         }
-        else if (fileId == "" || fileId == 0) {
-            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Une erreur au niveau du fichier est survenu. Veuillez rafraichir la page s'il vous plait." })
-            this.props.hideModal();
+        else if (fileId == "" || fileId == null) {
+            this.setState({ 'errorMessage': "Envoi de la demande de révision annulée! Une erreur au niveau du fichier est survenu. Veuillez rafraichir la page s'il vous plait." })
+            this.setState({ loading: false });
             this.showErrorModal();
         }
         else {
-            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Vous n'avez écrie aucun réviseur." })
-            this.props.hideModal();
+            this.setState({ 'errorMessage': "Envoi de la demande de révision annulée! Vous n'avez pas entrer le courriel du réviseur." })
+            this.setState({ loading: false });
             this.showErrorModal();
         }
     };
@@ -113,7 +123,11 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     hideModal={this.hideSuccessModal}
                     title="Choisissez un réviseur"
                     successMessage={`Demande de révision envoyé! ${this.state.reviewerEmail} sera notifié de votre demande dans les quelques secondes a venir.`}
-/>
+                />
+
+                <LoadingModal
+                    showModal={this.state.loading}
+                />
 
                 <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
                     <div className="modal-background"></div>
