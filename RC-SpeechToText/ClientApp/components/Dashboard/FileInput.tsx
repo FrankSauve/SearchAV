@@ -108,7 +108,7 @@ export default class FileInput extends React.Component<any, State> {
     public render() {
         
         return (
-            <div className="column mg-top-30">
+            <div className="column mg-top-30 no-padding">
                 <ErrorModal
                     showModal={this.state.showErrorTranscribe}
                     hideModal={this.hideErrorModal}
@@ -130,18 +130,17 @@ export default class FileInput extends React.Component<any, State> {
                 />
 
                 <div className="file is-boxed has-name">
-                    <label className="file-label">
+                    <label className="file-label no-padding">
                         <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
-                        <span className="file-cta">
+                        <span className="file-cta no-border">
                             <span className="file-icon">
-                                <i className="fas fa-upload"></i>
+                                <i className="fas fa-cloud-upload-alt"></i>
                             </span>
                             {this.state.loading ? <Loading/> : 
                                 <span className="file-label">
-                                    <br/>
-                                    Ajouter un fichier...
-                                    <br/>
-                                    <br/>
+                                    <div className="file-input-text">Glisser les fichier ici</div>
+                                    <div className="file-input-text">ou</div>
+                                    <button className="button is-link button-parcourir">Parcourir</button>
                                 </span>
                             }
                         </span>
