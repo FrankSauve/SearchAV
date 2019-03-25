@@ -128,14 +128,14 @@ export default class FileInput extends React.Component<any, State> {
                 <ErrorModal
                     showModal={this.state.showErrorTranscribe}
                     hideModal={this.hideErrorModal}
-                    title={"Échec de l'importation!"}
+                    title={"ï¿½chec de l'importation!"}
                     errorMessage={this.state.descriptionErrorTranscribe}
                 />
                 <SuccessModal
                     showModal={this.state.showSuccessTranscribe}
                     hideModal={this.hideSuccessModal}
-                    title={"Importation Réussie!"}
-                    successMessage="La transcription de votre fichier a été effectué avec succès. Vous recevrez un courriel dans quelques instants."
+                    title={"Importation Rï¿½ussie!"}
+                    successMessage="La transcription de votre fichier a ï¿½tï¿½ effectuï¿½ avec succï¿½s. Vous recevrez un courriel dans quelques instants."
                 />
 
                 <AddDescriptionModal
