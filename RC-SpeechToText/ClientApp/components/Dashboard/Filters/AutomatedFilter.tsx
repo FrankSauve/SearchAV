@@ -47,14 +47,14 @@ export default class AutomatedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <div className={`card filters mg-top-5 ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
+            <div className={`card filters mg-top-5 ${this.props.isActive ? "has-background-blizzard-blue" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className={`title automated ${this.props.isActive ? "has-text-white-bis" : null }`}>
+                    <p className={`title ${this.props.isActive ? "is-link" : "automated" }`}>
                         {this.state.files.length}
                     </p>
-                    <p className={`subtitle automated ${this.props.isActive ? "has-text-white-bis" : null}`}>
-                        FICHIERS<br />
-                        TRANSCRITS
+                    <p className={`subtitle ${this.props.isActive ? "is-link" : "automated"}`}>
+                        <b>FICHIERS<br />
+                            TRANSCRITS</b>
                 </p>
                 </div>
             </div>

@@ -47,14 +47,14 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
 
     public render() {
         return (
-            <div className={`card filters mg-top-30 ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
+            <div className={`card filters mg-top-30 ${this.props.isActive ? "has-background-blizzard-blue" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className={`title ${this.props.isActive ? "has-text-white-bis" : "has-text-danger"}`}>
+                    <p className={`title ${this.props.isActive ? "is-link" : "has-text-danger"}`}>
                         {this.state.files ? this.state.files.length : 0}
                     </p>
-                    <p className={`subtitle ${this.props.isActive ? "has-text-white-bis" : "has-text-danger"}`}>
-                        FICHIERS <br/>
-                        A REVISER
+                    <p className={`subtitle ${this.props.isActive ? "is-link" : "has-text-danger"}`}>
+                        <b>FICHIERS <br />
+                            A REVISER</b>
                 </p>
                 </div>
             </div>
