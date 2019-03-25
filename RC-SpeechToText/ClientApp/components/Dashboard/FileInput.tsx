@@ -153,12 +153,12 @@ export default class FileInput extends React.Component<any, State> {
                     <label className="file-label">
                         <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
                         <span className="file-cta no-border">
-                            {this.state.loading ? null :
+                            {this.state.loading ? <Loading /> :
                                 <span className="file-icon">
                                     <i className="fas fa-cloud-upload-alt"></i>
                                 </span>
                             }
-                            {this.state.loading ? <Loading/> : 
+                            {this.state.loading ? null : 
                                 <span className="file-label">
                                     <div className="file-input-text">Glisser les fichier ici</div>
                                     <div className="file-input-text">ou</div>
