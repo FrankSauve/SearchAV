@@ -135,7 +135,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         
         return (
             <div>
-                    <nav className="navbar is-light" role="navigation" aria-label="main navigation">
+                <nav className="navbar is-light container" role="navigation" aria-label="main navigation">
                         <div className="navbar-brand">
                             <a className="navbar-item" href="/">
                                 <img src="https://vignette.wikia.nocookie.net/logopedia/images/b/b7/Cbc-logo.png/revision/latest/scale-to-width-down/240?cb=20110304223128" width="30" height="30" />

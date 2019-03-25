@@ -124,18 +124,18 @@ export default class FileInput extends React.Component<any, State> {
     public render() {
         
         return (
-            <div className="column mg-top-30">
+            <div className="column mg-top-30 no-padding">
                 <ErrorModal
                     showModal={this.state.showErrorTranscribe}
                     hideModal={this.hideErrorModal}
-                    title={"Échec de l'importation!"}
+                    title={"ï¿½chec de l'importation!"}
                     errorMessage={this.state.descriptionErrorTranscribe}
                 />
                 <SuccessModal
                     showModal={this.state.showSuccessTranscribe}
                     hideModal={this.hideSuccessModal}
-                    title={"Importation Réussie!"}
-                    successMessage="La transcription de votre fichier a été effectué avec succès. Vous recevrez un courriel dans quelques instants."
+                    title={"Importation Rï¿½ussie!"}
+                    successMessage="La transcription de votre fichier a ï¿½tï¿½ effectuï¿½ avec succï¿½s. Vous recevrez un courriel dans quelques instants."
                 />
 
                 <AddDescriptionModal
@@ -150,18 +150,17 @@ export default class FileInput extends React.Component<any, State> {
                     onDrag={(e => this.onDrag(e))}
                     onDragOver={(e => this.onDragOver(e))}
                 >
-                    <label className="file-label">
+                    <label className="file-label no-padding">
                         <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
-                        <span className="file-cta">
+                        <span className="file-cta no-border">
                             <span className="file-icon">
-                                <i className="fas fa-upload"></i>
+                                <i className="fas fa-cloud-upload-alt"></i>
                             </span>
                             {this.state.loading ? <Loading/> : 
                                 <span className="file-label">
-                                    <br/>
-                                    Ajouter un fichier...
-                                    <br/>
-                                    <br/>
+                                    <div className="file-input-text">Glisser les fichier ici</div>
+                                    <div className="file-input-text">ou</div>
+                                    <button className="button is-link button-parcourir">Parcourir</button>
                                 </span>
                             }
                         </span>
