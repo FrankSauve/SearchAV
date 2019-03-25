@@ -105,6 +105,22 @@ export default class FileInput extends React.Component<any, State> {
             });
     };
 
+    onDrag = (e: any) => {
+        e.preventDefault();
+    }
+
+    onDragOver = (e: any) => {
+        e.preventDefault();
+    }
+
+    onDrop = (e: any) => {
+        e.preventDefault();
+        this.setState({ file: e.dataTransfer.files[0] })
+        this.setState({ showAddDescription: true });
+    }
+
+
+
     public render() {
         
         return (
@@ -112,14 +128,14 @@ export default class FileInput extends React.Component<any, State> {
                 <ErrorModal
                     showModal={this.state.showErrorTranscribe}
                     hideModal={this.hideErrorModal}
-                    title={"Échec de l'importation!"}
+                    title={"ï¿½chec de l'importation!"}
                     errorMessage={this.state.descriptionErrorTranscribe}
                 />
                 <SuccessModal
                     showModal={this.state.showSuccessTranscribe}
                     hideModal={this.hideSuccessModal}
-                    title={"Importation Réussie!"}
-                    successMessage="La transcription de votre fichier a été effectué avec succès. Vous recevrez un courriel dans quelques instants."
+                    title={"Importation Rï¿½ussie!"}
+                    successMessage="La transcription de votre fichier a ï¿½tï¿½ effectuï¿½ avec succï¿½s. Vous recevrez un courriel dans quelques instants."
                 />
 
                 <AddDescriptionModal
@@ -129,14 +145,20 @@ export default class FileInput extends React.Component<any, State> {
                     onSubmit={this.getGoogleSample}
                 />
 
-                <div className="file is-boxed has-name">
-                    <label className="file-label no-padding">
+                <div className="file is-boxed has-name"
+                    onDrop={e => this.onDrop(e)}
+                    onDrag={(e => this.onDrag(e))}
+                    onDragOver={(e => this.onDragOver(e))}
+                >
+                    <label className="file-label">
                         <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
                         <span className="file-cta no-border">
-                            <span className="file-icon">
-                                <i className="fas fa-cloud-upload-alt"></i>
-                            </span>
-                            {this.state.loading ? <Loading/> : 
+                            {this.state.loading ? <Loading /> :
+                                <span className="file-icon">
+                                    <i className="fas fa-cloud-upload-alt"></i>
+                                </span>
+                            }
+                            {this.state.loading ? null : 
                                 <span className="file-label">
                                     <div className="file-input-text">Glisser les fichier ici</div>
                                     <div className="file-input-text">ou</div>
