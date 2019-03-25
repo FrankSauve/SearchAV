@@ -180,6 +180,11 @@ namespace RC_SpeechToText.Tests
             var user = new User { Email = "user@email.com", Name = "testUser" };
             var reviewer = new User { Email = "reviewer@email.com", Name = "testReviewer" };
 
+            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim("email", user.Email)
+            }));
+
             // Add user and reviewer with username testUser and testReviewer
             await context.AddAsync(user);
             await context.AddAsync(reviewer);
@@ -196,9 +201,14 @@ namespace RC_SpeechToText.Tests
             // Add files using userId
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
-			
+
             // Act
             var controller = new FileController(context);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = userPrincipal }
+            };
+
             var result = await controller.AddReviewer(file.Id, "reviewer@email.com");
             
             // Assert
