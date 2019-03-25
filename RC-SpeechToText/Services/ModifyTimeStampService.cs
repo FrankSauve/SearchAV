@@ -14,7 +14,7 @@ namespace RC_SpeechToText.Services
             var newWords2 = CreateNewWords(oldWords, longestCommonSequence.newTranscriptionTerms,
                 longestCommonSequence.newTransPosition, longestCommonSequence.oldTransPositions, newVersionId);
 
-
+            EstimateWords(newWords2);
             //Old logic to be deleted after implementation of new save algorithm
             List<Word> newWords = new List<Word>();
 
@@ -141,7 +141,7 @@ namespace RC_SpeechToText.Services
                     counterEdited++;
                 }
                 //Handle if word edited in end of transcript
-                else if (counter == (newTransPos.Count) && (newTransTerms.Count - newTransPos[counter-1]) == (oldWords.Count - oldTransPos[counter-1]))
+                else if (counter == (newTransPos.Count) && (newTransTerms.Count - newTransPos[counter - 1]) == (oldWords.Count - oldTransPos[counter - 1]))
                 {
                     var oldWord = oldWords[oldTransPos[counter - 1] + counterEdited];
                     newWords.Add(new Word { Term = newTransTerms[i], Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
@@ -154,10 +154,19 @@ namespace RC_SpeechToText.Services
                     newWords.Add(new Word { Term = newTransTerms[i], Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
                     counterEdited++;
                 }
-                
+                else
+                {
+                    newWords.Add(new Word { Term = newTransTerms[i], VersionId = newVersionId, Position = i, State = "Estime" });
+                }
+
             }
 
             return newWords;
+        }
+
+        private void EstimateWords(List<Word> newWords)
+        {
+
         }
         private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
