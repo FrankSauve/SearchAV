@@ -133,14 +133,28 @@ namespace RC_SpeechToText.Services
                     counter++;
                     counterEdited = 1;
                 }
-                //Next three else/if handle when words have been replaced by other words
-                else if (counter > 0 && counter < (newTransPos.Count) && (newTransPos[counter] - newTransPos[counter-1]) > 1 && (newTransPos[counter] - newTransPos[counter-1]) == (oldTransPos[counter] - oldTransPos[counter-1]))
+                //Handle if word edited in beginning of transcript
+                else if (counter == 0 && newTransPos[0] == oldTransPos[0])
                 {
-                    var oldWord = oldWords[oldTransPos[counter-1]+counterEdited];
+                    var oldWord = oldWords[counterEdited - 1];
                     newWords.Add(new Word { Term = newTransTerms[i], Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
                     counterEdited++;
                 }
-
+                //Handle if word edited in end of transcript
+                else if (counter == (newTransPos.Count) && (newTransTerms.Count - newTransPos[counter-1]) == (oldWords.Count - oldTransPos[counter-1]))
+                {
+                    var oldWord = oldWords[oldTransPos[counter - 1] + counterEdited];
+                    newWords.Add(new Word { Term = newTransTerms[i], Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
+                    counterEdited++;
+                }
+                //Handle if word edited in middle of transcript
+                else if (counter > 0 && counter < (newTransPos.Count) && (newTransPos[counter] - newTransPos[counter - 1]) > 1 && (newTransPos[counter] - newTransPos[counter - 1]) == (oldTransPos[counter] - oldTransPos[counter - 1]))
+                {
+                    var oldWord = oldWords[oldTransPos[counter - 1] + counterEdited];
+                    newWords.Add(new Word { Term = newTransTerms[i], Timestamp = oldWord.Timestamp, VersionId = newVersionId, Position = i });
+                    counterEdited++;
+                }
+                
             }
 
             return newWords;
