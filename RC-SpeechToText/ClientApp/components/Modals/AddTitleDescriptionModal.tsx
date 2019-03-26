@@ -1,7 +1,7 @@
 ﻿import * as React from 'react';
 
 
-export class AddDescriptionModal extends React.Component<any> {
+export class AddTitleDescriptionModal extends React.Component<any> {
     constructor(props: any) {
         super(props);
     }
@@ -14,13 +14,16 @@ export class AddDescriptionModal extends React.Component<any> {
                 <div className="modal-card">
                     <div className="modal-container">
                         <header className="modalHeader">
-                            <i className="fas fa-edit fontSize2em mg-right-5"></i><p className="modal-card-title whiteText"> Ajouter une description (optionnel) </p>
+                            <i className="fas fa-edit fontSize2em mg-right-5"></i><p className="modal-card-title whiteText"> Ajouter un titre et une description </p>
                             <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal}></button>
                         </header>
                         <section className="modalBody">
                             <div className="field">
+                                <input className="input is-primary" type="text" placeholder="Choisir un titre pour le fichier" />
+                            </div>
+                            <div className="field">
                                 <div className="control">
-                                    <textarea className="textarea is-primary" type="text" placeholder="Entrez une description pour le fichier."
+                                    <textarea className="textarea is-primary" type="text" placeholder="Entrez une description pour le fichier. (optionnel)"
                                         onChange={this.props.handleDescriptionChange} />
                                 </div>
                             </div>

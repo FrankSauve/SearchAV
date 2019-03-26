@@ -4,7 +4,7 @@ import auth from '../../Utils/auth';
 import Loading from '../Loading';
 import { ErrorModal } from '../Modals/ErrorModal';
 import { SuccessModal } from '../Modals/SuccessModal';
-import { AddDescriptionModal } from '../Modals/AddDescriptionModal';
+import { AddTitleDescriptionModal } from '../Modals/AddTitleDescriptionModal';
 
 
 interface State {
@@ -138,7 +138,7 @@ export default class FileInput extends React.Component<any, State> {
                     successMessage="La transcription de votre fichier a �t� effectu� avec succ�s. Vous recevrez un courriel dans quelques instants."
                 />
 
-                <AddDescriptionModal
+                <AddTitleDescriptionModal
                     showModal={this.state.showAddDescription}
                     hideModal={this.hideAddDescription}
                     handleDescriptionChange={this.handleDescriptionChange}
