@@ -292,7 +292,6 @@ export default class Dashboard extends React.Component<any, State> {
                     <div className="column is-one-fifth">
                         <FileInput
                             getAllFiles={this.getAllFiles}
-                            getAutomatedFiles={this.getAutomatedFiles}
                         />
 
                         <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFiles}>
