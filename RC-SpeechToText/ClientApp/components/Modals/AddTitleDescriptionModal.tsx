@@ -19,7 +19,7 @@ export class AddTitleDescriptionModal extends React.Component<any> {
                         </header>
                         <section className="modalBody">
                             <div className="field">
-                                <input className="input is-primary" type="text" placeholder="Choisir un titre pour le fichier" />
+                                <input className="input is-primary" type="text" placeholder="Entrez un titre pour le fichier." onChange={this.props.handleTitleChange} />
                             </div>
                             <div className="field">
                                 <div className="control">

@@ -23,7 +23,7 @@ namespace RC_SpeechToText.Services
 			_context = context;
 		}
 
-		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile)
+		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile, string title)
 		{
 			// Get user id by email
 			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();

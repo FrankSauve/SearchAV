@@ -16,10 +16,12 @@ namespace RC_SpeechToText.Controllers
 	public class ConverterController : Controller
 	{
 		private readonly ConvertionService _convertionService;
+        private readonly FileService _fileService;
 
 		public ConverterController(SearchAVContext context)
 		{
 			_convertionService = new ConvertionService(context);
+            _fileService = new FileService(context);
 		}
 
 		/// <summary>
@@ -28,16 +30,26 @@ namespace RC_SpeechToText.Controllers
 		/// </summary>
 		/// <returns>GoogleResult</returns>
 		[HttpPost("[action]")]
-		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile)
+		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string description, string title)
 		{
-			
-				var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, descriptionFile);
-				if(version == null)
-				{
-                    throw new ControllerExceptions("Une erreur s'est produite lors de la transcription"); 
-				}
+            if (title == null)
+            {
+                throw new ControllerExceptions("S'il vous plaît remplir un titre");
+            }
+            else if (await _fileService.VerifyIfTitleExists(title))
+            {
+                throw new ControllerExceptions("Ce titre existe déjà");
+            }
+            else
+            {
+                var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, description, title);
+                if (version == null)
+                {
+                    throw new ControllerExceptions("Une erreur s'est produite lors de la transcription");
+                }
 
-				return Ok(version);
+                return Ok(version);
+            }
 			
 		}
 	}

@@ -11,8 +11,7 @@ interface State {
     file: any,
     loading: boolean,
     unauthorized: boolean,
-    currentTitle: string,
-    newTitle: string,
+    title: string,
     description: string,
     showAddTitleDescriptionModal: boolean,
     showSuccessTranscribe: boolean,
@@ -28,8 +27,7 @@ export default class FileInput extends React.Component<any, State> {
             file: null,
             loading: false,
             unauthorized: false,
-            currentTitle: "",
-            newTitle: "",
+            title: "",
             description: "",
             showAddTitleDescriptionModal: false, 
             showSuccessTranscribe: false,
@@ -45,12 +43,16 @@ export default class FileInput extends React.Component<any, State> {
 
     public showAddTitleDescriptionModal = (e: any) => {
         this.setState({ file: e.target.files[0] });
-        this.setState({ currentTitle: e.target.files[0].name });
+//        this.setState({ title: e.target.files[0].name });
         this.setState({ showAddTitleDescriptionModal: true });
     } 
 
     public hideAddTitleDescriptionModal = () => {
         this.setState({ showAddTitleDescriptionModal: false }); 
+    }
+
+    public handleTitleChange = (event: any) => {
+        this.setState({ title: event.target.value });
     }
 
     public handleDescriptionChange = (event: any) => {
@@ -85,6 +87,7 @@ export default class FileInput extends React.Component<any, State> {
         formData.append('audioFile', this.state.file);
         formData.append('userEmail', auth.getEmail()!);
         formData.append('description', this.state.description); 
+        formData.append('title', this.state.title); 
 
         const config = {
             headers: {
@@ -121,11 +124,9 @@ export default class FileInput extends React.Component<any, State> {
     onDrop = (e: any) => {
         e.preventDefault();
         this.setState({ file: e.dataTransfer.files[0] })
-        this.setState({ currentTitle: e.dataTransfer.files[0].name })
+ //       this.setState({ title: e.dataTransfer.files[0].name })
         this.setState({ showAddTitleDescriptionModal: true });
     }
-
-
 
     public render() {
         
@@ -148,6 +149,8 @@ export default class FileInput extends React.Component<any, State> {
                     showModal={this.state.showAddTitleDescriptionModal}
                     hideModal={this.hideAddTitleDescriptionModal}
                     handleDescriptionChange={this.handleDescriptionChange}
+                    handleTitleChange={this.handleTitleChange}
+                    title={this.state.title}
                     onSubmit={this.getGoogleSample}
                 />
 

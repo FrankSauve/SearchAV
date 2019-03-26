@@ -134,7 +134,7 @@ namespace RC_SpeechToText.Services
 			}
 		}
 
-        private async Task<bool> VerifyIfTitleExists(string title)
+        public async Task<bool> VerifyIfTitleExists(string title)
         {
             var existingFileTitlesCount = await _context.File.CountAsync(x => x.Title.Trim().Equals(title));
             if (existingFileTitlesCount > 0)
