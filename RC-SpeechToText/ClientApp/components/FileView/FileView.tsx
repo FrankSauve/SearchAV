@@ -278,7 +278,7 @@ export default class FileView extends React.Component<any, State> {
                         
                         <br />
 
-                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit"></i></a></b> : null}
+                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
                         {this.state.file ? (this.state.file.description ? <div>
                             <div className="file-view-desc">
                                 {this.state.description}
