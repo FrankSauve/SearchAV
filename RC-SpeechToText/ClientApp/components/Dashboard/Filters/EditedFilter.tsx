@@ -45,14 +45,14 @@ export default class EditedFilter extends React.Component<any, State> {
 
     public render() {   
         return (
-            <div className={`card filters mg-top-5 ${this.props.isActive ? "has-background-primary" : "has-background-link"}`}>
+            <div className={`card filters mg-top-5 ${this.props.isActive ? "has-background-blizzard-blue" : "has-background-link"}`}>
                 <div className="card-content">
-                    <p className={`title edited ${this.props.isActive ? "has-text-white-bis" : null }`}>
+                    <p className={`title ${this.props.isActive ? "is-link" : "edited" }`}>
                         {this.state.files.length}
                     </p>
-                    <p className={`subtitle edited ${this.props.isActive ? "has-text-white-bis" : null }`}>
-                        FICHIERS<br />
-                        EDITES
+                    <p className={`subtitle  ${this.props.isActive ? "is-link" : "edited" }`}>
+                        <b>FICHIERS<br />
+                            EDITES</b>
                 </p>
                 </div>
             </div>

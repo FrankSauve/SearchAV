@@ -29,6 +29,11 @@ export class GridFileCard extends React.Component<any, State> {
         return text.replace(/<br\s*[\/]?>/gi, " ");
     }
 
+    removeExtension(title: string) {
+        var titleNoExtension = title.lastIndexOf('.') != -1 ? title.substring(0, title.lastIndexOf('.')) : title;
+        return titleNoExtension;
+    }
+
     public render() {
         return (
             <div className="column is-3">
@@ -36,7 +41,7 @@ export class GridFileCard extends React.Component<any, State> {
                     <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.state.flag.toUpperCase()}</span> 
                     <header className="card-header">
                         <p className="card-header-title fileTitle">
-                            {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>
+                            {this.state.title ? (this.state.title.length < 35 ? this.removeExtension(this.state.title) : this.removeExtension(this.state.title).substring(0, 35) + " ..." ) : null}</p>
                         
                             <DropdownButton
                                         fileId={this.props.file.id}
@@ -65,7 +70,10 @@ export class GridFileCard extends React.Component<any, State> {
                     </div>
                     <div className="card-content">
                         <div className="content fileContent">
-                            <p className="transcription">{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
+                            <div className="transcription-grid-view">
+                                <p>{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
+                            </div>
+                            <br/>
                             <p><b>{this.props.username}</b></p>
                             <time dateTime={this.props.date}>{this.props.date}</time>
                         </div>

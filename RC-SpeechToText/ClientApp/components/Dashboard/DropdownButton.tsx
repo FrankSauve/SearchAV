@@ -289,26 +289,26 @@ export class DropdownButton extends React.Component<any, State> {
             <div>
                 <div className={`dropdown is-right ${this.state.showDropdown ? "is-active" : null}`} >
                     <div className="dropdown-trigger">
-                        <div className="is-black" aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
-                            <i className="fas fa-ellipsis-v "></i>
+                        <div aria-haspopup="true" aria-controls="dropdown-menu4" onClick={this.showDropdown}>
+                            <i className={`fas fa-ellipsis-v ${this.props.listView ? "list-view-dropdown" : "grid-view-dropdown"} ${this.state.showDropdown ? "is-link" : "is-cadet-grey"}`}></i>
                         </div>
                     </div>
                     <div className="dropdown-menu" id="dropdown-menu4" role="menu">
                         <div className="dropdown-content">
-                            <a className="dropdown-item" onClick={this.showTitleModal}>
+                            <a className="dropdown-item is-black" onClick={this.showTitleModal}>
                                 <i className="fas fa-edit mg-right-5"></i>
                                 Modifier le titre
                             </a>
 
-                            {this.props.description ? <a className="dropdown-item" onClick={this.showDescriptionModal}>
+                            {this.props.description ? <a className="dropdown-item is-black" onClick={this.showDescriptionModal}>
                                 <i className="fas fa-edit mg-right-5"></i>
                                 Modifier la description
-                                </a> : <a className="dropdown-item" onClick={this.showDescriptionModal}>
+                                </a> : <a className="dropdown-item is-black" onClick={this.showDescriptionModal}>
                                 <i className="fas fa-plus-square mg-right-5"></i>
                                 Ajouter une description
                                 </a>}
 
-                            <a className="dropdown-item" onClick={this.deleteWords}>
+                            <a className="dropdown-item is-black" onClick={this.deleteWords}>
                                 <i className="fa fa-trash mg-right-5" aria-hidden="true"></i>
                                 Effacer le fichier
                             </a>

@@ -1,26 +1,26 @@
 .fileCard {
     position: relative;
-    width: 200px;
+    width: 100%;
     background-color: rgba(255, 255, 255, 1);
-    border: 1px solid rgba(244, 245, 248, 1);
     height: 100%;
 }
 
 .fileContent {
     font-size: 15px;
-    color: rgba(33, 41, 64, 1);
+    color: $link;
     text-align: left;
     line-height: 20px;
 }
 
 .fileTitle {
     font-size: 14px;
-    color: rgba(33, 41, 64, 1);
+    color: $link;
     text-align: left;
 }
 
 .card-header-title {
     overflow:hidden;
+    height: 56px;
 }
 
 .flag {
@@ -32,10 +32,27 @@
     color: #9ef5c3;
 }
 
+.title-list-view {
+    font-family: Roboto;
+    font-size: 14px;
+    color: $link;
+    text-align: left;
+}
+
+.list-table-image{
+    width: 50%;
+}
+
+.list-view-image {
+    height: 45px;
+    width: 78px;
+}
+
 // Laptop screen
-@media only screen and (max-width: 1400px){
+@media only screen and (max-width: 1400px) {
     .file-box {
         height: 620px;
+        padding: 10px;
         overflow-y: scroll;
         overflow-x: hidden;
     }
@@ -45,6 +62,7 @@
 @media only screen and (min-width: 1400px){
     .file-box {
         height: 800px;
+        padding: 10px;
         overflow-y: scroll;
         overflow-x: hidden;
     }
@@ -54,10 +72,50 @@
     padding-right: 0rem !important;
 }
 
-.transcription {
+.transcription-grid-view {
     font-size: 13px;
-    color: rgba(33, 41, 64, 1);
+    color: $link;
+    height: 156px;
     line-height: 16px;
+}
+
+.list-view-cell{
+    height:60px;
+}
+
+.transcription-list-view {
+    font-size: 12px;
+    color: $link;
+    line-height: 16px;
+    height: 35px;
+    width: 90%;
+    margin-top: -18px;
+    font-family: Roboto;
+}
+
+.list-view-username {
+    width: 14%;
+    font-family: Roboto;
+    font-size: 14px;
+    color: $link;
+    text-align: left;
+    line-height: 20px;
+}
+
+.list-view-duration {
+    font-family: Roboto;
+    font-size: 13px;
+    color: $link;
+    text-align: left;
+    line-height: 20px;
+}
+
+.list-view-date {
+    font-family: Roboto;
+    font-size: 13px;
+    color: $link;
+    text-align: left;
+    line-height: 20px;
 }
 
 .search-div {

@@ -51,21 +51,38 @@ html, body {
     border-radius: 50%;
 }
 
-.fa-ellipsis-v {
+.grid-view-dropdown {
+    position: relative;
     margin-right: 10px;
-    margin-top: 10px;
+    top: -25px;
 }
 
 .is-cadet-grey {
     color: #909bb8
 }
 
+.is-link {
+    color: $link
+}
+
+.is-black {
+    color: black
+}
+
 .is-white {
     color: white
 }
 
+.is-white-smoke {
+    color: whitesmoke;
+}
+
 .whiteText {
     color: white !important;
+}
+
+.has-background-blizzard-blue {
+    background-color: #b9e0f9
 }
 
 .fa-exclamation-triangle {
@@ -97,6 +114,13 @@ html, body {
 
 .fontSize2em {
     font-size: 2em;
+}
+
+th {
+    font-family: Roboto;
+    font-size: 14px;
+    color: $link;
+    text-align: left;
 }
 
 .highlight-text {
