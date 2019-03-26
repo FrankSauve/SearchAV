@@ -266,7 +266,7 @@ export default class FileView extends React.Component<any, State> {
             <div className="container">
 
                 <div className="columns">
-                    <div className="column is-one-third mg-top-30 has-background-white-smoke">
+                    <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} /> : null}
 
@@ -297,7 +297,7 @@ export default class FileView extends React.Component<any, State> {
                             : null}</p>
                     </div>
 
-                    <div className="column is-half mg-top-30">
+                    <div className="column is-half mg-top-30 editing-section">
                         {this.state.version ? 
                             <TranscriptionSearch 
                                 versionId={this.state.version.id} 

@@ -33,14 +33,28 @@ export class TranscriptionSearch extends React.Component<any,State> {
         }
     };
 
+    public handleKeyPress = (e: any) => {
+        if (e.key === 'Enter') {
+            this.handleSearch();
+        }
+    }
+
     public render() {
         return (
-            <div>
-                <div className="field is-horizontal">
-                    <a className="button is-link mg-right-10" onClick={this.handleSearch}> Rechercher </a>
-                    <input className="input" type="text" placeholder="Your search terms" onChange={this.handleChange} />
+            <div className="search-div-file-view">
+                <div className="field is-horizontal mg-top-10">
+                    <p className="is-cadet-grey search-title">TRANSCRIPTION</p>
+                    <div className="right-side">
+                        <div className="search-field-file-view">
+                            <p className="control has-icons-right">
+                                <input className="input is-rounded search-input" type="text" onChange={this.handleSearch} onKeyPress={this.handleKeyPress} />
+                                <span className="icon is-small is-right">
+                                    <a onClick={this.handleSearch}><i className="fas fa-search is-cadet-grey"></i></a>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                {this.state.timestamps ?  <p> Résultats : {this.state.timestamps} </p> : null}
             </div>
         );
     }

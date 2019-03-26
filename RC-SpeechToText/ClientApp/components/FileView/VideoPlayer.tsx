@@ -82,7 +82,7 @@ export class VideoPlayer extends React.Component<any, State> {
     };
     public render() {
         return (
-            <div>
+            <div className="video-player">
                 <ReactPlayer
                     ref={this.ref}
                     url={'../assets/Audio/' + this.props.path}
