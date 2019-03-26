@@ -125,6 +125,15 @@ namespace RC_SpeechToText.Services
             var counterEdited = 1;
             for (int i = 0; i<newTransTerms.Count; i++)
             {
+                //If 1 or no common words between transcripts create all words and estimate timestamps
+                if (newTransPos.Count < 2)
+                {
+                    for (int j = 0; j < newTransTerms.Count; j++)
+                    {
+                        newWords.Add(new Word { Term = newTransTerms[j], VersionId = newVersionId, Position = j, State = "Estime" });
+                    }
+                    break;
+                }
                 //Keeping info from kept words
                 if (counter < newTransPos.Count && i == newTransPos[counter])
                 {
