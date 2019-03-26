@@ -11,8 +11,10 @@ interface State {
     file: any,
     loading: boolean,
     unauthorized: boolean,
-    descriptionFile: string,
-    showAddDescription: boolean,
+    currentTitle: string,
+    newTitle: string,
+    description: string,
+    showAddTitleDescriptionModal: boolean,
     showSuccessTranscribe: boolean,
     showErrorTranscribe: boolean,
     descriptionErrorTranscribe: string
@@ -26,8 +28,10 @@ export default class FileInput extends React.Component<any, State> {
             file: null,
             loading: false,
             unauthorized: false,
-            descriptionFile: "",
-            showAddDescription: false, 
+            currentTitle: "",
+            newTitle: "",
+            description: "",
+            showAddTitleDescriptionModal: false, 
             showSuccessTranscribe: false,
             showErrorTranscribe: false,
             descriptionErrorTranscribe: ""
@@ -39,17 +43,18 @@ export default class FileInput extends React.Component<any, State> {
         (this.state.loading) ? (this.setState({ loading: false })) : (this.setState({ loading: true }));
     };
 
-    public showAddDescription = (e: any) => {
+    public showAddTitleDescriptionModal = (e: any) => {
         this.setState({ file: e.target.files[0] });
-        this.setState({ showAddDescription: true });
+        this.setState({ currentTitle: e.target.files[0].name });
+        this.setState({ showAddTitleDescriptionModal: true });
     } 
 
-    public hideAddDescription = () => {
-        this.setState({ showAddDescription: false }); 
+    public hideAddTitleDescriptionModal = () => {
+        this.setState({ showAddTitleDescriptionModal: false }); 
     }
 
     public handleDescriptionChange = (event: any) => {
-        this.setState({ descriptionFile: event.target.value });
+        this.setState({ description: event.target.value });
     }
 
     public showSuccessModal = () => {
@@ -72,14 +77,14 @@ export default class FileInput extends React.Component<any, State> {
 
     public getGoogleSample = () => { 
 
-        this.hideAddDescription(); 
+        this.hideAddTitleDescriptionModal(); 
 
         this.toggleLoad();
 
         const formData = new FormData();
         formData.append('audioFile', this.state.file);
         formData.append('userEmail', auth.getEmail()!);
-        formData.append('descriptionFile', this.state.descriptionFile); 
+        formData.append('description', this.state.description); 
 
         const config = {
             headers: {
@@ -116,7 +121,8 @@ export default class FileInput extends React.Component<any, State> {
     onDrop = (e: any) => {
         e.preventDefault();
         this.setState({ file: e.dataTransfer.files[0] })
-        this.setState({ showAddDescription: true });
+        this.setState({ currentTitle: e.dataTransfer.files[0].name })
+        this.setState({ showAddTitleDescriptionModal: true });
     }
 
 
@@ -139,8 +145,8 @@ export default class FileInput extends React.Component<any, State> {
                 />
 
                 <AddTitleDescriptionModal
-                    showModal={this.state.showAddDescription}
-                    hideModal={this.hideAddDescription}
+                    showModal={this.state.showAddTitleDescriptionModal}
+                    hideModal={this.hideAddTitleDescriptionModal}
                     handleDescriptionChange={this.handleDescriptionChange}
                     onSubmit={this.getGoogleSample}
                 />
@@ -151,7 +157,7 @@ export default class FileInput extends React.Component<any, State> {
                     onDragOver={(e => this.onDragOver(e))}
                 >
                     <label className="file-label">
-                        <input className="file-input" type="file" name="File" onChange={this.showAddDescription} />
+                        <input className="file-input" type="file" name="File" onChange={this.showAddTitleDescriptionModal} />
                         <span className="file-cta no-border">
                             {this.state.loading ? <Loading /> :
                                 <span className="file-icon">
