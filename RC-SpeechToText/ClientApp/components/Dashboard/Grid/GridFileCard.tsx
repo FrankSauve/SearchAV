@@ -43,6 +43,7 @@ export class GridFileCard extends React.Component<any, State> {
                                         title={this.props.file.title}
                                         description={this.props.file.description}
                                         flag={this.props.file.flag}
+                                        updateFiles={this.props.updateFiles}
                                         username={this.props.username}
                                         image={this.props.file.type == "Audio" ? 'assets/speakerIcon.png' : this.props.file.thumbnailPath}
                                         date={this.props.file.dateAdded.substring(0, 10) + " " + this.props.file.dateAdded.substring(11, 16)}
