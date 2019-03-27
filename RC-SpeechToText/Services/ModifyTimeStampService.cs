@@ -216,6 +216,14 @@ namespace RC_SpeechToText.Services
             return positions;
         }
 
+        private Double timeStringToDouble(string time)
+        {
+            Regex regex = new Regex(@"([\d.]+)");
+            var matchTimeString = regex.Match(time).ToString();
+            var timeDouble = Convert.ToDouble(matchTimeString);
+
+            return timeDouble;
+        }
         private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
