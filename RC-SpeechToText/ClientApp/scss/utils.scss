@@ -32,7 +32,7 @@ html, body {
   }
   
   .mg-left-400 {
-      margin-left: 400px;
+      margin-left: 450px;
   }
   
   .mg-left-10 {
@@ -51,21 +51,42 @@ html, body {
     border-radius: 50%;
 }
 
-.fa-ellipsis-v {
+.right{
+    float:right;
+}
+
+.grid-view-dropdown {
+    position: relative;
     margin-right: 10px;
-    margin-top: 10px;
+    top: -25px;
 }
 
 .is-cadet-grey {
     color: #909bb8
 }
 
+.is-link {
+    color: $link
+}
+
+.is-black {
+    color: black
+}
+
 .is-white {
     color: white
 }
 
+.is-white-smoke {
+    color: whitesmoke;
+}
+
 .whiteText {
     color: white !important;
+}
+
+.has-background-blizzard-blue {
+    background-color: #b9e0f9
 }
 
 .fa-exclamation-triangle {
@@ -90,13 +111,21 @@ html, body {
     font-size: 2em;
 }
 
+.fa-cloud-upload-alt {
+    font-size: 22px;
+    color: $link;
+}
+
 .fontSize2em {
     font-size: 2em;
 }
 
-.highlight-text::selection {
-    background: $light-blue;
-} 
+th {
+    font-family: Roboto;
+    font-size: 14px;
+    color: $link;
+    text-align: left;
+}
 
 ::-webkit-scrollbar {
     height: 11px;
@@ -105,6 +134,7 @@ html, body {
 
 ::-webkit-scrollbar-track {
     background: #f1f1f1;
+    border: 1px solid #909bb8;
 }
 
 ::-webkit-scrollbar-thumb {

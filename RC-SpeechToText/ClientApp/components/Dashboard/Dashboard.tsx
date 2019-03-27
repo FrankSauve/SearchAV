@@ -292,7 +292,6 @@ export default class Dashboard extends React.Component<any, State> {
                     <div className="column is-one-fifth">
                         <FileInput
                             getAllFiles={this.getAllFiles}
-                            getAutomatedFiles={this.getAutomatedFiles}
                         />
 
                         <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFiles}>
@@ -326,17 +325,19 @@ export default class Dashboard extends React.Component<any, State> {
                         </a>
                     </div>
 
-                    <section className="section column">
+                    <section className="section column tile-container">
                         <div className="search-div">
                             <div className="field is-horizontal mg-top-10">
                                 <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
-                                <div className="search-field">
-                                    <p className="control has-icons-right">
-                                        <input className="input is-rounded search-input" type="text" onChange={this.handleSearch} onKeyPress={this.handleKeyPress}/>
-                                        <span className="icon is-small is-right">
-                                            <a onClick={this.searchDescription}><i className="fas fa-search is-cadet-grey"></i></a>
-                                        </span>
-                                    </p>
+                                <div className="right-side">
+                                    <div className="search-field">
+                                        <p className="control has-icons-right">
+                                            <input className="input is-rounded search-input" type="text" onChange={this.handleSearch} onKeyPress={this.handleKeyPress}/>
+                                            <span className="icon is-small is-right">
+                                                <a onClick={this.searchDescription}><i className="fas fa-search is-cadet-grey"></i></a>
+                                            </span>
+                                        </p>
+                                    </div>
                                 </div>
                                 &nbsp;
                                 <a onClick={this.showFileTable}><i className={`fas fa-th view-icon ${this.state.listView ? "is-cadet-grey" : "is-white"}`}></i></a>
@@ -345,7 +346,7 @@ export default class Dashboard extends React.Component<any, State> {
                             </div>
                         </div>
 
-                        <div className="file-box mg-top-10">
+                        <div className="file-box">
                             {this.state.loading ? <Loading /> :
                                 this.state.listView ? this.renderListView() : this.renderFileTable()}
                         </div>

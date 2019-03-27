@@ -1,7 +1,9 @@
 .historique-title {
-    font-family: Arial, Helvetica, sans-serif;
+    //font-family: Rubik;
+    font-family: Roboto;
     font-size: 18px;
     color: #909bb8;
+    margin-top: -5px;
 }
 
 #historique-title-box {
@@ -10,21 +12,29 @@
     background-color: $link;
     border-radius: 0px;
     text-align: center;
+    height: 60px;
 }
 
 #historique-content-box {
     box-shadow: none;
     background-color: #f4f5f8;
     border-radius: 0px;
-    height: 540px;
-    overflow-y: scroll
+    height: 580px;
+    overflow-y: auto
 }
 
 .historique-content {
     color: #212940;
+    //font-family: Rubik-Regular;
+    font-family: 'Roboto';
+    font-size: 14px;
+    text-align: left;
+    line-height: 20px;
     margin-bottom: 10px;
 }
 
 .historique-username {
     font-weight: 500;
+    font-size: 12px;
+    //font-family: 'Rubik-Medium';
 }

@@ -34,6 +34,10 @@ export default class ListTable extends React.Component<any, State>
         }
     }
 
+    public updateFiles = () => {
+        this.props.getAllFiles();
+    }
+
     public render() {
         const progressBar = <img src="assets/loading.gif" alt="Loading..." />
         var i = -1;
@@ -45,6 +49,7 @@ export default class ListTable extends React.Component<any, State>
 
                 <table className='table is-fullwidth'>
                     <th>TITRE</th>
+                    <th>DUREE</th>
                     <th>IMPORTE PAR</th>
                     <th>DATE DE MODIFICATION</th>
                     <th></th>
@@ -52,28 +57,31 @@ export default class ListTable extends React.Component<any, State>
                     {this.state.files.map((file) => {
                         i++
                         return (
-                            <tr>
-                                <td width='100'>
+                            <tr className="list-view-cell">
+                                <td className="list-table-image" width='100'>
                                     <ListTableImage
                                         fileId={file.id}
                                         thumbnailPath={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         title={file.title}
                                         flag={file.flag}
-                                        description={file.description != null ? file.description.length > 100 ? file.description.substring(0, 100) + "..." : file.description : null}
-                                        transcription={file.transcription != null ? file.transcription.length > 100 ? file.transcription.substring(0, 100) + "..." : file.transcription : null}
+                                        description={file.description != null ? file.description.length > 150 ? file.description.substring(0, 150) + "..." : file.description : null}
+                                        transcription={file.transcription != null ? file.transcription.length > 150 ? file.transcription.substring(0, 150) + "..." : file.transcription : null}
                                     />
                                 </td>
-                                <td>{this.state.usernames[i]}</td>
-                                <td>{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
+                                <td className="list-view-duration">{file.duration}</td>
+                                <td className="list-view-username"><b>{this.state.usernames[i]}</b></td>
+                                <td className="list-view-date">{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
                                 <td>
                                     <DropdownButton
                                         fileId={file.id}
                                         title={file.title}
                                         description={file.description}
                                         flag={file.flag}
+                                        updateFiles={this.updateFiles}
                                         username={this.state.usernames[i]}
                                         image={file.thumbnailPath == "NULL" ? "assets/audioIcon.png" : file.thumbnailPath}
                                         date={file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}
+                                        listView={true}
                                     />
                                 </td>
                             </tr>

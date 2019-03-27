@@ -59,6 +59,7 @@ export default class GridFileTable extends React.Component<any, State> {
                             username={this.state.usernames[i]}
                             filePath={file.filePath}
                             thumbnailPath={file.thumbnailPath}
+                            duration={file.duration}
                             dateAdded={file.dateAdded}
                             number={file.notified}
                             type={file.type}

@@ -30,7 +30,9 @@ interface State {
     successMessage: string,
     showDropdown: boolean,
     loading: boolean,
-    seekTime: string
+    seekTime: string,
+    selection: string,
+    textSearch: boolean
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -56,7 +58,9 @@ export default class FileView extends React.Component<any, State> {
             successMessage: "",
             showDropdown: false,
             loading: false,
-            seekTime: '0:00:00.00'
+            seekTime: '0:00:00.00',
+            selection: '',
+            textSearch: false
         }
     }
 
@@ -94,7 +98,7 @@ export default class FileView extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    }
+    };
 
     public getFile = () => {
         const config = {
@@ -114,7 +118,7 @@ export default class FileView extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    }
+    };
 
 
     public getUser = () => {
@@ -133,14 +137,14 @@ export default class FileView extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-    }
+    };
 
     public saveDescription = () => {
 
-        var oldDescription = this.state.description
-        var newDescription = this.state.newDescription
+        var oldDescription = this.state.description;
+        var newDescription = this.state.newDescription;
 
-        var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description")
+        var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description");
 
         const formData = new FormData();
         formData.append("newDescription", newDescription)
@@ -151,13 +155,13 @@ export default class FileView extends React.Component<any, State> {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
                     'content-type': 'application/json'
                 }
-            }
+            };
 
             axios.put('/api/file/saveDescription/' + this.state.fileId, formData, config)
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
                     this.hideDescriptionModal();
-                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
+                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirmï¿½! Les changements effectuï¿½s ont ï¿½tï¿½ enregistrï¿½ avec succï¿½s.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
@@ -167,61 +171,94 @@ export default class FileView extends React.Component<any, State> {
                 });
         }
         else {
-            this.showErrorModal(modalTitle, "Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
+            this.showErrorModal(modalTitle, "Enregistrement de la description annulï¿½! Vous n'avez effectuï¿½ aucun changements ou vous avez apportï¿½ les mï¿½mes modifications.");
         }
-    }
+    };
+
+    // Searches the transcript for the selection, and updates the seekTime var with its timestamp
+    public searchTranscript = (selection : string, returnData : boolean) => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        };
+
+        // Search the entire selection for now
+        // This will probably have to change by having words with timestamps in the frontend
+        // But its an ok temporary solution
+        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + selection , config)
+            .then(res => {
+                console.log(res.data);
+                this.handleSeekTime(res.data);
+                if(returnData){
+                    this.handleTextSearch(true);
+                    return res.data;
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+    
+    public handleSelectionChange = (sel : string) =>{
+        this.setState({selection: sel});
+    };
+    
+    public handleTextSearch = (b: boolean) =>{
+        this.setState({textSearch: b});
+    };
+
+    public handleSeekTime = (time: string) => {
+        this.setState({ seekTime: time });
+    };
 
     public handleTranscriptChange = (text: string) => {
         this.setState({ editedTranscript: text });
-    }
+    };
 
     public updateVersion = (newVersion: any) => {
         this.setState({ version: newVersion });
-    }
+    };
 
     public showDescriptionModal = () => {
         this.setState({ showDescriptionModal: true });
-    }
+    };
 
     public hideDescriptionModal = () => {
         this.setState({ showDescriptionModal: false });
-    }
+    };
 
     public showSuccessModal = (title: string, description: string) => {
         this.setState({ successMessage: description });
         this.setState({ modalTitle: title });
         this.setState({ showSuccessModal: true });
-    }
+    };
 
     public showErrorModal = (title: string, description: string) => {
         this.setState({ errorMessage: description });
         this.setState({ modalTitle: title });
         this.setState({ showErrorModal: true });
-    }
+    };
 
     public handleDescriptionChange = (event: any) => {
         this.setState({ newDescription: event.target.value });
-    }
+    };
 
     public hideSuccessModal = () => {
         this.setState({ showSuccessModal: false });
-    }
+    };
 
     public hideErrorModal = () => {
         this.setState({ showErrorModal: false });
-    }
+    };
 
     public showDropdown = () => {
         this.setState({ showDropdown: true });
-    }
+    };
 
     public hideDropdown = () => {
         this.setState({ showDropdown: false });
-    }
-
-
-    public handleSeekTime = (time: string) => {
-        this.setState({ seekTime: time });
     };
 
     render() {
@@ -229,44 +266,45 @@ export default class FileView extends React.Component<any, State> {
             <div className="container">
 
                 <div className="columns">
-                    <div className="column is-one-third mg-top-30 has-background-white-smoke">
+                    <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} /> : null}
 
-                        {this.state.file ? <b className="has-text-link">Titre: </b> : null}
-                        {this.state.file ? (this.state.file.title ? <div><div className="card">
-                            <div className="card-content">
+                        {this.state.file ? <b className="file-view-header">Titre: </b> : null}
+                        {this.state.file ? (this.state.file.title ? <div>
+                            <div className="file-view-title">
                                 {this.state.file.title}
-                            </div> </div></div> : <div className="card">
-                                <div className="card-content"> This file has no title </div></div>) : null}
+                            </div> </div> : <div className="file-view-title"> This file has no title </div>) : null}
                         
                         <br />
 
-                        {this.state.file ? <b className="has-text-link">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit"></i></a></b> : null}
+                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
                         {this.state.file ? (this.state.file.description ? <div>
-                            <div className="card">
-                                <div className="card-content">
+                            <div className="file-view-desc">
                                 {this.state.description}
-                                </div>
+                            </div>
 
-                            </div></div> : <div className="card">
-                                <div className="card-content"> This file has no description </div></div>) : null}
+                        </div> : <div className="file-view-desc"> This file has no description </div>) : null}
                         
                         <br />
 
-                        <p>{this.state.file ? (this.state.file ? <div><div className="card">
-                            <div className="card-content">
-                                {this.state.version ?
+                        <p>{this.state.file ? (this.state.version ?
                                     <FileInfo
                                         thumbnail={this.state.file.thumbnailPath}
                                         userId={this.state.file.userId}
-                                        dateModified={this.state.version.dateModified} /> : null}
-                            </div> </div></div> : <div className="card">
-                                <div className="card-content"> This file has no extra Info </div></div>) : null}</p>
+                                        dateModified={this.state.version.dateModified}
+                                    /> : <p>This file has no extra Info </p>)
+                            : null}</p>
                     </div>
 
-                    <div className="column is-half mg-top-30">
-                        {this.state.version ? <TranscriptionSearch versionId={this.state.version.id} /> : null}
+                    <div className="column is-half mg-top-30 editing-section">
+                        {this.state.version ? 
+                            <TranscriptionSearch 
+                                versionId={this.state.version.id} 
+                                handleSeekTime={this.handleSeekTime} 
+                                searchTranscript={this.searchTranscript} 
+                                selection={this.state.selection}
+                                handleSelectionChange={this.handleSelectionChange} /> : null}
                         {this.state.loading ?
                             <Loading />
                             : this.state.version && this.state.file && this.state.user ?
@@ -275,7 +313,12 @@ export default class FileView extends React.Component<any, State> {
                                         text={this.state.version.transcription}
                                         version={this.state.version}
                                         handleChange={this.handleTranscriptChange}
-                                        handleSeekTime={this.handleSeekTime} />
+                                        handleSeekTime={this.handleSeekTime}
+                                        searchTranscript={this.searchTranscript}
+                                        selection={this.state.selection}
+                                        handleSelectionChange={this.handleSelectionChange}
+                                        textSearch={this.state.textSearch}
+                                        handleTextSearch={this.handleTextSearch}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
