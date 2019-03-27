@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace RC_SpeechToText.Services
 {
@@ -14,7 +15,7 @@ namespace RC_SpeechToText.Services
             var newWords2 = CreateNewWords(oldWords, longestCommonSequence.newTranscriptionTerms,
                 longestCommonSequence.newTransPosition, longestCommonSequence.oldTransPositions, newVersionId);
 
-            EstimateWords(newWords2);
+            newWords2 = EstimateWords(newWords2);
             //Old logic to be deleted after implementation of new save algorithm
             List<Word> newWords = new List<Word>();
 
@@ -173,15 +174,13 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        private void EstimateWords(List<Word> newWords)
+        private List<Word> EstimateWords(List<Word> newWords)
         {
             //Will save each span of words that need to be estimated
             var positions = new List<List<int>>();
             positions = getSpanPositions(newWords);
-
-            
-           
-
+            return GenerateTimeStamps(newWords,positions);
+                       
         }
 
         private List<List<int>> getSpanPositions(List<Word> newWords)
@@ -195,27 +194,28 @@ namespace RC_SpeechToText.Services
             //Taking all words with "estime" since we have to re-estimate old words to keep it consistent
             for (int i = 0; i < newWords.Count; i++)
             {
-                if (newWords[i].Equals("Estime") && !inSpan)
+                if (newWords[i].State != null && newWords[i].State.Equals("Estime") && !inSpan)
                 {
                     positions.Add(new List<int>());
                     positions[spanCounter].Add(i);
                     inSpan = true;
                 }
-                else if (newWords[i].Equals("Estime") && inSpan)
+                else if (newWords[i].State != null && newWords[i].State.Equals("Estime") && inSpan)
                 {
                     positions[spanCounter].Add(i);
                 }
                 else
                 {
+                    if (inSpan)
+                        spanCounter++;
                     inSpan = false;
-                    spanCounter++;
+                   
                 }
             }
 
             return positions;
         }
 
-       
         private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
