@@ -8,14 +8,14 @@ namespace RC_SpeechToText.Services
 {
     public class ModifyTimeStampService
     {
-        public List<Word> ModifyTimestamps(List<Word> oldWords, string oldTranscript, string newTranscript, Guid newVersionId)
+        public List<Word> ModifyTimestamps(List<Word> oldWords, string oldTranscript, string newTranscript, Guid newVersionId, string duration)
         {
 
             var longestCommonSequence = CommonWords(oldTranscript,newTranscript);
             var newWords2 = CreateNewWords(oldWords, longestCommonSequence.newTranscriptionTerms,
                 longestCommonSequence.newTransPosition, longestCommonSequence.oldTransPositions, newVersionId);
 
-            newWords2 = EstimateWords(newWords2);
+            newWords2 = EstimateWords(newWords2, duration);
             //Old logic to be deleted after implementation of new save algorithm
             List<Word> newWords = new List<Word>();
 
@@ -174,12 +174,12 @@ namespace RC_SpeechToText.Services
             return newWords;
         }
 
-        private List<Word> EstimateWords(List<Word> newWords)
+        private List<Word> EstimateWords(List<Word> newWords, string duration)
         {
             //Will save each span of words that need to be estimated
             var positions = new List<List<int>>();
             positions = getSpanPositions(newWords);
-            return GenerateTimeStamps(newWords,positions);
+            return GenerateTimeStamps(newWords,positions, duration);
                        
         }
 
@@ -216,7 +216,7 @@ namespace RC_SpeechToText.Services
             return positions;
         }
 
-        private List<Word> GenerateTimeStamps(List<Word> newWords, List<List<int>> positions)
+        private List<Word> GenerateTimeStamps(List<Word> newWords, List<List<int>> positions, string duration)
         {
             
             for (int i = 0; i < positions.Count; i++)
