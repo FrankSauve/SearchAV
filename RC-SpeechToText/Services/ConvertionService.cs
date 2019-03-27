@@ -16,7 +16,7 @@ namespace RC_SpeechToText.Services
 	{
 
 		private readonly SearchAVContext _context;
-		private readonly string _bucketName = "rc-retd-stt-dev2";
+		private readonly string _bucketName = "rc-retd-stt-dev";
 
 		public ConvertionService(SearchAVContext context)
 		{
