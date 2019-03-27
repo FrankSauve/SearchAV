@@ -32,7 +32,7 @@ html, body {
   }
   
   .mg-left-400 {
-      margin-left: 400px;
+      margin-left: 450px;
   }
   
   .mg-left-10 {
@@ -49,6 +49,10 @@ html, body {
 
 .is-circular {
     border-radius: 50%;
+}
+
+.right{
+    float:right;
 }
 
 .grid-view-dropdown {
@@ -123,17 +127,6 @@ th {
     text-align: left;
 }
 
-.highlight-text {
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 10vh;
-  max-height: 55vh;
-}
-
-.highlight-text::selection {
-    background: $light-blue;
-} 
-
 ::-webkit-scrollbar {
     height: 11px;
     width: 11px;
@@ -141,6 +134,7 @@ th {
 
 ::-webkit-scrollbar-track {
     background: #f1f1f1;
+    border: 1px solid #909bb8;
 }
 
 ::-webkit-scrollbar-thumb {

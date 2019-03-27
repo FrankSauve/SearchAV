@@ -53,7 +53,7 @@
     .file-box {
         height: 620px;
         padding: 10px;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
     }
 }
@@ -63,7 +63,7 @@
     .file-box {
         height: 800px;
         padding: 10px;
-        overflow-y: scroll;
+        overflow-y: auto;
         overflow-x: hidden;
     }
 }
@@ -133,7 +133,6 @@
 
 .search-field {
     margin-top: 10px;
-    left: 660px;
     background-color: $link;
     width: 340px;
     float: right;

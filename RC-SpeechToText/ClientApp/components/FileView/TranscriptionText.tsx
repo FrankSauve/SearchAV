@@ -148,7 +148,7 @@ export class TranscriptionText extends React.Component<any, State> {
             <div>
                 <div 
                     id="transcription" 
-                    className="mg-top-30 highlight-text" 
+                    className="highlight-text" 
                     contentEditable={true}
                     dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
             </div>
