@@ -175,8 +175,47 @@ namespace RC_SpeechToText.Services
 
         private void EstimateWords(List<Word> newWords)
         {
+            //Will save each span of words that need to be estimated
+            var positions = new List<List<int>>();
+            positions = getSpanPositions(newWords);
+
+            
+           
 
         }
+
+        private List<List<int>> getSpanPositions(List<Word> newWords)
+        {
+
+            var positions = new List<List<int>>();
+
+            var inSpan = false;
+            var spanCounter = 0;
+
+            //Taking all words with "estime" since we have to re-estimate old words to keep it consistent
+            for (int i = 0; i < newWords.Count; i++)
+            {
+                if (newWords[i].Equals("Estime") && !inSpan)
+                {
+                    positions.Add(new List<int>());
+                    positions[spanCounter].Add(i);
+                    inSpan = true;
+                }
+                else if (newWords[i].Equals("Estime") && inSpan)
+                {
+                    positions[spanCounter].Add(i);
+                }
+                else
+                {
+                    inSpan = false;
+                    spanCounter++;
+                }
+            }
+
+            return positions;
+        }
+
+       
         private List<Word> HandleEdited(List<Word> oldWords, string newTranscript, Guid newVersionId, List<string> newTranscriptList)
         {
             List<Word> newWords = new List<Word>();
