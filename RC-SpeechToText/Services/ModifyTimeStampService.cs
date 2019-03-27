@@ -235,8 +235,7 @@ namespace RC_SpeechToText.Services
                 //Getting end time to estimate
                 if (positions[i][positions[i].Count - 1] == newWords.Count - 1)
                 {
-                    //To implement
-                    timeEnd = 9999999;
+                    timeEnd = TimeSpan.Parse(duration).TotalSeconds;
                 }
                 else
                 {
