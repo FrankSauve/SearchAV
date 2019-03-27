@@ -216,6 +216,50 @@ namespace RC_SpeechToText.Services
             return positions;
         }
 
+        private List<Word> GenerateTimeStamps(List<Word> newWords, List<List<int>> positions)
+        {
+            
+            for (int i = 0; i < positions.Count; i++)
+            {
+                double timeStart;
+                double timeEnd;
+                //Getting the start time to estimate 
+                if (positions[i][0] == 0)
+                {
+                    timeStart = 0;
+                }
+                else
+                {
+                    timeStart = timeStringToDouble(newWords[positions[i][0] - 1].Timestamp);
+                }
+                //Getting end time to estimate
+                if (positions[i][positions[i].Count - 1] == newWords.Count - 1)
+                {
+                    //To implement
+                    timeEnd = 9999999;
+                }
+                else
+                {
+                    timeEnd = timeStringToDouble(newWords[positions[i][positions[i].Count - 1] + 1].Timestamp);
+                }
+
+                var timeFrame = (timeEnd - timeStart)/(positions[i].Count + 1);
+
+                for (int j = 0; j < positions[i].Count;j++)
+                {
+
+                    var timestamp = timeStart + (timeFrame * (1 + j));
+
+                    double x = Math.Truncate(timestamp * 1000) / 1000;
+                    string timestampString = string.Format("{0:N3}", x); // No fear of rounding and takes the default number format
+                    timestampString ="\""+ timestampString +"s\"";
+                    newWords[positions[i][j]].Timestamp = timestampString;
+                }
+            }
+
+                return newWords;
+        }
+
         private Double timeStringToDouble(string time)
         {
             Regex regex = new Regex(@"([\d.]+)");
