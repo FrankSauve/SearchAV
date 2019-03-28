@@ -3,6 +3,8 @@ using RC_SpeechToText.Exceptions;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Models.DTO.Outgoing;
+using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,6 +134,23 @@ namespace RC_SpeechToText.Services
 			{
                 throw new ControllerExceptions("User not found");
 			}
+		}
+
+		public async Task ModifyThumbnail(OutModifyThumbnailDTO modifyThumbnailDTO)
+		{
+			await Task.Run(() =>
+			{
+				var filePath = @"\wwwroot\assets\Audio\" + modifyThumbnailDTO.FileTitle;
+				var thumbnailPath = @"\wwwroot\assets\Thumbnails\" + modifyThumbnailDTO.FileTitle + ".jpg";
+
+				var streamIO = new IOInfrastructure();
+
+				streamIO.DeleteFile(thumbnailPath);
+
+				var converter = new Converter();
+
+				var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime);
+			});
 		}
 
         private async Task<bool> VerifyIfTitleExists(string title)

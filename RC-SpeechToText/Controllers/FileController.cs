@@ -148,6 +148,7 @@ namespace RC_SpeechToText.Controllers
 		public async Task<IActionResult> ChangeThumbnail(string fileTitle, int seekTime)
 		{
 			var outDTO = new OutModifyThumbnailDTO { FileTitle = fileTitle, SeekTime = seekTime };
+			await _fileService.ModifyThumbnail(outDTO);
 			return Ok();
 		}
     }

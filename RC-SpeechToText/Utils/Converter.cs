@@ -60,7 +60,7 @@ namespace RC_SpeechToText.Utils
             return monoFileLocation;
         }
 
-        public string CreateThumbnail(string videoFilePath, string outputFilePath)
+        public string CreateThumbnail(string videoFilePath, string outputFilePath, int seekTime)
         {
 			try
 			{
@@ -69,7 +69,7 @@ namespace RC_SpeechToText.Utils
 					var mp4 = new MediaFile { Filename = videoFilePath };
 					var outputFile = new MediaFile { Filename = outputFilePath };
 
-					var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
+					var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(seekTime) };
 
 					options.VideoAspectRatio = VideoAspectRatio.R16_9;
 
