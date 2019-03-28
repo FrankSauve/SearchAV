@@ -28,12 +28,11 @@ namespace RC_SpeechToText.Services {
         {
             var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
 
-            //Find file related to version for duration and flag updates
-            Models.File file;
-            file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
+            //Find duration of file
+            var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync(); 
 
             //Calling this method will handle saving the new words in the databse
-            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript, file.Duration);
+            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript, duration);
             if (resultSaveWords != null)
             {
                 return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
@@ -45,7 +44,10 @@ namespace RC_SpeechToText.Services {
             //flag -> Révisé
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
 
-			//Find corresponding file and update its flag 
+            //Find corresponding file and update its flag 
+            Models.File file;
+            file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
+
             string flag;
             if (file != null)
                 flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"

@@ -12,12 +12,12 @@ namespace RC_SpeechToText.Services
         {
 
             var longestCommonSequence = CommonWords(oldTranscript,newTranscript);
-            var newWords2 = CreateNewWords(oldWords, longestCommonSequence.newTranscriptionTerms,
+            var newWords = CreateNewWords(oldWords, longestCommonSequence.newTranscriptionTerms,
                 longestCommonSequence.newTransPosition, longestCommonSequence.oldTransPositions, newVersionId);
 
-            newWords2 = EstimateWords(newWords2, duration);
+            newWords = EstimateWords(newWords, duration);
             //Old logic to be deleted after implementation of new save algorithm
-            List<Word> newWords = new List<Word>();
+            /*List<Word> newWords = new List<Word>();
 
             var newTranscriptNoBr = longestCommonSequence.newTranscriptionTerms;
 
@@ -33,7 +33,7 @@ namespace RC_SpeechToText.Services
             else
             {
                 newWords = HandleAdded(oldWords, newTranscript, newVersionId, newTranscriptNoBr);
-            }
+            }*/
             return newWords;
         }
 
@@ -236,7 +236,7 @@ namespace RC_SpeechToText.Services
                 if (positions[i][positions[i].Count - 1] == newWords.Count - 1)
                 {
                     //To implement
-                    timeEnd = 9999999;
+                    timeEnd = TimeSpan.Parse(duration).TotalSeconds;
                 }
                 else
                 {
