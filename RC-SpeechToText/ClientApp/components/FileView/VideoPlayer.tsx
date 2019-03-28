@@ -4,7 +4,7 @@ import ReactPlayer from 'react-player';
 interface State {
     player: any,
     playing: boolean,
-    
+    controle: boolean
 }
 
 export class VideoPlayer extends React.Component<any, State> {
@@ -13,7 +13,8 @@ export class VideoPlayer extends React.Component<any, State> {
 
         this.state = {
             player: null,
-            playing: false
+            playing: false,
+            controle: this.props.controle
         }
 
     }
@@ -89,7 +90,7 @@ export class VideoPlayer extends React.Component<any, State> {
                     playing={this.state.playing}
                     onPause={this.onPause}
                     onPlay={this.onPlay}
-                    controls={true}
+                    controls={this.state.controle}
                     width='100%'
                     height='100%'
                 />
