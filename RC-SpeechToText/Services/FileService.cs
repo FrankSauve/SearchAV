@@ -140,16 +140,19 @@ namespace RC_SpeechToText.Services
 		{
 			await Task.Run(() =>
 			{
-				var filePath = @"\wwwroot\assets\Audio\" + modifyThumbnailDTO.FileTitle;
-				var thumbnailPath = @"\wwwroot\assets\Thumbnails\" + modifyThumbnailDTO.FileTitle + ".jpg";
-
 				var streamIO = new IOInfrastructure();
+
+				var filePath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + modifyThumbnailDTO.FileTitle);
+				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + modifyThumbnailDTO.FileTitle + ".jpg");
 
 				streamIO.DeleteFile(thumbnailPath);
 
 				var converter = new Converter();
 
-				var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime);
+				var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime-1);
+
+				if (thumbnailImage != null)
+					Console.Write(thumbnailImage);
 			});
 		}
 
