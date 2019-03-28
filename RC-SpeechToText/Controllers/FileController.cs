@@ -8,6 +8,7 @@ using RC_SpeechToText.Services;
 using System.Linq;
 using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
+using RC_SpeechToText.Models.DTO.Outgoing;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -142,5 +143,12 @@ namespace RC_SpeechToText.Controllers
 
             return Ok(file.File);
         }
+
+		[HttpPut("[action]/{fileTitle}/{seekTime}")]
+		public async Task<IActionResult> ChangeThumbnail(string fileTitle, int seekTime)
+		{
+			var outDTO = new OutModifyThumbnailDTO { FileTitle = fileTitle, SeekTime = seekTime };
+			return Ok();
+		}
     }
 }
