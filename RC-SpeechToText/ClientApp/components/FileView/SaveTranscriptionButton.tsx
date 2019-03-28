@@ -124,7 +124,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     errorMessage={this.props.userId == this.props.reviewerId ? "Révision de la transcription annulé! Une erreur est survenue." : "Enregistrement de la transcription annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."}
                 />
 
-                <a className="button is-link mg-top-10" onClick={this.showSaveTranscriptModal}>{button}</a>
+                <a className="button is-rounded is-link mg-top-10 mg-left-10" onClick={this.showSaveTranscriptModal}><i className="far fa-save mg-right-5"></i> <p className="nav-button"> {button.toUpperCase()}</p></a>
             </div>
         );
     }

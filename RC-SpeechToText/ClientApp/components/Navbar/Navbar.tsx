@@ -101,9 +101,9 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                             <i className="fas fa-angle-left"></i>
                         </Link>
 
-                    <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showReviewModal}><i className="far fa-envelope mg-right-5 is-link"></i><p className="nav-button is-link"> Demander une revision</p></a>
-                        <a className="button is-rounded mg-top-10 mg-left-10 " onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5 is-link"></i><p className="nav-button is-link"> Exporter</p></a>
-                    <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> <p className="nav-button"> Enregistrer</p></a>
+                    <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showReviewModal}><i className="far fa-envelope mg-right-5 is-link"></i><p className="nav-button is-link"> DEMANDER UNE REVISION</p></a>
+                    <a className="button is-rounded mg-top-10 mg-left-10 " onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5 is-link"></i><p className="nav-button is-link"> EXPORTER</p></a>
+                    <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> <p className="nav-button"> ENREGISTRER</p></a>
                     </div>
 
                     <ExportModal
