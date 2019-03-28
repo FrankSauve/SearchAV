@@ -31,7 +31,7 @@ namespace RC_SpeechToText.Tests
 
             var user = new User {Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
             var reviewer = new User {Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
-            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:30"};
 
             var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
