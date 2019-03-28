@@ -73,9 +73,9 @@ export class GridFileCard extends React.Component<any, State> {
                             <div className="transcription-grid-view">
                                 <p>{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
                             </div>
-                            <br/>
-                            <p><b>{this.props.username}</b></p>
-                            <time dateTime={this.props.date}>{this.props.date}</time>
+                            <br />
+                            <p className="font-size-12 font-family-roboto"><b>{this.props.username}</b></p>
+                            <time className="font-size-12 font-family-roboto" dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
                 </div>
