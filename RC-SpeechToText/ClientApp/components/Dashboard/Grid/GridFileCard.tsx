@@ -6,8 +6,6 @@ interface State {
     title: string,
     description: string,
     duration: string, 
-    modifiedTitle: string,
-    newDescription: string,
     flag: string,
 }
 
@@ -19,10 +17,16 @@ export class GridFileCard extends React.Component<any, State> {
             title: this.props.title,
             description: this.props.description,
             duration: this.props.duration, 
-            modifiedTitle: "",
-            newDescription: "",
             flag: this.props.flag,
         }
+    }
+
+    public updateTitle = (newTitle: string) => {
+        this.setState({ 'title': newTitle });
+    }
+
+    public updateDescription = (newDescription: string) => {
+        this.setState({ 'description': newDescription });
     }
 
     rawToWhiteSpace(text: string) {
@@ -43,16 +47,18 @@ export class GridFileCard extends React.Component<any, State> {
                         <p className="card-header-title fileTitle">
                             {this.state.title ? (this.state.title.length < 35 ? this.removeExtension(this.state.title) : this.removeExtension(this.state.title).substring(0, 35) + " ..." ) : null}</p>
                         
-                            <DropdownButton
-                                        fileId={this.props.file.id}
-                                        title={this.props.file.title}
-                                        description={this.props.file.description}
-                                        flag={this.props.file.flag}
-                                        updateFiles={this.props.updateFiles}
-                                        username={this.props.username}
-                                        image={this.props.file.type == "Audio" ? 'assets/speakerIcon.png' : this.props.file.thumbnailPath}
-                                        date={this.props.file.dateAdded.substring(0, 10) + " " + this.props.file.dateAdded.substring(11, 16)}
-                            />
+                         <DropdownButton
+                            fileId={this.props.file.id}
+                            title={this.props.file.title}
+                            description={this.props.file.description}
+                            flag={this.props.file.flag}
+                            updateFiles={this.props.updateFiles}
+                            username={this.props.username}
+                            image={this.props.file.type == "Audio" ? 'assets/speakerIcon.png' : this.props.file.thumbnailPath}
+                            date={this.props.file.dateAdded.substring(0, 10) + " " + this.props.file.dateAdded.substring(11, 16)}
+                            updateTitle={this.updateTitle}
+                            updateDescription={this.updateDescription}
+                          />
 
                     </header>
                     <div className="card-image">

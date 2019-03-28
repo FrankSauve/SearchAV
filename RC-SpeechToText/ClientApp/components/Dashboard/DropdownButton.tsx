@@ -171,6 +171,7 @@ export class DropdownButton extends React.Component<any, State> {
             axios.put('/api/file/ModifyTitle/' + this.state.fileId, formData, config)
                 .then(res => {
                     this.setState({ title: this.state.modifiedTitle });
+                    this.props.updateTitle(this.state.modifiedTitle);
                     this.hideTitleModal();
                     this.showSuccessModal("Modifier le titre", "Enregistrement du titre confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
@@ -181,7 +182,13 @@ export class DropdownButton extends React.Component<any, State> {
                         this.setState({ 'unauthorized': true });
                     }
                     else if (err.response.status == 400) {
-                        this.showErrorModal("Modifier le titre", err.response.data);
+                        this.showErrorModal("Modifier le titre", "Une erreur inattendue est survenue! Veuillez recommencer ou vous reconnecter si le probleme persiste.");
+                    }
+                    else if (err.response.status == 500) {
+                        this.showErrorModal("Modifier le titre", "Un fichier avec le meme titre existe deja! Veuillez choisir un autre titre s'il vous plait.");
+                    }
+                    else {
+                        this.showErrorModal("Modifier le titre", "Une erreur inattendue est survenue! Veuillez recommencer ou vous reconnecter si le probleme persiste.");
                     }
                 });
         }
@@ -213,6 +220,7 @@ export class DropdownButton extends React.Component<any, State> {
             axios.put('/api/file/saveDescription/' + this.state.fileId, formData, config)
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
+                    this.props.updateDescription(this.state.newDescription);
                     this.hideDescriptionModal();
                     this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
