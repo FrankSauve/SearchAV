@@ -15,8 +15,9 @@ interface State {
     description: string,
     showAddTitleDescriptionModal: boolean,
     showSuccessTranscribe: boolean,
-    showErrorTranscribe: boolean,
-    descriptionErrorTranscribe: string
+    showErrorModal: boolean,
+    modalTitle: string,
+    errorMessage: string
 }
 
 export default class FileInput extends React.Component<any, State> {
@@ -31,8 +32,9 @@ export default class FileInput extends React.Component<any, State> {
             description: "",
             showAddTitleDescriptionModal: false, 
             showSuccessTranscribe: false,
-            showErrorTranscribe: false,
-            descriptionErrorTranscribe: ""
+            showErrorModal: false,
+            modalTitle: "",
+            errorMessage: ""
         }
 
     }
@@ -43,7 +45,6 @@ export default class FileInput extends React.Component<any, State> {
 
     public showAddTitleDescriptionModal = (e: any) => {
         this.setState({ file: e.target.files[0] });
-//        this.setState({ title: e.target.files[0].name });
         this.setState({ showAddTitleDescriptionModal: true });
     } 
 
@@ -67,20 +68,24 @@ export default class FileInput extends React.Component<any, State> {
         this.setState({ showSuccessTranscribe: false });
     }
 
-    public showErrorModal = (description: string) => {
-        this.setState({ showErrorTranscribe: true });
-        this.setState({ descriptionErrorTranscribe: description });
+    //public showErrorModal = (description: string) => {
+    //    this.setState({ showErrorTranscribe: true });
+    //    this.setState({ descriptionErrorTranscribe: description });
+    //}
+
+    public showErrorModal = (title: string, description: string) => {
+        this.setState({ errorMessage: description });
+        this.setState({ modalTitle: title });
+        this.setState({ showErrorModal: true });
     }
 
     public hideErrorModal = () => {
-        this.setState({ showErrorTranscribe: false });
-        this.setState({ descriptionErrorTranscribe: "" });
+        this.setState({ showErrorModal: false });
+        this.setState({ errorMessage: "" });
     }
 
     public getGoogleSample = () => { 
-
         this.hideAddTitleDescriptionModal(); 
-
         this.toggleLoad();
 
         const formData = new FormData();
@@ -106,12 +111,45 @@ export default class FileInput extends React.Component<any, State> {
             .catch(err => {
                 this.toggleLoad();
                 console.log(err.response.data);
-                this.showErrorModal(err.response.data.message)
+                this.showErrorModal("�chec de l'importation!", err.response.data.message)
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }
             });
     };
+
+    public verifyIfTitleExists = () => {
+        this.toggleLoad();
+        var title = this.state.title;
+
+        if (title != "")
+        {
+            const formData = new FormData();
+            formData.append("title", title)
+
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + auth.getAuthToken(),
+                    'content-type': 'application/json'
+                }
+            }
+            axios.post('/api/file/VerifyIfTitleExists/' + title, formData, config)
+                .then(res => {
+                    this.hideAddTitleDescriptionModal();
+                    //this.getGoogleSample();
+                })
+                .catch(err => {
+                    console.log(err);
+                    if (err.response.data) {
+                        this.showErrorModal("Modifier le titre", err.response.data.message);
+                    }
+                });
+        }
+        else {
+            this.showErrorModal("Modifier le titre", "Title is null");
+        }
+    }
+
 
     onDrag = (e: any) => {
         e.preventDefault();
@@ -132,26 +170,27 @@ export default class FileInput extends React.Component<any, State> {
         
         return (
             <div className="column mg-top-30 no-padding">
-                <ErrorModal
-                    showModal={this.state.showErrorTranscribe}
-                    hideModal={this.hideErrorModal}
-                    title={"�chec de l'importation!"}
-                    errorMessage={this.state.descriptionErrorTranscribe}
-                />
-                <SuccessModal
-                    showModal={this.state.showSuccessTranscribe}
-                    hideModal={this.hideSuccessModal}
-                    title={"Importation R�ussie!"}
-                    successMessage="La transcription de votre fichier a �t� effectu� avec succ�s. Vous recevrez un courriel dans quelques instants."
-                />
-
                 <AddTitleDescriptionModal
                     showModal={this.state.showAddTitleDescriptionModal}
                     hideModal={this.hideAddTitleDescriptionModal}
                     handleDescriptionChange={this.handleDescriptionChange}
                     handleTitleChange={this.handleTitleChange}
                     title={this.state.title}
-                    onSubmit={this.getGoogleSample}
+                    onSubmit={this.verifyIfTitleExists}
+                />
+
+                <ErrorModal
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.hideErrorModal}
+                    title={"�chec de l'importation!"}
+                    errorMessage={this.state.errorMessage}
+                />
+
+                <SuccessModal
+                    showModal={this.state.showSuccessTranscribe}
+                    hideModal={this.hideSuccessModal}
+                    title={"Importation R�ussie!"}
+                    successMessage="La transcription de votre fichier a �t� effectu� avec succ�s. Vous recevrez un courriel dans quelques instants."
                 />
 
                 <div className="file is-boxed has-name"

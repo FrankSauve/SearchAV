@@ -32,16 +32,6 @@ namespace RC_SpeechToText.Controllers
 		[HttpPost("[action]")]
 		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string description, string title)
 		{
-            if (title == null)
-            {
-                throw new ControllerExceptions("S'il vous plaît remplir un titre");
-            }
-            else if (await _fileService.VerifyIfTitleExists(title))
-            {
-                throw new ControllerExceptions("Ce titre existe déjà");
-            }
-            else
-            {
                 var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, description, title);
                 if (version == null)
                 {
@@ -52,5 +42,4 @@ namespace RC_SpeechToText.Controllers
             }
 			
 		}
-	}
 }
