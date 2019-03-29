@@ -31,7 +31,7 @@ namespace RC_SpeechToText.Tests
 
             var user = new User {Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
             var reviewer = new User {Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
-            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:30"};
 
             var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -124,7 +124,7 @@ namespace RC_SpeechToText.Tests
 
             var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
             var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
-            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:09" };
 
             var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -174,16 +174,9 @@ namespace RC_SpeechToText.Tests
             List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Position).ToListAsync();
 
             //Check if each words related to new transcription has right timestamp 
-            //(They should have the timestamp of the word that precedes them)
-            //Assert.Equal("\"1.000s\"", addedWords[0].Timestamp);
-            //Assert.Equal("\"2.000s\"", addedWords[1].Timestamp);
-            //Assert.Equal("\"2.000s\"", addedWords[2].Timestamp);
-            //Assert.Equal("\"3.000s\"", addedWords[3].Timestamp);
-            //Assert.Equal("\"4.000s\"", addedWords[4].Timestamp);
-            //Assert.Equal("\"5.000s\"", addedWords[5].Timestamp);
-            //Assert.Equal("\"6.000s\"", addedWords[6].Timestamp);
-            //Assert.Equal("\"7.000s\"", addedWords[7].Timestamp);
-            //Assert.Equal("\"7.000s\"", addedWords[8].Timestamp);
+            //(They should have the timestamp of the word that precedes them
+            Assert.Equal("\"2.500s\"", addedWords[2].Timestamp);
+            Assert.Equal("\"8.000s\"", addedWords[8].Timestamp);
             
            
         }
@@ -199,7 +192,7 @@ namespace RC_SpeechToText.Tests
 
             var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
             var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
-            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:08" };
 
             var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
@@ -247,14 +240,14 @@ namespace RC_SpeechToText.Tests
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
-            List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Id).ToListAsync();
+            List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Position).ToListAsync();
 
             //Check if each words related to new transcription has right timestamp 
             //(They should have the same timestamps with the removed words gone)
-            //Assert.Equal("\"2.000s\"", addedWords[0].Timestamp);
-            //Assert.Equal("\"3.000s\"", addedWords[1].Timestamp);
-            //Assert.Equal("\"4.000s\"", addedWords[2].Timestamp);
-            //Assert.Equal("\"6.000s\"", addedWords[3].Timestamp);
+            Assert.Equal("\"2.000s\"", addedWords[0].Timestamp);
+            Assert.Equal("\"3.000s\"", addedWords[1].Timestamp);
+            Assert.Equal("\"4.000s\"", addedWords[2].Timestamp);
+            Assert.Equal("\"6.000s\"", addedWords[3].Timestamp);
           
         }
 
@@ -269,7 +262,7 @@ namespace RC_SpeechToText.Tests
 
             var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
             var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
-            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:08" };
 
             var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
            {
@@ -316,17 +309,13 @@ namespace RC_SpeechToText.Tests
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
-            List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Id).ToListAsync();
+            List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Position).ToListAsync();
 
             //Check if each words related to new transcription has right timestamp 
             //(They should have the same timestamps with the modified words keeping their)
-            //Assert.Equal("\"1.000s\"", addedWords[0].Timestamp);
-            //Assert.Equal("\"2.000s\"", addedWords[1].Timestamp);
-            //Assert.Equal("\"3.000s\"", addedWords[2].Timestamp);
-            //Assert.Equal("\"4.000s\"", addedWords[3].Timestamp);
-            //Assert.Equal("\"5.000s\"", addedWords[4].Timestamp);
-            //Assert.Equal("\"6.000s\"", addedWords[5].Timestamp);
-            //Assert.Equal("\"7.000s\"", addedWords[6].Timestamp);
+            Assert.Equal("\"1.000s\"", addedWords[0].Timestamp);
+            Assert.Equal("\"5.000s\"", addedWords[4].Timestamp);
+            Assert.Equal("\"7.000s\"", addedWords[6].Timestamp);
         }
 
         [Fact]

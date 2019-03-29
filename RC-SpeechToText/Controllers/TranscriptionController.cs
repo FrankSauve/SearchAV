@@ -53,6 +53,7 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+
         /// <summary>
         /// Returns timestamps of searched terms
         /// </summary>
