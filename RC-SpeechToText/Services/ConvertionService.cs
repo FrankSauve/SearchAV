@@ -42,7 +42,7 @@ namespace RC_SpeechToText.Services
 
 			// Create thumbnail
 			var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
-			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg", 1);
+			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg", 1000);
 
 			if (thumbnailImage == null)
 			{

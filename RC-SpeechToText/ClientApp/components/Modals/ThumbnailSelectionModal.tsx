@@ -9,7 +9,7 @@ import { SuccessModal } from './SuccessModal';
 interface State {
     inputTime: string,
     seekTime: string,
-    timeSeconds: number,
+    timeMillisecond: number,
     errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
@@ -24,7 +24,7 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
         this.state = {
             inputTime: "0",
             seekTime: "00:00:00",
-            timeSeconds: 0,
+            timeMillisecond: 0,
             duration: 0,
             errorMessage: "",
             unauthorized: false,
@@ -71,13 +71,13 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
         var time = parseInt(inputValue)
         var timeToSeek = time / 100
         var inputTimeToVideoTime = timeToSeek * this.state.duration
-        this.setState({ timeSeconds: inputTimeToVideoTime })
+        this.setState({ timeMillisecond: Math.floor(inputTimeToVideoTime * 1000) })
         this.secondsToTimeString(inputTimeToVideoTime)
     }
 
     public submit = () => {
         var title = this.props.file.title
-        var seek = this.state.timeSeconds
+        var seek = this.state.timeMillisecond
 
         const config = {
             headers: {
@@ -107,7 +107,7 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
                         </header>
                         <section className="modalBody">
                             {this.props.file ? <VideoPlayer path={this.props.file.title} controle={false} seekTime={this.state.seekTime} /> : null}
-                            <input type="range" step="1" min="0" max="this.state.duration" value={this.state.inputTime} onChange={this.changeThumbnail} />
+                                <input type="range" step="1" min="0" max="this.state.duration" value={this.state.inputTime} onChange={this.changeThumbnail} />
                         </section>
                         <footer className="modalFooter">
                             <button className="button is-success mg-right-5" onClick={this.submit}>Accepter</button>

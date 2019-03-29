@@ -69,7 +69,7 @@ namespace RC_SpeechToText.Utils
 					var mp4 = new MediaFile { Filename = videoFilePath };
 					var outputFile = new MediaFile { Filename = outputFilePath };
 
-					var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(seekTime) };
+					var options = new ConversionOptions { Seek = TimeSpan.FromMilliseconds(seekTime) };
 
 					options.VideoAspectRatio = VideoAspectRatio.R16_9;
 
