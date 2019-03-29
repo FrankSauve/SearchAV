@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -158,7 +159,7 @@ namespace RC_SpeechToText.Services {
             var oldTranscript =  _context.Version.Where(v => v.Id == versionId).Select(v => v.Transcription).SingleOrDefault();
             //Modify timestamps and return the new words
             var modifyTimeStampService = new ModifyTimeStampService();
-            List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, oldTranscript, newTranscript, newVersionId, duration);
+            List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, oldTranscript.ClearHTMLTag(), newTranscript.ClearHTMLTag(), newVersionId, duration);
 
             newWords.ForEach(async x =>
             {

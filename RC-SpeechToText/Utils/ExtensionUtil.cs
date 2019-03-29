@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Utils
@@ -47,6 +48,15 @@ namespace RC_SpeechToText.Utils
 			}
 			else
 				return str;
+		}
+
+		public static string ClearHTMLTag(this string str)
+		{
+			if (string.IsNullOrEmpty(str))
+				return str;
+
+			var clearedTranscription = Regex.Replace(str, "<.*?>", string.Empty);
+			return Regex.Replace(clearedTranscription, "&nbsp;", " ");
 		}
 	}
 }
