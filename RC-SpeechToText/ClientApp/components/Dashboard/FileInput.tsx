@@ -162,7 +162,7 @@ export default class FileInput extends React.Component<any, State> {
                                 <span className="file-label">
                                     <div className="file-input-text">Glisser les fichier ici</div>
                                     <div className="file-input-text">ou</div>
-                                    <button className="button is-link button-parcourir">Parcourir</button>
+                                    <div className="button is-link button-parcourir">Parcourir</div>
                                 </span>
                             }
                         </span>
