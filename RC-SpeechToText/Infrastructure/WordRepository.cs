@@ -11,7 +11,7 @@ namespace RC_SpeechToText.Infrastructure
 			{
 				if (!transcription.IsNullOrEmpty())
 				{
-					var wordDocument = GenerateWordDocument(transcription);
+					var wordDocument = GenerateWordDocument(transcription.ClearHTMLTag());
 					wordDocument.Save();
 
 					return true;
