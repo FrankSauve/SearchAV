@@ -21,7 +21,7 @@ export class ModifyDescriptionModal extends React.Component<any> {
                             <div className="field">
                                 <div className="control">
                                     <textarea className="textarea is-primary" type="text" placeholder={this.props.description && this.props.description != "" ?
-                                        this.props.description : "Enter description"} defaultValue={this.props.description ? this.props.description : ""}
+                                        this.props.description : "Entrer la description"} defaultValue={this.props.description ? this.props.description : ""}
                                         onChange={this.props.handleDescriptionChange} />
                                 </div>
                             </div>

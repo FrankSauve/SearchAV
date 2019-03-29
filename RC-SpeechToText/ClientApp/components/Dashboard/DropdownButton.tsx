@@ -153,6 +153,8 @@ export class DropdownButton extends React.Component<any, State> {
     }
 
     public saveTitleChange = () => {
+        this.hideTitleModal();
+        this.setState({ 'loading': true });
 
         var oldTitle = this.state.title
         var newTitle = this.state.modifiedTitle
@@ -171,28 +173,44 @@ export class DropdownButton extends React.Component<any, State> {
             axios.put('/api/file/ModifyTitle/' + this.state.fileId, formData, config)
                 .then(res => {
                     this.setState({ title: this.state.modifiedTitle });
-                    this.hideTitleModal();
+                    this.props.updateTitle(this.state.modifiedTitle);
+                    this.setState({ 'loading': false });
                     this.showSuccessModal("Modifier le titre", "Enregistrement du titre confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
                 .catch(err => {
                     console.log(err);
                     if (err.response.status == 401) {
+                        this.setState({ 'loading': false });
                         this.showErrorModal("Modifier le titre", "Veuillez vous connecter avant de modifier le titre.");
                         this.setState({ 'unauthorized': true });
                     }
                     else if (err.response.status == 400) {
-                        this.showErrorModal("Modifier le titre", err.response.data);
+                        this.setState({ 'loading': false });
+                        this.showErrorModal("Modifier le titre", "Une erreur inattendue est survenue! Veuillez recommencer ou vous reconnecter si le probleme persiste.");
+                    }
+                    else if (err.response.status == 500) {
+                        this.setState({ 'loading': false });
+                        this.showErrorModal("Modifier le titre", "Un fichier avec le meme titre existe deja! Veuillez choisir un autre titre s'il vous plait.");
+                        this.showTitleModal();
+                    }
+                    else {
+                        this.setState({ 'loading': false });
+                        this.showErrorModal("Modifier le titre", "Une erreur inattendue est survenue! Veuillez recommencer ou vous reconnecter si le probleme persiste.");
                     }
                 });
         }
         else {
+            this.setState({ 'loading': false });
             this.showErrorModal("Modifier le titre", "Enregistrement du titre annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
+            this.showTitleModal();
         }
 
 
     }
 
     public saveDescription = () => {
+        this.hideDescriptionModal();
+        this.setState({ 'loading': true });
 
         var oldDescription = this.state.description
         var newDescription = this.state.newDescription
@@ -213,18 +231,22 @@ export class DropdownButton extends React.Component<any, State> {
             axios.put('/api/file/saveDescription/' + this.state.fileId, formData, config)
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
-                    this.hideDescriptionModal();
+                    this.props.updateDescription(this.state.newDescription);
+                    this.setState({ 'loading': false });
                     this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
+                        this.setState({ 'loading': false });
                         this.showErrorModal(modalTitle, "Veuillez vous connecter avant de modifier la description.");
                         this.setState({ 'unauthorized': true });
                     }
                 });
         }
         else {
+            this.setState({ 'loading': false });
             this.showErrorModal(modalTitle, "Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
+            this.showDescriptionModal();
         }
     }
 

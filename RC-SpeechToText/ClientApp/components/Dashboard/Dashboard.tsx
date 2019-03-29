@@ -254,6 +254,7 @@ export default class Dashboard extends React.Component<any, State> {
         }
         axios.get('/api/file/getFilesByDescriptionAndTitle/' + this.state.searchTerms, config)
             .then(res => {
+                this.deactivateFilters();
                 this.setState({ files: res.data });
             })
             .catch(err => {

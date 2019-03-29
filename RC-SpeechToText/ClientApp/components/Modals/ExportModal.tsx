@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ErrorModal } from './ErrorModal';
 import { SuccessModal } from './SuccessModal';
 import { EventHandler, ChangeEvent } from 'react';
+import { LoadingModal } from '../LoadingModal';
 
 interface State {
     fileId: AAGUID,
@@ -12,6 +13,7 @@ interface State {
     showErrorModal: boolean,
     hideBurnSubtitleRadioButton: boolean,
     burnVideoInput: boolean,
+    loading: boolean,
     unauthorized: boolean,
     documentOption: string
 }
@@ -27,6 +29,7 @@ export class ExportModal extends React.Component<any, State> {
             showErrorModal: false,
             hideBurnSubtitleRadioButton: true,
             burnVideoInput: false,
+            loading: false,
             unauthorized: false,
             documentOption: ""
         }
@@ -70,6 +73,8 @@ export class ExportModal extends React.Component<any, State> {
     }
 
     public saveDocument = () => {
+        this.setState({ loading: true });
+
         var fileId = this.state.fileId;
         var exportSelected = this.state.documentOption;
 
@@ -85,16 +90,20 @@ export class ExportModal extends React.Component<any, State> {
             };
             axios.get('/api/transcription/downloadtranscript/' + fileId + '/' + exportSelected, config)
                 .then(res => {
+                    this.setState({ loading: false });
                     this.showSuccessModal();
                 })
                 .catch(err => {
+                    this.setState({ loading: false });
                     this.showErrorModal("Une erreur est survenu lors de l'export du fichier")
                     this.setState({ 'unauthorized': true });
                 });
         } else {
             if (fileId == "")
+                this.setState({ loading: false });
                 this.showErrorModal("Une erreur est survenu lors de la selection du fichier");
             if (exportSelected == "" || exportSelected == "0")
+                this.setState({ loading: false });
                 this.showErrorModal("Choisier le type de document dont vous voulez exporter");
         }
     }
@@ -115,6 +124,10 @@ export class ExportModal extends React.Component<any, State> {
                     hideModal={this.hideSuccessModal}
                     title="Export du transcript"
                     successMessage="Document exporté!"
+                />
+
+                <LoadingModal
+                    showModal={this.state.loading}
                 />
 
                 <div className="modal-background"></div>
