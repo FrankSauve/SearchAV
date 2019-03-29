@@ -87,7 +87,7 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
         };
         axios.get('/api/file/ChangeThumbnail/' + title + '/' + seek, config)
             .then(res => {
-                this.showSuccessModal();
+                window.location.reload();
             })
             .catch(err => {
                 this.showErrorModal("Une erreur est survenu lors du changement du thumbnail")
@@ -120,13 +120,6 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
                     hideModal={this.hideErrorModal}
                     title="Erreur!"
                     errorMessage={this.state.errorMessage}
-                />
-
-                <SuccessModal
-                    showModal={this.state.showSuccessModal}
-                    hideModal={this.hideSuccessModal}
-                    title="Export du transcript"
-                    successMessage="Thumbnail changed!"
                 />
             </div>
         );
