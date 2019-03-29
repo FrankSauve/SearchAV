@@ -9,6 +9,7 @@ import { SuccessModal } from './SuccessModal';
 interface State {
     inputTime: string,
     seekTime: string,
+    timeSeconds: number,
     errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
@@ -22,7 +23,8 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
 
         this.state = {
             inputTime: "0",
-            seekTime: "0",
+            seekTime: "00:00:00",
+            timeSeconds: 0,
             duration: 0,
             errorMessage: "",
             unauthorized: false,
@@ -32,13 +34,13 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
     }
 
     public componentDidMount() {
-        this.timeStringToNumber(this.props.file.duration)
+        this.setState({ duration: this.timeStringToNumber(this.props.file.duration) })
     }
 
     private timeStringToNumber = (duration: string) => {
         var a = duration.split(':');
         var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
-        this.setState({ duration: seconds })
+        return seconds
     }
 
     private secondsToTimeString = (seconds: number) => {
@@ -69,12 +71,13 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
         var time = parseInt(inputValue)
         var timeToSeek = time / 100
         var inputTimeToVideoTime = timeToSeek * this.state.duration
+        this.setState({ timeSeconds: inputTimeToVideoTime })
         this.secondsToTimeString(inputTimeToVideoTime)
     }
 
     public submit = () => {
         var title = this.props.file.title
-        var seek = this.state.duration
+        var seek = this.state.timeSeconds
 
         const config = {
             headers: {
