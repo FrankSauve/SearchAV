@@ -99,17 +99,17 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
         return (
             <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
                 <div className="modal-background"></div>
-                <div className="modal-card modalCard">
-                    <div className="modal-container">
-                        <header className="modalHeader">
+                <div className="modal-card modalCard-Thumbnail">
+                    <div className="modal-container-Thumbnail">
+                        <header className="modalHeader-Thumbnail">
                             <p className="modal-card-title whiteText">Choisir un thumbnail</p>
                             <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal}></button>
                         </header>
-                        <section className="modalBody">
+                        <section className="modalBody-Thumbnail">
                             {this.props.file ? <VideoPlayer path={this.props.file.title} controle={false} seekTime={this.state.seekTime} /> : null}
                                 <input type="range" step="1" min="0" max="this.state.duration" value={this.state.inputTime} onChange={this.changeThumbnail} />
                         </section>
-                        <footer className="modalFooter">
+                        <footer className="modalFooter-Thumbnail">
                             <button className="button is-success mg-right-5" onClick={this.submit}>Accepter</button>
                         </footer>
                     </div>
