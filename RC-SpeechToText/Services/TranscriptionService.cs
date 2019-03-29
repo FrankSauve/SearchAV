@@ -28,8 +28,11 @@ namespace RC_SpeechToText.Services {
         {
             var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
 
+            //Find duration of file
+            var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync(); 
+
             //Calling this method will handle saving the new words in the databse
-            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript);
+            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript, duration);
             if (resultSaveWords != null)
             {
                 return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
@@ -41,9 +44,10 @@ namespace RC_SpeechToText.Services {
             //flag -> Révisé
             var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
 
-			//Find corresponding file and update its flag 
-			Models.File file;
+            //Find corresponding file and update its flag 
+            Models.File file;
             file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
+
             string flag;
             if (file != null)
                 flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
@@ -142,7 +146,7 @@ namespace RC_SpeechToText.Services {
         /// Private method that handles saving new words in the database when SaveTranscript is called
         /// This makes the transcript still searchable after adding new words
         /// </summary>
-        private async Task<string> SaveWords(Guid versionId, Guid newVersionId, string newTranscript)
+        private async Task<string> SaveWords(Guid versionId, Guid newVersionId, string newTranscript, string duration)
         {
             //Have to explicitly instantiate variable to be able to keep the words.
             List<Word> oldWords = new List<Word>();
@@ -151,10 +155,10 @@ namespace RC_SpeechToText.Services {
 
             //Ordered by position to get the words in the same order as transcript
             oldWords = await _context.Word.Where(w => w.VersionId == versionId).OrderBy(w => w.Position).ToListAsync();
-
+            var oldTranscript =  _context.Version.Where(v => v.Id == versionId).Select(v => v.Transcription).SingleOrDefault();
             //Modify timestamps and return the new words
             var modifyTimeStampService = new ModifyTimeStampService();
-            List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, newTranscript, newVersionId);
+            List<Word> newWords = modifyTimeStampService.ModifyTimestamps(oldWords, oldTranscript, newTranscript, newVersionId, duration);
 
             newWords.ForEach(async x =>
             {
