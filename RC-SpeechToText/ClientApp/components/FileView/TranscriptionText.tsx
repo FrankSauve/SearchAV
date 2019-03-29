@@ -128,7 +128,7 @@ export class TranscriptionText extends React.Component<any, State> {
 
     // removes all br tags from a string
     rawToHtml(text: string) {
-        return text.replace(/<br\s*[\/]?>/gi, "\n");
+        return text.replace(/&nbsp;/gi, "\n");
     }
 
     public handleBlur = () => {

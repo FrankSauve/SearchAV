@@ -92,7 +92,8 @@ namespace RC_SpeechToText.Services
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words, string fileTitle)
 		{
 			//get each paragraph. Remove all empty string (where <br> are present). Trim the strings
-			var paragraph = transcription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim()).ToList();
+			var clearedTranscription = transcription.ClearHTMLTag();
+			var paragraph = clearedTranscription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim()).ToList();
 			var timestamps = new List<string>();
 			//Count all the word that have been already passed through. => O(logN^2)
 			var wordPassed = 0;
