@@ -1,0 +1,103 @@
+.file-view-info-section {
+    margin-top: 40px;
+    background-color: #f4f5f8;
+    height: 100%;
+}
+
+.file-view-title {
+    padding: 10px 13px 10px 14px;
+    background-color: white;
+    font-family: Roboto;
+    font-size: 14px;
+    color: #000000;
+    text-align: left;
+    line-height: 20px;
+}
+
+.file-view-desc {
+    padding: 10px 13px 18px 14px;
+    background-color: white;
+    font-family: Roboto;
+    font-size: 14px;
+    color: #000000;
+    text-align: left;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    line-height: 20px;
+}
+
+.file-view-image {
+    height: 84px;
+    width: 150px;
+}
+
+.file-view-info {
+    //font-family: Rubik;
+    font-family: Roboto;
+    font-size: 13px;
+    color: #212940;
+    text-align: left;
+    line-height: 20px;
+}
+
+.file-view-header {
+    font-family: 'Roboto';
+    font-size: 14px;
+    color: #212940;
+    text-align: left;
+}
+
+.highlight-text {
+    //font-family: 'Rubik-Regular';
+    font-family: Roboto;
+    font-size: 14px;
+    color: #000000;
+    text-align: left;
+    line-height: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 540px;
+    padding: 20px;
+}
+
+.highlight-text:focus {
+    outline:none;
+} 
+
+.highlight-text::selection {
+    background: $light-blue;
+}
+
+.editing-section{
+    margin-left: -12px;
+    margin-right: 10px;
+}
+
+.search-div-file-view {
+    background-color: $link;
+    margin-top: -10px;
+    width: 100%;
+    height: 60px;
+}
+
+.search-field-file-view {
+    margin-top: 10px;
+    background-color: $link;
+    width: 240px;
+    margin-right: 10px;
+    float: right;
+}
+
+.nav-button {
+    font-family: 'Roboto';
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.video-player {
+    margin-top: -10px;
+    margin-right: -12px;
+    margin-left: -11px;
+}

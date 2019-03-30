@@ -4,13 +4,14 @@ import auth from '../../Utils/auth';
 import { ErrorModal } from '../Modals/ErrorModal';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { ConfirmationModal } from '../Modals/ConfirmationModal';
+import { LoadingModal } from '../LoadingModal';
 
 interface State {
     showSaveTranscriptModal: boolean,
     showSuccessModal: boolean,
     showErrorModal: boolean,
-    unauthorized: boolean,
-    isButtonDisabled: boolean
+    loading: boolean,
+    unauthorized: boolean
 }
 
 export class SaveTranscriptionButton extends React.Component<any, State> {
@@ -21,19 +22,21 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
             showSaveTranscriptModal: false,
             showSuccessModal: false,
             showErrorModal: false,
-            unauthorized: false,
-            isButtonDisabled: false
+            loading: false,
+            unauthorized: false
         }
 
     }
 
     public saveTranscription = () => {
+        this.hideSaveTranscriptModal();
+        this.setState({ 'loading': true });
 
         var oldTranscript = this.props.version.transcription
         var newTranscript = this.props.editedTranscription
 
         if ((oldTranscript == newTranscript || newTranscript == "") && this.props.userId != this.props.reviewerId) {
-            this.hideSaveTranscriptModal();
+            this.setState({ 'loading': false });
             this.setState({ 'showErrorModal': true });
         }
         else {
@@ -51,19 +54,17 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                 .then(res => {
                     console.log(res);
                     this.props.updateVersion(res.data);
-                    this.hideSaveTranscriptModal();
+                    this.setState({ 'loading': false });
                     this.showSuccessModal();
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
+                        this.setState({ 'loading': false });
                         this.setState({ 'unauthorized': true });
                         this.showErrorModal();
                     }
                 });
         }
-        this.setState({
-            isButtonDisabled: true
-        });
     }
 
     public showSaveTranscriptModal = () => {
@@ -76,8 +77,6 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
 
     public showSuccessModal = () => {
         this.setState({ showSuccessModal: true });
-        this.setState({ isButtonDisabled: false });
-
     }
 
     public hideSuccessModal = () => {
@@ -107,7 +106,6 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     confirmMessage={this.props.userId == this.props.reviewerId ? "Êtes-vous sûr(e) de vouloir réviser la transcription?" : "Êtes-vous sûr(e) de vouloir enregistrer les changements effectués à la transcription?"}
                     onConfirm={this.saveTranscription}
                     confirmButton={button}
-                    disabled={this.state.isButtonDisabled}
                 />
 
                 <SuccessModal
@@ -124,7 +122,11 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     errorMessage={this.props.userId == this.props.reviewerId ? "Révision de la transcription annulé! Une erreur est survenue." : "Enregistrement de la transcription annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications."}
                 />
 
-                <a className="button is-link mg-top-10" onClick={this.showSaveTranscriptModal}>{button}</a>
+                <LoadingModal
+                    showModal={this.state.loading}
+                />
+
+                <a className="button is-rounded is-link mg-top-10 mg-left-10" onClick={this.showSaveTranscriptModal}><i className="far fa-save mg-right-5"></i> <p className="nav-button"> {button.toUpperCase()}</p></a>
             </div>
         );
     }

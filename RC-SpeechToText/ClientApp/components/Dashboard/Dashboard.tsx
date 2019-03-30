@@ -254,6 +254,7 @@ export default class Dashboard extends React.Component<any, State> {
         }
         axios.get('/api/file/getFilesByDescriptionAndTitle/' + this.state.searchTerms, config)
             .then(res => {
+                this.deactivateFilters();
                 this.setState({ files: res.data });
             })
             .catch(err => {
@@ -346,7 +347,7 @@ export default class Dashboard extends React.Component<any, State> {
                             </div>
                         </div>
 
-                        <div className="file-box mg-top-10">
+                        <div className="file-box">
                             {this.state.loading ? <Loading /> :
                                 this.state.listView ? this.renderListView() : this.renderFileTable()}
                         </div>

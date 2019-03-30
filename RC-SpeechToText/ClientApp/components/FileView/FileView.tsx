@@ -266,43 +266,38 @@ export default class FileView extends React.Component<any, State> {
             <div className="container">
 
                 <div className="columns">
-                    <div className="column is-one-third mg-top-30 has-background-white-smoke">
+                    <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
                         {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} /> : null}
 
-                        {this.state.file ? <b className="has-text-link">Titre: </b> : null}
-                        {this.state.file ? (this.state.file.title ? <div><div className="card">
-                            <div className="card-content">
+                        {this.state.file ? <b className="file-view-header">Titre: </b> : null}
+                        {this.state.file ? (this.state.file.title ? <div>
+                            <div className="file-view-title">
                                 {this.state.file.title}
-                            </div> </div></div> : <div className="card">
-                                <div className="card-content"> This file has no title </div></div>) : null}
+                            </div> </div> : <div className="file-view-title"> This file has no title </div>) : null}
                         
                         <br />
 
-                        {this.state.file ? <b className="has-text-link">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit"></i></a></b> : null}
+                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
                         {this.state.file ? (this.state.file.description ? <div>
-                            <div className="card">
-                                <div className="card-content">
+                            <div className="file-view-desc">
                                 {this.state.description}
-                                </div>
+                            </div>
 
-                            </div></div> : <div className="card">
-                                <div className="card-content"> This file has no description </div></div>) : null}
+                        </div> : <div className="file-view-desc"> This file has no description </div>) : null}
                         
                         <br />
 
-                        <p>{this.state.file ? (this.state.file ? <div><div className="card">
-                            <div className="card-content">
-                                {this.state.version ?
+                        <p>{this.state.file ? (this.state.version ?
                                     <FileInfo
                                         thumbnail={this.state.file.thumbnailPath}
                                         userId={this.state.file.userId}
-                                        dateModified={this.state.version.dateModified} /> : null}
-                            </div> </div></div> : <div className="card">
-                                <div className="card-content"> This file has no extra Info </div></div>) : null}</p>
+                                        dateModified={this.state.version.dateModified}
+                                    /> : <p>This file has no extra Info </p>)
+                            : null}</p>
                     </div>
 
-                    <div className="column is-half mg-top-30">
+                    <div className="column is-half mg-top-30 editing-section">
                         {this.state.version ? 
                             <TranscriptionSearch 
                                 versionId={this.state.version.id} 
@@ -317,7 +312,7 @@ export default class FileView extends React.Component<any, State> {
                                     <TranscriptionText
                                         text={this.state.version.transcription}
                                         version={this.state.version}
-                                        handleChange={this.handleTranscriptChange}
+                                        handleTranscriptChange={this.handleTranscriptChange}
                                         handleSeekTime={this.handleSeekTime}
                                         searchTranscript={this.searchTranscript}
                                         selection={this.state.selection}

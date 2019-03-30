@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ChangeEvent } from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
+import * as $ from 'jquery';
 
 interface State {
     version: any,
@@ -35,7 +36,7 @@ export class TranscriptionText extends React.Component<any, State> {
         // Add onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
         if (transcription){
-            transcription.addEventListener('input', (e) => this.handleChange(e));
+            transcription.addEventListener('input', (e) => {this.handleChange(e)});
             transcription.addEventListener('blur', this.handleBlur);
         }
     }
@@ -48,7 +49,7 @@ export class TranscriptionText extends React.Component<any, State> {
         // Remove onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
         if (transcription){
-            transcription.removeEventListener('input', (e) => this.handleChange(e));
+            transcription.removeEventListener('input', this.handleChange);
             transcription.removeEventListener('blur', this.handleBlur);
         }
     }
@@ -132,23 +133,44 @@ export class TranscriptionText extends React.Component<any, State> {
 
     public handleBlur = () => {
         console.log('Returning:', this.state.rawText);
-        this.props.handleChange(this.state.rawText)
+        
     };
 
     public handleChange = (e: any) => {
-        let a = e.target.value.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        let cursorPos:any = this.getCursorPosition();
+        let a = e.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
         this.setState({ rawText: a });
-        this.setState({ displayText: e.target.value })
+        this.setState({ displayText: e.target.innerHTML })
+        console.log(this.state.rawText);
+        this.props.handleTranscriptChange(this.state.rawText);
+        this.setCursorPosition(cursorPos);
+
     };
-    
-    
+
+     setCursorPosition = (cursorPos: number) => {
+        var el = document.getElementById("transcription");
+        var range = document.createRange();
+        var sel = window.getSelection();
+        if(el) range.setStart(el.childNodes[0], cursorPos);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+
+    getCursorPosition = () => {
+        var sel = document.getSelection();
+        if(sel) {
+            var range = sel.getRangeAt(0);
+            return range.startOffset;
+        }
+    }
 
     public render() {
         return (
             <div>
                 <div 
                     id="transcription" 
-                    className="mg-top-30 highlight-text" 
+                    className="highlight-text" 
                     contentEditable={true}
                     dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
             </div>

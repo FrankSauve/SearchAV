@@ -6,8 +6,6 @@ interface State {
     title: string,
     description: string,
     duration: string, 
-    modifiedTitle: string,
-    newDescription: string,
     flag: string,
 }
 
@@ -19,14 +17,25 @@ export class GridFileCard extends React.Component<any, State> {
             title: this.props.title,
             description: this.props.description,
             duration: this.props.duration, 
-            modifiedTitle: "",
-            newDescription: "",
             flag: this.props.flag,
         }
     }
 
+    public updateTitle = (newTitle: string) => {
+        this.setState({ 'title': newTitle });
+    }
+
+    public updateDescription = (newDescription: string) => {
+        this.setState({ 'description': newDescription });
+    }
+
     rawToWhiteSpace(text: string) {
         return text.replace(/<br\s*[\/]?>/gi, " ");
+    }
+
+    removeExtension(title: string) {
+        var titleNoExtension = title.lastIndexOf('.') != -1 ? title.substring(0, title.lastIndexOf('.')) : title;
+        return titleNoExtension;
     }
 
     public render() {
@@ -36,18 +45,20 @@ export class GridFileCard extends React.Component<any, State> {
                     <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.state.flag.toUpperCase()}</span> 
                     <header className="card-header">
                         <p className="card-header-title fileTitle">
-                            {this.state.title ? (this.state.title.lastIndexOf('.') != -1 ? this.state.title.substring(0, this.state.title.lastIndexOf('.')) : this.state.title) : null}</p>
+                            {this.state.title ? (this.state.title.length < 35 ? this.removeExtension(this.state.title) : this.removeExtension(this.state.title).substring(0, 35) + " ..." ) : null}</p>
                         
-                            <DropdownButton
-                                        fileId={this.props.file.id}
-                                        title={this.props.file.title}
-                                        description={this.props.file.description}
-                                        flag={this.props.file.flag}
-                                        updateFiles={this.props.updateFiles}
-                                        username={this.props.username}
-                                        image={this.props.file.type == "Audio" ? 'assets/speakerIcon.png' : this.props.file.thumbnailPath}
-                                        date={this.props.file.dateAdded.substring(0, 10) + " " + this.props.file.dateAdded.substring(11, 16)}
-                            />
+                         <DropdownButton
+                            fileId={this.props.file.id}
+                            title={this.props.file.title}
+                            description={this.props.file.description}
+                            flag={this.props.file.flag}
+                            updateFiles={this.props.updateFiles}
+                            username={this.props.username}
+                            image={this.props.file.type == "Audio" ? 'assets/speakerIcon.png' : this.props.file.thumbnailPath}
+                            date={this.props.file.dateAdded.substring(0, 10) + " " + this.props.file.dateAdded.substring(11, 16)}
+                            updateTitle={this.updateTitle}
+                            updateDescription={this.updateDescription}
+                          />
 
                     </header>
                     <div className="card-image">
@@ -65,9 +76,12 @@ export class GridFileCard extends React.Component<any, State> {
                     </div>
                     <div className="card-content">
                         <div className="content fileContent">
-                            <p className="transcription">{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
-                            <p><b>{this.props.username}</b></p>
-                            <time dateTime={this.props.date}>{this.props.date}</time>
+                            <div className="transcription-grid-view">
+                                <p>{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
+                            </div>
+                            <br />
+                            <p className="font-size-12 font-family-roboto"><b>{this.props.username}</b></p>
+                            <time className="font-size-12 font-family-roboto" dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
                 </div>
