@@ -7,7 +7,7 @@ namespace RC_SpeechToText.Models.DTO.Outgoing
 {
     public class OutModifyThumbnailDTO
 	{
-		public string FileTitle { get; set; }
+		public Guid FileId { get; set; }
 		public int SeekTime { get; set; }
 	}
 }

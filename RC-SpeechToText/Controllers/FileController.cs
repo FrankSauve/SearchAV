@@ -144,10 +144,10 @@ namespace RC_SpeechToText.Controllers
             return Ok(file.File);
         }
 
-		[HttpGet("[action]/{fileTitle}/{seekTime}")]
-		public async Task<IActionResult> ChangeThumbnail(string fileTitle, int seekTime)
+		[HttpGet("[action]/{fileId}/{seekTime}")]
+		public async Task<IActionResult> ChangeThumbnail(Guid fileId, int seekTime)
 		{
-			var outDTO = new OutModifyThumbnailDTO { FileTitle = fileTitle, SeekTime = seekTime };
+			var outDTO = new OutModifyThumbnailDTO { FileId = fileId, SeekTime = seekTime };
 			await _fileService.ModifyThumbnail(outDTO);
 			return Ok();
 		}

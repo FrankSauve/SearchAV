@@ -138,18 +138,24 @@ namespace RC_SpeechToText.Services
 
 		public async Task ModifyThumbnail(OutModifyThumbnailDTO modifyThumbnailDTO)
 		{
+			var file = await _context.File.Where(f => f.Id == modifyThumbnailDTO.FileId).FirstOrDefaultAsync();
+
 			await Task.Run(() =>
 			{
 				var streamIO = new IOInfrastructure();
-
-				var filePath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + modifyThumbnailDTO.FileTitle);
-				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + modifyThumbnailDTO.FileTitle + ".jpg");
+				
+				var filePath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + file.Title);
+				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + file.Title + ".jpg");
 
 				streamIO.DeleteFile(thumbnailPath);
 
 				var converter = new Converter();
 
-				var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime-1);
+				string thumbnailImage;
+				if(modifyThumbnailDTO.SeekTime == TimeSpan.Parse(file.Duration).TotalMilliseconds)
+					thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime-500);
+				else
+					thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime);
 
 				if (thumbnailImage != null)
 					Console.Write(thumbnailImage);

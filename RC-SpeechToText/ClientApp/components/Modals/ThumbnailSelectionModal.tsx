@@ -76,7 +76,7 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
     }
 
     public submit = () => {
-        var title = this.props.file.title
+        var fileId = this.props.file.id
         var seek = this.state.timeMillisecond
 
         const config = {
@@ -85,7 +85,7 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         };
-        axios.get('/api/file/ChangeThumbnail/' + title + '/' + seek, config)
+        axios.get('/api/file/ChangeThumbnail/' + fileId + '/' + seek, config)
             .then(res => {
                 window.location.reload();
             })
