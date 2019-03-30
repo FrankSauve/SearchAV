@@ -268,7 +268,7 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} /> : null}
+                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} controle={true}/> : null}
 
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>
@@ -289,11 +289,12 @@ export default class FileView extends React.Component<any, State> {
                         <br />
 
                         <p>{this.state.file ? (this.state.version ?
-                                    <FileInfo
-                                        thumbnail={this.state.file.thumbnailPath}
-                                        userId={this.state.file.userId}
-                                        dateModified={this.state.version.dateModified}
-                                    /> : <p>This file has no extra Info </p>)
+                            <FileInfo
+                                thumbnail={this.state.file.thumbnailPath}
+                                userId={this.state.file.userId}
+                                dateModified={this.state.version.dateModified}
+                                file={this.state.file}
+                            /> : <p>This file has no extra Info </p>)
                             : null}</p>
                     </div>
 

@@ -3,6 +3,8 @@ using RC_SpeechToText.Exceptions;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Models.DTO.Outgoing;
+using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,6 +134,32 @@ namespace RC_SpeechToText.Services
 			{
                 throw new ControllerExceptions("User not found");
 			}
+		}
+
+		public async Task ModifyThumbnail(OutModifyThumbnailDTO modifyThumbnailDTO)
+		{
+			var file = await _context.File.Where(f => f.Id == modifyThumbnailDTO.FileId).FirstOrDefaultAsync();
+
+			await Task.Run(() =>
+			{
+				var streamIO = new IOInfrastructure();
+				
+				var filePath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + file.Title);
+				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + file.Title + ".jpg");
+
+				streamIO.DeleteFile(thumbnailPath);
+
+				var converter = new Converter();
+
+				string thumbnailImage;
+				if(modifyThumbnailDTO.SeekTime == TimeSpan.Parse(file.Duration).TotalMilliseconds)
+					thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime-500);
+				else
+					thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime);
+
+				if (thumbnailImage != null)
+					Console.Write(thumbnailImage);
+			});
 		}
 
         private async Task<bool> VerifyIfTitleExists(string title)
