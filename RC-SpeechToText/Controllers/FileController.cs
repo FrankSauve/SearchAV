@@ -45,15 +45,6 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{flag}")]
         public async Task<IActionResult> GetAllFilesByFlag(string flag)
         {
-            //Should find a better solution to handle accents
-            var automated = Enum.GetName(typeof(FileFlag), 0);
-            var edited = Enum.GetName(typeof(FileFlag), 1);
-            var reviewed = Enum.GetName(typeof(FileFlag), 2);
-
-            //If the flag is not accented we handle it here
-            if (flag != automated && flag != edited && flag != reviewed)
-                flag = (flag == "Automatise" ? automated : (flag == "Edite" ? edited : reviewed));
-
             var filesUsernames = await _fileService.GetAllFilesByFlag(flag);
             return Ok(filesUsernames);
         }
