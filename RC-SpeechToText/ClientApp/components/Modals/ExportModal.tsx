@@ -85,12 +85,14 @@ export class ExportModal extends React.Component<any, State> {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
-                    'content-type': 'application/json'
-                }
+                },
+                responseType: 'blob',
             };
             axios.get('/api/transcription/downloadtranscript/' + fileId + '/' + exportSelected, config)
                 .then(res => {
                     this.setState({ loading: false });
+                    console.log(res.data);
+                    this.downloadData('download.mp4', res.data);
                     this.showSuccessModal();
                 })
                 .catch(err => {
@@ -106,6 +108,17 @@ export class ExportModal extends React.Component<any, State> {
                 this.setState({ loading: false });
                 this.showErrorModal("Choisier le type de document dont vous voulez exporter");
         }
+    }
+
+    downloadData(filenameForDownload: string, data: any) {
+        var textUrl = URL.createObjectURL(data);
+        var element = document.createElement('a');
+        element.setAttribute('href', textUrl);
+        element.setAttribute('download', filenameForDownload);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
     }
 
     public render() {

@@ -19,10 +19,12 @@ namespace RC_SpeechToText.Controllers
     public class TranscriptionController : Controller
     {
 		private readonly TranscriptionService _transcriptionService;
+        private readonly FileService _fileService;
 
         public TranscriptionController(SearchAVContext context)
         {
 			_transcriptionService = new TranscriptionService(context);
+            _fileService = new FileService(context);
         }
 
         [HttpPost("[action]/{versionId}")]
@@ -77,7 +79,13 @@ namespace RC_SpeechToText.Controllers
                 throw new ControllerExceptions("Error while trying to download transcription");
 			}
 
-			return Ok();
+            var file = await _fileService.GetFileById(fileId);
+
+            var net = new System.Net.WebClient();
+            byte[] fileBytes = System.IO.File.ReadAllBytes(file.FilePath);
+            var contentType = "APPLICATION/octet-stream";
+            var fileName = file.Title;
+            return File(fileBytes, contentType, fileName);
         }
     }
 }
