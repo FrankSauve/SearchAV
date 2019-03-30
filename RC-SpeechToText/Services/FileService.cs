@@ -65,12 +65,14 @@ namespace RC_SpeechToText.Services
                 else
                 {
                     var file = _context.File.Find(id);
+                    string ext = System.IO.Path.GetExtension(file.FilePath);
 
                     if (file.ThumbnailPath != "NULL")
                     {
                         file.ThumbnailPath = ModifyThumbnailName(file.Title, newTitle);
+                        file.FilePath = ModifyFileName(file.Title, newTitle, file.FilePath);
                     }
-                    file.Title = newTitle;
+                    file.Title = newTitle + ext;
 
 
                     await _context.SaveChangesAsync();
@@ -155,6 +157,23 @@ namespace RC_SpeechToText.Services
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
                 return @"\assets\Thumbnails\" + newName + ".jpg";
+            }
+            else
+                return "NULL";
+        }
+
+        private string ModifyFileName(string oldName, string newName, string filePath)
+        {   
+            string ext = System.IO.Path.GetExtension(filePath);
+            var streamIO = new IOInfrastructure();
+            //Verifies if file exists in the current directory
+            if (streamIO.VerifyPathExistInDirectory(@"\wwwroot\assets\Audio\" + oldName))
+            {
+                string oldPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + oldName);
+                string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + newName + ext);
+                //Rename file in current directory to new title
+                streamIO.MoveFilePath(oldPath, newPath);
+                return newPath;
             }
             else
                 return "NULL";
