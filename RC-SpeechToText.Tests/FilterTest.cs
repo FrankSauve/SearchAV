@@ -27,11 +27,9 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var automatedFlag = Enum.GetName(typeof(FileFlag), 1);
-
-            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = automatedFlag };
-			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = automatedFlag };
-			var file3 = new File { Title = "testFile3", UserId = user.Id };
+			var file1 = new File { Title = "testFile1", UserId = user.Id, FileFlag = FileFlag.Automatise };
+			var file2 = new File { Title = "testFile2", UserId = user.Id, FileFlag = FileFlag.Automatise };
+			var file3 = new File { Title = "testFile3", UserId = user.Id, FileFlag = FileFlag.Revise };
 
 			// AddAsync files using flag
 			await context.File.AddAsync(file1);
@@ -41,7 +39,7 @@ namespace RC_SpeechToText.Tests
 			
             // Act
             var controller = new FileController(context);
-            var result = await controller.GetAllFilesByFlag(automatedFlag);
+            var result = await controller.GetAllFilesByFlag("Automatise");
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -56,8 +54,8 @@ namespace RC_SpeechToText.Tests
             //Verify the flags
             for (int i = 0; i < automatedFiles; i++)
             {
-                string flag = mockFileUsernameDTO.Files[i].Flag;
-                Assert.Equal(automatedFlag, flag);
+                var flag = mockFileUsernameDTO.Files[i].FileFlag;
+                Assert.Equal(FileFlag.Automatise, flag);
             }
         }
 
@@ -75,11 +73,9 @@ namespace RC_SpeechToText.Tests
             await context.AddAsync(user);
             await context.SaveChangesAsync();
 
-            var editedFlag = Enum.GetName(typeof(FileFlag), 1);
-
-            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = editedFlag };
-			var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = editedFlag };
-			var file3 = new File { Title = "testFile3", UserId = user.Id };
+            var file1 = new File { Title = "testFile1", UserId = user.Id, FileFlag = FileFlag.Edite };
+			var file2 = new File { Title = "testFile2", UserId = user.Id, FileFlag = FileFlag.Edite };
+			var file3 = new File { Title = "testFile3", UserId = user.Id, FileFlag = FileFlag.Revise };
 
 			// AddAsync files using flag
 			await context.File.AddAsync(file1);
@@ -89,10 +85,10 @@ namespace RC_SpeechToText.Tests
 
 			// Act
 			var controller = new FileController(context);
-            var result = await controller.GetAllFilesByFlag(editedFlag);
+            var result = await controller.GetAllFilesByFlag("Edite");
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+			// Assert
+			var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
 
 			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2 }, Usernames = new List<string> { user.Name } };
@@ -104,8 +100,8 @@ namespace RC_SpeechToText.Tests
             //Verify the flags
             for (int i = 0; i < editedFiles; i++)
             {
-                string flag = mockFileUsernameDTO.Files[i].Flag;
-                Assert.Equal(editedFlag, flag);
+                var flag = mockFileUsernameDTO.Files[i].FileFlag;
+                Assert.Equal(FileFlag.Edite, flag);
             }
         }
 
@@ -122,12 +118,10 @@ namespace RC_SpeechToText.Tests
             var user = new User { Email = "test@email.com", Name = "testUser" };
             await context.AddAsync(user);
             await context.SaveChangesAsync();
-            
-            var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
 
-            var file1 = new File { Title = "testFile1", UserId = user.Id, Flag = reviewedFlag };
-            var file2 = new File { Title = "testFile2", UserId = user.Id, Flag = reviewedFlag };
-            var file3 = new File { Title = "testFile3", UserId = user.Id }; // No flag for testing purposes
+            var file1 = new File { Title = "testFile1", UserId = user.Id, FileFlag = FileFlag.Revise };
+            var file2 = new File { Title = "testFile2", UserId = user.Id, FileFlag = FileFlag.Revise };
+            var file3 = new File { Title = "testFile3", UserId = user.Id, FileFlag = FileFlag.Edite }; // No flag for testing purposes
 
             // AddAsync files using flag
             await context.File.AddAsync(file1);
@@ -137,7 +131,7 @@ namespace RC_SpeechToText.Tests
 
             // Act
             var controller = new FileController(context);
-            var result = await controller.GetAllFilesByFlag(reviewedFlag);
+            var result = await controller.GetAllFilesByFlag("Revise");
 ;
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -152,8 +146,8 @@ namespace RC_SpeechToText.Tests
             //Verify the flags
             for (int i = 0; i < reviewedFiles; i++)
             {
-                string flag = mockFileUsernameDTO.Files[i].Flag;
-                Assert.Equal(reviewedFlag, flag);
+                var flag = mockFileUsernameDTO.Files[i].FileFlag;
+                Assert.Equal(FileFlag.Revise, flag);
             }
         }
     }

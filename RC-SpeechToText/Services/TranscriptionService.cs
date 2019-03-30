@@ -38,42 +38,35 @@ namespace RC_SpeechToText.Services {
                 return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
             }
 
-            //flag -> Edité
-            var editedFlag = Enum.GetName(typeof(FileFlag), 1);
-
-            //flag -> Révisé
-            var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-
             //Find corresponding file and update its flag 
             Models.File file;
             file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
 
-            string flag;
+            FileFlag flag;
             if (file != null)
-                flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? reviewedFlag : editedFlag); //If user is reviewer of file, flag = "Révisé"
+                flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? FileFlag.Revise : FileFlag.Edite); //If user is reviewer of file, flag = "Révisé"
             else
             {
-                file = await _context.File.FindAsync(newVersion.FileId);
-                flag = editedFlag;
+                file = await _context.File.Where(q => q.Id == newVersion.FileId).FirstOrDefaultAsync();
+				flag = FileFlag.Edite;
             }
-            file.Flag = flag;
+
+			file.FileFlag = flag;
             
             //Send email to user who uploaded file stating that review is done
-            if (flag == reviewedFlag)
+            if (flag == FileFlag.Revise)
             {
                 var uploader = await _context.User.FindAsync(file.UserId);
                 var reviewer = await _context.User.FindAsync(file.ReviewerId);
-                var emailSerice = new EmailInfrastructure();
-                emailSerice.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
+                var emailService = new EmailInfrastructure();
+                emailService.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
                 newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
             }
 
             await _context.SaveChangesAsync();
 
             return new VersionDTO { Version = newVersion, Error = null };
-
-            
-        }
+		}
 
         public async Task<string> SearchTranscript(Guid versionId, string searchTerms)
 		{
@@ -115,7 +108,7 @@ namespace RC_SpeechToText.Services {
 					else
 						return false;
 				}
-				else if( documentType.Contains("video"))
+				else if(documentType.Contains("video"))
 				{
 					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
 					if (words.Count > 0)
