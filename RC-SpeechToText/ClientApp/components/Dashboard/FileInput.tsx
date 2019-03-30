@@ -68,11 +68,6 @@ export default class FileInput extends React.Component<any, State> {
         this.setState({ showSuccessTranscribe: false });
     }
 
-    //public showErrorModal = (description: string) => {
-    //    this.setState({ showErrorTranscribe: true });
-    //    this.setState({ descriptionErrorTranscribe: description });
-    //}
-
     public showErrorModal = (title: string, description: string) => {
         this.setState({ errorMessage: description });
         this.setState({ modalTitle: title });
@@ -136,7 +131,7 @@ export default class FileInput extends React.Component<any, State> {
             axios.post('/api/file/VerifyIfTitleExists/' + title, formData, config)
                 .then(res => {
                     this.hideAddTitleDescriptionModal();
-                    //this.getGoogleSample();
+                    this.getGoogleSample();
                 })
                 .catch(err => {
                     console.log(err);
