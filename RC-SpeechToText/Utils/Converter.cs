@@ -55,7 +55,7 @@ namespace RC_SpeechToText.Utils
             }
 
 			var streamIO = new IOInfrastructure();
-            streamIO.DeleteFile(wavFileLocation); 
+			streamIO.DeleteFile(wavFileLocation); 
 
             return monoFileLocation;
         }
@@ -70,6 +70,8 @@ namespace RC_SpeechToText.Utils
 					var outputFile = new MediaFile { Filename = outputFilePath };
 
 					var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(1) };
+
+					options.VideoAspectRatio = VideoAspectRatio.R16_9;
 
 					engine.GetMetadata(mp4);
 

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,10 +16,10 @@ namespace RC_SpeechToText.Services
 			_context = context;
 		}
 
-		public async Task DeleteWordsByFileId(int id)
+		public async Task DeleteWordsByFileId(Guid id)
 		{
 			var wordList = await _context.Version
-				.Where(v => v.FileId == id)
+				.Where(v => Guid.Equals(v.FileId, id))
 				.Include(x => x.Words)
 				.Select(x => x.Words)
 				.FirstAsync();
@@ -25,5 +27,11 @@ namespace RC_SpeechToText.Services
 			_context.Word.RemoveRange(wordList);
 			await _context.SaveChangesAsync();
 		}
+
+        public async Task<List<Word>> GetByVersionId(Guid versionId)
+        {
+            var words = await _context.Word.Where(w => w.VersionId == versionId).ToListAsync();
+            return words;
+        }
 	}
 }

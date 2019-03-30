@@ -3,16 +3,18 @@ import axios from 'axios';
 import auth from '../../Utils/auth';
 import { ErrorModal } from './ErrorModal';
 import { SuccessModal } from './SuccessModal';
+import { ChangeEvent } from 'react';
+import { LoadingModal } from '../LoadingModal';
+import Loading from '../Loading';
 
 interface State {
     users: any[],
     fileId: any,
-    reviewerId: number,
-    reviewerName: string,
     reviewerEmail: string,
     errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
+    loading: boolean,
     unauthorized: boolean
 }
 
@@ -23,13 +25,12 @@ export class SelectReviewerModal extends React.Component<any, State> {
 
         this.state = {
             users: [],
-            fileId: 0,
-            reviewerId: 0,
-            reviewerName: "",
+            fileId: "",
             reviewerEmail: "",
             errorMessage: "",
             showSuccessModal: false,
             showErrorModal: false,
+            loading: false,
             unauthorized: false
         }
     }
@@ -38,85 +39,56 @@ export class SelectReviewerModal extends React.Component<any, State> {
     public componentDidMount() {
         var id = window.location.href.split('/')[window.location.href.split('/').length - 1]; //Getting fileId from url
         this.setState({ fileId: id });
-        this.getAllUsers();
     }
 
-    public getAllUsers = () => {
-
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/user/GetAllUsers', config)
-            .then(res => {
-                console.log(res.data);
-                this.setState({ 'users': res.data });
-            })
-            .catch(err => {
-                console.log(err);
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    };
-
     public addReviewerToFile = () => {
+        this.props.hideModal();
+        this.setState({ loading: true });
 
         var fileId = this.state.fileId
-        var reviewerId = this.state.reviewerId
+        var reviewerEmail = this.state.reviewerEmail
 
-        if ((fileId != "" && fileId != 0) && reviewerId != 0) {
+        //Quick fix: Sometimes component is rendered before url changes
+        if (fileId == "dashboard" || fileId == "" || fileId == null)
+            fileId = window.location.href.split('/')[window.location.href.split('/').length - 1];
+
+        if (fileId != "" && fileId != null && reviewerEmail != null && reviewerEmail != "") {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
                     'content-type': 'application/json'
                 }
-            }
-            axios.post('/api/file/AddReviewer/' + fileId + '/' + reviewerId, config)
-                .then(res => {
-                    console.log(res.data);
-
-                    axios.get('/api/user/getUserName/' + reviewerId, config)
-                        .then(res => {
-                            console.log(res);
-                            this.setState({ 'reviewerName': res.data.name })
-                            this.setState({ 'reviewerEmail': res.data.email })
-                        })
-                        .catch(err => {
-                            if (err.response.status == 401) {
-                                this.setState({ 'unauthorized': true });
-                            }
-                        });
-
-                    this.props.hideModal();
+            };
+            axios.get('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
+                .then(() => {
+                    this.setState({ loading: false });
                     this.showSuccessModal();
+                    this.setState({ reviewerEmail : ""})
                 })
                 .catch(err => {
                     console.log(err);
-                    this.setState({ 'errorMessage': "Vous n'etes pas connecté! Veuillez vous connecter s'il vous plait."})
-                    this.props.hideModal();
+                    this.setState({ 'errorMessage': "Le courriel ne correspond a aucun utilisateur enregistre dans le systeme! Veuillez entrer un autre courriel valide." })
+                    this.setState({ loading: false });
                     this.showErrorModal();
                     if (err.response.status == 401) {
                         this.setState({ 'unauthorized': true });
                     }
                 });
         }
-        else if (fileId == "" || fileId == 0){
-            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Une erreur au niveau du fichier est survenu. Veuillez rafraichir la page s'il vous plait." })
-            this.props.hideModal();
+        else if (fileId == "" || fileId == null) {
+            this.setState({ 'errorMessage': "Envoi de la demande de révision annulée! Une erreur au niveau du fichier est survenu. Veuillez rafraichir la page s'il vous plait." })
+            this.setState({ loading: false });
             this.showErrorModal();
         }
         else {
-            this.setState({ 'errorMessage': "Envoi de demande de révision annulé! Vous n'avez selectionné aucun réviseur." })
-            this.props.hideModal();
+            this.setState({ 'errorMessage': "Envoi de la demande de révision annulée! Vous n'avez pas entrer le courriel du réviseur." })
+            this.setState({ loading: false });
             this.showErrorModal();
         }
     };
 
-    public handleChange = (event: any) => {
-        this.setState({ reviewerId: event.target.value });
+    public handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        this.setState({ reviewerEmail: e.target.value })
     }
 
     public showSuccessModal = () => {
@@ -150,8 +122,12 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     showModal={this.state.showSuccessModal}
                     hideModal={this.hideSuccessModal}
                     title="Choisissez un réviseur"
-                    successMessage={`Demande de révision envoyé! ${this.state.reviewerName} (${this.state.reviewerEmail}) sera notifié de votre demande dans les quelques secondes a venir.`}
-/>
+                    successMessage={`Demande de révision envoyé! ${this.state.reviewerEmail} sera notifié de votre demande dans les quelques secondes a venir.`}
+                />
+
+                <LoadingModal
+                    showModal={this.state.loading}
+                />
 
                 <div className={`modal ${this.props.showModal ? "is-active" : null}`} >
                     <div className="modal-background"></div>
@@ -162,18 +138,10 @@ export class SelectReviewerModal extends React.Component<any, State> {
                                 <button className="delete" aria-label="close" onClick={this.props.hideModal}></button>
                             </header>
                             <section className="modalBody">
-                                <div className="select is-multiple">
-                                    <select multiple size={8} onChange={this.handleChange}>
-                                        {this.state.users.map((user) => {
-                                            {
-                                                //Includes current user's name for testing purposes
-                                            }
-                                            const listUsers = <option value={user.id}>{user.name} | {user.email}</option>
-                                            return (
-                                                listUsers
-                                            )
-                                        })}
-                                    </select>
+                                <div className="field">
+                                    <div className="control">
+                                        <input className="input is-medium" type="email" placeholder="Email" onChange={this.handleChange} />
+                                    </div>
                                 </div>
                             </section>
                             <footer className="modalFooter">

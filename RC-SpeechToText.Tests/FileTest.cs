@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using RC_SpeechToText.Models.DTO.Incoming;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace RC_SpeechToText.Tests
 {
@@ -124,7 +125,7 @@ namespace RC_SpeechToText.Tests
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
             };
 
-            var result = await controller.getAllFilesByUser();
+            var result = await controller.GetAllFilesByUser();
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
@@ -141,7 +142,7 @@ namespace RC_SpeechToText.Tests
             //Verify that all files has same userId as the user 
             for (int i = 0; i < mockFileUsernameDTO.Files.Count; i++)
             {
-                int actualUserId = mockFileUsernameDTO.Files[i].UserId;
+                Guid actualUserId = mockFileUsernameDTO.Files[i].UserId;
                 Assert.Equal(user.Id, actualUserId);
             }
         }
@@ -179,9 +180,14 @@ namespace RC_SpeechToText.Tests
             var user = new User { Email = "user@email.com", Name = "testUser" };
             var reviewer = new User { Email = "reviewer@email.com", Name = "testReviewer" };
 
+            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim("email", user.Email)
+            }));
+
             // Add user and reviewer with username testUser and testReviewer
             await context.AddAsync(user);
-            await context.AddAsync(user);
+            await context.AddAsync(reviewer);
             await context.SaveChangesAsync();
 
             // Remove all files in DB
@@ -195,10 +201,15 @@ namespace RC_SpeechToText.Tests
             // Add files using userId
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
-			
+
             // Act
             var controller = new FileController(context);
-            var result = await controller.AddReviewer(file.Id, reviewer.Id);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = userPrincipal }
+            };
+
+            var result = await controller.AddReviewer(file.Id, "reviewer@email.com");
             
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

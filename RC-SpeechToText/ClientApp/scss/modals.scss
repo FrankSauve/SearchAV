@@ -1,0 +1,43 @@
+.modal-container {
+    background-color: #141425 !important;
+    color: white !important;
+    padding-left: 60px;
+}
+
+.modalCard{
+    width: 500px !important;
+}
+
+.modalHeader {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    padding: 40px 20px 20px 20px;
+    position: relative;
+}
+
+.modalBody {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: auto;
+    padding: 20px;
+}
+
+.modalFooter {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    padding: 0px 0px 40px 20px;
+    position: relative;
+}
+.exportModalDropdown {
+    height: 30px;
+    padding: 5px;
+    width: 200px;
+}
+
+.closeModal {
+    right: 20px !important;
+}

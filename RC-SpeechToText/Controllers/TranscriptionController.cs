@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using RC_SpeechToText.Services;
+using RC_SpeechToText.Filters;
 using System.Linq;
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Controllers
 {
+    [ServiceFilter(typeof(ControllerExceptionFilter))]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Authorize]
     [Route("api/[controller]")]
     public class TranscriptionController : Controller
@@ -22,17 +26,13 @@ namespace RC_SpeechToText.Controllers
         }
 
         [HttpPost("[action]/{versionId}")]
-        public async Task<IActionResult> SaveTranscript(int versionId, string newTranscript)
+        public async Task<IActionResult> SaveTranscript(Guid versionId, string newTranscript)
         {
             var emailClaim = HttpContext.User.Claims;
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
             var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
-			if(saveResult.Error != null)
-			{
-				return BadRequest(saveResult.Error);
-			}
-           
+			           
             return Ok(saveResult.Version);
         }
         
@@ -53,6 +53,7 @@ namespace RC_SpeechToText.Controllers
             }
         }
 
+
         /// <summary>
         /// Returns timestamps of searched terms
         /// </summary>
@@ -60,27 +61,20 @@ namespace RC_SpeechToText.Controllers
         /// <param name="searchTerms"></param>
         /// <returns></returns>
         [HttpGet("[action]/{versionId}/{searchTerms}")]
-        public async Task<IActionResult> SearchTranscript(string searchTerms, int versionId)
+        public async Task<IActionResult> SearchTranscript(Guid versionId, string searchTerms)
         {
-            try
-            {
-                return Ok(await _transcriptionService.SearchTranscript(searchTerms, versionId));
-            }
-            catch
-            {
-                return BadRequest("Error fetching active version with fileId: " + versionId);
-            }
+            return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
         }
 
 
         [HttpGet("[action]/{fileId}/{documentType}")]
-        public async Task<IActionResult> DownloadTranscript(string documentType, int fileId)
+        public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
 			var result = await _transcriptionService.DownloadTranscription(documentType, fileId);
 
 			if(result != null)
 			{
-				return BadRequest(result);
+                throw new ControllerExceptions("Error while trying to download transcription");
 			}
 
 			return Ok();

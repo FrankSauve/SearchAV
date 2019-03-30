@@ -19,8 +19,8 @@ namespace RC_SpeechToText.Tests
 
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-            var user = new User { Id = 1, Email = "user@email.com", Name = "testUser" };
-            var reviewer = new User { Id = 2, Email = "reviewer@email.com", Name = "testReviewer" };
+            var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
+            var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
             List<File> files = new List<File>();
 
             var automatedFlag = Enum.GetName(typeof(FileFlag), 0);

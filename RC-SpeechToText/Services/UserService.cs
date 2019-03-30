@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace RC_SpeechToText.Services
 			return await _context.User.ToListAsync();
 		}
 
-		public async Task<User> GetUserName(int id)
+		public async Task<User> GetUserName(Guid id)
 		{
 			return await _context.User.FindAsync(id);
 		}

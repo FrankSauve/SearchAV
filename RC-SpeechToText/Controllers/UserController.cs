@@ -3,18 +3,22 @@ using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
 using Microsoft.AspNetCore.Authorization;
 using RC_SpeechToText.Services;
+using RC_SpeechToText.Filters;
+using System;
 
 namespace RC_SpeechToText.Controllers
 {
+    [ServiceFilter(typeof(ControllerExceptionFilter))]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [AllowAnonymous]
     [Route("api/[controller]")]
     public class UserController : Controller
     {
-		private readonly UserService _userService;
+        private readonly UserService _userService;
 
         public UserController(SearchAVContext context)
         {
-			_userService = new UserService(context);
+            _userService = new UserService(context);
         }
 
         /// <summary>
@@ -26,53 +30,35 @@ namespace RC_SpeechToText.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Create([FromBody]User user)
         {
-            try
-            {
-                return Ok(await _userService.CreateUser(user));
-            }
-            catch
-            {
-                return BadRequest("Create user failed");
-            }
+
+            return Ok(await _userService.CreateUser(user));
+
+
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllUsers()
         {
-            try
-            {
-                return Ok(await _userService.GetAllUsers());
-            }
-            catch
-            {
-                return BadRequest("Get all users failed.");
-            }
+
+            return Ok(await _userService.GetAllUsers());
+
+
         }
 
         [HttpGet("[action]/{id}")]
-        public async Task<IActionResult> GetUserName(int id)
+        public async Task<IActionResult> GetUserName(Guid id)
         {
-            try
-            {
-                return Ok(await _userService.GetUserName(id));
-            }
-            catch
-            {
-                return BadRequest("User with ID" + id + " not found");
-            }
+
+            return Ok(await _userService.GetUserName(id));
+
         }
 
         [HttpGet("[action]/{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
-            try
-            {
-                return Ok(await _userService.GetUserByEmail(email));
-            }
-            catch
-            {
-                return BadRequest("User with EMAIL '" + email + "' not found");
-            }
+
+            return Ok(await _userService.GetUserByEmail(email));
+
         }
     }
 }

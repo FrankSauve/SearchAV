@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using RC_SpeechToText.Filters;
 
 namespace RC_SpeechToText
 {
@@ -32,6 +33,10 @@ namespace RC_SpeechToText
             services.AddHttpClient();
 
             services.AddMvc();
+ 
+            //Adding out filters
+             services.AddScoped<LoggingActionFilter>();
+            services.AddScoped<ControllerExceptionFilter>();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
