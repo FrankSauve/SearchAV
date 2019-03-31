@@ -411,3 +411,5 @@ RC-SpeechToText/RC-SpeechToText.csproj
 *.ide
 .vs/RC-SpeechToText/v15/.suo
 .vs/RC-SpeechToText/v15/Server/sqlite3/storage.ide
+.vs/RC-SpeechToText/v15/.suo
+.vs/RC-SpeechToText/v15/Server/sqlite3/storage.ide

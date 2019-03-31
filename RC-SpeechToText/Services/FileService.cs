@@ -65,11 +65,13 @@ namespace RC_SpeechToText.Services
                 else
                 {
                     var file = _context.File.Find(id);
-                    string ext = System.IO.Path.GetExtension(file.FilePath);
+                    var ext = System.IO.Path.GetExtension(file.FilePath);
+                    var oldTitle = System.IO.Path.GetFileNameWithoutExtension(file.Title);
+                    
 
                     if (file.ThumbnailPath != "NULL")
                     {
-                        file.ThumbnailPath = ModifyThumbnailName(file.Title, newTitle);
+                        file.ThumbnailPath = ModifyThumbnailName(oldTitle, newTitle);
                         file.FilePath = ModifyFileName(file.Title, newTitle, file.FilePath);
                     }
                     file.Title = newTitle + ext;
@@ -162,7 +164,7 @@ namespace RC_SpeechToText.Services
                 return "NULL";
         }
 
-        private string ModifyFileName(string oldName, string newName, string filePath)
+        public string ModifyFileName(string oldName, string newName, string filePath)
         {   
             string ext = System.IO.Path.GetExtension(filePath);
             var streamIO = new IOInfrastructure();

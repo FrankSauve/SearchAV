@@ -17,8 +17,9 @@ namespace RC_SpeechToText.Services
 
 		private readonly SearchAVContext _context;
 		private readonly string _bucketName = "rc-retd-stt-dev";
+        //private readonly FileService _fileService;
 
-		public ConvertionService(SearchAVContext context)
+        public ConvertionService(SearchAVContext context)
 		{
 			_context = context;
 		}
@@ -36,13 +37,18 @@ namespace RC_SpeechToText.Services
 			var streamIO = new IOInfrastructure();
 
 			var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
+            string ext = System.IO.Path.GetExtension(filePath);
 
-			// Once we get the file path(of the uploaded file) from the server, we use it to call the converter
-			Converter converter = new Converter();
-
-			// Create thumbnail
-			var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
-			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + audioFile.FileName + ".jpg");
+            // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
+            Converter converter = new Converter();
+            if (title != "")
+            {
+                var newFilePath = converter.RenamFile(filePath, title);
+                filePath = newFilePath;
+            }
+            // Create thumbnail
+            var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
+			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg");
 
 			if (thumbnailImage == null)
 			{
@@ -75,14 +81,14 @@ namespace RC_SpeechToText.Services
 			var file = new File
 			{
 				//Title = audioFile.FileName,
-                Title = title,
+                Title = (title == "" ? audioFile.FileName : title + ext),
 				FilePath = filePath,
 				Flag = "Automatisé",
                 Description = descriptionFile, 
                 UserId = user.Id,
 				DateAdded = DateTime.Now,
 				Type = fileType,
-				ThumbnailPath = @"\assets\Thumbnails\" + audioFile.FileName + ".jpg",
+				ThumbnailPath = @"\assets\Thumbnails\" + (title == "" ? audioFile.FileName : title) + ".jpg",
                 Duration = duration
             };
 			await _context.File.AddAsync(file);

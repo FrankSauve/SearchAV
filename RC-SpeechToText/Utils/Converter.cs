@@ -109,5 +109,14 @@ namespace RC_SpeechToText.Utils
             }
             return type;
         }
+
+        public string RenamFile(string inputFilePath, string title)
+        {
+            var streamIO = new IOInfrastructure();
+            string ext = Path.GetExtension(inputFilePath);
+            string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + title + ext);
+            streamIO.MoveFilePath(inputFilePath, newPath);
+            return newPath;
+        }
     }
 }
