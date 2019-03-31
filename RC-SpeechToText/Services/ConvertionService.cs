@@ -76,7 +76,7 @@ namespace RC_SpeechToText.Services
 			{
 				Title = audioFile.FileName,
 				FilePath = filePath,
-				Flag = "Automatisé",
+				FileFlag = FileFlag.Automatise,
                 Description = descriptionFile, 
                 UserId = user.Id,
 				DateAdded = DateTime.Now,

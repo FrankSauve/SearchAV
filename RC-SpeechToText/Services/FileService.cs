@@ -39,7 +39,23 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetAllFilesByFlag(string flag)
         {
-            var files = await _context.File.Where(f => f.Flag == flag).Include(q => q.User).ToListAsync();
+			FileFlag fileFlag;
+			switch (flag)
+			{
+				case "Automatise":
+					fileFlag = FileFlag.Automatise;
+					break;
+				case "Edite":
+					fileFlag = FileFlag.Edite;
+					break;
+				case "Revise":
+					fileFlag = FileFlag.Revise;
+					break;
+				default:
+					throw new NullReferenceException();
+			}
+
+			var files = await _context.File.Where(f => f.FileFlag == fileFlag).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
@@ -51,8 +67,7 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
         {
-            var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).Include(q => q.User).ToListAsync();
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.FileFlag != FileFlag.Revise).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
