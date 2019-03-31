@@ -17,7 +17,6 @@ namespace RC_SpeechToText.Services
 
 		private readonly SearchAVContext _context;
 		private readonly string _bucketName = "rc-retd-stt-dev";
-        //private readonly FileService _fileService;
 
         public ConvertionService(SearchAVContext context)
 		{
