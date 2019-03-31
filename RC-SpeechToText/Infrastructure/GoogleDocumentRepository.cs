@@ -35,7 +35,7 @@ namespace RC_SpeechToText.Infrastructure
 					DocumentsResource.CreateRequest createRequest = service.Documents.Create(newDocument);
 					Document createdDocument = createRequest.Execute();
 
-					DocumentsResource.BatchUpdateRequest batchUpdate = service.Documents.BatchUpdate(GenerateGoogleDocText(transcription), createdDocument.DocumentId);
+					DocumentsResource.BatchUpdateRequest batchUpdate = service.Documents.BatchUpdate(GenerateGoogleDocText(transcription.ClearHTMLTag()), createdDocument.DocumentId);
 					batchUpdate.Execute();
 
 					return true;

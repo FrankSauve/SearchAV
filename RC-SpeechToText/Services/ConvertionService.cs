@@ -46,9 +46,10 @@ namespace RC_SpeechToText.Services
                 var newFilePath = converter.RenamFile(filePath, title);
                 filePath = newFilePath;
             }
-            // Create thumbnail
-            var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
-			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg");
+
+			// Create thumbnail
+			var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
+			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg", 1000);
 
 			if (thumbnailImage == null)
 			{
@@ -83,7 +84,7 @@ namespace RC_SpeechToText.Services
 				//Title = audioFile.FileName,
                 Title = (title == "" ? audioFile.FileName : title + ext),
 				FilePath = filePath,
-				Flag = "Automatisé",
+				FileFlag = FileFlag.Automatise,
                 Description = descriptionFile, 
                 UserId = user.Id,
 				DateAdded = DateTime.Now,

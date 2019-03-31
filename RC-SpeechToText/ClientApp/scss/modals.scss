@@ -8,6 +8,41 @@
     width: 500px !important;
 }
 
+.modalCard-Thumbnail {
+    width: 40% !important;
+}
+
+.modal-container-Thumbnail {
+    background-color: #141425 !important;
+    color: white !important;
+}
+
+.modalHeader-Thumbnail {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    padding: 40px 20px 20px 20px;
+    position: relative;
+}
+
+.modalBody-Thumbnail {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: auto;
+    padding-right: 30px;
+    padding-left: 30px;
+}
+
+.modalFooter-Thumbnail {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    padding: 20px 0px 40px 20px;
+    position: relative;
+}
+
 .modalHeader {
     align-items: center;
     display: flex;

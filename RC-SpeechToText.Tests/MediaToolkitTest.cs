@@ -128,7 +128,7 @@ namespace RC_SpeechToText.Tests
             var converter = new Converter();
             
             // Act
-            converter.CreateThumbnail(inputFile, outputFile);
+            converter.CreateThumbnail(inputFile, outputFile, 1000);
 
             var thumbnailPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), outputFile));
             

@@ -55,7 +55,8 @@ namespace RC_SpeechToText.Infrastructure
 
 		public void DeleteFile(string path)
 		{
-			File.Delete(path);
+			if(File.Exists(path))
+				File.Delete(path);
 		}
 
         public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)

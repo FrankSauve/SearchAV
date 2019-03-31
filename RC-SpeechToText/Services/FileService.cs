@@ -3,6 +3,8 @@ using RC_SpeechToText.Exceptions;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Models.DTO.Outgoing;
+using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +39,23 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetAllFilesByFlag(string flag)
         {
-            var files = await _context.File.Where(f => f.Flag == flag).Include(q => q.User).ToListAsync();
+			FileFlag fileFlag;
+			switch (flag)
+			{
+				case "Automatise":
+					fileFlag = FileFlag.Automatise;
+					break;
+				case "Edite":
+					fileFlag = FileFlag.Edite;
+					break;
+				case "Revise":
+					fileFlag = FileFlag.Revise;
+					break;
+				default:
+					throw new NullReferenceException();
+			}
+
+			var files = await _context.File.Where(f => f.FileFlag == fileFlag).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
@@ -49,8 +67,7 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
         {
-            var reviewedFlag = Enum.GetName(typeof(FileFlag), 2);
-            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.Flag != reviewedFlag).Include(q => q.User).ToListAsync();
+            var files = await _context.File.Where(f => f.Reviewer.Email == email && f.FileFlag != FileFlag.Revise).Include(q => q.User).ToListAsync();
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
@@ -138,7 +155,33 @@ namespace RC_SpeechToText.Services
 			}
 		}
 
-        public async Task<bool> VerifyIfTitleExists(string title)
+		public async Task ModifyThumbnail(OutModifyThumbnailDTO modifyThumbnailDTO)
+		{
+			var file = await _context.File.Where(f => f.Id == modifyThumbnailDTO.FileId).FirstOrDefaultAsync();
+
+			await Task.Run(() =>
+			{
+				var streamIO = new IOInfrastructure();
+				
+				var filePath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + file.Title);
+				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + file.Title + ".jpg");
+
+				streamIO.DeleteFile(thumbnailPath);
+
+				var converter = new Converter();
+
+				string thumbnailImage;
+				if(modifyThumbnailDTO.SeekTime == TimeSpan.Parse(file.Duration).TotalMilliseconds)
+					thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime-500);
+				else
+					thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath, modifyThumbnailDTO.SeekTime);
+
+				if (thumbnailImage != null)
+					Console.Write(thumbnailImage);
+			});
+		}
+
+        private async Task<bool> VerifyIfTitleExists(string title)
         {
             var existingFileTitlesCount = await _context.File.CountAsync(x => x.Title.Trim().Equals(title));
             if (existingFileTitlesCount > 0)
