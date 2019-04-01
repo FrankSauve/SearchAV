@@ -81,8 +81,8 @@ export class TranscriptionText extends React.Component<any, State> {
         if(textArray.length >1 && this.state.displayText.indexOf(s) != -1) {
             for( let i=0 ; i<textArray.length; i++ ){
                 hTextArray.push(textArray[i]);
-                if(i!=textArray.length-1){
-                    hTextArray.push("<span style='background-color: #b9e0f9'>");
+                if (i != textArray.length - 1 && textArray[i].localeCompare(" ") != 0) {
+                    hTextArray.push(" <span style='background-color: #b9e0f9'>");
                     hTextArray.push(s);
                     hTextArray.push("</span>");
                 }
