@@ -1,4 +1,5 @@
 import * as React from 'react';
+import ReactTooltip from 'react-tooltip'
 import { ChangeEvent } from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
@@ -119,7 +120,8 @@ export class TranscriptionText extends React.Component<any, State> {
                 timeInfo = this.props.searchTranscript(this.props.selection, true);
             }
         }
-        // TODO: Use Timeinfo to put timestamps near highlights
+        // TODO: Use timeInfo to put timestamps near highlights
+        
     };
 
     // removes all span tags from a string
@@ -176,6 +178,13 @@ export class TranscriptionText extends React.Component<any, State> {
                     className="highlight-text" 
                     contentEditable={true}
                     dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
+                
+                {
+                    //Testing ReactTooltip timestamp display 
+                }
+                <a data-tip="startTime here" data-for="left-tip"><a data-tip="endTime here" data-for="right-tip"> ◕‿‿◕ </a></a>
+                <ReactTooltip  id= "left-tip" place="left" type="info" effect="solid"/>
+                <ReactTooltip  id="right-tip" place="right" type="info" effect="solid"/>
             </div>
         );
     }
