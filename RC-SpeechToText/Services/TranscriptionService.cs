@@ -83,7 +83,7 @@ namespace RC_SpeechToText.Services {
 			return searchService.PerformSearch(searchTerms, words);
 		}
 
-		public async Task<string> DownloadTranscription(string documentType, Guid fileId)
+		public async Task<string> PrepareDownload(string documentType, Guid fileId)
 		{
 			var fileTitle = _context.File.Where(x => x.Id == fileId).Select(x => x.Title).SingleOrDefault();
 			var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
@@ -109,7 +109,7 @@ namespace RC_SpeechToText.Services {
 					if (words.Count > 0)
 
                     {
-						var exportTranscriptionService = new ExportTranscriptionService();
+						var exportTranscriptionService = new ExportTranscriptionService(_context);
 						return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
 					}
 					else
@@ -120,7 +120,7 @@ namespace RC_SpeechToText.Services {
 					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
 					if (words.Count > 0)
 					{
-						var exportTranscriptionService = new ExportTranscriptionService();
+						var exportTranscriptionService = new ExportTranscriptionService(_context);
 						return await exportTranscriptionService.ExportVideo(fileTitle, documentType, transcript, words);
 					}
 					else
@@ -191,6 +191,6 @@ namespace RC_SpeechToText.Services {
             await _context.Version.AddAsync(newVersion);
             await _context.SaveChangesAsync();
             return newVersion;
-            }
+        }
     }
 }

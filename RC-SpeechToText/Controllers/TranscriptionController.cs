@@ -20,11 +20,13 @@ namespace RC_SpeechToText.Controllers
     {
 		private readonly TranscriptionService _transcriptionService;
         private readonly FileService _fileService;
+        private readonly ExportTranscriptionService _exportTranscriptionService;
 
         public TranscriptionController(SearchAVContext context)
         {
 			_transcriptionService = new TranscriptionService(context);
             _fileService = new FileService(context);
+            _exportTranscriptionService = new ExportTranscriptionService(context);
         }
 
         [HttpPost("[action]/{versionId}")]
@@ -68,24 +70,34 @@ namespace RC_SpeechToText.Controllers
             return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
         }
 
-
+        /// <summary>
+        /// Downloads a file (mp4, srt, burned mp4)
+        /// </summary>
+        /// <param name="documentType"></param>
+        /// <param name="fileId"></param>
+        /// <returns>File</returns>
         [HttpGet("[action]/{fileId}/{documentType}")]
         public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
-			var result = await _transcriptionService.DownloadTranscription(documentType, fileId);
+            try
+            {
+                var result = await _transcriptionService.PrepareDownload(documentType, fileId);
 
-			if(result != null)
-			{
-                throw new ControllerExceptions("Error while trying to download transcription");
-			}
+                if (result != null)
+                {
+                    throw new ControllerExceptions("Error while trying to download transcription");
+                }
 
-            var file = await _fileService.GetFileById(fileId);
+                var file = await _fileService.GetFileById(fileId);
+                byte[] fileBytes = _exportTranscriptionService.GetFileBytes(documentType, file);
+                var contentType = "APPLICATION/octet-stream";
 
-            var net = new System.Net.WebClient();
-            byte[] fileBytes = System.IO.File.ReadAllBytes(file.FilePath);
-            var contentType = "APPLICATION/octet-stream";
-            var fileName = file.Title;
-            return File(fileBytes, contentType, fileName);
+                return File(fileBytes, contentType, file.Title);
+            }
+            catch
+            {
+                return BadRequest("Download failed");
+            }
         }
     }
 }
