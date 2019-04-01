@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using System.Globalization;
 using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
 using System.Linq;
@@ -88,11 +86,19 @@ namespace RC_SpeechToText.Controllers
                     throw new ControllerExceptions("Error while trying to download transcription");
                 }
 
-                var file = await _fileService.GetFileById(fileId);
-                byte[] fileBytes = _exportTranscriptionService.GetFileBytes(documentType, file);
-                var contentType = "APPLICATION/octet-stream";
-
-                return File(fileBytes, contentType, file.Title);
+                if(documentType == "srt" || documentType == "video" || documentType == "videoburn")
+                {
+                    // Return the file to download
+                    var file = await _fileService.GetFileById(fileId);
+                    byte[] fileBytes = _exportTranscriptionService.GetFileBytes(documentType, file);
+                    var contentType = "APPLICATION/octet-stream";
+                    return File(fileBytes, contentType, file.Title);
+                }
+                else
+                {
+                    return Ok();
+                }
+                
             }
             catch
             {

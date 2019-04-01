@@ -139,6 +139,9 @@ namespace RC_SpeechToText.Services
                 case "video":
                     fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".mp4");
                     break;
+                case "videoburn":
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + "Burn.mp4");
+                    break;
             }
 
             return fileBytes;

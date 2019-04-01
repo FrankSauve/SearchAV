@@ -127,7 +127,12 @@ export class ExportModal extends React.Component<any, State> {
                             break;
                         case "video":
                             console.log("Downloading video");
-                            this.downloadData(splitTitle + ".mp4", res.data)
+                            this.downloadData(splitTitle + ".mp4", res.data);
+                            break;
+                        case "videoburn":
+                            console.log("Downloading burned video");
+                            this.downloadData(splitTitle + "Burn.mp4", res.data);
+                            break;
                     }
                     this.showSuccessModal();
                 })
