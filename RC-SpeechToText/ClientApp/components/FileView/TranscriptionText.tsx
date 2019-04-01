@@ -72,10 +72,13 @@ export class TranscriptionText extends React.Component<any, State> {
     // Highlights occurences of a string sel by inserting span tags into the displayText
     public highlightWords = (sel: string) =>{
         let s = sel;
-        let textArray = this.rawToUnspannedHtml(this.state.displayText).split(s);
+        let regex = new RegExp('(\\s|^)'+s+'(\\s|$)','g');
+        console.log("s: "+s);
+        let textArray = (this.rawToUnspannedHtml(this.state.displayText)).split(regex);
+        console.log("textArray: "+(textArray[0]));
         let hTextArray = [];
         // Iterate over the array of strings gathered from splitting based on sel, and insert span tags between them
-        if(textArray.length !=1 && textArray.length !=0 && this.state.displayText.indexOf(s) != -1) {
+        if(textArray.length >1 && this.state.displayText.indexOf(s) != -1) {
             for( let i=0 ; i<textArray.length; i++ ){
                 hTextArray.push(textArray[i]);
                 if(i!=textArray.length-1){
