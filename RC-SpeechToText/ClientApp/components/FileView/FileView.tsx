@@ -189,7 +189,7 @@ export default class FileView extends React.Component<any, State> {
         // But its an ok temporary solution
         axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + selection , config)
             .then(res => {
-                console.log(res.data);
+                console.log("searchTranscript call result: " + res.data);
                 this.handleSeekTime(res.data);
                 if(returnData){
                     this.handleTextSearch(true);

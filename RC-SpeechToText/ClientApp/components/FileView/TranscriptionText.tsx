@@ -93,6 +93,8 @@ export class TranscriptionText extends React.Component<any, State> {
     public getHighlightedWords = (event: any) => {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
+        
+        let timeInfo = "";
         if (selectedWords && s) {
             this.props.handleSelectionChange(s.toString());
 
@@ -114,9 +116,10 @@ export class TranscriptionText extends React.Component<any, State> {
                 }
 
                 console.log("firstSelectedWord: " + this.state.firstSelectedWord + ", lastSelectedWord: " + this.state.lastSelectedWord);
-                this.props.searchTranscript(this.props.selection, false);
+                timeInfo = this.props.searchTranscript(this.props.selection, true);
             }
         }
+        // TODO: Use Timeinfo to put timestamps near highlights
     };
 
     // removes all span tags from a string
