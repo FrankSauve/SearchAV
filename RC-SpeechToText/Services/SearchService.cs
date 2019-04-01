@@ -66,9 +66,6 @@ namespace RC_SpeechToText.Services
             }
 
             //Getting all timestamps and converting them to string to make it easier when passing to frontend
-            //var result = String.Join(", ", timeStampOfTerms.ToArray());
-
-            
             if (timeStampOfTerms.Count > 0)
             {
                 var temp = new List<string>();
@@ -85,11 +82,6 @@ namespace RC_SpeechToText.Services
             {
                 return "";
             }
-            /*
-            var result = String.Join();
-
-            return result;
-            */
         }
 
         static public List<File> SearchDescriptionAndTitle(List<File> files, string search)
