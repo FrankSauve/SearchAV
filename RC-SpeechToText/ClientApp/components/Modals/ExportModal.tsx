@@ -117,10 +117,17 @@ export class ExportModal extends React.Component<any, State> {
             axios.get('/api/transcription/downloadtranscript/' + fileId + '/' + exportSelected, config)
                 .then(res => {
                     this.setState({ loading: false });
+                    // Title without the extension
                     var splitTitle = this.state.file.title.split(".")[0];
-                    if(exportSelected == "srt") {
-                        console.log("Downloading srt");
-                        this.downloadData(splitTitle + ".srt", res.data);
+                    // Download the appropriate file
+                    switch(exportSelected){
+                        case "srt":
+                            console.log("Downloading srt");
+                            this.downloadData(splitTitle + ".srt", res.data);
+                            break;
+                        case "video":
+                            console.log("Downloading video");
+                            this.downloadData(splitTitle + ".mp4", res.data)
                     }
                     this.showSuccessModal();
                 })
@@ -140,7 +147,7 @@ export class ExportModal extends React.Component<any, State> {
         }
     }
 
-    downloadData(filenameForDownload: string, data: any) {
+    downloadData = (filenameForDownload: string, data: any) => {
         var textUrl = URL.createObjectURL(data);
         var element = document.createElement('a');
         element.setAttribute('href', textUrl);

@@ -131,9 +131,14 @@ namespace RC_SpeechToText.Services
             var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
             byte[] fileBytes = null;
 
-            if (docType == "srt")
+            switch (docType)
             {
-                fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".srt");
+                case "srt":
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".srt");
+                    break;
+                case "video":
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".mp4");
+                    break;
             }
 
             return fileBytes;
