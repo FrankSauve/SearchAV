@@ -1,5 +1,4 @@
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip'
 import { ChangeEvent } from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
@@ -66,7 +65,7 @@ export class TranscriptionText extends React.Component<any, State> {
     
     // remove all span tags from the page
     public clearHighlights = () =>{
-        this.setState({displayText:this.rawToUnspannedHtml(this.state.displayText)});
+        this.setState({displayText:this.rawToUnhighlightedHtml(this.state.displayText)});
     };
     
     // Highlights occurences of a string sel by inserting span tags into the displayText
@@ -74,21 +73,29 @@ export class TranscriptionText extends React.Component<any, State> {
         let s = sel;
         let regex = new RegExp('(\\s|^)'+s+'(\\s|$)','g');
         console.log("s: "+s);
-        let textArray = (this.rawToUnspannedHtml(this.state.displayText)).split(regex);
+        let textArray = (this.rawToUnhighlightedHtml(this.state.displayText)).split(regex);
         console.log("textArray: "+(textArray[0]));
+        let startTime = "0:00:00.0";
+        let endTime = "0:00:09.0";
         let hTextArray = [];
         // Iterate over the array of strings gathered from splitting based on sel, and insert span tags between them
         if(textArray.length >1 && this.state.displayText.indexOf(s) != -1) {
             for( let i=0 ; i<textArray.length; i++ ){
                 hTextArray.push(textArray[i]);
                 if (i != textArray.length - 1 && textArray[i].localeCompare(" ") != 0) {
-                    hTextArray.push(" <span style='background-color: #b9e0f9'>");
+
+                    hTextArray.push(" <a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-left' data-tooltip='"+startTime+"'>");
+                    hTextArray.push("<a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-right' data-tooltip='"+endTime+"'>");
+                    hTextArray.push("<span style='background-color: #b9e0f9'>");
                     hTextArray.push(s);
                     hTextArray.push("</span>");
+                    hTextArray.push("</a>");
+                    hTextArray.push("</a>");
                 }
                 
             }
             let highlightedText = hTextArray.join("");
+            console.log("HighlightedText:\n"+highlightedText);
             this.setState({displayText: highlightedText});
         }
     };
@@ -127,11 +134,14 @@ export class TranscriptionText extends React.Component<any, State> {
         
     };
 
-    // removes all span tags from a string
-    rawToUnspannedHtml(text: string) {
+    // removes all span and a tags from a string
+    rawToUnhighlightedHtml(text: string) {
         let a = text;
         a = a.replace(/<span[^>]+\>/g,'');
-        return a.replace(/<\/span>/g,'');
+        a = a.replace(/<\/span>/g,'');
+        a = a.replace(/<a[^>]+\>/g,'');
+        a = a.replace(/<\/a>/g,'');
+        return a;
     }
 
     // removes all br tags from a string
@@ -181,13 +191,6 @@ export class TranscriptionText extends React.Component<any, State> {
                     className="highlight-text" 
                     contentEditable={true}
                     dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
-                
-                {
-                    //Testing ReactTooltip timestamp display 
-                }
-                <a data-tip="startTime here" data-for="left-tip"><a data-tip="endTime here" data-for="right-tip"> ◕‿‿◕ </a></a>
-                <ReactTooltip  id= "left-tip" place="left" type="info" effect="solid"/>
-                <ReactTooltip  id="right-tip" place="right" type="info" effect="solid"/>
             </div>
         );
     }
