@@ -77,32 +77,24 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}/{documentType}")]
         public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
-            try
+            var result = await _transcriptionService.PrepareDownload(documentType, fileId);
+
+            if (result != null)
             {
-                var result = await _transcriptionService.PrepareDownload(documentType, fileId);
-
-                if (result != null)
-                {
-                    throw new ControllerExceptions("Error while trying to download transcription");
-                }
-
-                if(documentType == "srt" || documentType == "video" || documentType == "videoburn")
-                {
-                    // Return the file to download
-                    var file = await _fileService.GetFileById(fileId);
-                    byte[] fileBytes = _exportTranscriptionService.GetFileBytes(documentType, file);
-                    var contentType = "APPLICATION/octet-stream";
-                    return File(fileBytes, contentType, file.Title);
-                }
-                else
-                {
-                    return Ok();
-                }
-                
+                throw new ControllerExceptions("Error while trying to download transcription");
             }
-            catch
+
+            if(documentType == "srt" || documentType == "video" || documentType == "videoburn")
             {
-                return BadRequest("Download failed");
+                // Return the file to download
+                var file = await _fileService.GetFileById(fileId);
+                byte[] fileBytes = _exportTranscriptionService.GetFileBytes(documentType, file);
+                var contentType = "APPLICATION/octet-stream";
+                return File(fileBytes, contentType, file.Title);
+            }
+            else
+            {
+                return Ok();
             }
         }
     }
