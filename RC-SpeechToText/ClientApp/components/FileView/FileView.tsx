@@ -261,6 +261,11 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ showDropdown: false });
     };
 
+    removeExtension(title: string) {
+        var titleNoExtension = title.lastIndexOf('.') != -1 ? title.substring(0, title.lastIndexOf('.')) : title;
+        return titleNoExtension;
+    };
+
     render() {
         return (
             <div className="container">
@@ -273,7 +278,7 @@ export default class FileView extends React.Component<any, State> {
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>
                             <div className="file-view-title">
-                                {this.state.file.title}
+                                {this.removeExtension(this.state.file.title)}
                             </div> </div> : <div className="file-view-title"> This file has no title </div>) : null}
                         
                         <br />
