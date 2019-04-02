@@ -191,6 +191,7 @@ export default class FileView extends React.Component<any, State> {
         // But its an ok temporary solution
         axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.selection , config)
             .then(res => {
+                console.log("searchTranscript state.selection: "+this.state.selection);
                 console.log("searchTranscript call result: " + res.data);
                 this.handleSeekTime(res.data);
                 this.setState({timestampInfo: res.data});
@@ -202,7 +203,8 @@ export default class FileView extends React.Component<any, State> {
     };
     
     public handleSelectionChange = (sel : string) =>{
-        if(sel.localeCompare("") != 0 && sel != null) {
+        if(sel != null && sel != '' && sel != ' ') {
+            console.log("HANDLESELECTIONCHANGE SEL: "+sel);
             this.setState({selection: sel});
             this.searchTranscript();
         }

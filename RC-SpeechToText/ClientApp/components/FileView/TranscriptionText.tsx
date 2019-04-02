@@ -8,9 +8,7 @@ interface State {
     version: any,
     displayText: string,
     rawText: string,
-    errorMessage: string,
-    firstSelectedWord: string,
-    lastSelectedWord: string
+    errorMessage: string
 }
 
 export class TranscriptionText extends React.Component<any, State> {
@@ -21,9 +19,7 @@ export class TranscriptionText extends React.Component<any, State> {
             version: this.props.version,
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
-            errorMessage: "",
-            firstSelectedWord: '',
-            lastSelectedWord: ''
+            errorMessage: ""
         }
     }
     
@@ -113,33 +109,9 @@ export class TranscriptionText extends React.Component<any, State> {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
         
-        let timeInfo = "";
         if (selectedWords && s) {
             this.props.handleSelectionChange(s.toString());
-
-            //Get first non-empty string element
-            for (var i = 0; i < selectedWords.length; i++) {
-                if (selectedWords[i].localeCompare("") != 0) {
-                    this.setState({ firstSelectedWord: selectedWords[i] });
-                    break;
-                }
-            }
-            //call the search func if there is at least one word selected
-            if (this.state.firstSelectedWord.localeCompare("") != 0) {
-                //get last non-empty string element
-                for (var i = selectedWords.length - 1; i >= 0; i--) {
-                    if (selectedWords[i].localeCompare("") != 0) {
-                        this.setState({ lastSelectedWord: selectedWords[i] });
-                        break;
-                    }
-                }
-
-                console.log("firstSelectedWord: " + this.state.firstSelectedWord + ", lastSelectedWord: " + this.state.lastSelectedWord);
-                this.props.handleSelectionChange(s);
-                //timeInfo = this.props.searchTranscript(this.props.selection, true);
-            }
         }
-        // TODO: Use timeInfo to put timestamps near highlights
         
     };
 
@@ -182,7 +154,7 @@ export class TranscriptionText extends React.Component<any, State> {
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
-    }
+    };
 
     getCursorPosition = () => {
         var sel = document.getSelection();
@@ -190,7 +162,7 @@ export class TranscriptionText extends React.Component<any, State> {
             var range = sel.getRangeAt(0);
             return range.startOffset;
         }
-    }
+    };
 
     public render() {
         return (
