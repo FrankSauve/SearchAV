@@ -3,7 +3,7 @@ import axios from 'axios';
 import auth from '../../Utils/auth';
 
 interface State {
-    timestamps: any,
+    //timestamps: any,
     searchTerms: string,
     versionId: AAGUID,
     unauthorized: boolean
@@ -16,7 +16,7 @@ export class TranscriptionSearch extends React.Component<any,State> {
         this.state = {
             versionId: this.props.versionId,
             searchTerms: '',
-            timestamps: null,
+            //timestamps: null,
             unauthorized: false
         }
     }
@@ -28,8 +28,8 @@ export class TranscriptionSearch extends React.Component<any,State> {
     public handleSearch = () => {
         if(this.state.searchTerms!='' && this.state.searchTerms != null){
             this.props.handleSelectionChange(this.state.searchTerms);
-            let a = this.props.searchTranscript(this.state.searchTerms, true);
-            this.setState({timestamps: a});
+            //let a = this.props.searchTranscript(this.state.searchTerms, true);
+            //this.setState({timestamps: a});
         }
     };
 
