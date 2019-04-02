@@ -45,6 +45,7 @@ export default class FileInput extends React.Component<any, State> {
 
     public showAddTitleDescriptionModal = (e: any) => {
         this.setState({ file: e.target.files[0] });
+        this.setState({title: e.target.files[0].name.split(".")[0]}) // Name of the file without the extension
         this.setState({ showAddTitleDescriptionModal: true });
     } 
 
@@ -114,7 +115,6 @@ export default class FileInput extends React.Component<any, State> {
     };
 
     public verifyIfTitleExists = () => {
-        this.toggleLoad();
         var title = this.state.title;
 
         if (title != "")
@@ -166,13 +166,15 @@ export default class FileInput extends React.Component<any, State> {
         return (
             <div className="column mg-top-30 no-padding">
                 <AddTitleDescriptionModal
-                    showModal={this.state.showAddTitleDescriptionModal}
-                    hideModal={this.hideAddTitleDescriptionModal}
-                    handleDescriptionChange={this.handleDescriptionChange}
-                    handleTitleChange={this.handleTitleChange}
-                    title={this.state.title}
-                    onSubmit={this.verifyIfTitleExists}
-                />
+                showModal={this.state.showAddTitleDescriptionModal}
+                hideModal={this.hideAddTitleDescriptionModal}
+                handleDescriptionChange={this.handleDescriptionChange}
+                handleTitleChange={this.handleTitleChange}
+                title={this.state.title}
+                onSubmit={this.verifyIfTitleExists}
+            />
+
+                
 
                 <ErrorModal
                     showModal={this.state.showErrorModal}
