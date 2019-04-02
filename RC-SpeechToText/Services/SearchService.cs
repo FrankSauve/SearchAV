@@ -10,7 +10,7 @@ namespace RC_SpeechToText.Services
     public class SearchService
     {
 
-        //Performs the serach on the terms
+        //Performs the search on the terms
         public string PerformSearch(string searchTerms, List<Word> wordInfo)
         {
 
@@ -53,6 +53,7 @@ namespace RC_SpeechToText.Services
                             {
                                 //Adding the timestamp in the appropriate format
                                 timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"g"));
+                                timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i+j].StartTime.Seconds).ToString(@"g"));
                                 i = i + j;
                             }
                         }
@@ -65,9 +66,22 @@ namespace RC_SpeechToText.Services
             }
 
             //Getting all timestamps and converting them to string to make it easier when passing to frontend
-            var result = String.Join(", ", timeStampOfTerms.ToArray());
-
-            return result;
+            if (timeStampOfTerms.Count > 0)
+            {
+                var temp = new List<string>();
+                for (var i = 0; i < timeStampOfTerms.Count; i += 2)
+                {
+                    string s = (timeStampOfTerms[i] + "-" + timeStampOfTerms[i + 1]);
+                    temp.Add(s);
+                }
+                
+                var result = String.Join(", ", temp.ToArray());
+                return result;
+            }
+            else
+            {
+                return "";
+            }
         }
 
         static public List<File> SearchDescriptionAndTitle(List<File> files, string search)
