@@ -54,7 +54,7 @@ export class TranscriptionText extends React.Component<any, State> {
         // check if the button on TranscriptionSearch was pressed
         if (this.props.textSearch && (prevProps.textSearch !== this.props.textSearch)) {
             this.clearHighlights();
-            this.highlightWords(this.props.selection);
+            this.highlightWords();
             this.props.handleTextSearch(false);
         }
     }
@@ -65,8 +65,8 @@ export class TranscriptionText extends React.Component<any, State> {
     };
     
     // Highlights occurences of a string sel by inserting span tags into the displayText
-    public highlightWords = (sel: string) =>{
-        let s = sel;
+    public highlightWords = () =>{
+        let s = this.props.selection;
         let regex = new RegExp('(\\s|^)'+s+'(\\s|$)','g');
         console.log("s: "+s);
         let textArray = (this.rawToUnhighlightedHtml(this.state.displayText)).split(regex);
@@ -75,18 +75,18 @@ export class TranscriptionText extends React.Component<any, State> {
         let endTime = "9:99:99.9";
         console.log("timestampinfo: "+this.props.timestampInfo);
         let timeOfWordInstances = this.props.timestampInfo.split(", ");
-        let instanceTimeInfo;
         let hTextArray = [];
         // Iterate over the array of strings gathered from splitting based on sel, and insert span tags between them
         if(textArray.length >1 && this.state.displayText.indexOf(s) != -1) {
-            for( let i=0; i<textArray.length; i++){
+            for( let i=0, timeIndex=0; i<textArray.length; i++){
                 hTextArray.push(textArray[i]);
-                if (i != textArray.length - 1 && textArray[i].localeCompare(" ") != 0) {
+                if (i != textArray.length - 1 && textArray[i] != " ") {
                     
-                    
-                    instanceTimeInfo=timeOfWordInstances[i].split("-");
+                    console.log("timeOfWordInstances["+timeIndex+"]: "+timeOfWordInstances[timeIndex]);
+                    let instanceTimeInfo=timeOfWordInstances[timeIndex].toString().split('-');
                     startTime = instanceTimeInfo[0];
                     endTime = instanceTimeInfo[1];
+                    timeIndex++;
                     
                     hTextArray.push(" <a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-left' data-tooltip='"+startTime+"'>");
                     hTextArray.push("<a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-right' data-tooltip='"+endTime+"'>");
