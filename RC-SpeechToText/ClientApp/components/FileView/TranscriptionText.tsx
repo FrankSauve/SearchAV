@@ -86,13 +86,23 @@ export class TranscriptionText extends React.Component<any, State> {
                     timeIndex++;
                     
                     //inject tooltips and highlights into html
-                    hTextArray.push(" <a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-left' data-tooltip='"+startTime+"'>");
-                    hTextArray.push("<a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-right' data-tooltip='"+endTime+"'>");
-                    hTextArray.push("<span style='background-color: #b9e0f9'>");
-                    hTextArray.push(s);
-                    hTextArray.push("</span>");
-                    hTextArray.push("</a>");
-                    hTextArray.push("</a>");
+                    
+                    if(startTime != endTime){
+                        hTextArray.push(" <a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-left' data-tooltip='"+startTime+"'>");
+                        hTextArray.push("<a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-right' data-tooltip='"+endTime+"'>");
+                        hTextArray.push("<span style='background-color: #b9e0f9'>");
+                        hTextArray.push(s);
+                        hTextArray.push("</span>");
+                        hTextArray.push("</a>");
+                        hTextArray.push("</a>");
+                    }
+                    else{
+                        hTextArray.push(" <a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-left' data-tooltip='"+startTime+"'>");
+                        hTextArray.push("<span style='background-color: #b9e0f9'>");
+                        hTextArray.push(s);
+                        hTextArray.push("</span>");
+                        hTextArray.push("</a>");
+                    }
                 }
                 
             }
