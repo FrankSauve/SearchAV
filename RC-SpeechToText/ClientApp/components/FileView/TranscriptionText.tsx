@@ -68,12 +68,9 @@ export class TranscriptionText extends React.Component<any, State> {
     public highlightWords = () =>{
         let s = this.props.selection;
         let regex = new RegExp('(\\s|^)'+s+'(\\s|$)','g');
-        console.log("s: "+s);
         let textArray = (this.rawToUnhighlightedHtml(this.state.displayText)).split(regex);
-        console.log("textArray: "+(textArray[0]));
         let startTime = "0:00:00.0";
         let endTime = "9:99:99.9";
-        console.log("timestampinfo: "+this.props.timestampInfo);
         let timeOfWordInstances = this.props.timestampInfo.split(", ");
         let hTextArray = [];
         // Iterate over the array of strings gathered from splitting based on sel, and insert span tags between them
@@ -82,12 +79,13 @@ export class TranscriptionText extends React.Component<any, State> {
                 hTextArray.push(textArray[i]);
                 if (i != textArray.length - 1 && textArray[i] != " ") {
                     
-                    console.log("timeOfWordInstances["+timeIndex+"]: "+timeOfWordInstances[timeIndex]);
+                    //get beginning and end timestamps for instance of search term in text
                     let instanceTimeInfo=timeOfWordInstances[timeIndex].toString().split('-');
                     startTime = instanceTimeInfo[0];
                     endTime = instanceTimeInfo[1];
                     timeIndex++;
                     
+                    //inject tooltips and highlights into html
                     hTextArray.push(" <a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-left' data-tooltip='"+startTime+"'>");
                     hTextArray.push("<a class='is-primary tooltip is-tooltip-info is-tooltip-active is-tooltip-right' data-tooltip='"+endTime+"'>");
                     hTextArray.push("<span style='background-color: #b9e0f9'>");
@@ -99,7 +97,6 @@ export class TranscriptionText extends React.Component<any, State> {
                 
             }
             let highlightedText = hTextArray.join("");
-            console.log("HighlightedText:\n"+highlightedText);
             this.setState({displayText: highlightedText});
         }
     };
@@ -109,8 +106,10 @@ export class TranscriptionText extends React.Component<any, State> {
         let s = document.getSelection();
         let selectedWords = s ? s.toString().split(" ") : null;
         
-        if (selectedWords && s) {
-            this.props.handleSelectionChange(s.toString());
+        let str = s.toString().trim();
+        
+        if (selectedWords && s && str) {
+            this.props.handleSelectionChange(str);
         }
         
     };
