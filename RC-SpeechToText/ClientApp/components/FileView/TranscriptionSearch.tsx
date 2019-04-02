@@ -24,11 +24,6 @@ export class TranscriptionSearch extends React.Component<any,State> {
     };
 
     public handleSearch = () => {
-        /*
-        if(this.state.searchTerms!='' && this.state.searchTerms != null){
-            this.props.handleSelectionChange(this.state.searchTerms.toString());
-        }
-        */
         let selectedWords = this.state.searchTerms ? this.state.searchTerms.toString().split(" ") : null;
 
         if (selectedWords && this.state.searchTerms && this.state.searchTerms!='') {
@@ -40,7 +35,7 @@ export class TranscriptionSearch extends React.Component<any,State> {
         if (e.key === 'Enter') {
             this.handleSearch();
         }
-    }
+    };
 
     public render() {
         return (
