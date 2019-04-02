@@ -164,7 +164,7 @@ namespace RC_SpeechToText.Services
 				var streamIO = new IOInfrastructure();
 				
 				var filePath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + file.Title);
-				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + file.Title + ".jpg");
+				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + file.Title.Split(".")[0] + ".jpg");
 
 				streamIO.DeleteFile(thumbnailPath);
 

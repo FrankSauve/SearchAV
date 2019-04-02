@@ -107,7 +107,7 @@ export default class FileInput extends React.Component<any, State> {
             .catch(err => {
                 this.toggleLoad();
                 console.log(err.response.data);
-                this.showErrorModal("�chec de l'importation!", err.response.data.message)
+                this.showErrorModal("Échec de l'importation!", err.response.data.message)
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }
@@ -179,15 +179,15 @@ export default class FileInput extends React.Component<any, State> {
                 <ErrorModal
                     showModal={this.state.showErrorModal}
                     hideModal={this.hideErrorModal}
-                    title={"�chec de l'importation!"}
+                    title={"Échec de l'importation!"}
                     errorMessage={this.state.errorMessage}
                 />
 
                 <SuccessModal
                     showModal={this.state.showSuccessTranscribe}
                     hideModal={this.hideSuccessModal}
-                    title={"Importation R�ussie!"}
-                    successMessage="La transcription de votre fichier a �t� effectu� avec succ�s. Vous recevrez un courriel dans quelques instants."
+                    title={"Importation Réussie!"}
+                    successMessage="La transcription de votre fichier a été effectué avec succès. Vous recevrez un courriel dans quelques instants."
                 />
 
                 <div className="file is-boxed has-name"

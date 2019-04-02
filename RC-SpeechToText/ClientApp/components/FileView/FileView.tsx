@@ -31,6 +31,7 @@ interface State {
     showDropdown: boolean,
     loading: boolean,
     seekTime: string,
+    timestampInfo: string,
     selection: string,
     textSearch: boolean
 }
@@ -59,6 +60,7 @@ export default class FileView extends React.Component<any, State> {
             showDropdown: false,
             loading: false,
             seekTime: '0:00:00.00',
+            timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
             textSearch: false
         }
@@ -161,7 +163,7 @@ export default class FileView extends React.Component<any, State> {
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
                     this.hideDescriptionModal();
-                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirm�! Les changements effectu�s ont �t� enregistr� avec succ�s.");
+                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
@@ -171,12 +173,12 @@ export default class FileView extends React.Component<any, State> {
                 });
         }
         else {
-            this.showErrorModal(modalTitle, "Enregistrement de la description annul�! Vous n'avez effectu� aucun changements ou vous avez apport� les m�mes modifications.");
+            this.showErrorModal(modalTitle, "Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
         }
     };
 
     // Searches the transcript for the selection, and updates the seekTime var with its timestamp
-    public searchTranscript = (selection : string, returnData : boolean) => {
+    public searchTranscript = () => {
         const config = {
             headers: {
                 'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -187,14 +189,11 @@ export default class FileView extends React.Component<any, State> {
         // Search the entire selection for now
         // This will probably have to change by having words with timestamps in the frontend
         // But its an ok temporary solution
-        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + selection , config)
+        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.selection , config)
             .then(res => {
-                console.log(res.data);
                 this.handleSeekTime(res.data);
-                if(returnData){
-                    this.handleTextSearch(true);
-                    return res.data;
-                }
+                this.setState({timestampInfo: res.data});
+                this.handleTextSearch(true);
             })
             .catch(err => {
                 console.log(err);
@@ -202,7 +201,11 @@ export default class FileView extends React.Component<any, State> {
     };
     
     public handleSelectionChange = (sel : string) =>{
-        this.setState({selection: sel});
+        if(sel != null && sel != '' && sel != ' ') {
+            this.setState({selection: sel}, () =>{
+                this.searchTranscript();
+            });
+        }
     };
     
     public handleTextSearch = (b: boolean) =>{
@@ -308,7 +311,6 @@ export default class FileView extends React.Component<any, State> {
                             <TranscriptionSearch 
                                 versionId={this.state.version.id} 
                                 handleSeekTime={this.handleSeekTime} 
-                                searchTranscript={this.searchTranscript} 
                                 selection={this.state.selection}
                                 handleSelectionChange={this.handleSelectionChange} /> : null}
                         {this.state.loading ?
@@ -320,11 +322,11 @@ export default class FileView extends React.Component<any, State> {
                                         version={this.state.version}
                                         handleTranscriptChange={this.handleTranscriptChange}
                                         handleSeekTime={this.handleSeekTime}
-                                        searchTranscript={this.searchTranscript}
                                         selection={this.state.selection}
                                         handleSelectionChange={this.handleSelectionChange}
                                         textSearch={this.state.textSearch}
-                                        handleTextSearch={this.handleTextSearch}/>
+                                        handleTextSearch={this.handleTextSearch}
+                                        timestampInfo={this.state.timestampInfo}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
