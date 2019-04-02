@@ -82,12 +82,16 @@ namespace RC_SpeechToText.Services
                 else
                 {
                     var file = _context.File.Find(id);
+                    var ext = System.IO.Path.GetExtension(file.FilePath);
+                    var oldTitle = System.IO.Path.GetFileNameWithoutExtension(file.Title);
+                    
 
                     if (file.ThumbnailPath != "NULL")
                     {
-                        file.ThumbnailPath = ModifyThumbnailName(file.Title, newTitle);
+                        file.ThumbnailPath = ModifyThumbnailName(oldTitle, newTitle);
+                        file.FilePath = ModifyFileName(file.Title, newTitle, file.FilePath);
                     }
-                    file.Title = newTitle;
+                    file.Title = newTitle + ext;
 
 
                     await _context.SaveChangesAsync();
@@ -177,9 +181,9 @@ namespace RC_SpeechToText.Services
 			});
 		}
 
-        private async Task<bool> VerifyIfTitleExists(string title)
+        public async Task<bool> VerifyIfTitleExists(string title)
         {
-            var existingFileTitlesCount = await _context.File.CountAsync(x => x.Title.Trim().Equals(title));
+            var existingFileTitlesCount = await _context.File.CountAsync(x => x.Title.Trim().Equals(title) || x.Title.Trim().Equals(title + ".mp4"));
             if (existingFileTitlesCount > 0)
             {
                 return true;
@@ -198,6 +202,23 @@ namespace RC_SpeechToText.Services
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
                 return @"\assets\Thumbnails\" + newName + ".jpg";
+            }
+            else
+                return "NULL";
+        }
+
+        public string ModifyFileName(string oldName, string newName, string filePath)
+        {   
+            string ext = System.IO.Path.GetExtension(filePath);
+            var streamIO = new IOInfrastructure();
+            //Verifies if file exists in the current directory
+            if (streamIO.VerifyPathExistInDirectory(@"\wwwroot\assets\Audio\" + oldName))
+            {
+                string oldPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + oldName);
+                string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + newName + ext);
+                //Rename file in current directory to new title
+                streamIO.MoveFilePath(oldPath, newPath);
+                return newPath;
             }
             else
                 return "NULL";

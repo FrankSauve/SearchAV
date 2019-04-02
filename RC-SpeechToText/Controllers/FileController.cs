@@ -135,6 +135,17 @@ namespace RC_SpeechToText.Controllers
             return Ok(file.File);
         }
 
+        [HttpPost("[action]/{title}")]
+        public async Task<IActionResult>VerifyIfTitleExists(string title)
+        {
+            var name = await _fileService.VerifyIfTitleExists(title);
+            if (name == true)
+            {
+                throw new ControllerExceptions("Le nom de fichier existe déjà. Veuillez choisir un nouveau nom.");
+            }
+
+            return Ok(name);
+        }
 		[HttpGet("[action]/{fileId}/{seekTime}")]
 		public async Task<IActionResult> ChangeThumbnail(Guid fileId, int seekTime)
 		{
