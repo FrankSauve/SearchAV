@@ -69,7 +69,7 @@ export class GridFileCard extends React.Component<any, State> {
                                     <p className="time-on-thumbnail-police">{this.state.duration}</p>
                                 </div>
                                 <div className="overlay">
-                                    <Link className="info" to={`/FileView/${this.props.file.id}`}>View/Edit</Link>
+                                    <Link className="info" to={`/FileView/${this.props.file.id}`}>Voir/Modifier</Link>
                                 </div>                                
                             </figure>
                         </div>

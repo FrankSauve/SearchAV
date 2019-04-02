@@ -163,7 +163,7 @@ export default class FileView extends React.Component<any, State> {
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
                     this.hideDescriptionModal();
-                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirm�! Les changements effectu�s ont �t� enregistr� avec succ�s.");
+                    this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
@@ -173,7 +173,7 @@ export default class FileView extends React.Component<any, State> {
                 });
         }
         else {
-            this.showErrorModal(modalTitle, "Enregistrement de la description annul�! Vous n'avez effectu� aucun changements ou vous avez apport� les m�mes modifications.");
+            this.showErrorModal(modalTitle, "Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
         }
     };
 
