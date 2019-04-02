@@ -8,6 +8,7 @@ import { LoadingModal } from '../LoadingModal';
 
 interface State {
     fileId: AAGUID,
+    file: any,
     errorMessage: string,
     showSuccessModal: boolean,
     showErrorModal: boolean,
@@ -24,6 +25,7 @@ export class ExportModal extends React.Component<any, State> {
 
         this.state = {
             fileId: "",
+            file: null,
             errorMessage: "",
             showSuccessModal: false,
             showErrorModal: false,
@@ -72,6 +74,29 @@ export class ExportModal extends React.Component<any, State> {
         this.setState({ fileId: id });
     }
 
+    public download = () => {
+        this.setState({loading: true});
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        // Get the file by ID
+        axios.get('/api/file/details/' + this.state.fileId, config)
+            .then(res => {
+                console.log(res.data);
+                this.setState({ file: res.data });
+                this.setState({ loading: false });
+                // Download the document
+                this.saveDocument();
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({ loading: false });
+            });
+    };
+
     public saveDocument = () => {
         this.setState({ loading: true });
 
@@ -81,19 +106,38 @@ export class ExportModal extends React.Component<any, State> {
         if (this.state.burnVideoInput && this.state.documentOption == "video")
             exportSelected += "burn"
 
+        console.log(exportSelected);
         if (fileId != "" && exportSelected != "" && exportSelected != "0") {
             const config = {
                 headers: {
                     'Authorization': 'Bearer ' + auth.getAuthToken(),
-                    'content-type': 'application/json'
-                }
+                },
+                responseType: 'blob',
             };
             axios.get('/api/transcription/downloadtranscript/' + fileId + '/' + exportSelected, config)
                 .then(res => {
                     this.setState({ loading: false });
+                    // Title without the extension
+                    var splitTitle = this.state.file.title.split(".")[0];
+                    // Download the appropriate file
+                    switch(exportSelected){
+                        case "srt":
+                            console.log("Downloading srt");
+                            this.downloadData(splitTitle + ".srt", res.data);
+                            break;
+                        case "video":
+                            console.log("Downloading video");
+                            this.downloadData(splitTitle + ".mp4", res.data);
+                            break;
+                        case "videoburn":
+                            console.log("Downloading burned video");
+                            this.downloadData(splitTitle + "Burn.mp4", res.data);
+                            break;
+                    }
                     this.showSuccessModal();
                 })
                 .catch(err => {
+                    console.error(err);
                     this.setState({ loading: false });
                     this.showErrorModal("Une erreur est survenu lors de l'export du fichier")
                     this.setState({ 'unauthorized': true });
@@ -106,6 +150,17 @@ export class ExportModal extends React.Component<any, State> {
                 this.setState({ loading: false });
                 this.showErrorModal("Choisier le type de document dont vous voulez exporter");
         }
+    }
+
+    downloadData = (filenameForDownload: string, data: any) => {
+        var textUrl = URL.createObjectURL(data);
+        var element = document.createElement('a');
+        element.setAttribute('href', textUrl);
+        element.setAttribute('download', filenameForDownload);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
     }
 
     public render() {
@@ -153,7 +208,7 @@ export class ExportModal extends React.Component<any, State> {
                             <input type="checkbox" value="burn" className="mg-right-5" onChange={this.handleBurnVideoChange} hidden={this.state.hideBurnSubtitleRadioButton}></input><span hidden={this.state.hideBurnSubtitleRadioButton}>Incrustrer les sous-titres sur la vidéo</span>
                     </section>
                         <footer className="modalFooter">
-                            <button className="button is-success pull-right" onClick={this.saveDocument}>Confirmer</button>
+                            <button className="button is-success pull-right" onClick={this.download}>Confirmer</button>
                         </footer>
                     </div>
                 </div>

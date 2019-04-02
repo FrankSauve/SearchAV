@@ -1,4 +1,5 @@
 ﻿using RC_SpeechToText.Infrastructure;
+using RC_SpeechToText.Models;
 using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,14 @@ namespace RC_SpeechToText.Services
 {
     public class ExportTranscriptionService
 	{
-		private IOInfrastructure streamIO = new IOInfrastructure();
+        private readonly SearchAVContext _context;
+        private IOInfrastructure streamIO = new IOInfrastructure();
+
+        public ExportTranscriptionService(SearchAVContext context)
+        {
+            _context = context;
+        }
+
 
 		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
 		{
@@ -111,7 +119,36 @@ namespace RC_SpeechToText.Services
 			return true;
 		}
 
-		private List<string> GetParagraphTimestamp(string[] paragraph, List<Models.Word> words)
+        /// <summary>
+        /// Gets the file bytes of the specified file to be downloaded.
+        /// </summary>
+        /// <param name="docType"></param>
+        /// <param name="file"></param>
+        /// <returns name="fileBytes"></returns>
+        public byte[] GetFileBytes(string docType, Models.File file)
+        {
+            var net = new System.Net.WebClient();
+            var splitFileTitle = file.Title.Split(".")[0];
+            var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
+            byte[] fileBytes = null;
+
+            switch (docType)
+            {
+                case "srt":
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".srt");
+                    break;
+                case "video":
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".mp4");
+                    break;
+                case "videoburn":
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + "Burn.mp4");
+                    break;
+            }
+
+            return fileBytes;
+        }
+
+        private List<string> GetParagraphTimestamp(string[] paragraph, List<Models.Word> words)
 		{
 			//Look for the first instance where the paragraph word match & the word db match
 			var firstWord = words.Find(x => x.Term == paragraph.First());

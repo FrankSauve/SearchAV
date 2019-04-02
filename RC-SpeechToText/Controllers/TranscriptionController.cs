@@ -1,10 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using System.Globalization;
 using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
 using System.Linq;
@@ -19,10 +17,14 @@ namespace RC_SpeechToText.Controllers
     public class TranscriptionController : Controller
     {
 		private readonly TranscriptionService _transcriptionService;
+        private readonly FileService _fileService;
+        private readonly ExportTranscriptionService _exportTranscriptionService;
 
         public TranscriptionController(SearchAVContext context)
         {
 			_transcriptionService = new TranscriptionService(context);
+            _fileService = new FileService(context);
+            _exportTranscriptionService = new ExportTranscriptionService(context);
         }
 
         [HttpPost("[action]/{versionId}")]
@@ -66,18 +68,34 @@ namespace RC_SpeechToText.Controllers
             return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
         }
 
-
+        /// <summary>
+        /// Downloads a file (mp4, srt, burned mp4)
+        /// </summary>
+        /// <param name="documentType"></param>
+        /// <param name="fileId"></param>
+        /// <returns>File</returns>
         [HttpGet("[action]/{fileId}/{documentType}")]
         public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
-			var result = await _transcriptionService.DownloadTranscription(documentType, fileId);
+            var result = await _transcriptionService.PrepareDownload(documentType, fileId);
 
-			if(result != null)
-			{
+            if (result != null)
+            {
                 throw new ControllerExceptions("Error while trying to download transcription");
-			}
+            }
 
-			return Ok();
+            if(documentType == "srt" || documentType == "video" || documentType == "videoburn")
+            {
+                // Return the file to download
+                var file = await _fileService.GetFileById(fileId);
+                byte[] fileBytes = _exportTranscriptionService.GetFileBytes(documentType, file);
+                var contentType = "APPLICATION/octet-stream";
+                return File(fileBytes, contentType, file.Title);
+            }
+            else
+            {
+                return Ok();
+            }
         }
     }
 }
