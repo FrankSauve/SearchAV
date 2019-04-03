@@ -23,10 +23,10 @@ export class VideoPlayer extends React.Component<any, State> {
 
         if(event.altKey) { // alt key
             if(event.keyCode == 66){ // b key
-                this.props.updateHighlightPosition(true);
+                this.props.handleHighlightPosition(true);
             }
             else if(event.keyCode == 78){ // n key
-                this.props.updateHighlightPosition(false);
+                this.props.handleHighlightPosition(false);
             }
         }
     };

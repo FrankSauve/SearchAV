@@ -57,11 +57,26 @@ export class TranscriptionText extends React.Component<any, State> {
             this.highlightWords();
             this.props.handleTextSearch(false);
         }
+        // check if the feature toggle for #75 was activated
+        if (this.props.highlightPosition && (prevProps.highlightPosition !== this.props.highlightPosition)) {
+            console.log("ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
+            this.highlightPosition();
+        }
+        // check if the feature toggle for #75 was deactivated
+        else if (!this.props.highlightPosition && (prevProps.highlightPosition !== this.props.highlightPosition)){
+            console.log("DE-ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
+            this.clearPositionHighlights();
+        }
     }
     
     // remove all span tags from the page
     public clearHighlights = () =>{
         this.setState({displayText:this.rawToUnhighlightedHtml(this.state.displayText)});
+    };
+    // remove only span tags dedicated to showing the current position of the video in the transcript
+    public clearPositionHighlights=()=>{
+        console.log("REACHED TranscriptionText.clearPositionHighlights");
+        this.setState({displayText:this.rawToUnhighlightedPosHtml(this.state.displayText)});
     };
     
     // Highlights occurences of a string sel by inserting span tags into the displayText
@@ -110,6 +125,11 @@ export class TranscriptionText extends React.Component<any, State> {
             this.setState({displayText: highlightedText});
         }
     };
+    
+    public highlightPosition=()=>{
+        //TODO: IMPLEMENT METHOD
+        console.log("IMPLEMENT TranscriptionText.highlightPosition");
+    };
 
     // Retrieves the words selected via mouse and calls FileView's searchTranscript method with them
     public getHighlightedWords = (event: any) => {
@@ -124,6 +144,15 @@ export class TranscriptionText extends React.Component<any, State> {
         
     };
 
+    // removes all div tags from a string
+    rawToUnhighlightedPosHtml(text: string) {
+        console.log("REACHED TranscriptionText.rawToUnhighligtedPosHtml");
+        let a = text;
+        a = a.replace(/<div[^>]+\>/g,''); //<div style:'background-color: #DCDCDC'>
+        a = a.replace(/<\/div>/g,'');
+        return a;
+    }
+    
     // removes all span and a tags from a string
     rawToUnhighlightedHtml(text: string) {
         let a = text;
@@ -156,9 +185,9 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
      setCursorPosition = (cursorPos: number) => {
-        var el = document.getElementById("transcription");
-        var range = document.createRange();
-        var sel = window.getSelection();
+        let el = document.getElementById("transcription");
+        let range = document.createRange();
+        let sel = window.getSelection();
         if(el) range.setStart(el.childNodes[0], cursorPos);
         range.collapse(true);
         sel.removeAllRanges();
@@ -166,9 +195,9 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
     getCursorPosition = () => {
-        var sel = document.getSelection();
+        let sel = document.getSelection();
         if(sel) {
-            var range = sel.getRangeAt(0);
+            let range = sel.getRangeAt(0);
             return range.startOffset;
         }
     };

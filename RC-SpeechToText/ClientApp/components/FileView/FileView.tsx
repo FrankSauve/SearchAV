@@ -218,7 +218,7 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ seekTime: time });
     };
     
-    public updateHighlightPosition = (b: boolean) =>{
+    public handleHighlightPosition = (b: boolean) =>{
         this.setState({highlightPosition: b});
     };
 
@@ -277,7 +277,7 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} updateHighlightPosition={this.updateHighlightPosition} controls={true}/> : null}
+                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} handleHighlightPosition={this.handleHighlightPosition} controls={true}/> : null}
 
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>
@@ -327,7 +327,9 @@ export default class FileView extends React.Component<any, State> {
                                         handleSelectionChange={this.handleSelectionChange}
                                         textSearch={this.state.textSearch}
                                         handleTextSearch={this.handleTextSearch}
-                                        timestampInfo={this.state.timestampInfo}/>
+                                        timestampInfo={this.state.timestampInfo}
+                                        highlightPosition={this.state.highlightPosition}
+                                        handleHighlightPosition={this.handleHighlightPosition}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
