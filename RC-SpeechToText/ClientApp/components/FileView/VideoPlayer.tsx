@@ -4,8 +4,7 @@ import ReactPlayer from 'react-player';
 interface State {
     player: any,
     playing: boolean,
-    controls: boolean,
-    highlightPosition: boolean
+    controls: boolean
 }
 
 export class VideoPlayer extends React.Component<any, State> {
@@ -15,8 +14,7 @@ export class VideoPlayer extends React.Component<any, State> {
         this.state = {
             player: null,
             playing: false,
-            controls: this.props.controls,
-            highlightPosition: false
+            controls: this.props.controls
         }
 
     }
@@ -25,12 +23,10 @@ export class VideoPlayer extends React.Component<any, State> {
 
         if(event.altKey) { // alt key
             if(event.keyCode == 66){ // b key
-                this.setState({highlightPosition:true});
-                console.log("This was activated: "+this.state.highlightPosition);
+                this.props.updateHighlightPosition(true);
             }
             else if(event.keyCode == 78){ // n key
-                this.setState({highlightPosition:false});
-                console.log("This was activated: "+this.state.highlightPosition);
+                this.props.updateHighlightPosition(false);
             }
         }
     };

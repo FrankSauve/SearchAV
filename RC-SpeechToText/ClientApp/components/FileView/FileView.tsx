@@ -33,7 +33,8 @@ interface State {
     seekTime: string,
     timestampInfo: string,
     selection: string,
-    textSearch: boolean
+    textSearch: boolean,
+    highlightPosition: boolean
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -62,7 +63,8 @@ export default class FileView extends React.Component<any, State> {
             seekTime: '0:00:00.00',
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
-            textSearch: false
+            textSearch: false,
+            highlightPosition: false
         }
     }
 
@@ -215,6 +217,10 @@ export default class FileView extends React.Component<any, State> {
     public handleSeekTime = (time: string) => {
         this.setState({ seekTime: time });
     };
+    
+    public updateHighlightPosition = (b: boolean) =>{
+        this.setState({highlightPosition: b});
+    };
 
     public handleTranscriptChange = (text: string) => {
         this.setState({ editedTranscript: text });
@@ -271,7 +277,7 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} controls={true}/> : null}
+                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} updateHighlightPosition={this.updateHighlightPosition} controls={true}/> : null}
 
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>
