@@ -4,7 +4,7 @@ import ReactPlayer from 'react-player';
 interface State {
     player: any,
     playing: boolean,
-    controle: boolean
+    controls: boolean
 }
 
 export class VideoPlayer extends React.Component<any, State> {
@@ -14,26 +14,10 @@ export class VideoPlayer extends React.Component<any, State> {
         this.state = {
             player: null,
             playing: false,
-            controle: this.props.controle
+            controls: this.props.controls
         }
 
     }
-
-    handleKeyDown = (event: any) => {
-        //console.log("isPlaying? " + this.state.isPlaying);
-        
-        if(event.ctrlKey) { //ctrl key
-            if (event.keyCode == 37) { //left arrow
-                this.localSeek(-5);
-            }
-            else if (event.keyCode == 40 || event.keyCode == 32) { //down arrow or space
-                this.playPause();
-            }
-            else if (event.keyCode == 39) { //right arrow
-                this.localSeek(5);
-            }
-        }
-    };
     
     localSeek = (n: any) =>{
         let seekVal = this.state.player.getCurrentTime()+n;
@@ -44,26 +28,6 @@ export class VideoPlayer extends React.Component<any, State> {
         this.state.player.seekTo(seekVal);
     };
     
-    playPause = () =>{
-        this.setState({playing: !this.state.playing})
-    };
-    
-    onPlay = () =>{
-        this.setState({playing:true})
-    };
-    onPause = () =>{
-        this.setState({playing:false})
-    };
-
-    componentDidMount() {
-        document.addEventListener("keydown", this.handleKeyDown);
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
-    }
-
-    
     componentDidUpdate(prevProps : any, prevState : any) {
         // only call for the change in time if the data has changed
         if (prevProps.seekTime !== this.props.seekTime) {
@@ -72,8 +36,8 @@ export class VideoPlayer extends React.Component<any, State> {
     }
 
     public changeTime = () => {
-        var a = this.props.seekTime.split(':');
-        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (parseFloat(a[2]));
+        let a = this.props.seekTime.split(':');
+        let seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (parseFloat(a[2]));
         this.state.player.seekTo(seconds);
     };
     
@@ -87,9 +51,7 @@ export class VideoPlayer extends React.Component<any, State> {
                     ref={this.ref}
                     url={'../assets/Audio/' + this.props.path}
                     playing={this.state.playing}
-                    onPause={this.onPause}
-                    onPlay={this.onPlay}
-                    controls={this.state.controle}
+                    controls={this.state.controls}
                     width='100%'
                     height='100%'
                 />
