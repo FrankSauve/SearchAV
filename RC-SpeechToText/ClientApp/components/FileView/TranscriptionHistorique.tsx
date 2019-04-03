@@ -51,8 +51,18 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                     this.setState({ 'unauthorized': true });
                 }
             });
-   };
+    };
 
+    public formatTime = (dateModified : string) => {
+        var d = new Date(dateModified);
+
+
+        var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " +
+            d.getHours() + ":" + d.getMinutes();
+
+        return datestring;
+
+    }
 
     public render() {
         var i = 0;
@@ -68,7 +78,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                             const listVersions = (
                                 <div className="historique-content">
                                     <p> {version.historyTitle} </p>
-                                    <p> {version.dateModified.substr(0, 10)} {version.dateModified.substr(11, 5)} </p>
+                                    <p> {this.formatTime(version.dateModified)} </p>
                                     <p className="historique-username"> {this.state.usernames[i]}</p>
                                 </div>
                             )
