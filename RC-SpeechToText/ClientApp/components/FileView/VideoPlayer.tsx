@@ -4,7 +4,8 @@ import ReactPlayer from 'react-player';
 interface State {
     player: any,
     playing: boolean,
-    controls: boolean
+    controls: boolean,
+    highlightPosition: boolean
 }
 
 export class VideoPlayer extends React.Component<any, State> {
@@ -14,10 +15,25 @@ export class VideoPlayer extends React.Component<any, State> {
         this.state = {
             player: null,
             playing: false,
-            controls: this.props.controls
+            controls: this.props.controls,
+            highlightPosition: false
         }
 
     }
+    
+    handleKeyDown = (event : any) => {
+
+        if(event.altKey) { // alt key
+            if(event.keyCode == 66){ // b key
+                this.setState({highlightPosition:true});
+                console.log("This was activated: "+this.state.highlightPosition);
+            }
+            else if(event.keyCode == 78){ // n key
+                this.setState({highlightPosition:false});
+                console.log("This was activated: "+this.state.highlightPosition);
+            }
+        }
+    };
     
     localSeek = (n: any) =>{
         let seekVal = this.state.player.getCurrentTime()+n;
@@ -27,6 +43,14 @@ export class VideoPlayer extends React.Component<any, State> {
             seekVal = this.state.player.getDuration() - 1;
         this.state.player.seekTo(seekVal);
     };
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
     
     componentDidUpdate(prevProps : any, prevState : any) {
         // only call for the change in time if the data has changed
@@ -44,6 +68,7 @@ export class VideoPlayer extends React.Component<any, State> {
     ref = (player: any) => {
         this.setState({player: player});
     };
+    
     public render() {
         return (
             <div className="video-player">
