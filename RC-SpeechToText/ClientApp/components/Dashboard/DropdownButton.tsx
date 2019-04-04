@@ -1,6 +1,7 @@
 ﻿import * as React from 'react';
 import axios from 'axios';
 import auth from '../../Utils/auth';
+import { DeleteFileModal } from '../Modals/DeleteFileModal';
 import { ModifyTitleModal } from '../Modals/ModifyTitleModal';
 import { ModifyDescriptionModal } from '../Modals/ModifyDescriptionModal';
 import { SuccessModal } from '../Modals/SuccessModal';
@@ -16,6 +17,7 @@ interface State {
     newDescription: string,
     flag: string,
     showDropdown: boolean,
+    showDeleteFileModal: boolean,
     showTitleModal: boolean,
     showDescriptionModal: boolean,
     showErrorModal: boolean,
@@ -39,6 +41,7 @@ export class DropdownButton extends React.Component<any, State> {
             newDescription: "",
             flag: this.props.flag,
             showDropdown: false,
+            showDeleteFileModal: false,
             showTitleModal: false,
             showDescriptionModal: false,
             showErrorModal: false,
@@ -270,6 +273,14 @@ export class DropdownButton extends React.Component<any, State> {
         this.setState({ showDropdown: false });
     }
 
+    public showDeleteFileModal = () => {
+        this.setState({ showDeleteFileModal: true });
+    }
+
+    public hideDeleteFileModal = () => {
+        this.setState({ showDeleteFileModal: false });
+    }
+
     public showTitleModal = () => {
         this.setState({ showTitleModal: true });
     }
@@ -330,7 +341,7 @@ export class DropdownButton extends React.Component<any, State> {
                                 Ajouter une description
                                 </a>}
 
-                            <a className="dropdown-item is-black" onClick={this.deleteWords}>
+                            <a className="dropdown-item is-black" onClick={this.showDeleteFileModal}>
                                 <i className="fa fa-trash mg-right-5" aria-hidden="true"></i>
                                 Effacer le fichier
                             </a>
@@ -338,6 +349,12 @@ export class DropdownButton extends React.Component<any, State> {
                         </div>
                     </div>
                 </div>
+
+                <DeleteFileModal
+                    showModal={this.state.showDeleteFileModal}
+                    hideModal={this.hideDeleteFileModal}
+                    onSubmit={this.deleteWords}
+                />
 
                 <ModifyTitleModal
                     showModal={this.state.showTitleModal}
