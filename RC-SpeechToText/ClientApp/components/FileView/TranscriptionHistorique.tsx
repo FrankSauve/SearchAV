@@ -3,8 +3,6 @@ import auth from '../../Utils/auth';
 import axios from 'axios';
 
 interface State {
-    versions: any[],
-    usernames: string[], 
     loading: boolean,
     unauthorized: boolean
 }
@@ -15,8 +13,6 @@ export class TranscriptionHistorique extends React.Component<any, State> {
         super(props);
 
         this.state = {
-            versions: [],
-            usernames: [], 
             loading: false,
             unauthorized: false
         }
@@ -24,11 +20,12 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
     // Called when the component is rendered
     public componentDidMount() {
-        this.getAllVersions();
+
     }
 
-    public getAllVersions = () => {
-        this.setState({ loading: true });
+    public formatTime = (dateModified: string) => {
+        var d = new Date(dateModified);
+
 
 
         const config = {
@@ -56,11 +53,10 @@ export class TranscriptionHistorique extends React.Component<any, State> {
     public formatTime = (dateModified : string) => {
         var d = new Date(dateModified);
 
-
         var datestring = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " +
             d.getHours() + ":" + d.getMinutes();
 
-        return datestring;
+      return datestring;
 
     }
 
@@ -74,12 +70,12 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 </div>
                 <div className="box" id="historique-content-box">
                     <div>
-                        {this.state.versions.map((version) => {
+                        {this.props.versions.map((version: any) => {
                             const listVersions = (
                                 <div className="historique-content">
                                     <p> {version.historyTitle} </p>
                                     <p> {this.formatTime(version.dateModified)} </p>
-                                    <p className="historique-username"> {this.state.usernames[i]}</p>
+                                    <p className="historique-username"> {this.props.usernames[i]}</p>
                                 </div>
                             )
                             i++;

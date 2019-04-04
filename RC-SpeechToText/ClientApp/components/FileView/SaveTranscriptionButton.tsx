@@ -56,6 +56,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     this.props.updateVersion(res.data);
                     this.setState({ 'loading': false });
                     this.showSuccessModal();
+                    this.props.getAllVersions();
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
