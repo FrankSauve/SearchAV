@@ -65,7 +65,7 @@ export class FileInfo extends React.Component<any, State> {
         var d = new Date(this.state.dateModified);
 
 
-        var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " +
+        var datestring = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " +
             d.getHours() + ":" + d.getMinutes();
 
         this.setState({ dateFormated: datestring });

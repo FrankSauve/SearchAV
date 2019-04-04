@@ -57,7 +57,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
         var d = new Date(dateModified);
 
 
-        var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " +
+        var datestring = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " +
             d.getHours() + ":" + d.getMinutes();
 
         return datestring;
