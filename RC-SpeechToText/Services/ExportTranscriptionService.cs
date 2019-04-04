@@ -40,15 +40,22 @@ namespace RC_SpeechToText.Services
 
 				command =
 					"-i " +
-					videoPath + splitFileTitle[0] +
-					".mp4 -vf subtitles=\'" +
+					"\"" +
+					videoPath + 
+					splitFileTitle[0] +
+					".mp4\"" +
+					" -vf subtitles=\'" + 
+					"\"" +
 					subtitlePath +
 					splitFileTitle[0] +
-					".srt\'" +
+					".srt\'" + 
+					"\"" +
 					" -max_muxing_queue_size 1024 " +
+					"\"" +
 					videoPath +
 					splitFileTitle[0] +
-					"Burn.mp4";
+					"Burn.mp4" +
+					"\"";
 			}
 			else
 			{
@@ -57,14 +64,18 @@ namespace RC_SpeechToText.Services
 
 				command =
 					"-i " +
+					"\"" +
 					videoPath +
 					splitFileTitle[0] +
-					".mp4 -i " +
+					".mp4\" -i " +
+					"\"" +
 					videoPath +
 					splitFileTitle[0] +
-					".srt -c copy -c:s mov_text " +
+					".srt\" -c copy -c:s mov_text " +
+					"\"" +
 					videoPath + splitFileTitle[0] +
-					"Embedded.mp4";
+					"Embedded.mp4" +
+					"\"";
 			}
 
 			var videoProcess = new ProcessStartInfo
@@ -138,7 +149,7 @@ namespace RC_SpeechToText.Services
                     fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".srt");
                     break;
                 case "video":
-                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".mp4");
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + "Embedded.mp4");
                     break;
                 case "videoburn":
                     fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + "Burn.mp4");
