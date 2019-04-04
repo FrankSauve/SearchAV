@@ -71,7 +71,8 @@ export class DropdownButton extends React.Component<any, State> {
     }
 
     public deleteWords = () => {
-
+        this.hideDeleteFileModal();
+    
         console.log("Deleting words");
         this.setState({ 'loading': true });
 
