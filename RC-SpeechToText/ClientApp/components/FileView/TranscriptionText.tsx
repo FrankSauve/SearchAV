@@ -8,7 +8,8 @@ interface State {
     version: any,
     displayText: string,
     rawText: string,
-    errorMessage: string
+    errorMessage: string,
+    timestamps: string
 }
 
 export class TranscriptionText extends React.Component<any, State> {
@@ -19,7 +20,8 @@ export class TranscriptionText extends React.Component<any, State> {
             version: this.props.version,
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
-            errorMessage: ""
+            errorMessage: "",
+            timestamps: "0:00:00.00"
         }
     }
     
@@ -60,7 +62,7 @@ export class TranscriptionText extends React.Component<any, State> {
         // check if the feature toggle for #75 was activated
         if (this.props.highlightPosition && (prevProps.highlightPosition !== this.props.highlightPosition)) {
             console.log("ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
-            this.highlightPosition(this.props.getTimestamps());
+            this.getTimestamps();
         }
         // check if the feature toggle for #75 was deactivated
         else if (!this.props.highlightPosition && (prevProps.highlightPosition !== this.props.highlightPosition)){
@@ -68,6 +70,27 @@ export class TranscriptionText extends React.Component<any, State> {
             this.clearPositionHighlights();
         }
     }
+
+    // retrieves all the timestamps from the transcript
+    public getTimestamps = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        };
+        axios.get('/api/Transcription/GetTimestamps/' + this.state.version.id, config)
+            .then(res => {
+                console.log("FileView.getTimestamps(): "+res.data);
+                this.setState({timestamps: res.data}, () =>{
+                    this.highlightPosition();
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+    
     
     // remove all span tags from the page
     public clearHighlights = () =>{
@@ -126,7 +149,7 @@ export class TranscriptionText extends React.Component<any, State> {
         }
     };
     
-    public highlightPosition=(timestamps: string)=> {
+    public highlightPosition=()=> {
 
         console.log("highlightPosition");
         //TODO: IMPLEMENT METHOD
@@ -140,9 +163,9 @@ export class TranscriptionText extends React.Component<any, State> {
         let wordList = this.state.displayText.split(" ");
         console.log("highlightPosition wordList:" + wordList.toString());
         // 1) get list of all timestamps in array form (var timeList[] timestamps converted to seconds)
-        console.log("highlightPosition timestamps:" + timestamps);
+        console.log("highlightPosition timestamps:" + this.state.timestamps);
         
-        let rawTimeList = (timestamps).split(", ");
+        let rawTimeList = (this.state.timestamps).split(", ");
         console.log("highlightPosition rawTimeList:" + rawTimeList.toString());
         let timeList = [];
         

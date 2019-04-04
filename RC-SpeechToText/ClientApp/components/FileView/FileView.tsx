@@ -34,8 +34,7 @@ interface State {
     timestampInfo: string,
     selection: string,
     textSearch: boolean,
-    highlightPosition: boolean,
-    timestamps: string
+    highlightPosition: boolean
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -65,8 +64,7 @@ export default class FileView extends React.Component<any, State> {
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
             textSearch: false,
-            highlightPosition: false,
-            timestamps: "0:00:00.00"
+            highlightPosition: false
         }
     }
 
@@ -203,24 +201,6 @@ export default class FileView extends React.Component<any, State> {
                 console.log(err);
             });
     };
-
-    // retrieves all the timestamps from the transcript
-    public getTimestamps = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        };
-        axios.get('/api/Transcription/GetTimestamps/' + this.state.version.id, config)
-            .then(res => {
-                console.log("FileView.getTimestamps(): "+res.data);
-                this.setState({timestamps: res.data});
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    };
     
     public handleSelectionChange = (sel : string) =>{
         if(sel != null && sel != '' && sel != ' ') {
@@ -239,7 +219,6 @@ export default class FileView extends React.Component<any, State> {
     };
     
     public handleHighlightPosition = (b: boolean) =>{
-        this.getTimestamps();
         this.setState({highlightPosition: b});
     };
 
@@ -350,8 +329,7 @@ export default class FileView extends React.Component<any, State> {
                                         handleTextSearch={this.handleTextSearch}
                                         timestampInfo={this.state.timestampInfo}
                                         highlightPosition={this.state.highlightPosition}
-                                        handleHighlightPosition={this.handleHighlightPosition}
-                                        getTimestamps={this.getTimestamps}/>
+                                        handleHighlightPosition={this.handleHighlightPosition}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
