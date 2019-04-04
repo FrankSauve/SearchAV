@@ -86,8 +86,6 @@ export default class FileView extends React.Component<any, State> {
     }
 
     public getAllVersions = () => {
-        this.setState({ loading: true });
-
 
         const config = {
             headers: {
@@ -100,7 +98,7 @@ export default class FileView extends React.Component<any, State> {
                 console.log(res.data);
                 this.setState({ 'versions': res.data.versions });
                 this.setState({ 'usernames': res.data.usernames });
-                console.log(this.state.loading);
+                
             })
             .catch(err => {
                 console.log(err);
@@ -359,6 +357,7 @@ export default class FileView extends React.Component<any, State> {
                                         editedTranscription={this.state.editedTranscript}
                                         reviewerId={this.state.file.reviewerId}
                                         userId={this.state.user.id}
+                                        getAllVersions={this.getAllVersions}
                                     />
                                 </div>
                                 : null}
