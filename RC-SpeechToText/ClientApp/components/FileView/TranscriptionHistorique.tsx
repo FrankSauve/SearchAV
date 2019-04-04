@@ -27,7 +27,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
         var d = new Date(dateModified);
 
 
-        var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " +
+        var datestring = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " +
             d.getHours() + ":" + d.getMinutes();
 
         return datestring;
@@ -40,7 +40,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
         return (
             <div>
                 <div className="box mg-top-30" id="historique-title-box">
-                      <p className="historique-title"> HISTORIQUE </p>
+                    <p className="historique-title"> HISTORIQUE </p>
                 </div>
                 <div className="box" id="historique-content-box">
                     <div>
@@ -55,9 +55,9 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                             i++;
                             return listVersions;
                         })}
-                     </div>
+                    </div>
                 </div>
-               
+
             </div>
         );
     }
