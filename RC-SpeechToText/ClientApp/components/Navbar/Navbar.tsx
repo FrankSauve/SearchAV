@@ -90,20 +90,28 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         
     public isInFileViewPage() {
         var re = /^.*(FileView).*$/; // Letters only regex
-                return re.test(window.location.pathname);
-            }
-        
+        return re.test(window.location.pathname);
+    }
+
+    public isInLoginPage() {
+        var is_root = (location.pathname == "/");
+        return is_root; 
+    }    
     public renderFileViewNav = () => {
         return (
-            <div className="navbar-menu">
+            <div className="navbar-brand">
+                <a className="navbar-item" href="/">
+                    <img src="https://vignette.wikia.nocookie.net/logopedia/images/b/b7/Cbc-logo.png/revision/latest/scale-to-width-down/240?cb=20110304223128" width="30" height="30" />
+                </a>
+                <div className="navbar-menu">
                     <div className="navbar-start">
                         <Link className="navbar-item" to="/dashboard">
                             <i className="fas fa-angle-left"></i>
                         </Link>
 
-                    <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showReviewModal}><i className="far fa-envelope mg-right-5 is-link"></i><p className="nav-button is-link"> DEMANDER UNE REVISION</p></a>
-                    <a className="button is-rounded mg-top-10 mg-left-10 " onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5 is-link"></i><p className="nav-button is-link"> EXPORTER</p></a>
-                    <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> <p className="nav-button"> ENREGISTRER</p></a>
+                        <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showReviewModal}><i className="far fa-envelope mg-right-5 is-link"></i><p className="nav-button is-link"> DEMANDER UNE REVISION</p></a>
+                        <a className="button is-rounded mg-top-10 mg-left-10 " onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5 is-link"></i><p className="nav-button is-link"> EXPORTER</p></a>
+                        <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> <p className="nav-button"> ENREGISTRER</p></a>
                     </div>
 
                     <ExportModal
@@ -120,45 +128,68 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
                     />
 
                 </div>
-
-
-
+                <a role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
                 );
             }
         
     public renderNormalNav = () => {
         return (
-            <div className="navbar-menu">
+            <div className="navbar-brand">
+                <a className="navbar-item" href="/">
+                    <img src="https://vignette.wikia.nocookie.net/logopedia/images/b/b7/Cbc-logo.png/revision/latest/scale-to-width-down/240?cb=20110304223128" width="30" height="30" />
+                </a>
+                <div className="navbar-menu">
                     <div className="navbar-start">
                         <Link className="navbar-item" to="/">
                             STENO
                     </Link>
                     </div>
                 </div>
-                );
-            }
+                <a role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+        );
+    }
+
+    public renderLoginNav = () => {
+        return (
+            <div className="navbar-brand">
+                
+                <div className="navbar-menu">
+                    <div className="navbar-start">
+                        <Link className="navbar-item" to="/">
+                            STENO
+                        </Link>
+                        <a className="navbar-item">
+                            <img src="https://vignette.wikia.nocookie.net/logopedia/images/b/b7/Cbc-logo.png/revision/latest/scale-to-width-down/240?cb=20110304223128" width="30" height="30" />
+                        </a>
+                    </div>
+                </div>
+                <a role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>  
+        );
+    }
         
     public render() {
         
         return (
             <div>
                 <nav className="navbar has-background-white-smoke container" role="navigation" aria-label="main navigation">
-                        <div className="navbar-brand">
-                            <a className="navbar-item" href="/">
-                                <img src="https://vignette.wikia.nocookie.net/logopedia/images/b/b7/Cbc-logo.png/revision/latest/scale-to-width-down/240?cb=20110304223128" width="30" height="30" />
-                            </a>
 
-                            {this.isInFileViewPage() ? this.renderFileViewNav() : this.renderNormalNav()}
-
-
-                            <a role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-                                <span aria-hidden="true"></span>
-                                <span aria-hidden="true"></span>
-                                <span aria-hidden="true"></span>
-                            </a>
-                        </div>
-
-                        {this.isInFileViewPage() ? null : auth.isLoggedIn() ? this.renderLoggedIn() : null}
+                    {this.isInFileViewPage() ? this.renderFileViewNav() : this.isInLoginPage() ? this.renderLoginNav : this.renderNormalNav()}
+                    {this.isInFileViewPage() ? null : auth.isLoggedIn() ? this.renderLoggedIn() : null}
 
                     </nav>
                 </div>
