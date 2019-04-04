@@ -33,6 +33,8 @@ interface State {
     seekTime: string,
     timestampInfo: string,
     selection: string,
+    versions: any[],
+    usernames: string[], 
     textSearch: boolean
 }
 
@@ -62,6 +64,8 @@ export default class FileView extends React.Component<any, State> {
             seekTime: '0:00:00.00',
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
+            versions: [],
+            usernames: [], 
             textSearch: false
         }
     }
@@ -71,6 +75,7 @@ export default class FileView extends React.Component<any, State> {
         this.getVersion();
         this.getFile();
         this.getUser();
+        this.getAllVersions();
         this.setState({ description: this.state.description }); 
         document.addEventListener('mouseup', this.hideDropdown);
     }
@@ -79,6 +84,32 @@ export default class FileView extends React.Component<any, State> {
     componentWillUnmount() {
         document.removeEventListener('mouseup', this.hideDropdown);
     }
+
+    public getAllVersions = () => {
+        this.setState({ loading: true });
+
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/version/GetAllVersionsWithUserName/' + this.state.fileId, config)
+            .then(res => {
+                console.log(res.data);
+                this.setState({ 'versions': res.data.versions });
+                this.setState({ 'usernames': res.data.usernames });
+                console.log(this.state.loading);
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    };
+
 
     public getVersion = () => {
         this.setState({ loading: true });
@@ -337,6 +368,8 @@ export default class FileView extends React.Component<any, State> {
                     <div className="column is-one-fifth historique_padding">
                         <TranscriptionHistorique
                             fileId={this.state.fileId}
+                            versions={this.state.versions}
+                            usernames={this.state.usernames}
                         />
                     </div>
 
