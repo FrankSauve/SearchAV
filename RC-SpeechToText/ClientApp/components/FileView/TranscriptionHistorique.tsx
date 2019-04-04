@@ -27,36 +27,10 @@ export class TranscriptionHistorique extends React.Component<any, State> {
         var d = new Date(dateModified);
 
 
-
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/version/GetAllVersionsWithUserName/' + this.props.fileId, config)
-            .then(res => {
-                console.log(res.data);
-                this.setState({ 'versions': res.data.versions});
-                this.setState({ 'usernames': res.data.usernames });
-                this.setState({ 'loading': false })
-                console.log(this.state.loading);
-            })
-            .catch(err => {
-                console.log(err);
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    };
-
-    public formatTime = (dateModified : string) => {
-        var d = new Date(dateModified);
-
         var datestring = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " +
             d.getHours() + ":" + d.getMinutes();
 
-      return datestring;
+        return datestring;
 
     }
 
@@ -66,7 +40,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
         return (
             <div>
                 <div className="box mg-top-30" id="historique-title-box">
-                      <p className="historique-title"> HISTORIQUE </p>
+                    <p className="historique-title"> HISTORIQUE </p>
                 </div>
                 <div className="box" id="historique-content-box">
                     <div>
@@ -81,9 +55,9 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                             i++;
                             return listVersions;
                         })}
-                     </div>
+                    </div>
                 </div>
-               
+
             </div>
         );
     }
