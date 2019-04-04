@@ -76,6 +76,14 @@ namespace RC_SpeechToText.Services {
 			var searchService = new SearchService();
 			return searchService.PerformSearch(searchTerms, words);
 		}
+	    
+	    public async Task<string> GetTimestamps(Guid versionId)
+	    {
+		    //Ordered by Id to get the words in the same order as transcript
+		    var words = await _context.Word.Where(w => Guid.Equals(w.VersionId,versionId)).OrderBy(w => w.Position).ToListAsync();
+		    var searchService = new SearchService();
+		    return searchService.GetTimestamps(words);
+	    }
 
 		public async Task<string> PrepareDownload(string documentType, Guid fileId)
 		{

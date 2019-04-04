@@ -113,6 +113,27 @@ namespace RC_SpeechToText.Services
 
             return filesContainDescription;
         }
+        
+        //Returns all the timestamps of the words
+        public string GetTimestamps(List<Word> wordInfo)
+        {
+
+            var timeStampOfTerms = new List<string>(); // Saves all instances of words timestamps
+
+            Words[] words = StringToWordList(wordInfo); // For clearer code instead of calling the full variable
+            
+            for (var i = 0; i < words.Length; i++)
+            {
+                //Adding the timestamp in the appropriate format
+                timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"g"));
+            }
+
+            if (timeStampOfTerms.Count <= 0) return "";
+            
+            //Getting all timestamps and converting them to string to make it easier when passing to frontend
+            var result = String.Join(", ", timeStampOfTerms.ToArray());
+            return result;
+        }
 
 
         //Converts the new database Model to the one previously used, 
