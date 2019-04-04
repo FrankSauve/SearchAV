@@ -12,8 +12,6 @@ update  [file] set notified= 1 where id =119;*/
 
 select * from [file]
 
-update  [file] set ReviewerId= 103 where id =123;
-
 
 
 

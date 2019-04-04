@@ -23,18 +23,18 @@ namespace RC_SpeechToText.Services
 
         public async Task<List<File>> GetAllFiles()
         {
-            return FormatTitle(await _context.File.ToListAsync());
+            return FormatTitles(await _context.File.ToListAsync());
         }
 
         public async Task<File> GetFileById(Guid id)
         {
-            return await _context.File.FindAsync(id);
+            return FormatTitle(await _context.File.FindAsync(id));
         }
 
         public async Task<FileUsernameDTO> GetAllWithUsernames()
         {
             var files = await _context.File.Include(q => q.User).ToListAsync();
-            files = FormatTitle(files);
+            files = FormatTitles(files);
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
@@ -57,21 +57,21 @@ namespace RC_SpeechToText.Services
 			}
 
 			var files = await _context.File.Where(f => f.FileFlag == fileFlag).Include(q => q.User).ToListAsync();
-            files = FormatTitle(files);
+            files = FormatTitles(files);
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
         public async Task<FileUsernameDTO> GetAllFilesById(string email)
         {
             var files = await _context.File.Where(f => f.User.Email == email).Include(q => q.User).ToListAsync();
-            files = FormatTitle(files);
+            files = FormatTitles(files);
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
         public async Task<FileUsernameDTO> GetUserFilesToReview(string email)
         {
             var files = await _context.File.Where(f => f.Reviewer.Email == email && f.FileFlag != FileFlag.Revise).Include(q => q.User).ToListAsync();
-            files = FormatTitle(files);
+            files = FormatTitles(files);
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
@@ -228,7 +228,7 @@ namespace RC_SpeechToText.Services
                 return "NULL";
         }
 
-        public List<File> FormatTitle(List<File> files)
+        public List<File> FormatTitles(List<File> files)
         {
             int count = 0;
             foreach (File f in files)
@@ -237,6 +237,12 @@ namespace RC_SpeechToText.Services
                 f.Title = System.IO.Path.GetFileNameWithoutExtension(f.Title);
             };
             return files;
+        }
+
+        public File FormatTitle(File file)
+        {
+            file.Title = System.IO.Path.GetFileNameWithoutExtension(file.Title);
+            return file;
         }
     }
 }
