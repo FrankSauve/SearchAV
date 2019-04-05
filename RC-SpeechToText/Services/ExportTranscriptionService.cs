@@ -40,15 +40,22 @@ namespace RC_SpeechToText.Services
 
 				command =
 					"-i " +
-					videoPath + splitFileTitle[0] +
-					".mp4 -vf subtitles=\'" +
+					"\"" +
+					videoPath + 
+					splitFileTitle[0] +
+					".mp4\"" +
+					" -vf subtitles=\'" + 
+					"\"" +
 					subtitlePath +
 					splitFileTitle[0] +
-					".srt\'" +
+					".srt\'" + 
+					"\"" +
 					" -max_muxing_queue_size 1024 " +
+					"\"" +
 					videoPath +
 					splitFileTitle[0] +
-					"Burn.mp4";
+					"Burn.mp4" +
+					"\"";
 			}
 			else
 			{
@@ -57,14 +64,18 @@ namespace RC_SpeechToText.Services
 
 				command =
 					"-i " +
+					"\"" +
 					videoPath +
 					splitFileTitle[0] +
-					".mp4 -i " +
+					".mp4\" -i " +
+					"\"" +
 					videoPath +
 					splitFileTitle[0] +
-					".srt -c copy -c:s mov_text " +
+					".srt\" -c copy -c:s mov_text " +
+					"\"" +
 					videoPath + splitFileTitle[0] +
-					"Embedded.mp4";
+					"Embedded.mp4" +
+					"\"";
 			}
 
 			var videoProcess = new ProcessStartInfo
@@ -99,22 +110,27 @@ namespace RC_SpeechToText.Services
 
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words, string fileTitle)
 		{
+			var para = new List<string>();
 			//get each paragraph. Remove all empty string (where <br> are present). Trim the strings
 			var clearedTranscription = transcription.ClearHTMLTag();
-			var paragraph = clearedTranscription.Split("\n").ToList().RemoveEmptyString().Select(str => str.Trim()).ToList();
+			var paragraph = clearedTranscription.Split("\n");
+
+			foreach (var p in paragraph)
+				para.AddRange(p.SplitByCharCount(30));
+
 			var timestamps = new List<string>();
 			//Count all the word that have been already passed through. => O(logN^2)
 			var wordPassed = 0;
 
-			foreach(string p in paragraph)
+			foreach(string p in para)
 			{
-				var paragraphWords = p.Split(" ");
+				var paragraphWords = p.Split(" ").Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 				timestamps.AddRange(GetParagraphTimestamp(paragraphWords, words.Skip(wordPassed).ToList()));
 				wordPassed += paragraphWords.Count() - 1;
 			}
 
 			var splitFileTitle = fileTitle.Split(".");
-			streamIO.GenerateSRTFile(paragraph, timestamps, splitFileTitle[0]);
+			streamIO.GenerateSRTFile(para, timestamps, splitFileTitle[0]);
 
 			return true;
 		}
@@ -138,7 +154,7 @@ namespace RC_SpeechToText.Services
                     fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".srt");
                     break;
                 case "video":
-                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + ".mp4");
+                    fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + "Embedded.mp4");
                     break;
                 case "videoburn":
                     fileBytes = System.IO.File.ReadAllBytes(videoPath + splitFileTitle + "Burn.mp4");
@@ -148,7 +164,7 @@ namespace RC_SpeechToText.Services
             return fileBytes;
         }
 
-        private List<string> GetParagraphTimestamp(string[] paragraph, List<Models.Word> words)
+        private List<string> GetParagraphTimestamp(List<string> paragraph, List<Word> words)
 		{
 			//Look for the first instance where the paragraph word match & the word db match
 			var firstWord = words.Find(x => x.Term == paragraph.First());
@@ -165,15 +181,17 @@ namespace RC_SpeechToText.Services
 		private string FormatTimestamp(string timestamp)
 		{
 			//getting this "\"4.600s\"", should be this 00:00:04,600
-			var temp = string.Join(string.Empty, Regex.Matches(timestamp, @"\d+").OfType<Match>().Select(m => m.Value));
+			var temp = string.Join(string.Empty, Regex.Matches(timestamp, @"\d+\.*\d*").OfType<Match>().Select(m => m.Value)).Split(".");
 
-			for (int i = temp.Count(); i < 9; i++) //there is always 9 numbers
-			{
-				temp = "0" + temp;
-			}
+			var time = TimeSpan.FromSeconds(int.Parse(temp[0]));
+			string timeStr = time.ToString(@"hh\:mm\:ss");
 
-			temp = temp.Insert(2, ":").Insert(5, ":").Insert(8, ",");
-			return temp;
+			if (temp.Length > 1)
+				timeStr += "," + temp[1];
+			else
+				timeStr += ",000";
+
+			return timeStr;
 		}
 
 		private string GetFfmpegSubtitlePath()
