@@ -80,8 +80,8 @@ export class GridFileCard extends React.Component<any, State> {
                                 <p>{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
                             </div>
                             <br />
-                            <p className="font-size-12 font-family-roboto"><b>{this.props.username}</b></p>
-                            <time className="font-size-12 font-family-roboto" dateTime={this.props.date}>{this.props.date}</time>
+                            <p className="font-size-12"><b>{this.props.username}</b></p>
+                            <time className="font-size-12" dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
                 </div>
