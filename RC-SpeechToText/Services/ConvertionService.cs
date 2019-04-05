@@ -82,7 +82,7 @@ namespace RC_SpeechToText.Services
 			{
 				//Title = audioFile.FileName,
                 Title = (title == "" ? audioFile.FileName : title + ext),
-				FilePath = filePath,
+				FilePath = @"\assets\Audio\" + (title == "" ? audioFile.FileName : title + ext),
 				FileFlag = FileFlag.Automatise,
                 Description = descriptionFile, 
                 UserId = user.Id,
