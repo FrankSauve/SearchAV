@@ -62,21 +62,14 @@ export class FileInfo extends React.Component<any, State> {
     }
 
     public formatTime = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/File/FormatTime/' + this.state.dateModified + '/', config)
-            .then(res => {
-                this.setState({ dateFormated: res.data });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        var d = new Date(this.state.dateModified);
+
+
+        var datestring = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " +
+            d.getHours() + ":" + d.getMinutes();
+
+        this.setState({ dateFormated: datestring });
+        
     }
 
     public render() {
