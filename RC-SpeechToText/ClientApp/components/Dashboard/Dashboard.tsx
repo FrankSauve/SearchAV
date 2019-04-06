@@ -308,7 +308,7 @@ export default class Dashboard extends React.Component<any, State> {
                     }
                 }
             })
-            this.setState({ 'files': results });
+            this.setState({ 'files': results.filter(n => n) });
         }
         
     }
@@ -341,7 +341,7 @@ export default class Dashboard extends React.Component<any, State> {
 
     public handleSearch = (e: any) => {
         this.setState(
-            { searchTerms: e.target.value },
+            { searchTerms: e.target.value.trim() },
             this.searchDescription
         );
     }
