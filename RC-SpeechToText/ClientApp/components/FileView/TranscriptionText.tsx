@@ -9,7 +9,9 @@ interface State {
     displayText: string,
     rawText: string,
     errorMessage: string,
-    timestamps: string
+    timestamps: string,
+    intervalID: any,
+    highlightPos: number
 }
 
 export class TranscriptionText extends React.Component<any, State> {
@@ -21,12 +23,15 @@ export class TranscriptionText extends React.Component<any, State> {
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
             errorMessage: "",
-            timestamps: "0:00:00.00"
+            timestamps: "0:00:00.00",
+            intervalID: null,
+            highlightPos: 0
         }
     }
     
     // Called when the component renders
     componentDidMount() {
+        
         document.addEventListener('mousedown', this.clearHighlights);
 
         // Add onBlur and onInput to the contentEditable div
@@ -49,6 +54,9 @@ export class TranscriptionText extends React.Component<any, State> {
             transcription.removeEventListener('input', this.handleChange);
             transcription.removeEventListener('blur', this.handleBlur);
         }
+        if(this.state.intervalID!=null){
+            clearInterval(this.state.intervalID);
+        }
     }
 
     componentDidUpdate(prevProps : any, prevState : any) {
@@ -61,10 +69,12 @@ export class TranscriptionText extends React.Component<any, State> {
         // check if the feature toggle for #75 was activated
         if (this.props.highlightPosition != null && (prevProps.highlightPosition !== this.props.highlightPosition)) {
             console.log("ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
-            this.getTimestamps();
+            this.setState({highlightPos:this.props.highlightPosition},()=>{
+                this.getTimestamps();
+            });
         }
         // check if the feature toggle for #75 was deactivated
-        else if (!this.props.highlightPosition != null && (prevProps.highlightPosition !== this.props.highlightPosition)){
+        else if (this.props.highlightPosition == null && (prevProps.highlightPosition !== this.props.highlightPosition)){
             console.log("DE-ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
             this.clearPositionHighlights();
         }
@@ -97,7 +107,8 @@ export class TranscriptionText extends React.Component<any, State> {
     // remove only span tags dedicated to showing the current position of the video in the transcript
     public clearPositionHighlights=()=>{
         console.log("REACHED TranscriptionText.clearPositionHighlights");
-        this.setState({displayText:this.rawToUnhighlightedPosHtml(this.state.displayText)});
+        clearInterval(this.state.intervalID);
+        this.setState({displayText:this.rawToUnhighlightedPosHtml(this.state.displayText), intervalID: null});
     };
     
     // Highlights occurences of a string sel by inserting span tags into the displayText
@@ -150,29 +161,80 @@ export class TranscriptionText extends React.Component<any, State> {
     public highlightPosition=()=> {
 
         console.log("highlightPosition");
-        
         // 0) get displayText in array form (var wordList[] string array of words)
         let wordList = this.state.displayText.split(" ");
         // 1) get list of all timestamps in array form (var timeList[] timestamps converted to seconds)
         let rawTimeList = (this.state.timestamps).split(", ");
-        let timeList = [];
+        let timeList:number[] = [];
         for(let i=0; i<rawTimeList.length; i++){
             let a = rawTimeList[i].split(':');
             timeList[i] = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (parseFloat(a[2]));
         }
         
+        /*
         console.log("highlightPosition words with timelist: \n");
         for(let i=0;i<wordList.length;i++){
             console.log(wordList[i] + " == "+timeList[i] + "\n");
         }
+        */
         
         // 2) get current time in video (var currentTime = int form of seconds so far in video)
-        console.log("this.props.highlightPosition: "+this.props.highlightPosition);
+        console.log("this.props.highlightPosition: "+this.state.highlightPos);
         
-        // 3) inject start tag at appropriate word
+        let hTextArray:string[] = [];
+        let injected = false;
+        let startIndex = 0;
         
-        // 4) call endTag injection method at a given interval
+        // 3) inject tags around appropriate word
+        for(let i=0;i<wordList.length;i++){
+            //find first word above currentTime (starting from second)
+            if(!injected && timeList[i] >= this.state.highlightPos){
+                hTextArray.push("<span style='background-color: #DCDCDC'>");
+                injected = true;
+                startIndex = i;
+            }
+            hTextArray.push(wordList[i]);
+            if(i == (startIndex+1)){
+                hTextArray.push("</span>");
+            }
+        }
+        
+        console.log("original displayText: \n"+this.state.displayText);
+
+        if(this.state.intervalID == null){
+            // 4) call endTag injection method at a given interval
+            let interval = setInterval(() => {this.replaceHighlightPosEnd(hTextArray, wordList, timeList);}, 500);
+            this.setState({intervalID:interval});
+        }
     };
+    
+    replaceHighlightPosEnd(hTextArray:string[], wordList:string[], timeList:number[]) {
+        console.log("replaceHighlightPosEnd called!");
+        //clearing away last div close tag
+        let spanIndex = hTextArray.indexOf("<span style='background-color: #DCDCDC'>");
+        for(let i=spanIndex;i<hTextArray.length;i++){
+
+            if(hTextArray[i] == "</span>"){
+                hTextArray.splice(i,1);
+                spanIndex = i;
+                break;
+            }
+        }
+
+        for(let i=spanIndex-1;i<wordList.length;i++){
+
+            if(timeList[i] > this.state.highlightPos){
+                hTextArray.splice(i,0,"</span>");
+                if(i == (timeList.length-1)){
+                    this.clearPositionHighlights();
+                }
+                break;
+            }
+        }
+        let str = hTextArray.join(" ");
+        console.log("new displayText at time:"+this.state.highlightPos+":\n" + str);
+        this.setState({displayText: str, highlightPos: (this.state.highlightPos+0.5)});
+    }
 
     // Retrieves the words selected via mouse and calls FileView's searchTranscript method with them
     public getHighlightedWords = (event: any) => {
@@ -186,13 +248,13 @@ export class TranscriptionText extends React.Component<any, State> {
         }
         
     };
-
+    
     // removes all div tags from a string
     rawToUnhighlightedPosHtml(text: string) {
         console.log("REACHED TranscriptionText.rawToUnhighligtedPosHtml");
         let a = text;
-        a = a.replace(/<div[^>]+\>/g,''); //<div style:'background-color: #DCDCDC'>
-        a = a.replace(/<\/div>/g,'');
+        a = a.replace(/<span[^>]+\>/g,'');
+        a = a.replace(/<\/span>/g,'');
         return a;
     }
     

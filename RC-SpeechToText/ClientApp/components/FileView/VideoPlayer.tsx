@@ -28,7 +28,7 @@ export class VideoPlayer extends React.Component<any, State> {
             }
             else if(event.keyCode == 78){ // n key
                 console.log("GetCurrentTimeWork END?: "+this.state.player.getCurrentTime());
-                this.props.handleHighlightPosition(this.state.player.getCurrentTime());
+                this.props.handleHighlightPosition(null);
             }
         }
     };
