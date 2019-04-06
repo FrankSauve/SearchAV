@@ -14,6 +14,7 @@ import ListTable from './list/ListTable';
 
 interface State {
     files: any[],
+    allFiles: any[],
     searchResults: any[],
     usernames: string[],
     userId: any,
@@ -35,6 +36,7 @@ export default class Dashboard extends React.Component<any, State> {
 
         this.state = {
             files: [],
+            allFiles: [],
             searchResults: [],
             usernames: [],
             userId: "",
@@ -70,6 +72,7 @@ export default class Dashboard extends React.Component<any, State> {
             .then(res => {
                 console.log(res.data);
                 this.setState({ 'files': res.data.files });
+                this.setState({ 'allFiles': res.data.files });
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 console.log(this.state.loading);
@@ -249,13 +252,11 @@ export default class Dashboard extends React.Component<any, State> {
     public searchDescription = () => {
 
         var searchTerms = this.state.searchTerms;
-        
-        var files = this.state.files;
         var fileAdded = false;
         var counter = 0;
-        var results = Array(files.length);
+        var results = Array(this.state.allFiles.length);
 
-        this.state.files.map((file) => {
+        this.state.allFiles.map((file) => {
             fileAdded = false;
            
             if (file.description != null) {
@@ -275,6 +276,8 @@ export default class Dashboard extends React.Component<any, State> {
                 }
             }
         })
+        console.log(results);
+
         this.setState({ 'files' : results });
         
     }
