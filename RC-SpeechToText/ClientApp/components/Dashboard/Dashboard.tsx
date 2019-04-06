@@ -152,15 +152,16 @@ export default class Dashboard extends React.Component<any, State> {
                 counter++;
             }
         })
-
-        this.setState({ 'files': userFiles });
+		console.log(userFiles);
+        this.setState({ 'files': userFiles.filter(n => n) });
         this.setState(
-			{ 'currentFilterFiles': userFiles },
+			{ 'currentFilterFiles': userFiles.filter(n => n) },
 			this.searchDescription
 			);
-        this.setState({ 'usernames': usernames });
+        this.setState({ 'usernames': usernames.filter(n => n) });
         this.setState({ 'isMyFilesFilterActive': true });
-        
+		console.log(this.state.files);
+
     }
 
     public getUserFilesToReview = () => {
@@ -178,12 +179,12 @@ export default class Dashboard extends React.Component<any, State> {
             }
         })
 
-        this.setState({ 'files': userFiles });
+        this.setState({ 'files': userFiles.filter(n => n) });
 		 this.setState(
-			{ 'currentFilterFiles': userFiles },
+			{ 'currentFilterFiles': userFiles.filter(n => n) },
 			this.searchDescription
 			);
-        this.setState({ 'usernames': usernames });
+        this.setState({ 'usernames': usernames.filter(n => n) });
         this.setState({ 'isFilesToReviewFilterActive': true });
 
     }
@@ -203,12 +204,12 @@ export default class Dashboard extends React.Component<any, State> {
             }
         })
 
-        this.setState({ 'files': userFiles });
+        this.setState({ 'files': userFiles.filter(n => n) });
 		this.setState(
 			{ 'currentFilterFiles': userFiles },
 			this.searchDescription
 			);
-        this.setState({ 'usernames': usernames });
+        this.setState({ 'usernames': usernames.filter(n => n) });
 
         this.setState({ 'isAutomatedFilterActive': true });
 
@@ -230,12 +231,12 @@ export default class Dashboard extends React.Component<any, State> {
             }
         })
 
-        this.setState({ 'files': userFiles });
+        this.setState({ 'files': userFiles.filter(n => n) });
 		this.setState(
 			{ 'currentFilterFiles': userFiles },
 			this.searchDescription
 			);
-        this.setState({ 'usernames': usernames });
+        this.setState({ 'usernames': usernames.filter(n => n) });
 
         this.setState({ 'isEditedFilterActive': true });
 
@@ -256,12 +257,12 @@ export default class Dashboard extends React.Component<any, State> {
             }
         })
 
-        this.setState({ 'files': userFiles });
+        this.setState({ 'files': userFiles.filter(n => n) });
 		this.setState(
 			{ 'currentFilterFiles': userFiles },
 			this.searchDescription
 			);
-        this.setState({ 'usernames': usernames });
+        this.setState({ 'usernames': usernames.filter(n => n) });
 
         this.setState({ 'isReviewedFilterActive': true });
 
@@ -305,6 +306,7 @@ export default class Dashboard extends React.Component<any, State> {
         var fileAdded = false;
         var counter = 0;
         var results = Array(this.state.allFiles.length);
+        var resultsUsernames = Array(this.state.allFiles.length);
 
         if (searchTerms == "") {
             this.setState({ 'files': this.state.currentFilterFiles });
@@ -315,7 +317,8 @@ export default class Dashboard extends React.Component<any, State> {
                 if (file.description != null) {
                     if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
                         results[counter] = file;
-
+						resultsUsernames[counter] = file.user.name;
+						
                         //If file is added here we do not want to add it again if it has a title match too
                         fileAdded = true;
                         counter++;
@@ -324,41 +327,17 @@ export default class Dashboard extends React.Component<any, State> {
                 if (file.title != null && !fileAdded) {
                     if (file.title.toLowerCase().includes(searchTerms.toLowerCase())) {
                         results[counter] = file;
-
+						resultsUsernames[counter] = file.user.name;
                         counter++;
                     }
                 }
             })
             this.setState({ 'files': results.filter(n => n) });
+            this.setState({ 'usernames': resultsUsernames.filter(n => n) });
         }
         
     }
 
-
-    public searchDescriptionOld = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/file/getFilesByDescriptionAndTitle/' + this.state.searchTerms, config)
-            .then(res => {
-                this.deactivateFilters();
-                this.setState({ files: res.data });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
-    }
-
-    public handleKeyPress = (e: any) => {
-        if (e.key === 'Enter') {
-            this.searchDescription();
-        }
-    }
 
     public handleSearch = (e: any) => {
         this.setState(
@@ -426,9 +405,9 @@ export default class Dashboard extends React.Component<any, State> {
                                 <div className="right-side">
                                     <div className="search-field">
                                         <p className="control has-icons-right">
-                                            <input className="input is-rounded search-input" type="text" onChange={this.handleSearch} onKeyPress={this.handleKeyPress}/>
+                                            <input className="input is-rounded search-input" type="text" onChange={this.handleSearch}/>
                                             <span className="icon is-small is-right">
-                                                <a onClick={this.searchDescription}><i className="fas fa-search is-cadet-grey"></i></a>
+                                                <i className="fas fa-search is-cadet-grey"></i>
                                             </span>
                                         </p>
                                     </div>
