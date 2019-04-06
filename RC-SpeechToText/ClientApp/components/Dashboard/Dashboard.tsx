@@ -84,8 +84,23 @@ export default class Dashboard extends React.Component<any, State> {
                 }
             });
     }
+    public getAllFilesLoaded = () => {
+        this.deactivateFilters();
 
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
+
+        this.state.allFiles.map((file) => {
+                usernames[counter] = file.user.name;
+                counter++;
+        })
+
+        this.setState({ 'files': this.state.allFiles });
+        this.setState({ 'usernames': usernames });
+
+    }
     public getAllFiles = () => {
+        //Keeping this method to update files once a new file is uploaded.
         this.setState({ loading: true });
         this.deactivateFilters();
 
@@ -235,7 +250,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
-                                getAllFiles={this.getAllFiles}
+                                getAllFiles={this.getAllFilesLoaded}
                         /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
            </div>
         )
@@ -251,7 +266,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
-                                getAllFiles={this.getAllFiles}
+                                getAllFiles={this.getAllFilesLoaded}
                             /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
             </div>
         )
@@ -342,34 +357,34 @@ export default class Dashboard extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-fifth">
                         <FileInput
-                            getAllFiles={this.getAllFiles}
+                            getAllFiles={this.getAllFilesLoaded}
                         />
 
-                        <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFiles}>
+                        <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFilesLoaded}>
                             <FilesToReviewFilter
                                 isActive={this.state.isFilesToReviewFilterActive}
                             />
                         </a>
                         
-                        <a onClick={!this.state.isAutomatedFilterActive ? this.getAutomatedFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isAutomatedFilterActive ? this.getAutomatedFiles : this.getAllFilesLoaded}>
                             <AutomatedFilter
                                 isActive={this.state.isAutomatedFilterActive}
                             />
                         </a>
 
-                        <a onClick={!this.state.isEditedFilterActive ? this.getEditedFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isEditedFilterActive ? this.getEditedFiles : this.getAllFilesLoaded}>
                             <EditedFilter
                                 isActive={this.state.isEditedFilterActive}
                             />
                         </a>
 
-                        <a onClick={!this.state.isReviewedFilterActive ? this.getReviewedFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isReviewedFilterActive ? this.getReviewedFiles : this.getAllFilesLoaded}>
                             <ReviewedFilter
                                 isActive={this.state.isReviewedFilterActive}
                             />
                         </a>
 
-                        <a onClick={!this.state.isMyFilesFilterActive ? this.getUserFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isMyFilesFilterActive ? this.getUserFiles : this.getAllFilesLoaded}>
                             <MyFilesFilter
                                 isActive={this.state.isMyFilesFilterActive}
                             />
