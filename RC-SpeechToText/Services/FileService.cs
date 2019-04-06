@@ -8,6 +8,7 @@ using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Services
@@ -77,9 +78,10 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileDTO> ModifyTitle(Guid id, string newTitle)
         {
-            if (newTitle != null)
+            var proper = System.IO.Path.GetFileNameWithoutExtension(newTitle);
+            if (proper != null)
             {
-                if (await VerifyIfTitleExists(newTitle))
+                if (await VerifyIfTitleExists(proper))
                 {
                     throw new ControllerExceptions("Le nom de fichier existe déjà. Veuillez choisir un nouveau nom.");
                 }
@@ -92,10 +94,10 @@ namespace RC_SpeechToText.Services
 
                     if (file.ThumbnailPath != "NULL")
                     {
-                        file.ThumbnailPath = ModifyThumbnailName(oldTitle, newTitle);
-                        file.FilePath = ModifyFileName(file.Title, newTitle, file.FilePath);
+                        file.ThumbnailPath = ModifyThumbnailName(oldTitle, proper);
+                        file.FilePath = ModifyFileName(file.Title, proper, file.FilePath);
                     }
-                    file.Title = newTitle + ext;
+                    file.Title = proper + ext;
 
 
                     await _context.SaveChangesAsync();
@@ -187,7 +189,7 @@ namespace RC_SpeechToText.Services
 
         public async Task<bool> VerifyIfTitleExists(string title)
         {
-            var existingFileTitlesCount = await _context.File.CountAsync(x => x.Title.Trim().Equals(title) || x.Title.Trim().Equals(title + ".mp4"));
+            var existingFileTitlesCount = await _context.File.CountAsync(x => EF.Functions.Like(x.Title, title.Trim() + ".%"));
             if (existingFileTitlesCount > 0)
             {
                 return true;
@@ -222,7 +224,7 @@ namespace RC_SpeechToText.Services
                 string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + newName + ext);
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
-                return newPath;
+                return @"\assets\Audio\" + newName + ext;
             }
             else
                 return "NULL";

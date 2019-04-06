@@ -80,7 +80,6 @@ namespace RC_SpeechToText.Services
 			// Create file
 			var file = new File
 			{
-				//Title = audioFile.FileName,
                 Title = (title == "" ? audioFile.FileName : title + ext),
 				FilePath = @"\assets\Audio\" + (title == "" ? audioFile.FileName : title + ext),
 				FileFlag = FileFlag.Automatise,

@@ -22,7 +22,7 @@ export class GridFileCard extends React.Component<any, State> {
     }
 
     public updateTitle = (newTitle: string) => {
-        this.setState({ 'title': newTitle });
+        this.setState({ 'title': newTitle.split(".")[0] });
     }
 
     public updateDescription = (newDescription: string) => {
@@ -32,11 +32,6 @@ export class GridFileCard extends React.Component<any, State> {
     rawToWhiteSpace(text: string) {
         return text.replace(/<br\s*[\/]?>/gi, " ");
     }
-
-    //removeExtension(title: string) {
-    //    var titleNoExtension = title.lastIndexOf('.') != -1 ? title.substring(0, title.lastIndexOf('.')) : title;
-    //    return titleNoExtension;
-    //}
 
     public render() {
         return (
