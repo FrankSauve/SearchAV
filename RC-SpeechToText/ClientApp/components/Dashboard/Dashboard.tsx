@@ -14,6 +14,7 @@ import ListTable from './list/ListTable';
 
 interface State {
     files: any[],
+    searchResults: any[],
     usernames: string[],
     userId: any,
     isMyFilesFilterActive: boolean,
@@ -34,6 +35,7 @@ export default class Dashboard extends React.Component<any, State> {
 
         this.state = {
             files: [],
+            searchResults: [],
             usernames: [],
             userId: "",
             isMyFilesFilterActive: false,
@@ -244,8 +246,41 @@ export default class Dashboard extends React.Component<any, State> {
             </div>
         )
     }
-
     public searchDescription = () => {
+
+        var searchTerms = this.state.searchTerms;
+        
+        var files = this.state.files;
+        var fileAdded = false;
+        var counter = 0;
+        var results = Array(files.length);
+
+        this.state.files.map((file) => {
+            fileAdded = false;
+           
+            if (file.description != null) {
+                if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
+                    results[counter] = file;
+
+                    //If file is added here we do not want to add it again if it has a title match too
+                    fileAdded = true;
+                    counter++;
+                }
+            }
+            if (file.title != null && !fileAdded) {
+                if (file.title.toLowerCase().includes(searchTerms.toLowerCase())) {
+                    results[counter] = file;
+                    
+                    counter++;
+                }
+            }
+        })
+        this.setState({ 'files' : results });
+        
+    }
+
+
+    public searchDescriptionOld = () => {
         const config = {
             headers: {
                 'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -271,7 +306,8 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public handleSearch = (e: any) => {
-        this.setState({ searchTerms: e.target.value })
+        this.setState({ searchTerms: e.target.value });
+        this.searchDescription();
     }
 
     public deactivateFilters = () => {
