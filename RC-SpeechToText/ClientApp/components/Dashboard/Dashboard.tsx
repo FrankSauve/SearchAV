@@ -13,6 +13,7 @@ import FilesToReviewFilter from './filters/FilesToReviewFilter';
 import ListTable from './list/ListTable';
 
 interface State {
+    loggedUser: any;
     files: any[],
     allFiles: any[],
     searchResults: any[],
@@ -35,6 +36,7 @@ export default class Dashboard extends React.Component<any, State> {
         super(props);
 
         this.state = {
+            loggedUser: null,
             files: [],
             allFiles: [],
             searchResults: [],
@@ -55,6 +57,32 @@ export default class Dashboard extends React.Component<any, State> {
     // Called when the component gets rendered
     public componentDidMount() {
         this.getAllFiles();
+        this.getUserInfo();
+    }
+
+    public getUserInfo = () => {
+        this.setState({ loading: true });
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/user/GetUserByEmail/' + auth.getEmail(), config)
+            .then(res => {
+                console.log(res.data);
+                this.setState({ 'loggedUser': res.data})
+                this.setState({ 'loading': false });
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response.status == 401) {
+                    // Logs out if the user's JWT is expired
+                    auth.removeAuthToken();
+                    this.setState({ 'unauthorized': true });
+                }
+            });
     }
 
     public getAllFiles = () => {
@@ -88,133 +116,112 @@ export default class Dashboard extends React.Component<any, State> {
     };
 
     public getUserFiles = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByUser/', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isMyFilesFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.user.id == this.state.loggedUser.id) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+
+        this.setState({ 'files': userFiles });
+        this.setState({ 'usernames': usernames });
+        this.setState({ 'isMyFilesFilterActive': true });
+        
     }
 
     public getUserFilesToReview = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
+        
+        this.state.allFiles.map((file) => {
+            if (file.reviewerId == this.state.loggedUser.id && file.flag.localeCompare("Revise", 'en', { sensitivity: 'base' }) != 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
 
-        axios.get('/api/file/getUserFilesToReview/', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ loading: false });
-                this.setState({ 'isFilesToReviewFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.setState({ 'files': userFiles });
+        this.setState({ 'usernames': usernames });
+        this.setState({ 'isFilesToReviewFilterActive': true });
+
     }
 
     public getAutomatedFiles = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByFlag/Automatise', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isAutomatedFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.flag.localeCompare("Automatise", 'en', { sensitivity: 'base' }) == 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+
+        this.setState({ 'files': userFiles });
+        this.setState({ 'usernames': usernames });
+
+        this.setState({ 'isAutomatedFilterActive': true });
+
     }
 
     public getEditedFiles = () => {
-        this.setState({ loading: true });
+
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByFlag/Edite', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isEditedFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.flag.localeCompare("Edite", 'en', { sensitivity: 'base' }) == 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+
+        this.setState({ 'files': userFiles });
+        this.setState({ 'usernames': usernames });
+
+        this.setState({ 'isEditedFilterActive': true });
+
     }
 
     public getReviewedFiles = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByFlag/Revise', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isReviewedFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.flag.localeCompare("Revise", 'en', { sensitivity: 'base' }) == 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+
+        this.setState({ 'files': userFiles });
+        this.setState({ 'usernames': usernames });
+
+        this.setState({ 'isReviewedFilterActive': true });
+
     }
 
     public showFileTable = () => {
