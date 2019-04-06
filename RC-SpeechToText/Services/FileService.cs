@@ -189,7 +189,7 @@ namespace RC_SpeechToText.Services
 
         public async Task<bool> VerifyIfTitleExists(string title)
         {
-            var existingFileTitlesCount = await _context.File.CountAsync(x => EF.Functions.Like(x.Title, title.Trim() + ".%"));
+            var existingFileTitlesCount = await _context.File.CountAsync(x => EF.Functions.Like(x.Title, title.Trim() + ".%") || EF.Functions.Like(x.Title, title.Trim()));
             if (existingFileTitlesCount > 0)
             {
                 return true;
