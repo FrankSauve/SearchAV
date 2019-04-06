@@ -16,7 +16,7 @@ interface State {
     loggedUser: any;
     files: any[],
     allFiles: any[],
-    searchResults: any[],
+    currentFilterFiles: any[],
     usernames: string[],
     userId: any,
     isMyFilesFilterActive: boolean,
@@ -39,7 +39,7 @@ export default class Dashboard extends React.Component<any, State> {
             loggedUser: null,
             files: [],
             allFiles: [],
-            searchResults: [],
+            currentFilterFiles: [],
             usernames: [],
             userId: "",
             isMyFilesFilterActive: false,
@@ -96,6 +96,7 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': this.state.allFiles });
+        this.setState({ 'currentFilterFiles': this.state.allFiles });
         this.setState({ 'usernames': usernames });
 
     }
@@ -116,6 +117,7 @@ export default class Dashboard extends React.Component<any, State> {
                 console.log(res.data);
                 this.setState({ 'files': res.data.files });
                 this.setState({ 'allFiles': res.data.files });
+				this.setState({ 'currentFilterFiles': res.data.files });
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 console.log(this.state.loading);
@@ -146,6 +148,7 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
+        this.setState({ 'currentFilterFiles': userFiles });
         this.setState({ 'usernames': usernames });
         this.setState({ 'isMyFilesFilterActive': true });
         
@@ -167,6 +170,7 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
+		this.setState({ 'currentFilterFiles': userFiles });
         this.setState({ 'usernames': usernames });
         this.setState({ 'isFilesToReviewFilterActive': true });
 
@@ -188,6 +192,7 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
+		this.setState({ 'currentFilterFiles': userFiles });
         this.setState({ 'usernames': usernames });
 
         this.setState({ 'isAutomatedFilterActive': true });
@@ -211,6 +216,7 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
+		this.setState({ 'currentFilterFiles': userFiles });
         this.setState({ 'usernames': usernames });
 
         this.setState({ 'isEditedFilterActive': true });
@@ -233,6 +239,7 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
+		this.setState({ 'currentFilterFiles': userFiles });
         this.setState({ 'usernames': usernames });
 
         this.setState({ 'isReviewedFilterActive': true });
@@ -279,9 +286,9 @@ export default class Dashboard extends React.Component<any, State> {
         var results = Array(this.state.allFiles.length);
 
         if (searchTerms == "") {
-            this.setState({ 'files': this.state.allFiles });
+            this.setState({ 'files': this.state.currentFilterFiles });
         } else {
-            this.state.allFiles.map((file) => {
+            this.state.currentFilterFiles.map((file) => {
                 fileAdded = false;
 
                 if (file.description != null) {
