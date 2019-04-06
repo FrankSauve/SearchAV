@@ -25,13 +25,12 @@ export class TranscriptionText extends React.Component<any, State> {
     
     // Called when the component renders
     componentDidMount() {
-        // Add event listener for a click anywhere in the page
-        document.addEventListener('mouseup', this.getHighlightedWords);
         document.addEventListener('mousedown', this.clearHighlights);
 
         // Add onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
-        if (transcription){
+        if (transcription) {
+            transcription.addEventListener('mouseup', this.getHighlightedWords);
             transcription.addEventListener('input', (e) => {this.handleChange(e)});
             transcription.addEventListener('blur', this.handleBlur);
         }
@@ -39,12 +38,12 @@ export class TranscriptionText extends React.Component<any, State> {
     
     // Remove event listener
     componentWillUnmount() {
-        document.removeEventListener('mouseup', this.getHighlightedWords);
         document.addEventListener('mousedown', this.clearHighlights);
-        
+
         // Remove onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
-        if (transcription){
+        if (transcription) {
+            transcription.removeEventListener('mouseup', this.getHighlightedWords);
             transcription.removeEventListener('input', this.handleChange);
             transcription.removeEventListener('blur', this.handleBlur);
         }

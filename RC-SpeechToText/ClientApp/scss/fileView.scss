@@ -7,7 +7,6 @@
 .file-view-title {
     padding: 10px 13px 10px 14px;
     background-color: white;
-    font-family: Roboto;
     font-size: 14px;
     color: #000000;
     text-align: left;
@@ -17,7 +16,6 @@
 .file-view-desc {
     padding: 10px 13px 18px 14px;
     background-color: white;
-    font-family: Roboto;
     font-size: 14px;
     color: #000000;
     text-align: left;
@@ -33,8 +31,6 @@
 }
 
 .file-view-info {
-    //font-family: Rubik;
-    font-family: Roboto;
     font-size: 13px;
     color: #212940;
     text-align: left;
@@ -42,15 +38,13 @@
 }
 
 .file-view-header {
-    font-family: 'Roboto';
+    font-family: Roboto;
     font-size: 14px;
     color: #212940;
     text-align: left;
 }
 
 .highlight-text {
-    //font-family: 'Rubik-Regular';
-    font-family: Roboto;
     font-size: 14px;
     color: #000000;
     text-align: left;
@@ -90,7 +84,6 @@
 }
 
 .nav-button {
-    font-family: 'Roboto';
     font-size: 14px;
     font-weight: bold;
     text-align: center;
