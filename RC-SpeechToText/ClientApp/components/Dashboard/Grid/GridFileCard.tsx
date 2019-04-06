@@ -42,7 +42,7 @@ export class GridFileCard extends React.Component<any, State> {
         return (
             <div className="column is-3">
                 <div className="card fileCard">
-                    <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.state.flag.toUpperCase()}</span> 
+                    <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}><b>{this.state.flag.toUpperCase()}</b></span> 
                     <header className="card-header">
                         <p className="card-header-title fileTitle">
                             {this.state.title ? (this.state.title.length < 35 ? this.removeExtension(this.state.title) : this.removeExtension(this.state.title).substring(0, 35) + " ..." ) : null}</p>
@@ -80,8 +80,8 @@ export class GridFileCard extends React.Component<any, State> {
                                 <p>{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
                             </div>
                             <br />
-                            <p className="font-size-12 font-family-roboto"><b>{this.props.username}</b></p>
-                            <time className="font-size-12 font-family-roboto" dateTime={this.props.date}>{this.props.date}</time>
+                            <p className="font-size-12"><b>{this.props.username}</b></p>
+                            <time className="font-size-12" dateTime={this.props.date}>{this.props.date}</time>
                         </div>
                     </div>
                 </div>
