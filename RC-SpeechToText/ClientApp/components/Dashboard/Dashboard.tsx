@@ -96,7 +96,10 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': this.state.allFiles });
-        this.setState({ 'currentFilterFiles': this.state.allFiles });
+        this.setState(
+			{ 'currentFilterFiles': this.state.allFiles },
+			this.searchDescription
+		);
         this.setState({ 'usernames': usernames });
 
     }
@@ -117,7 +120,10 @@ export default class Dashboard extends React.Component<any, State> {
                 console.log(res.data);
                 this.setState({ 'files': res.data.files });
                 this.setState({ 'allFiles': res.data.files });
-				this.setState({ 'currentFilterFiles': res.data.files });
+				this.setState(
+					{ 'currentFilterFiles': res.data.files },
+					this.searchDescription
+				);
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 console.log(this.state.loading);
@@ -148,7 +154,10 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
-        this.setState({ 'currentFilterFiles': userFiles });
+        this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
         this.setState({ 'usernames': usernames });
         this.setState({ 'isMyFilesFilterActive': true });
         
@@ -170,7 +179,10 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
-		this.setState({ 'currentFilterFiles': userFiles });
+		 this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
         this.setState({ 'usernames': usernames });
         this.setState({ 'isFilesToReviewFilterActive': true });
 
@@ -192,7 +204,10 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
-		this.setState({ 'currentFilterFiles': userFiles });
+		this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
         this.setState({ 'usernames': usernames });
 
         this.setState({ 'isAutomatedFilterActive': true });
@@ -216,7 +231,10 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
-		this.setState({ 'currentFilterFiles': userFiles });
+		this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
         this.setState({ 'usernames': usernames });
 
         this.setState({ 'isEditedFilterActive': true });
@@ -239,7 +257,10 @@ export default class Dashboard extends React.Component<any, State> {
         })
 
         this.setState({ 'files': userFiles });
-		this.setState({ 'currentFilterFiles': userFiles });
+		this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
         this.setState({ 'usernames': usernames });
 
         this.setState({ 'isReviewedFilterActive': true });
@@ -341,7 +362,7 @@ export default class Dashboard extends React.Component<any, State> {
 
     public handleSearch = (e: any) => {
         this.setState(
-            { searchTerms: e.target.value.trim() },
+            { 'searchTerms': e.target.value.trim() },
             this.searchDescription
         );
     }
