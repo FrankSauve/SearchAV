@@ -59,12 +59,12 @@ export class TranscriptionText extends React.Component<any, State> {
             this.props.handleTextSearch(false);
         }
         // check if the feature toggle for #75 was activated
-        if (this.props.highlightPosition && (prevProps.highlightPosition !== this.props.highlightPosition)) {
+        if (this.props.highlightPosition != null && (prevProps.highlightPosition !== this.props.highlightPosition)) {
             console.log("ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
             this.getTimestamps();
         }
         // check if the feature toggle for #75 was deactivated
-        else if (!this.props.highlightPosition && (prevProps.highlightPosition !== this.props.highlightPosition)){
+        else if (!this.props.highlightPosition != null && (prevProps.highlightPosition !== this.props.highlightPosition)){
             console.log("DE-ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
             this.clearPositionHighlights();
         }
@@ -80,7 +80,6 @@ export class TranscriptionText extends React.Component<any, State> {
         };
         axios.get('/api/Transcription/GetTimestamps/' + this.state.version.id, config)
             .then(res => {
-                console.log("FileView.getTimestamps(): "+res.data);
                 this.setState({timestamps: res.data}, () =>{
                     this.highlightPosition();
                 });
@@ -151,33 +150,28 @@ export class TranscriptionText extends React.Component<any, State> {
     public highlightPosition=()=> {
 
         console.log("highlightPosition");
-        //TODO: IMPLEMENT METHOD
-        // Ideas for implementation: 
-
-        // DECENT IDEA
-        //-1) Write div shift method to make the highlight shift one word over each time it is called.
-        // TODO: Write this method
         
         // 0) get displayText in array form (var wordList[] string array of words)
         let wordList = this.state.displayText.split(" ");
-        console.log("highlightPosition wordList:" + wordList.toString());
         // 1) get list of all timestamps in array form (var timeList[] timestamps converted to seconds)
-        console.log("highlightPosition timestamps:" + this.state.timestamps);
-        
         let rawTimeList = (this.state.timestamps).split(", ");
-        console.log("highlightPosition rawTimeList:" + rawTimeList.toString());
         let timeList = [];
-        
         for(let i=0; i<rawTimeList.length; i++){
             let a = rawTimeList[i].split(':');
             timeList[i] = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (parseFloat(a[2]));
         }
-        console.log("highlightPosition timeList: "+timeList.toString());
+        
+        console.log("highlightPosition words with timelist: \n");
+        for(let i=0;i<wordList.length;i++){
+            console.log(wordList[i] + " == "+timeList[i] + "\n");
+        }
         
         // 2) get current time in video (var currentTime = int form of seconds so far in video)
+        console.log("this.props.highlightPosition: "+this.props.highlightPosition);
         
+        // 3) inject start tag at appropriate word
         
-        console.log("IMPLEMENT TranscriptionText.highlightPosition");
+        // 4) call endTag injection method at a given interval
     };
 
     // Retrieves the words selected via mouse and calls FileView's searchTranscript method with them

@@ -33,7 +33,7 @@ interface State {
     seekTime: string,
     timestampInfo: string,
     selection: string,
-    highlightPosition: boolean,
+    highlightPosition: string,
     versions: any[],
     usernames: string[], 
     textSearch: boolean,
@@ -66,7 +66,7 @@ export default class FileView extends React.Component<any, State> {
             seekTime: '0:00:00.00',
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
-            highlightPosition: false,
+            highlightPosition: '0:00:00.00',
             versions: [],
             usernames: [], 
             textSearch: false,
@@ -250,8 +250,8 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ seekTime: time });
     };
     
-    public handleHighlightPosition = (b: boolean) =>{
-        this.setState({highlightPosition: b});
+    public handleHighlightPosition = (time: string) =>{
+        this.setState({highlightPosition: time});
     };
 
     public handleTranscriptChange = (text: string) => {

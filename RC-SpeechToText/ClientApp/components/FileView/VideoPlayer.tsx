@@ -23,10 +23,12 @@ export class VideoPlayer extends React.Component<any, State> {
 
         if(event.altKey) { // alt key
             if(event.keyCode == 66){ // b key
-                this.props.handleHighlightPosition(true);
+                console.log("GetCurrentTimeWork START?: "+this.state.player.getCurrentTime());
+                this.props.handleHighlightPosition(this.state.player.getCurrentTime());
             }
             else if(event.keyCode == 78){ // n key
-                this.props.handleHighlightPosition(false);
+                console.log("GetCurrentTimeWork END?: "+this.state.player.getCurrentTime());
+                this.props.handleHighlightPosition(this.state.player.getCurrentTime());
             }
         }
     };
