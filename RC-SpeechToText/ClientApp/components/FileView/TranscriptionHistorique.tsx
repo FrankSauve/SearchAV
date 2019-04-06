@@ -49,7 +49,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                                 <div className="historique-content">
                                     <p> {version.historyTitle} </p>
                                     <p> {this.formatTime(version.dateModified)} </p>
-                                    <p className="historique-username"> {this.props.usernames[i]}</p>
+                                    <p className="historique-username"> <b>{this.props.usernames[i]}</b></p>
                                 </div>
                             )
                             i++;
