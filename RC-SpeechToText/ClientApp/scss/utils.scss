@@ -1,6 +1,7 @@
 html, body {
   margin: 0px;
   padding: 0px;
+  font-family: Rubik;
 }
 
 .mg-top-30 {
@@ -121,7 +122,6 @@ html, body {
 }
 
 th {
-    font-family: Roboto;
     font-size: 14px;
     color: $link;
     text-align: left;
@@ -154,5 +154,5 @@ th {
 }
 
 .font-family-roboto{
-    font-family: Roboto;
+    font-family: Roboto !important;
 }
