@@ -309,8 +309,10 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public handleSearch = (e: any) => {
-        this.setState({ searchTerms: e.target.value });
-        this.searchDescription();
+        this.setState(
+            { searchTerms: e.target.value },
+            this.searchDescription
+        );
     }
 
     public deactivateFilters = () => {
