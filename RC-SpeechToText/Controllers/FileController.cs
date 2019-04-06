@@ -61,12 +61,7 @@ namespace RC_SpeechToText.Controllers
             return Ok(filesUsernames);
 
         }
-
-        [HttpGet("[action]/{date}")]
-        public IActionResult FormatTime(string date)
-        {
-            return Ok(DateTimeUtil.FormatDateCardInfo(date));
-        }
+        
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetUserFilesToReview()

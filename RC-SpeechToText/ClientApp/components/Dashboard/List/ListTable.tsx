@@ -68,7 +68,7 @@ export default class ListTable extends React.Component<any, State>
                                         transcription={file.transcription != null ? file.transcription.length > 150 ? file.transcription.substring(0, 150) + "..." : file.transcription : null}
                                     />
                                 </td>
-                                <td className="list-view-duration">{file.duration}</td>
+                                <td><p className="tag is-rounded is-link">{file.duration}</p></td>
                                 <td className="list-view-username"><b>{this.state.usernames[i]}</b></td>
                                 <td className="list-view-date">{file.dateAdded.substring(0, 10) + " " + file.dateAdded.substring(11, 16)}</td>
                                 <td>

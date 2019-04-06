@@ -68,14 +68,12 @@ namespace RC_SpeechToText.Infrastructure
 			//00:00:00,000 --> 00:00:00,000
 			//Paragraph
 			//-blank line-
-			var paragraphCount = 0;
-			foreach (string p in paragraph)
+			for(int i = 0, j = 0; i<paragraph.Count; i++, j = j+2)
 			{
-				tw.WriteLine(paragraphCount.ToString());
-				tw.WriteLine(timestamps[paragraphCount] + " --> " + timestamps[paragraphCount + 1]);
-				tw.WriteLine(paragraph[paragraphCount]);
+				tw.WriteLine(i.ToString());
+				tw.WriteLine(timestamps[j] + " --> " + timestamps[j + 1]);
+				tw.WriteLine(paragraph[i]);
 				tw.WriteLine("");
-				paragraphCount++;
 			}
 			tw.Close();
 		}

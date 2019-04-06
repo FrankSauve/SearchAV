@@ -33,8 +33,11 @@ interface State {
     seekTime: string,
     timestampInfo: string,
     selection: string,
+    highlightPosition: boolean,
+    versions: any[],
+    usernames: string[], 
     textSearch: boolean,
-    highlightPosition: boolean
+    path: string
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -63,8 +66,11 @@ export default class FileView extends React.Component<any, State> {
             seekTime: '0:00:00.00',
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
+            highlightPosition: false,
+            versions: [],
+            usernames: [], 
             textSearch: false,
-            highlightPosition: false
+            path: ""
         }
     }
 
@@ -73,6 +79,7 @@ export default class FileView extends React.Component<any, State> {
         this.getVersion();
         this.getFile();
         this.getUser();
+        this.getAllVersions();
         this.setState({ description: this.state.description }); 
         document.addEventListener('mouseup', this.hideDropdown);
     }
@@ -81,6 +88,30 @@ export default class FileView extends React.Component<any, State> {
     componentWillUnmount() {
         document.removeEventListener('mouseup', this.hideDropdown);
     }
+
+    public getAllVersions = () => {
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/version/GetAllVersionsWithUserName/' + this.state.fileId, config)
+            .then(res => {
+                console.log(res.data);
+                this.setState({ 'versions': res.data.versions });
+                this.setState({ 'usernames': res.data.usernames });
+                
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response.status == 401) {
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    };
+
 
     public getVersion = () => {
         this.setState({ loading: true });
@@ -115,6 +146,7 @@ export default class FileView extends React.Component<any, State> {
             .then(res => {
                 this.setState({ file: res.data }); 
                 this.setState({ description: this.state.file.description }); 
+                this.setState({ path: this.state.file.filePath });
             })
             .catch(err => {
                 console.log(err);
@@ -270,6 +302,11 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ showDropdown: false });
     };
 
+    removeExtension(title: string) {
+        var titleNoExtension = title.lastIndexOf('.') != -1 ? title.substring(0, title.lastIndexOf('.')) : title;
+        return titleNoExtension;
+    };
+
     render() {
         return (
             <div className="container">
@@ -277,12 +314,12 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} handleHighlightPosition={this.handleHighlightPosition} controls={true}/> : null}
+                        {this.state.file ? <VideoPlayer path={this.state.file.filePath} seekTime={this.state.seekTime} handleHighlightPosition={this.handleHighlightPosition} controls={true}/> : null}
 
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>
                             <div className="file-view-title">
-                                {this.state.file.title}
+                                {this.removeExtension(this.state.file.title)}
                             </div> </div> : <div className="file-view-title"> This file has no title </div>) : null}
                         
                         <br />
@@ -336,6 +373,7 @@ export default class FileView extends React.Component<any, State> {
                                         editedTranscription={this.state.editedTranscript}
                                         reviewerId={this.state.file.reviewerId}
                                         userId={this.state.user.id}
+                                        getAllVersions={this.getAllVersions}
                                     />
                                 </div>
                                 : null}
@@ -345,6 +383,8 @@ export default class FileView extends React.Component<any, State> {
                     <div className="column is-one-fifth historique_padding">
                         <TranscriptionHistorique
                             fileId={this.state.fileId}
+                            versions={this.state.versions}
+                            usernames={this.state.usernames}
                         />
                     </div>
 
