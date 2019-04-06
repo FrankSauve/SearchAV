@@ -157,7 +157,7 @@ export default class FileInput extends React.Component<any, State> {
     onDrop = (e: any) => {
         e.preventDefault();
         this.setState({ file: e.dataTransfer.files[0] })
- //       this.setState({ title: e.dataTransfer.files[0].name })
+        this.setState({ title: e.dataTransfer.files[0].name.split(".")[0] }) // Name of the file without the extension
         this.setState({ showAddTitleDescriptionModal: true });
     }
 
