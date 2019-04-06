@@ -88,7 +88,7 @@ export default class FileInput extends React.Component<any, State> {
         formData.append('audioFile', this.state.file);
         formData.append('userEmail', auth.getEmail()!);
         formData.append('description', this.state.description); 
-        formData.append('title', this.state.title); 
+        formData.append('title', this.state.title.split(".")[0]); 
 
         const config = {
             headers: {
@@ -128,7 +128,7 @@ export default class FileInput extends React.Component<any, State> {
                     'content-type': 'application/json'
                 }
             }
-            axios.post('/api/file/VerifyIfTitleExists/' + title, formData, config)
+            axios.post('/api/file/VerifyIfTitleExists/' + title.split(".")[0], formData, config)
                 .then(res => {
                     this.hideAddTitleDescriptionModal();
                     this.getGoogleSample();
@@ -157,7 +157,7 @@ export default class FileInput extends React.Component<any, State> {
     onDrop = (e: any) => {
         e.preventDefault();
         this.setState({ file: e.dataTransfer.files[0] })
- //       this.setState({ title: e.dataTransfer.files[0].name })
+        this.setState({ title: e.dataTransfer.files[0].name.split(".")[0] }) // Name of the file without the extension
         this.setState({ showAddTitleDescriptionModal: true });
     }
 
