@@ -33,7 +33,7 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                 </section>
                 <div className="is-centered">
                     <p className="homeText"> L'application <b>Steno</b> souhaite que vous vous identifiez </p>
-                    <div className="column is-one-quarter has-text-centered mg-top-30">
+                    <div className="column has-text-centered mg-top-30">
                         <Login />
                     </div>
                 </div>
