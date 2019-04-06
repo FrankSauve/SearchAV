@@ -13,28 +13,26 @@ export class Home extends React.Component<RouteComponentProps<{}>, State> {
                 {auth.isLoggedIn() ? <Redirect to="/dashboard" /> : null}
                 <section className="is-medium is-light">
                     <div>
-                        <div className="container">
+                        <div className="homeContainer">
                             <h2 className="hometitle">
-                                RBC
+                                CBC &nbsp;
                                 <a href="/">
                                     <img src="https://vignette.wikia.nocookie.net/logopedia/images/b/b7/Cbc-logo.png/revision/latest/scale-to-width-down/240?cb=20110304223128" width="30" height="30" />
                                 </a>
-                                Radio Canada
+                               &nbsp; Radio-Canada
                             </h2>
                         </div>
                     </div>
                 </section>
                 <section className="hero is-small is-dark">
-                    <div className="hero-body">
-                        <div className="container">
-                            <h2 className="homesubtitle">
-                                CENTRE DES MEMBRES
-                            </h2>
-                        </div>
+                    <div className="homeContainer">
+                        <h2 className="homesubtitle">
+                            CENTRE DES MEMBRES
+                        </h2>
                     </div>
                 </section>
-                <div className="columns is-centered">
-                    <p> L'application SGC Picto souhaite que vous vous identifiez </p>
+                <div className="is-centered">
+                    <p className="homeText"> L'application <b>Steno</b> souhaite que vous vous identifiez </p>
                     <div className="column is-one-quarter has-text-centered mg-top-30">
                         <Login />
                     </div>
