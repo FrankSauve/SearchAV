@@ -256,29 +256,31 @@ export default class Dashboard extends React.Component<any, State> {
         var counter = 0;
         var results = Array(this.state.allFiles.length);
 
-        this.state.allFiles.map((file) => {
-            fileAdded = false;
-           
-            if (file.description != null) {
-                if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
-                    results[counter] = file;
+        if (searchTerms == "") {
+            this.setState({ 'files': this.state.allFiles });
+        } else {
+            this.state.allFiles.map((file) => {
+                fileAdded = false;
 
-                    //If file is added here we do not want to add it again if it has a title match too
-                    fileAdded = true;
-                    counter++;
-                }
-            }
-            if (file.title != null && !fileAdded) {
-                if (file.title.toLowerCase().includes(searchTerms.toLowerCase())) {
-                    results[counter] = file;
-                    
-                    counter++;
-                }
-            }
-        })
-        console.log(results);
+                if (file.description != null) {
+                    if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
+                        results[counter] = file;
 
-        this.setState({ 'files' : results });
+                        //If file is added here we do not want to add it again if it has a title match too
+                        fileAdded = true;
+                        counter++;
+                    }
+                }
+                if (file.title != null && !fileAdded) {
+                    if (file.title.toLowerCase().includes(searchTerms.toLowerCase())) {
+                        results[counter] = file;
+
+                        counter++;
+                    }
+                }
+            })
+            this.setState({ 'files': results });
+        }
         
     }
 
