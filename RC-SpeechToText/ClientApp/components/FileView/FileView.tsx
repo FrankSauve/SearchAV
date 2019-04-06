@@ -11,6 +11,7 @@ import Loading from '../Loading';
 import { ModifyDescriptionModal } from '../Modals/ModifyDescriptionModal';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
+import { SeeTranscriptionModal } from '../Modals/SeeTranscriptionModal'; 
 
 interface State {
     fileId: AAGUID,
@@ -23,6 +24,8 @@ interface State {
     description: string,
     showDescriptionModal: boolean,
     newDescription: string,
+    revertTranscription: boolean, 
+    showTranscriptionModal: boolean, 
     showErrorModal: boolean,
     showSuccessModal: boolean,
     modalTitle: string,
@@ -54,7 +57,9 @@ export default class FileView extends React.Component<any, State> {
             fileTitle: "",
             description: "",
             showDescriptionModal: false,
-            newDescription: "", 
+            newDescription: "",
+            revertTranscription: false, 
+            showTranscriptionModal: false, 
             showErrorModal: false,
             showSuccessModal: false,
             modalTitle: "",
@@ -173,6 +178,10 @@ export default class FileView extends React.Component<any, State> {
             });
     };
 
+    public revertTranscription = () => {
+
+    }
+
     public saveDescription = () => {
 
         var oldDescription = this.state.description;
@@ -254,6 +263,18 @@ export default class FileView extends React.Component<any, State> {
 
     public updateVersion = (newVersion: any) => {
         this.setState({ version: newVersion });
+    };
+
+    public showTranscriptionModal = () => {
+        this.setState({ showTranscriptionModal: true }); 
+    }
+
+    public hideTranscriptionModal = () => {
+        this.setState({ showTranscriptionModal: false }); 
+    }
+
+    public handleHistoryChange = (event: any) => {
+        this.setState({ revertTranscription: event.target.value });
     };
 
     public showDescriptionModal = () => {
@@ -387,6 +408,14 @@ export default class FileView extends React.Component<any, State> {
                             description={this.state.description}
                             handleDescriptionChange={this.handleDescriptionChange}
                             onSubmit={this.saveDescription}
+                        />
+
+                        <SeeTranscriptionModal
+                            showModal={this.state.showTranscriptionModal}
+                            hideModal={this.hideTranscriptionModal}
+                            revert={this.state.revertTranscription}
+                            handleRevertTranscriptionChange={this.handleTranscriptChange}
+                            onSubmit={this.revertTranscription}
                         />
 
                         <SuccessModal
