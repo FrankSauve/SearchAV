@@ -61,7 +61,7 @@ export default class EditedFilter extends React.Component<any, State> {
                         {this.state.files.length}
                     </p>
                     <p className={`subtitle  ${this.props.isActive ? "is-link" : "edited"}`}>
-                        {this.state.showArrow ? <i className="fas fa-arrow-right edited"></i> : null}
+                        {this.props.isActive ? <i className="fas fa-arrow-left"></i> : this.state.showArrow ? <i className="fas fa-arrow-right edited"></i> : null}
                         <b>FICHIERS<br />
                             EDITES</b>
                 </p>

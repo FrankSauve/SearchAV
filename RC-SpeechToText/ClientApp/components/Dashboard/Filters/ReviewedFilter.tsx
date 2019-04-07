@@ -61,7 +61,7 @@ export default class ReviewedFilter extends React.Component<any, State> {
                         {this.state.files.length}
                     </p>
                     <p className={`subtitle ${this.props.isActive ? "is-link" : "reviewed"}`}>
-                        {this.state.showArrow ? <i className="fas fa-arrow-right right reviewed"></i> : null}
+                        {this.props.isActive ? <i className="fas fa-arrow-left"></i> : this.state.showArrow ? <i className="fas fa-arrow-right right reviewed"></i> : null}
                         <b>FICHIERS<br />
                             REVISES</b></p>
                 </div>

@@ -64,7 +64,7 @@ export default class MyFilesFilter extends React.Component<any, State> {
                         {this.state.files ? this.state.files.length : 0}
                     </p>
                     <p className={`subtitle ${this.props.isActive ? "is-link" : "is-white-smoke"}`}>
-                        {this.state.showArrow ? <i className="fas fa-arrow-right is-white"></i> : null}
+                        {this.props.isActive ? <i className="fas fa-arrow-left"></i> : this.state.showArrow ? <i className="fas fa-arrow-right is-white"></i> : null}
                         <b>MES FICHIERS</b>
                 </p>
                 </div>
