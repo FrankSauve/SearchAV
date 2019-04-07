@@ -26,7 +26,7 @@
 }
 
 .homeContainer {
-    padding-top: 5px; 
+    padding-top: 5px;
 }
 
 .homeText {
@@ -34,4 +34,15 @@
     text-align: center; 
     font-size: 20px; 
     color: black; 
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.background-platinium {
+    background-color: #eaeaea;
+    overflow: hidden;
+    height: 1000px;
 }
