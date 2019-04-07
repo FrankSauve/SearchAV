@@ -10,11 +10,14 @@ namespace RC_SpeechToText.Services
     {
         public List<Word> ModifyTimestamps(List<Word> oldWords, string oldTranscript, string newTranscript, Guid newVersionId, string duration)
         {
+            //Changing all words to lowercase
+            newTranscript = newTranscript.ToLower();
 
             var longestCommonSequence = CommonWords(oldTranscript,newTranscript);
             var newWords = CreateNewWords(oldWords, longestCommonSequence.newTranscriptionTerms,
                 longestCommonSequence.newTransPosition, longestCommonSequence.oldTransPositions, newVersionId);
 
+            
             newWords = EstimateWords(newWords, duration);
             
             return newWords;
