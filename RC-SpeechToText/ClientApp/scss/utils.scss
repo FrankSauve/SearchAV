@@ -117,10 +117,17 @@ html, body {
     color: $link;
 }
 
+.fa-arrow-right {
+    margin-top: -8px;
+    float: right;
+    font-size: 2em;
+}
+
 .fa-arrow-left {
     margin-top: -8px;
     float: right;
     font-size: 2em;
+    color: $link
 }
 
 .fontSize2em {

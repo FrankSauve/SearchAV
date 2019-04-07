@@ -61,7 +61,7 @@ export default class AutomatedFilter extends React.Component<any, State> {
                         {this.state.files.length}
                     </p>
                     <p className={`subtitle ${this.props.isActive ? "is-link" : "automated"}`}>
-                        {this.state.showArrow ? <i className="fas fa-arrow-left automated"></i> : null}
+                        {this.state.showArrow ? <i className="fas fa-arrow-right automated"></i> : null}
                         <b>FICHIERS<br />
                             TRANSCRITS</b>
                 </p>

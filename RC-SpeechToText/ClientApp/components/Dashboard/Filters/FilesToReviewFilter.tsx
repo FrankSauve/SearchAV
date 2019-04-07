@@ -48,11 +48,13 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
     }
 
     public handleHover = () => {
-        this.setState({ showArrow: true });
+        if (!this.props.isActive)
+            this.setState({ showArrow: true });
     }
 
     public handleLeave = () => {
-        this.setState({ showArrow: false });
+        if (!this.props.isActive)
+            this.setState({ showArrow: false });
     }
 
     public render() {
@@ -63,7 +65,7 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
                         {this.state.files ? this.state.files.length : 0}
                     </p>
                     <p className={`subtitle ${this.props.isActive ? "is-link" : "has-text-danger"}`}>
-                        {this.state.showArrow ? <i className="fas fa-arrow-left is-danger"></i> : null}
+                        {this.state.showArrow ? <i className="fas fa-arrow-right is-danger"></i> : null}
                         <b>FICHIERS <br />
                             A REVISER</b>
                 </p>
