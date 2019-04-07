@@ -68,14 +68,14 @@ export class TranscriptionText extends React.Component<any, State> {
         }
         // check if the feature toggle for #75 was activated
         if (this.props.highlightPosition != null && (prevProps.highlightPosition !== this.props.highlightPosition)) {
-            console.log("ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
+            console.log("ACTIVATE 491 FEATURE TranscriptionText.componentDidUpdate");
             this.setState({highlightPos:this.props.highlightPosition},()=>{
                 this.getTimestamps();
             });
         }
         // check if the feature toggle for #75 was deactivated
         else if (this.props.highlightPosition == null && (prevProps.highlightPosition !== this.props.highlightPosition)){
-            console.log("DE-ACTIVATE TOGGLE TranscriptionText.componentDidUpdate");
+            console.log("DE-ACTIVATE 491 FEATURE TranscriptionText.componentDidUpdate");
             this.clearPositionHighlights();
         }
     }
@@ -106,7 +106,6 @@ export class TranscriptionText extends React.Component<any, State> {
     };
     // remove only span tags dedicated to showing the current position of the video in the transcript
     public clearPositionHighlights=()=>{
-        console.log("REACHED TranscriptionText.clearPositionHighlights");
         clearInterval(this.state.intervalID);
         this.setState({displayText:this.rawToUnhighlightedPosHtml(this.state.displayText), intervalID: null});
     };
@@ -248,7 +247,6 @@ export class TranscriptionText extends React.Component<any, State> {
     
     // removes all div tags from a string
     rawToUnhighlightedPosHtml(text: string) {
-        console.log("REACHED TranscriptionText.rawToUnhighligtedPosHtml");
         let a = text;
         a = a.replace(/<span[^>]+\>/g,'');
         a = a.replace(/<\/span>/g,'');

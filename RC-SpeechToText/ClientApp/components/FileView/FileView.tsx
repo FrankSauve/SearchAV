@@ -245,7 +245,6 @@ export default class FileView extends React.Component<any, State> {
     };
     
     public handleIsPlaying = (b:boolean) =>{
-        console.log("isPlaying set to "+b);
         this.setState({isPlaying:b});
     };
     
