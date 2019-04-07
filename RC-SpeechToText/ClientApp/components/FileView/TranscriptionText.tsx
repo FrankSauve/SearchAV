@@ -199,6 +199,7 @@ export class TranscriptionText extends React.Component<any, State> {
                 hTextArray.push(wordList[i]);
             }
             
+            // initial position of the end span should be one ahead from the start span
             if(injected && i == (startIndex+1)){
                 hTextArray.push("</span>");
             }

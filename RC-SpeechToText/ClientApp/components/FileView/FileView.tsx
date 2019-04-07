@@ -366,7 +366,6 @@ export default class FileView extends React.Component<any, State> {
                                         text={this.state.version.transcription}
                                         version={this.state.version}
                                         handleTranscriptChange={this.handleTranscriptChange}
-                                        handleSeekTime={this.handleSeekTime}
                                         selection={this.state.selection}
                                         handleSelectionChange={this.handleSelectionChange}
                                         textSearch={this.state.textSearch}
