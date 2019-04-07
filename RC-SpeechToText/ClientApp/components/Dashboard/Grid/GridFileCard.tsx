@@ -29,8 +29,15 @@ export class GridFileCard extends React.Component<any, State> {
         this.setState({ 'description': newDescription });
     }
 
-    rawToWhiteSpace(text: string) {
-        return text.replace(/<br\s*[\/]?>/gi, " ");
+    removeTags(text: string) {
+        let a = text;
+        a = a.replace(/<span[^>]+\>/g, '');
+        a = a.replace(/<\/span>/g, '');
+        a = a.replace(/<a[^>]+\>/g, '');
+        a = a.replace(/<\/a>/g, '');
+        a = a.replace(/<div\s*[\/]?>/gi, " ");
+        a = a.replace(/<br\s*[\/]?>/gi, " ");
+        return a;
     }
 
     public formatTime = (dateModified: any) => {
@@ -86,7 +93,7 @@ export class GridFileCard extends React.Component<any, State> {
                     <div className="card-content">
                         <div className="content fileContent">
                             <div className="transcription-grid-view">
-                                <p>{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
+                                <p>{this.state.description ? this.removeTags(this.state.description) : this.removeTags(this.props.transcription)}</p>
                             </div>
                             <br />
                             <p className="font-size-12"><b>{this.props.username}</b></p>
