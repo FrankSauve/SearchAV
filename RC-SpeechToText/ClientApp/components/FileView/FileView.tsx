@@ -35,7 +35,8 @@ interface State {
     selection: string,
     versions: any[],
     usernames: string[], 
-    textSearch: boolean
+    textSearch: boolean,
+    path: string
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -66,7 +67,8 @@ export default class FileView extends React.Component<any, State> {
             selection: '',
             versions: [],
             usernames: [], 
-            textSearch: false
+            textSearch: false,
+            path: ""
         }
     }
 
@@ -142,6 +144,7 @@ export default class FileView extends React.Component<any, State> {
             .then(res => {
                 this.setState({ file: res.data }); 
                 this.setState({ description: this.state.file.description }); 
+                this.setState({ path: this.state.file.filePath });
             })
             .catch(err => {
                 console.log(err);
@@ -305,7 +308,7 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.title} seekTime={this.state.seekTime} controls={true}/> : null}
+                        {this.state.file ? <VideoPlayer path={this.state.file.filePath} seekTime={this.state.seekTime} controls={true}/> : null}
 
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>

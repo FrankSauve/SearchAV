@@ -74,15 +74,16 @@ namespace RC_SpeechToText.Services
 			//Gets type of file (audio or video)
 			var fileType = converter.GetFileType(filePath);
 
-			//Create transcription out of the words
+			//Create transcription out of the words and capitalizing the first letter
 			var transcription = CreateTranscription(words);
+            transcription = transcription.First().ToString().ToUpper() + transcription.Substring(1);
 
-			// Create file
-			var file = new File
+
+            // Create file
+            var file = new File
 			{
-				//Title = audioFile.FileName,
                 Title = (title == "" ? audioFile.FileName : title + ext),
-				FilePath = filePath,
+				FilePath = @"\assets\Audio\" + (title == "" ? audioFile.FileName : title + ext),
 				FileFlag = FileFlag.Automatise,
                 Description = descriptionFile, 
                 UserId = user.Id,

@@ -49,7 +49,7 @@ export class VideoPlayer extends React.Component<any, State> {
             <div className="video-player">
                 <ReactPlayer
                     ref={this.ref}
-                    url={'../assets/Audio/' + this.props.path}
+                    url={this.props.path}
                     playing={this.state.playing}
                     controls={this.state.controls}
                     width='100%'
