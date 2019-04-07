@@ -8,7 +8,6 @@ import { TranscriptionSearch } from './TranscriptionSearch';
 import { SaveTranscriptionButton } from './SaveTranscriptionButton';
 import { FileInfo } from './FileInfo';
 import Loading from '../Loading';
-import { ModifyDescriptionModal } from '../Modals/ModifyDescriptionModal';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
 import { DescriptionText } from './DescriptionText';
