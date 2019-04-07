@@ -5,6 +5,7 @@ import auth from '../../../Utils/auth';
 interface State {
     files: any[],
     userId: AAGUID,
+    showArrow: boolean,
     unauthorized: boolean
 }
 
@@ -15,6 +16,7 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
         this.state = {
             files: [],
             userId: "",
+            showArrow: false,
             unauthorized: false
         }
     }
@@ -45,14 +47,23 @@ export default class FilesToReviewFilter extends React.Component<any, State> {
             });
     }
 
+    public handleHover = () => {
+        this.setState({ showArrow: true });
+    }
+
+    public handleLeave = () => {
+        this.setState({ showArrow: false });
+    }
+
     public render() {
         return (
             <div className={`card filters mg-top-30 ${this.props.isActive ? "has-background-blizzard-blue" : "has-background-link"}`}>
-                <div className="card-content">
+                <div className="card-content" onMouseEnter={this.handleHover} onMouseLeave={this.handleLeave}>
                     <p className={`title ${this.props.isActive ? "is-link" : "has-text-danger"}`}>
                         {this.state.files ? this.state.files.length : 0}
                     </p>
                     <p className={`subtitle ${this.props.isActive ? "is-link" : "has-text-danger"}`}>
+                        {this.state.showArrow ? <i className="fas fa-arrow-left is-danger"></i> : null}
                         <b>FICHIERS <br />
                             A REVISER</b>
                 </p>
