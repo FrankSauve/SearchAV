@@ -115,9 +115,14 @@ namespace RC_SpeechToText.Services
         {
 
             var file = new File { Id = id };
+            var streamIO = new IOInfrastructure();
+            var filePath = streamIO.GetPathFromDirectory(@"\wwwroot" + file.FilePath);
+            var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot" + file.ThumbnailPath);
             _context.File.Attach(file);
             _context.File.Remove(file);
             await _context.SaveChangesAsync();
+            streamIO.DeleteFile(filePath);
+            streamIO.DeleteFile(file.ThumbnailPath);
 
         }
 
