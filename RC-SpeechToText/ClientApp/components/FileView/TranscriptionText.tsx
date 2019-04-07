@@ -29,6 +29,7 @@ export class TranscriptionText extends React.Component<any, State> {
 
         // Add onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
+        console.log('TRANS DIV: ' + transcription);
         if (transcription) {
             transcription.addEventListener('mouseup', this.getHighlightedWords);
             transcription.addEventListener('input', (e) => {this.handleChange(e)});
@@ -139,8 +140,7 @@ export class TranscriptionText extends React.Component<any, State> {
     }
 
     public handleBlur = () => {
-        console.log('Returning:', this.state.rawText);
-        
+        console.log('Returning transcription:', this.state.rawText);
     };
 
     public handleChange = (e: any) => {

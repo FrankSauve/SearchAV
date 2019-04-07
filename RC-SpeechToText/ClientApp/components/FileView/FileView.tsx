@@ -11,6 +11,7 @@ import Loading from '../Loading';
 import { ModifyDescriptionModal } from '../Modals/ModifyDescriptionModal';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
+import { DescriptionText } from './DescriptionText';
 
 interface State {
     fileId: AAGUID,
@@ -178,6 +179,8 @@ export default class FileView extends React.Component<any, State> {
         var oldDescription = this.state.description;
         var newDescription = this.state.newDescription;
 
+        console.log('NEW DESCRIPTION: ' + this.state.newDescription);
+
         var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description");
 
         const formData = new FormData();
@@ -276,8 +279,9 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ showErrorModal: true });
     };
 
-    public handleDescriptionChange = (event: any) => {
-        this.setState({ newDescription: event.target.value });
+    public handleDescriptionChange = (text: string) => {
+        this.setState({ newDescription: text })
+        console.log('NEW DESCRIPTION: ' + this.state.newDescription);
     };
 
     public hideSuccessModal = () => {
@@ -314,17 +318,18 @@ export default class FileView extends React.Component<any, State> {
                         {this.state.file ? (this.state.file.title ? <div>
                             <div className="file-view-title">
                                 {this.removeExtension(this.state.file.title)}
-                            </div> </div> : <div className="file-view-title"> This file has no title </div>) : null}
+                            </div> </div> : <div className="file-view-title"> Ce fichier n'a pas de titre </div>) : null}
                         
                         <br />
 
-                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
-                        {this.state.file ? (this.state.file.description ? <div>
-                            <div className="file-view-desc">
-                                {this.state.description}
-                            </div>
-
-                        </div> : <div className="file-view-desc"> This file has no description </div>) : null}
+                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.saveDescription}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
+                        {this.state.file ?
+                            <div>
+                                <DescriptionText
+                                    description={this.state.file.description ? this.state.file.description : "Ce fichier n'a aucune description."}
+                                    handleDescriptionChange={this.handleDescriptionChange}
+                                />
+                        </div> : null}
                         
                         <br />
 
