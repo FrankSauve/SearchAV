@@ -51,7 +51,6 @@ export default class FileInput extends React.Component<any, State> {
 
     public hideAddTitleDescriptionModal = () => {
         this.setState({ showAddTitleDescriptionModal: false }); 
-        window.location.reload();
     }
 
     public handleTitleChange = (event: any) => {
