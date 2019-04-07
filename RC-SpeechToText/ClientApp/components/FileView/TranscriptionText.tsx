@@ -90,7 +90,7 @@ export class TranscriptionText extends React.Component<any, State> {
         };
         axios.get('/api/Transcription/GetTimestamps/' + this.state.version.id, config)
             .then(res => {
-                this.setState({timestamps: res.data}, () =>{
+                this.setState({displayText:this.rawToUnhighlightedPosHtml(this.state.displayText),timestamps: res.data}, () =>{
                     this.highlightPosition();
                 });
             })
@@ -160,6 +160,8 @@ export class TranscriptionText extends React.Component<any, State> {
     
     public highlightPosition=()=> {
 
+        let intervalSpeed = 100; // update every intervalSpeed/1000 seconds
+        
         console.log("highlightPosition");
         // 0) get displayText in array form (var wordList[] string array of words)
         let wordList = this.state.displayText.split(" ");
@@ -193,7 +195,9 @@ export class TranscriptionText extends React.Component<any, State> {
                 injected = true;
                 startIndex = i;
             }
-            hTextArray.push(wordList[i]);
+            if(wordList[i] !=" " && wordList[i]!="" && wordList[i]!="</span>"){
+                hTextArray.push(wordList[i]);
+            }
             if(i == (startIndex+1)){
                 hTextArray.push("</span>");
             }
@@ -203,13 +207,19 @@ export class TranscriptionText extends React.Component<any, State> {
 
         if(this.state.intervalID == null){
             // 4) call endTag injection method at a given interval
-            let interval = setInterval(() => {this.replaceHighlightPosEnd(hTextArray, wordList, timeList);}, 500);
+            let interval = setInterval(() => {this.replaceHighlightPosEnd(hTextArray, wordList, timeList, intervalSpeed);}, intervalSpeed);
             this.setState({intervalID:interval});
         }
     };
     
-    replaceHighlightPosEnd(hTextArray:string[], wordList:string[], timeList:number[]) {
+    replaceHighlightPosEnd(hTextArray:string[], wordList:string[], timeList:number[], intervalSpeed:number) {
         console.log("replaceHighlightPosEnd called!");
+        
+        //if there is nothing left to highlight, clear the highlight and end the process
+        if(timeList[timeList.length-1] <=this.state.highlightPos){
+            this.clearPositionHighlights();
+        }
+        
         //clearing away last div close tag
         let spanIndex = hTextArray.indexOf("<span style='background-color: #DCDCDC'>");
         for(let i=spanIndex;i<hTextArray.length;i++){
@@ -221,19 +231,16 @@ export class TranscriptionText extends React.Component<any, State> {
             }
         }
 
-        for(let i=spanIndex-1;i<wordList.length;i++){
+        for(let i=spanIndex;i<hTextArray.length;i++){
 
             if(timeList[i] > this.state.highlightPos){
                 hTextArray.splice(i,0,"</span>");
-                if(i == (timeList.length-1)){
-                    this.clearPositionHighlights();
-                }
                 break;
             }
         }
         let str = hTextArray.join(" ");
         console.log("new displayText at time:"+this.state.highlightPos+":\n" + str);
-        this.setState({displayText: str, highlightPos: (this.state.highlightPos+0.5)});
+        this.setState({displayText: str, highlightPos: (this.state.highlightPos+(intervalSpeed/1000))});
     }
 
     // Retrieves the words selected via mouse and calls FileView's searchTranscript method with them
