@@ -177,8 +177,11 @@ namespace RC_SpeechToText.Services {
             //Deactivate current version 
             currentVersion.Active = false;
 
-			    //Create a new version
-			    var newVersion = new Models.Version
+            //Capitalize the first letter when saving the transcript
+            newTranscript = newTranscript.First().ToString().ToUpper() + newTranscript.Substring(1);
+
+            //Create a new version
+            var newVersion = new Models.Version
 			    {
 				    UserId = await _context.User.Where(u => u.Email == userEmail).Select(u => u.Id).FirstOrDefaultAsync(),
 				    FileId = currentVersion.FileId,
