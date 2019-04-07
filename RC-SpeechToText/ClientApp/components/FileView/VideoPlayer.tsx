@@ -55,6 +55,10 @@ export class VideoPlayer extends React.Component<any, State> {
         if (prevProps.seekTime !== this.props.seekTime) {
             this.changeTime();
         }
+        if(prevState.playing !== this.state.playing){
+            console.log("playing changed to:" + this.state.playing);
+            this.props.handleIsPlaying(this.state.playing);
+        }
     }
 
     public changeTime = () => {
@@ -66,15 +70,29 @@ export class VideoPlayer extends React.Component<any, State> {
     ref = (player: any) => {
         this.setState({player: player});
     };
+
+    onPlay = () => {
+        console.log('onPlay')
+        this.setState({ playing: true })
+    };
+
+    onPause = () => {
+        console.log('onPause')
+        this.setState({ playing: false })
+    };
     
     public render() {
+        const { playing, controls} = this.state;
+        
         return (
             <div className="video-player">
                 <ReactPlayer
                     ref={this.ref}
                     url={this.props.path}
-                    playing={this.state.playing}
-                    controls={this.state.controls}
+                    playing={playing}
+                    controls={controls}
+                    onPlay={this.onPlay}
+                    onPause={this.onPause}
                     width='100%'
                     height='100%'
                 />

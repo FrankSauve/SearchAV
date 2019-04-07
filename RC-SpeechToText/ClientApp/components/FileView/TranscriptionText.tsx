@@ -198,9 +198,11 @@ export class TranscriptionText extends React.Component<any, State> {
             if(wordList[i] !=" " && wordList[i]!="" && wordList[i]!="</span>"){
                 hTextArray.push(wordList[i]);
             }
-            if(i == (startIndex+1)){
+            
+            if(injected && i == (startIndex+1)){
                 hTextArray.push("</span>");
             }
+            
         }
         
         console.log("original displayText: \n"+this.state.displayText);
@@ -220,27 +222,30 @@ export class TranscriptionText extends React.Component<any, State> {
             this.clearPositionHighlights();
         }
         
-        //clearing away last div close tag
-        let spanIndex = hTextArray.indexOf("<span style='background-color: #DCDCDC'>");
-        for(let i=spanIndex;i<hTextArray.length;i++){
+        console.log(this.props.isPlaying);
+        if(this.props.isPlaying){
+            //clearing away last div close tag
+            let spanIndex = hTextArray.indexOf("<span style='background-color: #DCDCDC'>");
+            for(let i=spanIndex;i<hTextArray.length;i++){
 
-            if(hTextArray[i] == "</span>"){
-                hTextArray.splice(i,1);
-                spanIndex = i;
-                break;
+                if(hTextArray[i] == "</span>"){
+                    hTextArray.splice(i,1);
+                    spanIndex = i;
+                    break;
+                }
             }
-        }
 
-        for(let i=spanIndex;i<hTextArray.length;i++){
+            for(let i=spanIndex;i<hTextArray.length;i++){
 
-            if(timeList[i] > this.state.highlightPos){
-                hTextArray.splice(i,0,"</span>");
-                break;
+                if(timeList[i] > this.state.highlightPos){
+                    hTextArray.splice(i,0,"</span>");
+                    break;
+                }
             }
+            let str = hTextArray.join(" ");
+            console.log("new displayText at time:"+this.state.highlightPos+":\n" + str);
+            this.setState({displayText: str, highlightPos: (this.state.highlightPos+(intervalSpeed/1000))});
         }
-        let str = hTextArray.join(" ");
-        console.log("new displayText at time:"+this.state.highlightPos+":\n" + str);
-        this.setState({displayText: str, highlightPos: (this.state.highlightPos+(intervalSpeed/1000))});
     }
 
     // Retrieves the words selected via mouse and calls FileView's searchTranscript method with them
