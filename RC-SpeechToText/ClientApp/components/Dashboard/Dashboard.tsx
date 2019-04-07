@@ -365,7 +365,7 @@ export default class Dashboard extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-fifth">
                         <FileInput
-                            getAllFiles={this.getAllFilesLoaded}
+                            getAllFiles={this.getAllFiles}
                         />
 
                         <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFilesLoaded}>
