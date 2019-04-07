@@ -13,6 +13,7 @@ import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
 import { DescriptionText } from './DescriptionText';
 import { ConfirmationModal } from '../Modals/ConfirmationModal';
+import { LoadingModal } from '../LoadingModal';
 
 interface State {
     fileId: AAGUID,
@@ -32,6 +33,7 @@ interface State {
     successMessage: string,
     showDropdown: boolean,
     loading: boolean,
+    loadingModal: boolean,
     seekTime: string,
     timestampInfo: string,
     selection: string,
@@ -64,6 +66,7 @@ export default class FileView extends React.Component<any, State> {
             successMessage: "",
             showDropdown: false,
             loading: false,
+            loadingModal: false,
             seekTime: '0:00:00.00',
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
@@ -176,6 +179,8 @@ export default class FileView extends React.Component<any, State> {
     };
 
     public saveDescription = () => {
+        this.hideConfirmDescriptionModal();
+        this.setState({ loadingModal: true });
 
         var oldDescription = this.state.description;
         var newDescription = this.state.newDescription;
@@ -196,19 +201,19 @@ export default class FileView extends React.Component<any, State> {
             axios.put('/api/file/saveDescription/' + this.state.fileId, formData, config)
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
-                    this.hideConfirmDescriptionModal();
+                    this.setState({ loadingModal: false });
                     this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
-                        this.hideConfirmDescriptionModal();
+                        this.setState({ loadingModal: false });
                         this.showErrorModal(modalTitle, "Veuillez vous connecter avant de modifier la description.");
                         this.setState({ 'unauthorized': true });
                     }
                 });
         }
         else {
-            this.hideConfirmDescriptionModal();
+            this.setState({ loadingModal: false });
             this.showErrorModal(modalTitle, "Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
         }
     };
@@ -410,6 +415,10 @@ export default class FileView extends React.Component<any, State> {
                             hideModal={this.hideErrorModal}
                             title={this.state.modalTitle}
                             errorMessage={this.state.errorMessage}
+                        />
+
+                        <LoadingModal
+                            showModal={this.state.loadingModal}
                         />
 
                     </div>
