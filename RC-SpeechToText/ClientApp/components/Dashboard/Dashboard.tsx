@@ -105,6 +105,7 @@ export default class Dashboard extends React.Component<any, State> {
     }
     public getAllFiles = () => {
         //Keeping this method to update files once a new file is uploaded.
+        console.log("GET ALL FILES")
         this.setState({ loading: true });
         this.deactivateFilters();
 
@@ -279,8 +280,8 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
-                                getAllFiles={this.getAllFilesLoaded}
-                        /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
+                                getAllFiles={this.getAllFiles}
+                        /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
            </div>
         )
     }
@@ -295,8 +296,8 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
-                                getAllFiles={this.getAllFilesLoaded}
-                            /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
+                    getAllFiles={this.getAllFiles}
+                            /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
             </div>
         )
     }
