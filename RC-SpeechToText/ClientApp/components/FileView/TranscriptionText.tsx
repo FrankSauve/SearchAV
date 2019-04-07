@@ -162,7 +162,6 @@ export class TranscriptionText extends React.Component<any, State> {
 
         let intervalSpeed = 100; // update every intervalSpeed/1000 seconds
         
-        console.log("highlightPosition");
         // 0) get displayText in array form (var wordList[] string array of words)
         let wordList = this.state.displayText.split(" ");
         // 1) get list of all timestamps in array form (var timeList[] timestamps converted to seconds)
@@ -172,22 +171,11 @@ export class TranscriptionText extends React.Component<any, State> {
             let a = rawTimeList[i].split(':');
             timeList[i] = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (parseFloat(a[2]));
         }
-        
-        /*
-        console.log("highlightPosition words with timelist: \n");
-        for(let i=0;i<wordList.length;i++){
-            console.log(wordList[i] + " == "+timeList[i] + "\n");
-        }
-        */
-        
-        // 2) get current time in video (var currentTime = int form of seconds so far in video)
-        console.log("this.props.highlightPosition: "+this.state.highlightPos);
-        
+
+        // 2) inject tags around the word currently being said in the video
         let hTextArray:string[] = [];
         let injected = false;
         let startIndex = 0;
-        
-        // 3) inject tags around appropriate word
         for(let i=0;i<wordList.length;i++){
             //find first word above currentTime (starting from second)
             if(!injected && timeList[i] >= this.state.highlightPos){
@@ -203,29 +191,25 @@ export class TranscriptionText extends React.Component<any, State> {
             if(injected && i == (startIndex+1)){
                 hTextArray.push("</span>");
             }
-            
         }
         
-        console.log("original displayText: \n"+this.state.displayText);
-
+        // If the interval process isn't already running...
         if(this.state.intervalID == null){
-            // 4) call endTag injection method at a given interval
+            // 3) call endTag injection method at a given interval
             let interval = setInterval(() => {this.replaceHighlightPosEnd(hTextArray, wordList, timeList, intervalSpeed);}, intervalSpeed);
             this.setState({intervalID:interval});
         }
     };
     
     replaceHighlightPosEnd(hTextArray:string[], wordList:string[], timeList:number[], intervalSpeed:number) {
-        console.log("replaceHighlightPosEnd called!");
         
         //if there is nothing left to highlight, clear the highlight and end the process
         if(timeList[timeList.length-1] <=this.state.highlightPos){
             this.clearPositionHighlights();
         }
         
-        console.log(this.props.isPlaying);
         if(this.props.isPlaying){
-            //clearing away last div close tag
+            //Clearing away last div close tag
             let spanIndex = hTextArray.indexOf("<span style='background-color: #DCDCDC'>");
             for(let i=spanIndex;i<hTextArray.length;i++){
 
@@ -236,6 +220,7 @@ export class TranscriptionText extends React.Component<any, State> {
                 }
             }
 
+            //Adding new closing tag
             for(let i=spanIndex;i<hTextArray.length;i++){
 
                 if(timeList[i] > this.state.highlightPos){
@@ -244,7 +229,6 @@ export class TranscriptionText extends React.Component<any, State> {
                 }
             }
             let str = hTextArray.join(" ");
-            console.log("new displayText at time:"+this.state.highlightPos+":\n" + str);
             this.setState({displayText: str, highlightPos: (this.state.highlightPos+(intervalSpeed/1000))});
         }
     }

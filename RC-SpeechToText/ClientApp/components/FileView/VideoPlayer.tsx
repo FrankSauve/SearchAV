@@ -56,7 +56,6 @@ export class VideoPlayer extends React.Component<any, State> {
             this.changeTime();
         }
         if(prevState.playing !== this.state.playing){
-            console.log("playing changed to:" + this.state.playing);
             this.props.handleIsPlaying(this.state.playing);
         }
     }
