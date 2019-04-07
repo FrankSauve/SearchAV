@@ -64,12 +64,15 @@ export class FileInfo extends React.Component<any, State> {
     public formatTime = () => {
         var d = new Date(this.state.dateModified);
 
+        var day = d.getDate() < 10 ? "0" + d.getDate() : d.getDate();
+        var month = d.getMonth() < 10 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1);
+        var hours = d.getHours() < 10 ? "0" + d.getHours() : d.getHours();
+        var minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
 
-        var datestring = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " +
-            d.getHours() + ":" + d.getMinutes();
+        var datestring = day + "-" + month + "-" + d.getFullYear() + " " + hours + ":" + minutes;
 
         this.setState({ dateFormated: datestring });
-        
+
     }
 
     public render() {
