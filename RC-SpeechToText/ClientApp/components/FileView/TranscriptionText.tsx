@@ -1,8 +1,4 @@
 import * as React from 'react';
-import { ChangeEvent } from 'react';
-import axios from 'axios';
-import auth from '../../Utils/auth';
-import * as $ from 'jquery';
 
 interface State {
     version: any,
@@ -29,7 +25,6 @@ export class TranscriptionText extends React.Component<any, State> {
 
         // Add onBlur and onInput to the contentEditable div
         let transcription = document.querySelector('#transcription');
-        console.log('TRANS DIV: ' + transcription);
         if (transcription) {
             transcription.addEventListener('mouseup', this.getHighlightedWords);
             transcription.addEventListener('input', (e) => {this.handleChange(e)});

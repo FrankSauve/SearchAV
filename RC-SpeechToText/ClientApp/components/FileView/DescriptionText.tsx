@@ -1,8 +1,4 @@
 import * as React from 'react';
-import { ChangeEvent } from 'react';
-import axios from 'axios';
-import auth from '../../Utils/auth';
-import * as $ from 'jquery';
 
 interface State {
     displayText: string,
@@ -23,7 +19,6 @@ export class DescriptionText extends React.Component<any, State> {
     componentDidMount() {
         // Add onBlur and onInput to the contentEditable div
         let description = document.querySelector('#description');
-        console.log('DESC DIV: ' + description);
         if (description) {
             description.addEventListener('input', (e) => this.handleChange(e));
             description.addEventListener('blur', this.handleBlur);
