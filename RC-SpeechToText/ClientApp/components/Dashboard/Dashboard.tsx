@@ -406,7 +406,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 <div className="right-side">
                                     <div className="search-field">
                                         <p className="control has-icons-right">
-                                            <input className="input is-rounded search-input" type="text" onChange={this.handleSearch}/>
+                                            <input className="input is-rounded search-input" type="search" onChange={this.handleSearch}/>
                                             <span className="icon is-small is-right">
                                                 <i className="fas fa-search is-cadet-grey"></i>
                                             </span>

@@ -63,7 +63,11 @@
     background: $light-blue;
 }
 
-.editing-section{
+.file-view-desc-edit:focus {
+    outline: none;
+}
+
+.editing-section {
     margin-left: -12px;
     margin-right: 10px;
 }
