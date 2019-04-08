@@ -115,9 +115,9 @@ namespace RC_SpeechToText.Services
         {
 
             var file = new File { Id = id };
-            RemoveFiles(id);
             _context.File.Attach(file);
             _context.File.Remove(file);
+            //RemoveFiles(id);
             await _context.SaveChangesAsync();
         }
 
