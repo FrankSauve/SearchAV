@@ -10,7 +10,6 @@ import { FileInfo } from './FileInfo';
 import Loading from '../Loading';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
-import { SeeTranscriptionModal } from '../Modals/SeeTranscriptionModal';
 import { DescriptionText } from './DescriptionText';
 import { ConfirmationModal } from '../Modals/ConfirmationModal';
 import { LoadingModal } from '../LoadingModal';
@@ -26,8 +25,6 @@ interface State {
     description: string,
     showConfirmDescriptionModal: boolean,
     newDescription: string,
-    revertTranscription: boolean,
-    showTranscriptionModal: boolean,
     showErrorModal: boolean,
     showSuccessModal: boolean,
     modalTitle: string,
@@ -60,9 +57,7 @@ export default class FileView extends React.Component<any, State> {
             fileTitle: "",
             description: "",
             showConfirmDescriptionModal: false,
-            newDescription: "",
-            revertTranscription: false,
-            showTranscriptionModal: false,
+            newDescription: "", 
             showErrorModal: false,
             showSuccessModal: false,
             modalTitle: "",
@@ -182,10 +177,6 @@ export default class FileView extends React.Component<any, State> {
             });
     };
 
-    public revertTranscription = () => {
-
-    }
-
     public saveDescription = () => {
         this.hideConfirmDescriptionModal();
         this.setState({ loadingModal: true });
@@ -271,18 +262,6 @@ export default class FileView extends React.Component<any, State> {
 
     public updateVersion = (newVersion: any) => {
         this.setState({ version: newVersion });
-    };
-
-    public showTranscriptionModal = () => {
-        this.setState({ showTranscriptionModal: true });
-    }
-
-    public hideTranscriptionModal = () => {
-        this.setState({ showTranscriptionModal: false });
-    }
-
-    public handleHistoryChange = (event: any) => {
-        this.setState({ revertTranscription: event.target.value });
     };
 
     public showConfirmDescriptionModal = () => {

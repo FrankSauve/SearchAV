@@ -1,10 +1,13 @@
 import * as React from 'react';
 import auth from '../../Utils/auth';
 import axios from 'axios';
+import { SeeTranscriptionModal } from '../Modals/SeeTranscriptionModal';
 
 interface State {
     loading: boolean,
-    unauthorized: boolean
+    unauthorized: boolean, 
+    revertTranscription: boolean,
+    showTranscriptionModal: boolean
 }
 
 
@@ -14,7 +17,9 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
         this.state = {
             loading: false,
-            unauthorized: false
+            unauthorized: false,
+            revertTranscription: false,
+            showTranscriptionModal: false
         }
     }
 
@@ -37,6 +42,22 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
     }
 
+    public showTranscriptionModal = () => {
+        this.setState({ showTranscriptionModal: true });
+    }
+
+    public hideTranscriptionModal = () => {
+        this.setState({ showTranscriptionModal: false });
+    }
+
+    public handleHistoryChange = (event: any) => {
+        this.setState({ revertTranscription: event.target.value });
+    };
+
+    public revertTranscription = (selectedVersion: any) => {
+        this.setState({ version: selectedVersion });
+    };
+
     public render() {
         var i = 0;
 
@@ -51,7 +72,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                             const listVersions = (
                                 <div className="historique-content">
                                     <p> {version.historyTitle} </p>
-                                    <p> {this.formatTime(version.dateModified)} </p>
+                                    <p> {this.formatTime(version.dateModified)} <a onClick={this.showTranscriptionModal}><i className="fas fa-edit mg-left-5"></i></a> </p>
                                     <p className="historique-username"> <b>{this.props.usernames[i]}</b></p>
                                 </div>
                             )
@@ -59,6 +80,16 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                             return listVersions;
                         })}
                     </div>
+                </div>
+
+                <div>
+                    <SeeTranscriptionModal
+                        showModal={this.state.showTranscriptionModal}
+                        hideModal={this.hideTranscriptionModal}
+                        revert={this.state.revertTranscription}
+                        handleRevertTranscriptionChange={this.handleHistoryChange}
+                        onSubmit={this.revertTranscription}
+                    />
                 </div>
 
             </div>
