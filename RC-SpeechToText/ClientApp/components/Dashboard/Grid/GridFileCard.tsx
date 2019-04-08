@@ -29,8 +29,29 @@ export class GridFileCard extends React.Component<any, State> {
         this.setState({ 'description': newDescription });
     }
 
-    rawToWhiteSpace(text: string) {
-        return text.replace(/<br\s*[\/]?>/gi, " ");
+    removeTags(text: string) {
+        let a = text;
+        a = a.replace(/<span[^>]+\>/g, '');
+        a = a.replace(/<\/span>/g, '');
+        a = a.replace(/<a[^>]+\>/g, '');
+        a = a.replace(/<\/a>/g, '');
+        a = a.replace(/<div\s*[\/]?>/gi, " ");
+        a = a.replace(/<br\s*[\/]?>/gi, " ");
+        return a;
+    }
+
+    public formatTime = (dateModified: any) => {
+        var d = new Date(dateModified);
+
+        var day = d.getDate() < 10 ? "0" + d.getDate() : d.getDate();
+        var month = d.getMonth() < 10 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1);
+        var hours = d.getHours() < 10 ? "0" + d.getHours() : d.getHours();
+        var minutes = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
+
+        var datestring = day + "-" + month + "-" + d.getFullYear() + " " + hours + ":" + minutes;
+
+        return datestring;
+
     }
 
     public render() {
@@ -72,11 +93,11 @@ export class GridFileCard extends React.Component<any, State> {
                     <div className="card-content">
                         <div className="content fileContent">
                             <div className="transcription-grid-view">
-                                <p>{this.state.description ? this.rawToWhiteSpace(this.state.description) : this.rawToWhiteSpace(this.props.transcription)}</p>
+                                <p>{this.state.description ? this.removeTags(this.state.description) : this.removeTags(this.props.transcription)}</p>
                             </div>
                             <br />
                             <p className="font-size-12"><b>{this.props.username}</b></p>
-                            <time className="font-size-12" dateTime={this.props.date}>{this.props.date}</time>
+                            <time className="font-size-12" dateTime={this.props.date}>{this.formatTime(this.props.date)}</time>
                         </div>
                     </div>
                 </div>

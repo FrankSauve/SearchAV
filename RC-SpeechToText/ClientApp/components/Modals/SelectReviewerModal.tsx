@@ -63,14 +63,15 @@ export class SelectReviewerModal extends React.Component<any, State> {
                 .then(() => {
                     this.setState({ loading: false });
                     this.showSuccessModal();
-                    this.setState({ reviewerEmail : ""})
+                    //this.setState({ reviewerEmail : ""})
                 })
                 .catch(err => {
                     console.log(err);
-                    this.setState({ 'errorMessage': "Le courriel ne correspond a aucun utilisateur enregistre dans le systeme! Veuillez entrer un autre courriel valide." })
+                    this.setState({ 'errorMessage': "Le courriel '" + reviewerEmail + "' ne correspond a aucun utilisateur enregistre dans le systeme! Veuillez entrer un autre courriel valide." })
                     this.setState({ loading: false });
                     this.showErrorModal();
                     if (err.response.status == 401) {
+                        this.setState({ 'errorMessage': "Vous etes déconnecté! Veuillez vous connecter avant d'envoyer une demande de révision." })
                         this.setState({ 'unauthorized': true });
                     }
                 });
@@ -122,7 +123,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     showModal={this.state.showSuccessModal}
                     hideModal={this.hideSuccessModal}
                     title="Choisissez un réviseur"
-                    successMessage={`Demande de révision envoyé! ${this.state.reviewerEmail} sera notifié de votre demande dans les quelques secondes a venir.`}
+                    successMessage={"Demande de révision envoyé! Le réviseur (" + this.state.reviewerEmail + ") sera notifié de votre demande dans les quelques secondes a venir."}
                 />
 
                 <LoadingModal
@@ -140,7 +141,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                             <section className="modalBody">
                                 <div className="field">
                                     <div className="control">
-                                        <input className="input is-medium" type="email" placeholder="Email" onChange={this.handleChange} />
+                                        <input className="input is-medium" type="email" placeholder="Courriel" onChange={this.handleChange} />
                                     </div>
                                 </div>
                             </section>
