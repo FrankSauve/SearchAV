@@ -7,7 +7,9 @@ interface State {
     loading: boolean,
     unauthorized: boolean, 
     revertTranscription: boolean,
-    showTranscriptionModal: boolean
+    showTranscriptionModal: boolean,
+    revertedVersion: any, 
+    currentVersionId: any
 }
 
 
@@ -19,7 +21,9 @@ export class TranscriptionHistorique extends React.Component<any, State> {
             loading: false,
             unauthorized: false,
             revertTranscription: false,
-            showTranscriptionModal: false
+            showTranscriptionModal: false,
+            revertedVersion: null,
+            currentVersionId: null 
         }
     }
 
@@ -55,7 +59,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
     };
 
     public revertTranscription = (selectedVersion: any) => {
-        this.setState({ version: selectedVersion });
+        this.setState({ revertedVersion: selectedVersion });
     };
 
     public render() {
@@ -77,6 +81,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                                 </div>
                             )
                             i++;
+                            this.setState({ currentVersionId: version.id }); 
                             return listVersions;
                         })}
                     </div>
@@ -84,13 +89,14 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
                 <div>
                     <SeeTranscriptionModal
+                        versionId={this.state.currentVersionId}
                         showModal={this.state.showTranscriptionModal}
                         hideModal={this.hideTranscriptionModal}
                         revert={this.state.revertTranscription}
                         handleRevertTranscriptionChange={this.handleHistoryChange}
                         onSubmit={this.revertTranscription}
                     />
-                </div>
+                </div> 
 
             </div>
         );
