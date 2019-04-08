@@ -1,8 +1,4 @@
 import * as React from 'react';
-import { ChangeEvent } from 'react';
-import axios from 'axios';
-import auth from '../../Utils/auth';
-import * as $ from 'jquery';
 
 interface State {
     version: any,
@@ -139,8 +135,7 @@ export class TranscriptionText extends React.Component<any, State> {
     }
 
     public handleBlur = () => {
-        console.log('Returning:', this.state.rawText);
-        
+        console.log('Returning transcription:', this.state.rawText);
     };
 
     public handleChange = (e: any) => {

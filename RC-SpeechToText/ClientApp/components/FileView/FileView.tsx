@@ -8,9 +8,11 @@ import { TranscriptionSearch } from './TranscriptionSearch';
 import { SaveTranscriptionButton } from './SaveTranscriptionButton';
 import { FileInfo } from './FileInfo';
 import Loading from '../Loading';
-import { ModifyDescriptionModal } from '../Modals/ModifyDescriptionModal';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { ErrorModal } from '../Modals/ErrorModal';
+import { DescriptionText } from './DescriptionText';
+import { ConfirmationModal } from '../Modals/ConfirmationModal';
+import { LoadingModal } from '../LoadingModal';
 
 interface State {
     fileId: AAGUID,
@@ -21,7 +23,7 @@ interface State {
     unauthorized: boolean,
     fileTitle: string,
     description: string,
-    showDescriptionModal: boolean,
+    showConfirmDescriptionModal: boolean,
     newDescription: string,
     showErrorModal: boolean,
     showSuccessModal: boolean,
@@ -30,6 +32,7 @@ interface State {
     successMessage: string,
     showDropdown: boolean,
     loading: boolean,
+    loadingModal: boolean,
     seekTime: string,
     timestampInfo: string,
     selection: string,
@@ -53,7 +56,7 @@ export default class FileView extends React.Component<any, State> {
             unauthorized: false,
             fileTitle: "",
             description: "",
-            showDescriptionModal: false,
+            showConfirmDescriptionModal: false,
             newDescription: "", 
             showErrorModal: false,
             showSuccessModal: false,
@@ -62,6 +65,7 @@ export default class FileView extends React.Component<any, State> {
             successMessage: "",
             showDropdown: false,
             loading: false,
+            loadingModal: false,
             seekTime: '0:00:00.00',
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
@@ -174,6 +178,8 @@ export default class FileView extends React.Component<any, State> {
     };
 
     public saveDescription = () => {
+        this.hideConfirmDescriptionModal();
+        this.setState({ loadingModal: true });
 
         var oldDescription = this.state.description;
         var newDescription = this.state.newDescription;
@@ -194,17 +200,19 @@ export default class FileView extends React.Component<any, State> {
             axios.put('/api/file/saveDescription/' + this.state.fileId, formData, config)
                 .then(res => {
                     this.setState({ description: this.state.newDescription });
-                    this.hideDescriptionModal();
+                    this.setState({ loadingModal: false });
                     this.showSuccessModal(modalTitle, "Enregistrement de la description confirmé! Les changements effectués ont été enregistré avec succès.");
                 })
                 .catch(err => {
                     if (err.response.status == 401) {
+                        this.setState({ loadingModal: false });
                         this.showErrorModal(modalTitle, "Veuillez vous connecter avant de modifier la description.");
                         this.setState({ 'unauthorized': true });
                     }
                 });
         }
         else {
+            this.setState({ loadingModal: false });
             this.showErrorModal(modalTitle, "Enregistrement de la description annulé! Vous n'avez effectué aucun changements ou vous avez apporté les mêmes modifications.");
         }
     };
@@ -256,12 +264,12 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ version: newVersion });
     };
 
-    public showDescriptionModal = () => {
-        this.setState({ showDescriptionModal: true });
+    public showConfirmDescriptionModal = () => {
+        this.setState({ showConfirmDescriptionModal: true });
     };
 
-    public hideDescriptionModal = () => {
-        this.setState({ showDescriptionModal: false });
+    public hideConfirmDescriptionModal = () => {
+        this.setState({ showConfirmDescriptionModal: false });
     };
 
     public showSuccessModal = (title: string, description: string) => {
@@ -276,8 +284,8 @@ export default class FileView extends React.Component<any, State> {
         this.setState({ showErrorModal: true });
     };
 
-    public handleDescriptionChange = (event: any) => {
-        this.setState({ newDescription: event.target.value });
+    public handleDescriptionChange = (text: string) => {
+        this.setState({ newDescription: text })
     };
 
     public hideSuccessModal = () => {
@@ -302,6 +310,8 @@ export default class FileView extends React.Component<any, State> {
     };
 
     render() {
+        var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description");
+
         return (
             <div className="container">
 
@@ -314,17 +324,18 @@ export default class FileView extends React.Component<any, State> {
                         {this.state.file ? (this.state.file.title ? <div>
                             <div className="file-view-title">
                                 {this.removeExtension(this.state.file.title)}
-                            </div> </div> : <div className="file-view-title"> This file has no title </div>) : null}
+                            </div> </div> : <div className="file-view-title"> Ce fichier n'a pas de titre </div>) : null}
                         
                         <br />
 
-                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showDescriptionModal}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
-                        {this.state.file ? (this.state.file.description ? <div>
-                            <div className="file-view-desc">
-                                {this.state.description}
-                            </div>
-
-                        </div> : <div className="file-view-desc"> This file has no description </div>) : null}
+                        {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showConfirmDescriptionModal}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
+                        {this.state.file ?
+                            <div>
+                                <DescriptionText
+                                    description={this.state.file.description ? this.state.file.description : "Ce fichier n'a aucune description."}
+                                    handleDescriptionChange={this.handleDescriptionChange}
+                                />
+                        </div> : null}
                         
                         <br />
 
@@ -381,12 +392,14 @@ export default class FileView extends React.Component<any, State> {
                     </div>
 
                     <div>
-                        <ModifyDescriptionModal
-                            showModal={this.state.showDescriptionModal}
-                            hideModal={this.hideDescriptionModal}
-                            description={this.state.description}
-                            handleDescriptionChange={this.handleDescriptionChange}
-                            onSubmit={this.saveDescription}
+
+                        <ConfirmationModal
+                            showModal={this.state.showConfirmDescriptionModal}
+                            title={modalTitle}
+                            hideModal={this.hideConfirmDescriptionModal}
+                            confirmMessage={this.state.file ? "Etes-vous sur(e) de modifier la description du fichier '" + this.state.file.title + "' ?" : "Etes-vous sur(e) de modifier la description de ce fichier ?"}
+                            confirmButton={"Confirmer"}
+                            onConfirm={this.saveDescription}
                         />
 
                         <SuccessModal
@@ -401,6 +414,10 @@ export default class FileView extends React.Component<any, State> {
                             hideModal={this.hideErrorModal}
                             title={this.state.modalTitle}
                             errorMessage={this.state.errorMessage}
+                        />
+
+                        <LoadingModal
+                            showModal={this.state.loadingModal}
                         />
 
                     </div>
