@@ -448,3 +448,4 @@ RC-SpeechToText/Scripts/test.sql
 *.flac
 *.mp3
 *.jpg
+.vs/RC-SpeechToText/v15/.suo

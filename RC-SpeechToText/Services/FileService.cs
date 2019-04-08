@@ -114,11 +114,14 @@ namespace RC_SpeechToText.Services
         public async Task DeleteFile(Guid id)
         {
 
-            var file = new File { Id = id };
+            //var file = new File { Id = id };
+            var file = _context.File.Find(id);
+            var filePath = file.FilePath;
+            var thumbnailPath = file.ThumbnailPath;
             _context.File.Attach(file);
             _context.File.Remove(file);
-            //RemoveFiles(id);
             await _context.SaveChangesAsync();
+            RemoveFiles(filePath, thumbnailPath);
         }
 
         public async Task<FileDTO> SaveDescription(Guid id, string newDescription)
@@ -247,15 +250,13 @@ namespace RC_SpeechToText.Services
             return file;
         }
 
-        public void RemoveFiles(Guid id)
+        public void RemoveFiles(string filePath, string thumbnailPath)
         {
             var streamIO = new IOInfrastructure();
-            var file = new File();
-            file = _context.File.Find(id);
-            var filePath = streamIO.GetPathFromDirectory(@"\wwwroot" + file.FilePath);
-            var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot" + file.ThumbnailPath);
-            streamIO.DeleteFile(filePath);
-            streamIO.DeleteFile(thumbnailPath);
+            var video = streamIO.GetPathFromDirectory(@"\wwwroot" + filePath);
+            var thumbnail = streamIO.GetPathFromDirectory(@"\wwwroot" + thumbnailPath);
+            streamIO.DeleteFile(video);
+            streamIO.DeleteFile(thumbnail);
         }
     }
 }
