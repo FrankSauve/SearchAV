@@ -65,7 +65,7 @@ export default class ListTableImage extends React.Component<any, State>
                     </figure>
                     <div className="media-content">
                         <p>
-                            <strong className="title-list-view">{this.removeExtension(this.props.title)}</strong> <small className={`tag is-rounded flag ${this.props.flag.indexOf("A") == 0 ? "is-danger" : this.props.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}>{this.props.flag.toUpperCase()}</small>
+                            <strong className="title-list-view">{this.removeExtension(this.props.title)}</strong> <small className={`tag is-rounded flag ${this.props.flag.indexOf("A") == 0 ? "is-danger" : this.props.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}><b>{this.props.flag.toUpperCase()}</b></small>
                             <br />
                             <br />
                             <p className="transcription-list-view">{this.props.description ? this.rawToWhiteSpace(this.props.description) : this.state.transcription.length > 100 ? this.rawToWhiteSpace(this.state.transcription.substring(0, 100)) + " ..." : this.rawToWhiteSpace(this.state.transcription)}</p>
