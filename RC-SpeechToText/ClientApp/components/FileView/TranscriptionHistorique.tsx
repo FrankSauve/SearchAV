@@ -1,15 +1,11 @@
 import * as React from 'react';
 import auth from '../../Utils/auth';
 import axios from 'axios';
-import { SeeTranscriptionModal } from '../Modals/SeeTranscriptionModal';
+import { TranscriptionHistoriqueItem } from '../FileView/TranscriptionHistoriqueItem'
 
 interface State {
     loading: boolean,
-    unauthorized: boolean, 
-    revertTranscription: boolean,
-    showTranscriptionModal: boolean,
-    revertedVersion: any, 
-    currentVersionId: any
+    unauthorized: boolean
 }
 
 
@@ -19,11 +15,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
         this.state = {
             loading: false,
-            unauthorized: false,
-            revertTranscription: false,
-            showTranscriptionModal: false,
-            revertedVersion: null,
-            currentVersionId: null 
+            unauthorized: false
         }
     }
 
@@ -46,22 +38,6 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
     }
 
-    public showTranscriptionModal = () => {
-        this.setState({ showTranscriptionModal: true });
-    }
-
-    public hideTranscriptionModal = () => {
-        this.setState({ showTranscriptionModal: false });
-    }
-
-    public handleHistoryChange = (event: any) => {
-        this.setState({ revertTranscription: event.target.value });
-    };
-
-    public revertTranscription = (selectedVersion: any) => {
-        this.setState({ revertedVersion: selectedVersion });
-    };
-
     public render() {
         var i = 0;
 
@@ -73,31 +49,19 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 <div className="box" id="historique-content-box">
                     <div>
                         {this.props.versions.map((version: any) => {
-                            const listVersions = (
-                                <div className="historique-content">
-                                    <p> {version.historyTitle} </p>
-                                    <p> {this.formatTime(version.dateModified)} <a onClick={this.showTranscriptionModal}><i className="fas fa-edit mg-left-5"></i></a> </p>
-                                    <p className="historique-username"> <b>{this.props.usernames[i]}</b></p>
-                                </div>
+                            const VersionComponent = (
+                                <TranscriptionHistoriqueItem
+                                    version={version}
+                                    historyTitle={version.historyTitle}
+                                    username={this.props.usernames[i]}
+                                    dateModified={this.formatTime(version.dateModified)}                                    
+                                />
                             )
                             i++;
-                            this.setState({ currentVersionId: version.id }); 
-                            return listVersions;
+                            return VersionComponent;
                         })}
                     </div>
                 </div>
-
-                <div>
-                    <SeeTranscriptionModal
-                        versionId={this.state.currentVersionId}
-                        showModal={this.state.showTranscriptionModal}
-                        hideModal={this.hideTranscriptionModal}
-                        revert={this.state.revertTranscription}
-                        handleRevertTranscriptionChange={this.handleHistoryChange}
-                        onSubmit={this.revertTranscription}
-                    />
-                </div> 
-
             </div>
         );
     }
