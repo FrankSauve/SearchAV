@@ -192,7 +192,7 @@ namespace RC_SpeechToText.Services {
 
         public async Task<VersionDTO> RevertTranscript(string userEmail, Guid versionId, string newTranscript)
         {
-            var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
+            var newVersion = await CreateRevertedVersion(versionId, newTranscript, userEmail);
 
             //Find duration of file
             var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync();

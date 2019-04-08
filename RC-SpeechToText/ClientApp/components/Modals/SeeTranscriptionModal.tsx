@@ -25,7 +25,7 @@ export class SeeTranscriptionModal extends React.Component<any> {
                             </div>
                         </section>
                         <footer className="modalFooter">
-                            
+                            <button className="button is-success mg-right-5" onClick={this.props.onSubmit}>Enregistrer</button>
                         </footer>
                     </div>
                 </div>

@@ -111,7 +111,7 @@ namespace RC_SpeechToText.Controllers
             var emailClaim = HttpContext.User.Claims;
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
-            var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
+            var saveResult = await _transcriptionService.RevertTranscript(emailString, versionId, newTranscript);
 
             return Ok(saveResult.Version);
         }
