@@ -97,5 +97,24 @@ namespace RC_SpeechToText.Controllers
                 return Ok();
             }
         }
+
+
+        /// <summary>
+        /// Revert to a previous version of the transcription
+        /// </summary>
+        /// <param name="documentType"></param>
+        /// <param name="fileId"></param>
+        /// <returns>File</returns>
+        [HttpPost("[action]/{versionId}")]
+        public async Task<IActionResult> RevertTranscript(Guid versionId, string newTranscript)
+        {
+            var emailClaim = HttpContext.User.Claims;
+            var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
+
+            var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
+
+            return Ok(saveResult.Version);
+        }
+
     }
 }

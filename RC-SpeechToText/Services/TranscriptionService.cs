@@ -189,5 +189,54 @@ namespace RC_SpeechToText.Services {
             await _context.SaveChangesAsync();
             return newVersion;
         }
+
+        public async Task<VersionDTO> RevertTranscript(string userEmail, Guid versionId, string newTranscript)
+        {
+            var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
+
+            //Find duration of file
+            var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync();
+
+            //Calling this method will handle saving the new words in the databse
+            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript, duration);
+            if (resultSaveWords != null)
+            {
+                return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
+            }
+            
+            await _context.SaveChangesAsync();
+
+            return new VersionDTO { Version = newVersion, Error = null };
+        }
+
+
+        private async Task<Models.Version> CreateRevertedVersion(Guid versionId, string newTranscript, string userEmail)
+        {
+            var currentVersion = _context.Version.Find(versionId);
+
+            //Deactivate current version 
+            currentVersion.Active = false;
+
+            //Capitalize the first letter when saving the transcript
+            newTranscript = newTranscript.First().ToString().ToUpper() + newTranscript.Substring(1);
+
+            //Create a new version
+            var newVersion = new Models.Version
+            {
+                UserId = await _context.User.Where(u => u.Email == userEmail).Select(u => u.Id).FirstOrDefaultAsync(),
+                FileId = currentVersion.FileId,
+                DateModified = DateTime.Now,
+                HistoryTitle = "ANCIENNE VERSION RÉACTIVÉE",
+                Transcription = newTranscript,
+                Active = true
+            };
+
+            //Add new version to DB
+
+            await _context.Version.AddAsync(newVersion);
+            await _context.SaveChangesAsync();
+            return newVersion;
+        }
+
     }
 }

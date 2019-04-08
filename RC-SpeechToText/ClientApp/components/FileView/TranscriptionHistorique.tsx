@@ -5,7 +5,8 @@ import { TranscriptionHistoriqueItem } from '../FileView/TranscriptionHistorique
 
 interface State {
     loading: boolean,
-    unauthorized: boolean
+    unauthorized: boolean, 
+    activeVersion: any
 }
 
 
@@ -15,7 +16,8 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
         this.state = {
             loading: false,
-            unauthorized: false
+            unauthorized: false, 
+            activeVersion: this.props.activeVersion
         }
     }
 
@@ -54,7 +56,9 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                                     version={version}
                                     historyTitle={version.historyTitle}
                                     username={this.props.usernames[i]}
-                                    dateModified={this.formatTime(version.dateModified)}                                    
+                                    dateModified={this.formatTime(version.dateModified)}
+                                    transcription={version.transcription}
+                                    activeVersion={this.state.activeVersion}
                                 />
                             )
                             i++;

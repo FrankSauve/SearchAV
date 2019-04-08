@@ -35,8 +35,8 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
         this.setState({ revertTranscription: event.target.value });
     };
 
-    public revertTranscription = (selectedVersion: any) => {
-        this.setState({ revertedVersion: selectedVersion });
+    public revertTranscription = () => {
+        //create method to change the Active status of this version to 1 and the last version to 0. 
     };
 
     public render() {
@@ -54,6 +54,7 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
                         historyTitle={this.state.historyTitle}
                         versionUser={this.state.username}
                         dateModified={this.state.dateModified}
+                        transcription={this.props.transcription}
                         showModal={this.state.showTranscriptionModal}
                         hideModal={this.hideTranscriptionModal}
                         revert={this.state.revertTranscription}

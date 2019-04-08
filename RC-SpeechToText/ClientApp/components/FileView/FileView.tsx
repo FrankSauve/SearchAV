@@ -388,6 +388,7 @@ export default class FileView extends React.Component<any, State> {
                             fileId={this.state.fileId}
                             versions={this.state.versions}
                             usernames={this.state.usernames}
+                            activeVersion={this.state.version}
                         />
                     </div>
 
