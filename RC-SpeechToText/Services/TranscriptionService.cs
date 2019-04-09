@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Models.DTO.Outgoing;
 using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
@@ -69,12 +70,12 @@ namespace RC_SpeechToText.Services {
             return new VersionDTO { Version = newVersion, Error = null };
 		}
 
-        public async Task<string> SearchTranscript(Guid versionId, string searchTerms)
+        public async Task<string> SearchTranscript(OutSearchTranscriptDTO outSearchTranscriptDTO)
 		{
 			//Ordered by Id to get the words in the same order as transcript
-			var words = await _context.Word.Where(w => Guid.Equals(w.VersionId,versionId)).OrderBy(w => w.Position).ToListAsync();
+			var words = await _context.Word.Where(w => Guid.Equals(w.VersionId, outSearchTranscriptDTO.VersionId)).OrderBy(w => w.Position).ToListAsync();
 			var searchService = new SearchService();
-			return searchService.PerformSearch(searchTerms, words);
+			return searchService.PerformSearch(outSearchTranscriptDTO.SearchTerms, words);
 		}
 
 		public async Task<string> PrepareDownload(string documentType, Guid fileId)

@@ -7,6 +7,7 @@ using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
 using System.Linq;
 using RC_SpeechToText.Exceptions;
+using RC_SpeechToText.Models.DTO.Outgoing;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -65,7 +66,8 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{versionId}/{searchTerms}")]
         public async Task<IActionResult> SearchTranscript(Guid versionId, string searchTerms)
         {
-            return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
+            var outDTO = new OutSearchTranscriptDTO { VersionId = versionId, SearchTerms = searchTerms };
+            return Ok(await _transcriptionService.SearchTranscript(outDTO));
         }
 
         /// <summary>
