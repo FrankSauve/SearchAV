@@ -14,7 +14,7 @@ interface State {
     showErrorModal: boolean,
     historyTitle: string,
     dateModified: string,
-    username: any,
+    username: string,
     revertTranscription: boolean,
     showTranscriptionModal: boolean,
     loading: boolean, 
@@ -29,8 +29,8 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
             showSaveRevertTranscriptModal: false,
             showSuccessModal: false,
             showErrorModal: false,
-            historyTitle: this.props.title,
-            dateModified: this.props.description,
+            historyTitle: this.props.historyTitle,
+            dateModified: this.props.dateModified,
             username: this.props.username, 
             revertTranscription: false,
             showTranscriptionModal: false,
@@ -116,15 +116,16 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
         }
     };
 
+
     public render() {
         var title = ("Réactiver cette version")
         var button = ("Confirmer")
         return (
             <div>
                 <div className="historique-content">
-                    <p> {this.state.historyTitle} </p>
-                    <p> {this.state.dateModified} <a onClick={this.showTranscriptionModal}><i className="fas fa-edit mg-left-5"></i></a> </p>
-                    <p className="historique-username"> <b>{this.state.username}</b></p>
+                    <p> {this.state.historyTitle} <a onClick={this.showTranscriptionModal}><i className="fas fa-edit mg-left-10"></i></a></p>
+                    <p> {this.state.dateModified}  </p>
+                    <p className="historique-username"> <b>{this.props.username}</b></p>
                 </div>
 
                 <div>

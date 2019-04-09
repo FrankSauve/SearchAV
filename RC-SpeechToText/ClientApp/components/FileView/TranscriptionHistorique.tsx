@@ -44,7 +44,6 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
     public render() {
         var i = 0;
-
         return (
             <div>
                 <div className="box mg-top-30" id="historique-title-box">
@@ -60,8 +59,9 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                                     username={this.props.usernames[i]}
                                     dateModified={this.formatTime(version.dateModified)}
                                     transcription={version.transcription}
-                                    activeVersion={this.state.activeVersion.id}
+                                    activeVersion={this.state.activeVersion}
                                     currentTranscription={this.state.currentTranscription}
+                                    key={version.id}
                                 />
                             )
                             i++;
