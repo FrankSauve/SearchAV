@@ -14,13 +14,14 @@ export class SeeTranscriptionModal extends React.Component<any> {
                 <div className="modal-card">
                     <div className="modal-container">
                         <header className="modalHeader">
-                            <i className="fas fa-edit fontSize2em mg-right-5"></i><p className="modal-card-title whiteText">TEST</p>
+                            <i className="fas fa-edit fontSize2em mg-right-5"></i>
+                            <p className="modal-card-title whiteText historique-modal-title">{this.props.historyTitle} par {this.props.versionUser}</p>
                             <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal}></button>
                         </header>
                         <section className="modalBody">
                             <div className="field">
                                 <div className="control">
-                                    
+                                    <p className="modal-card-content whiteText historique-modal-subtitle"> {this.props.transcription}</p>
                                 </div>
                             </div>
                         </section>

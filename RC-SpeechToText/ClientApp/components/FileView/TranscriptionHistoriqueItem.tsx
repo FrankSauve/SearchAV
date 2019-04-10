@@ -79,8 +79,8 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
         //create method to change the Active status of this version to 1 and the last version to 0. 
         this.hideTranscriptionModal();
         this.setState({ 'loading': true });
-
-        var oldTranscript = this.props.currentTranscription
+        var oldTranscript = this.props.activeVersion.transcription
+        var test = this.props.activeVersion
         var newTranscript = this.props.transcription
 
         if ((oldTranscript == newTranscript || newTranscript == "") && this.props.userId != this.props.reviewerId) {
@@ -98,7 +98,7 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
                 },
             };
 
-            axios.post('/api/Transcription/RevertTranscript/' + this.props.activeVersion, formData, config)
+            axios.post('/api/Transcription/RevertTranscript/' + this.props.activeVersion.id, formData, config)
                 .then(res => {
                     console.log(res);
                     this.props.updateVersion(res.data);
@@ -133,7 +133,7 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
                     <SeeTranscriptionModal
                         versionId={this.props.version.id}
                         historyTitle={this.state.historyTitle}
-                        versionUser={this.state.username}
+                        versionUser={this.props.username}
                         dateModified={this.state.dateModified}
                         transcription={this.props.transcription}
                         showModal={this.state.showTranscriptionModal}

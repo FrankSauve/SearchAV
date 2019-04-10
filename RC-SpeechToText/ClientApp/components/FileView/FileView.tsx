@@ -385,7 +385,7 @@ export default class FileView extends React.Component<any, State> {
 
                     <div className="column is-one-fifth historique_padding">
                         <TranscriptionHistorique
-                            fileId={this.state.fileId}
+                            file={this.state.file}
                             versions={this.state.versions}
                             usernames={this.state.usernames}
                             activeVersion={this.state.version}

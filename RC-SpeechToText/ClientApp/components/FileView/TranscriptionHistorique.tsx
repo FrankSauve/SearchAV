@@ -59,7 +59,7 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                                     username={this.props.usernames[i]}
                                     dateModified={this.formatTime(version.dateModified)}
                                     transcription={version.transcription}
-                                    activeVersion={this.state.activeVersion}
+                                    activeVersion={this.props.activeVersion}
                                     currentTranscription={this.state.currentTranscription}
                                     key={version.id}
                                 />
