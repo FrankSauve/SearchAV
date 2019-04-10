@@ -39,6 +39,14 @@ namespace RC_SpeechToText.Services
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
+        public async Task<FileUsernameVersionDTO> GetAllWithUsernamesAndVersions()
+        {
+            var files = await _context.File.Include(q => q.User).ToListAsync();
+            var versions = await _context.Version.Where(q => q.Active == true).ToListAsync();
+            files = FormatTitles(files);
+            return new FileUsernameVersionDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList(), Versions = versions };
+        }
+
         public async Task<FileUsernameDTO> GetAllFilesByFlag(string flag)
         {
 			FileFlag fileFlag;

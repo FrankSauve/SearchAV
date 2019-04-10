@@ -43,6 +43,14 @@ namespace RC_SpeechToText.Controllers
             return Ok(filesUsernames);
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetAllWithUsernameAndVersions()
+        {
+            var filesUsernames = await _fileService.GetAllWithUsernamesAndVersions();
+
+            return Ok(filesUsernames);
+        }
+
         [HttpGet("[action]/{flag}")]
         public async Task<IActionResult> GetAllFilesByFlag(string flag)
         {
