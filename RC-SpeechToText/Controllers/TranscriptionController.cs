@@ -27,7 +27,7 @@ namespace RC_SpeechToText.Controllers
             _exportTranscriptionService = new ExportTranscriptionService(context);
         }
 
-        [HttpPost("[action]/{versionId}")]
+        [HttpPost("{versionId}")]
         public async Task<IActionResult> SaveTranscript(Guid versionId, string newTranscript)
         {
             var emailClaim = HttpContext.User.Claims;
