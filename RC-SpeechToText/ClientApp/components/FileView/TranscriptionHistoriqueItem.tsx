@@ -80,7 +80,6 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
         this.hideTranscriptionModal();
         this.setState({ 'loading': true });
         var oldTranscript = this.props.activeVersion.transcription
-        var test = this.props.activeVersion
         var newTranscript = this.props.transcription
 
         if ((oldTranscript == newTranscript || newTranscript == "") && this.props.userId != this.props.reviewerId) {
@@ -104,6 +103,7 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
                     this.props.updateVersion(res.data);
                     this.setState({ 'loading': false });
                     this.showSuccessModal();
+                    this.hideSaveRevertTranscriptModal(); 
                     this.props.getAllVersions();
                 })
                 .catch(err => {
@@ -111,6 +111,7 @@ export class TranscriptionHistoriqueItem extends React.Component<any, State> {
                         this.setState({ 'loading': false });
                         this.setState({ 'unauthorized': true });
                         this.showErrorModal();
+                        this.hideSaveRevertTranscriptModal(); 
                     }
                 });
         }
