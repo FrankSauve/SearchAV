@@ -332,8 +332,6 @@ export default class Dashboard extends React.Component<any, State> {
         } else {
             this.state.currentFilterFiles.map((file) => {
                 fileAddedTitle = false;
-                currentVersion = this.getCurrentVersion(file.id);
-                console.log(currentVersion);
                 if (file.description != null) {
                     if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
                         results[counter] = file;
@@ -352,8 +350,9 @@ export default class Dashboard extends React.Component<any, State> {
                         fileAddedDescription = true;
                     }
                 }
-                if (this.state.allFilesSearch && currentVersion != null && !fileAddedTitle && !fileAddedDescription) {
-                    if (currentVersion.transcription.toLowerCase().includes(searchTerms.toLowerCase())) {
+                if (this.state.allFilesSearch && !fileAddedTitle && !fileAddedDescription) {
+                    currentVersion = this.getCurrentVersion(file.id);
+                    if (currentVersion.transcription.toLowerCase().includes(searchTerms.toLowerCase()) && currentVersion != null) {
                         results[counter] = file;
                         resultsUsernames[counter] = file.user.name;
                         counter++;
