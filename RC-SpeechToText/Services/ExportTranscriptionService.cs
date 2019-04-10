@@ -167,7 +167,7 @@ namespace RC_SpeechToText.Services
         private List<string> GetParagraphTimestamp(List<string> paragraph, List<Word> words)
 		{
 			//Look for the first instance where the paragraph word match & the word db match
-			var firstWord = words.Find(x => x.Term == paragraph.First());
+			var firstWord = words.Find(x => x.Term.ToLower() == paragraph.First().ToLower());
 			//Same but for the last word
 			var lastWord = words.Find(x => x.Term == paragraph.Last().RemovePunctuation());
 			return new List<string>
