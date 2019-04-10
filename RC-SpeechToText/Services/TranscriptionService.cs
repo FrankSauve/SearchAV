@@ -20,11 +20,6 @@ namespace RC_SpeechToText.Services {
             _context = context;
         }
 
-        public async Task<List<Models.Version>> Index()
-        {
-            return await _context.Version.ToListAsync();
-        }
-
         public async Task<VersionDTO> SaveTranscript(string userEmail, Guid versionId, string newTranscript)
         {
             var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);

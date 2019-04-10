@@ -37,23 +37,6 @@ namespace RC_SpeechToText.Controllers
 			           
             return Ok(saveResult.Version);
         }
-        
-        /// <summary>
-        /// Returns all versions
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                return Ok(await _transcriptionService.Index());
-            }
-            catch
-            {
-                return BadRequest("Get all versions failed.");
-            }
-        }
 
 
         /// <summary>
