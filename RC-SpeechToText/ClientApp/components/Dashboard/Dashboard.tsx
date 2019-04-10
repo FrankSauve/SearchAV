@@ -16,6 +16,7 @@ interface State {
     loggedUser: any;
     files: any[],
     allFiles: any[],
+    versions: any[],
     currentFilterFiles: any[],
     usernames: string[],
     userId: any,
@@ -27,6 +28,7 @@ interface State {
     isFilesToReviewFilterActive: boolean,
     listView: boolean,
     loading: boolean,
+    allFilesSearch: boolean,
     unauthorized: boolean
 }
 
@@ -39,6 +41,7 @@ export default class Dashboard extends React.Component<any, State> {
             loggedUser: null,
             files: [],
             allFiles: [],
+            versions:[],
             currentFilterFiles: [],
             usernames: [],
             userId: "",
@@ -50,6 +53,7 @@ export default class Dashboard extends React.Component<any, State> {
             listView: false,
             searchTerms: '',
             loading: false,
+            allFilesSearch: false,
             unauthorized: false
         }
     }
@@ -115,11 +119,12 @@ export default class Dashboard extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/file/GetAllWithUsernames', config)
+        axios.get('/api/file/GetAllWithUsernameAndVersions', config)
             .then(res => {
                 console.log(res.data);
                 this.setState({ 'files': res.data.files });
                 this.setState({ 'allFiles': res.data.files });
+                this.setState({ 'versions': res.data.versions})
 				this.setState(
 					{ 'currentFilterFiles': res.data.files },
 					this.searchDescription
@@ -300,34 +305,57 @@ export default class Dashboard extends React.Component<any, State> {
             </div>
         )
     }
-    public searchDescription = () => {
 
+    private getCurrentVersion = (fileId: AAGUID) => {
+        var currentVersion = this.state.versions[0];
+        this.state.versions.map((version) => {
+            console.log(version.fileId);
+            if (version.fileId == fileId) {
+                currentVersion = version;
+            }
+        })
+        return currentVersion;
+    }
+
+    public searchDescription = () => {
         var searchTerms = this.state.searchTerms;
-        var fileAdded = false;
+        var fileAddedTitle = false;
+        var fileAddedDescription = false;
         var counter = 0;
         var results = Array(this.state.allFiles.length);
         var resultsUsernames = Array(this.state.allFiles.length);
+        var currentVersion;
 
+        console.log(this.state.versions);
         if (searchTerms == "") {
             this.setState({ 'files': this.state.currentFilterFiles });
         } else {
             this.state.currentFilterFiles.map((file) => {
-                fileAdded = false;
-
+                fileAddedTitle = false;
+                currentVersion = this.getCurrentVersion(file.id);
+                console.log(currentVersion);
                 if (file.description != null) {
                     if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
                         results[counter] = file;
 						resultsUsernames[counter] = file.user.name;
 						
                         //If file is added here we do not want to add it again if it has a title match too
-                        fileAdded = true;
+                        fileAddedTitle = true;
                         counter++;
                     }
                 }
-                if (file.title != null && !fileAdded) {
+                if (file.title != null && !fileAddedTitle) {
                     if (file.title.toLowerCase().includes(searchTerms.toLowerCase())) {
                         results[counter] = file;
 						resultsUsernames[counter] = file.user.name;
+                        counter++;
+                        fileAddedDescription = true;
+                    }
+                }
+                if (this.state.allFilesSearch && currentVersion != null && !fileAddedTitle && !fileAddedDescription) {
+                    if (currentVersion.transcription.toLowerCase().includes(searchTerms.toLowerCase())) {
+                        results[counter] = file;
+                        resultsUsernames[counter] = file.user.name;
                         counter++;
                     }
                 }
@@ -337,8 +365,13 @@ export default class Dashboard extends React.Component<any, State> {
         }
         
     }
-
-
+    
+    public handleAllFilesSearch = (e: any) => {
+        this.setState(
+            { 'allFilesSearch': e.target.checked },
+            this.searchDescription
+        );
+    }
     public handleSearch = (e: any) => {
         this.setState(
             { 'searchTerms': e.target.value.trim() },
@@ -404,6 +437,11 @@ export default class Dashboard extends React.Component<any, State> {
                                 <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
                                 <div className="right-side">
                                     <div className="search-field">
+                                        <input
+                                            name="isGoing"
+                                            type="checkbox"
+                                            checked={this.state.allFilesSearch}
+                                            onChange={this.handleAllFilesSearch} />
                                         <p className="control has-icons-right">
                                             <input className="input is-rounded search-input" type="search" onChange={this.handleSearch}/>
                                             <span className="icon is-small is-right">
