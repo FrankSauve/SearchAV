@@ -79,7 +79,8 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}/{documentType}")]
         public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
-            var result = await _transcriptionService.PrepareDownload(documentType, fileId);
+            var outDTO = new OutDownloadTranscriptDTO { FileId = fileId, DocumentType = documentType };
+            var result = await _transcriptionService.PrepareDownload(outDTO);
 
             if (result != null)
             {
