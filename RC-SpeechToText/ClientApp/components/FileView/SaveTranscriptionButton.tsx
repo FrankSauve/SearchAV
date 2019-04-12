@@ -127,7 +127,7 @@ export class SaveTranscriptionButton extends React.Component<any, State> {
                     showModal={this.state.loading}
                 />
 
-                <a className="button is-rounded is-link mg-top-10 mg-left-10" onClick={this.showSaveTranscriptModal}><i className="far fa-save mg-right-5"></i> <p className="nav-button font-family-roboto"> {button.toUpperCase()}</p></a>
+                <a className="button is-rounded is-link mg-top-10 mg-left-10 is-hidden" onClick={this.showSaveTranscriptModal} id="saveTranscriptButton"><i className="far fa-save mg-right-5"></i> <p className="nav-button font-family-roboto"> {button.toUpperCase()}</p></a>
             </div>
         );
     }
