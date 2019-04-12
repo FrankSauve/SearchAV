@@ -92,7 +92,7 @@ export default class FileInput extends React.Component<any, State> {
         
         for (var i = 0; i < this.state.file.length; i++)
         {
-            formData.append('audioFile', this.state.file[i]);
+            formData.append('files', this.state.file[i]);
             formData.append('userEmail', auth.getEmail()!);
             formData.append('description', this.state.description);
             formData.append('title', this.state.file[i].name.split(".")[0]); 
@@ -116,6 +116,7 @@ export default class FileInput extends React.Component<any, State> {
                 this.toggleLoad();
                 console.log(err.response.data);
                 this.showErrorModal("Échec de l'importation!", err.response.data.message)
+                this.props.getAllFiles();
                 if (err.response.status == 401) {
                     this.setState({ 'unauthorized': true });
                 }

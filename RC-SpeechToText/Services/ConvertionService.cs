@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using RC_SpeechToText.Infrastructure;
 using Microsoft.WindowsAPICodePack.Shell;
-
+using RC_SpeechToText.Exceptions;
 
 namespace RC_SpeechToText.Services
 {
@@ -25,7 +25,8 @@ namespace RC_SpeechToText.Services
 
 		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile, string title)
 		{
-			// Get user id by email
+			
+            // Get user id by email
 			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
 
 			if (user == null)
@@ -38,8 +39,10 @@ namespace RC_SpeechToText.Services
 			var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
             string ext = System.IO.Path.GetExtension(filePath);
 
+
             // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
             Converter converter = new Converter();
+
             if (title != "")
             {
                 var newFilePath = converter.RenamFile(filePath, title);
@@ -175,14 +178,23 @@ namespace RC_SpeechToText.Services
 
         public async Task<int> ProcessFiles(List<IFormFile> files, string userEmail, string description, string title)
         {
+            var converter = new Converter();
             var count = 0;
             foreach (var file in files)
             {
-                var version = await ConvertAndTranscribe(file, userEmail, description, file.FileName);
-                if (version == null)
+                if (converter.GetFileType(file.FileName) == "N/A")
                 {
                     count++;
                     continue;
+                }
+                else
+                {
+                    var version = await ConvertAndTranscribe(file, userEmail, description, file.FileName);
+                    if (version == null)
+                    {
+                        count++;
+                        continue;
+                    }
                 }
             }
             return count;
