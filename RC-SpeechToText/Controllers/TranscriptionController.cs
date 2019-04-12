@@ -28,7 +28,7 @@ namespace RC_SpeechToText.Controllers
             _exportTranscriptionService = new ExportTranscriptionService(context);
         }
 
-        [HttpPost("[action]/{versionId}")]
+        [HttpPost("{versionId}")]
         public async Task<IActionResult> SaveTranscript(Guid versionId, string newTranscript)
         {
             var emailClaim = HttpContext.User.Claims;
@@ -37,23 +37,6 @@ namespace RC_SpeechToText.Controllers
             var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
 			           
             return Ok(saveResult.Version);
-        }
-        
-        /// <summary>
-        /// Returns all versions
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                return Ok(await _transcriptionService.Index());
-            }
-            catch
-            {
-                return BadRequest("Get all versions failed.");
-            }
         }
 
 

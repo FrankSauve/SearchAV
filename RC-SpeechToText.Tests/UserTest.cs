@@ -34,7 +34,7 @@ namespace RC_SpeechToText.Tests
 
             var client = server.CreateClient();
 
-            var url = "api/file/index";
+            var url = "api/file/getAllFiles";
             var expected = HttpStatusCode.Unauthorized;
 
             // Act
