@@ -76,41 +76,61 @@ namespace RC_SpeechToText.Services {
 		{
 			if (outDownloadTranscriptDTO.DocumentType == "doc")
 			{
-				var wordRepository = new WordRepository();
-				return wordRepository.CreateWordDocument(transcript);
+				return GenerateWordDoucment(transcript);
 			}
 			else if (outDownloadTranscriptDTO.DocumentType == "googleDoc")
 			{
-				var googleDocRepository = new GoogleDocumentRepository();
-				return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
+				return GenerateGoogleDocument(fileTitle, transcript);
 			}
 			else if (outDownloadTranscriptDTO.DocumentType == "srt")
 			{
-				var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
-				if (words.Count > 0)
-
-				{
-					var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
-					return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
-				}
-				else
-					return false;
+				return await GenerateSRTDocument(fileTitle, version, transcript);
 			}
 			else if (outDownloadTranscriptDTO.DocumentType.Contains("video"))
 			{
-				var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
-				if (words.Count > 0)
-				{
-					var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
-					return await exportTranscriptionService.ExportVideo(fileTitle, outDownloadTranscriptDTO.DocumentType, transcript, words);
-				}
-				else
-					return false;
+				return await GenerateVideoWithSubtitle(outDownloadTranscriptDTO, fileTitle, version, transcript);
 			}
 			else
 			{
 				return false;
 			}
+		}
+
+		private async Task<bool> GenerateVideoWithSubtitle(OutDownloadTranscriptDTO outDownloadTranscriptDTO, string fileTitle, Models.Version version, string transcript)
+		{
+			var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
+			if (words.Count > 0)
+			{
+				var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
+				return await exportTranscriptionService.ExportVideo(fileTitle, outDownloadTranscriptDTO.DocumentType, transcript, words);
+			}
+			else
+				return false;
+		}
+
+		private async Task<bool> GenerateSRTDocument(string fileTitle, Models.Version version, string transcript)
+		{
+			var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
+			if (words.Count > 0)
+
+			{
+				var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
+				return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
+			}
+			else
+				return false;
+		}
+
+		private static bool GenerateGoogleDocument(string fileTitle, string transcript)
+		{
+			var googleDocRepository = new GoogleDocumentRepository();
+			return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
+		}
+
+		private static bool GenerateWordDoucment(string transcript)
+		{
+			var wordRepository = new WordRepository();
+			return wordRepository.CreateWordDocument(transcript);
 		}
 
 		private async Task EmailReviewer(File file)
