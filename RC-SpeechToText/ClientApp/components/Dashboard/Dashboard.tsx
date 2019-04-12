@@ -122,13 +122,12 @@ export default class Dashboard extends React.Component<any, State> {
         axios.get('/api/file/GetAllWithUsernameAndVersions', config)
             .then(res => {
                 console.log(res.data);
-                this.setState({ 'files': res.data.files });
                 this.setState({ 'allFiles': res.data.files });
-                this.setState({ 'versions': res.data.versions})
-				this.setState(
-					{ 'currentFilterFiles': res.data.files },
-					this.searchDescription
+                this.setState(
+					{ 'versions': res.data.versions},
+					this.matchVersionToFile
 				);
+				
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 console.log(this.state.loading);
@@ -305,17 +304,21 @@ export default class Dashboard extends React.Component<any, State> {
             </div>
         )
     }
-
-    private getCurrentVersion = (fileId: AAGUID) => {
-        var currentVersion = this.state.versions[0];
-        this.state.versions.map((version) => {
-            console.log(version.fileId);
-            if (version.fileId == fileId) {
-                currentVersion = version;
-            }
+	public matchVersionToFile = () => {
+		this.state.allFiles.map((file) => {
+            this.state.versions.map((version) =>{
+				 if (version.fileId == file.id) {
+					 file.transcription = version.transcription;
+				 }
+			})
         })
-        return currentVersion;
-    }
+		this.setState({ 'files': this.state.allFiles });
+		this.setState(
+			{ 'currentFilterFiles': this.state.allFiles},
+			this.searchDescription
+		);
+
+	}
 
     public searchDescription = () => {
         var searchTerms = this.state.searchTerms;
@@ -324,7 +327,6 @@ export default class Dashboard extends React.Component<any, State> {
         var counter = 0;
         var results = Array(this.state.allFiles.length);
         var resultsUsernames = Array(this.state.allFiles.length);
-        var currentVersion;
 
         console.log(this.state.versions);
         if (searchTerms == "") {
@@ -351,8 +353,7 @@ export default class Dashboard extends React.Component<any, State> {
                     }
                 }
                 if (this.state.allFilesSearch && !fileAddedTitle && !fileAddedDescription) {
-                    currentVersion = this.getCurrentVersion(file.id);
-                    if (currentVersion.transcription.toLowerCase().includes(searchTerms.toLowerCase()) && currentVersion != null) {
+                    if (file.transcription.toLowerCase().includes(searchTerms.toLowerCase()) && file.transcription != null) {
                         results[counter] = file;
                         resultsUsernames[counter] = file.user.name;
                         counter++;
