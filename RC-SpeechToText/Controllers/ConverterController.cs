@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
 using Microsoft.Extensions.Options;
+using RC_SpeechToText.Models.DTO.Incoming;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -35,7 +36,8 @@ namespace RC_SpeechToText.Controllers
 		[HttpPost("[action]")]
 		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string description, string title)
 		{
-			var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, description, title);
+
+			var version = await _convertionService.ConvertAndTranscribe(new ConvertionDTO(audioFile, userEmail, description, title));
 			if (version == null)
 			{
 				throw new ControllerExceptions("Une erreur s'est produite lors de la transcription");
