@@ -30,7 +30,7 @@ namespace RC_SpeechToText.Tests
 			
             //Act
             var controller = new VersionController(context);
-            var result = await controller.Index();
+            var result = await controller.GetAllVersions();
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<List<Models.Version>>(okResult.Value);

@@ -29,7 +29,7 @@ namespace RC_SpeechToText.Controllers
 		}
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetAllFiles()
         {
 
             var files = await _fileService.GetAllFiles();
@@ -46,7 +46,7 @@ namespace RC_SpeechToText.Controllers
             return Ok(filesUsernames);
         }
 
-        [HttpGet("[action]/{flag}")]
+        [HttpGet("{flag}")]
         public async Task<IActionResult> GetAllFilesByFlag(string flag)
         {
             var filesUsernames = await _fileService.GetAllFilesByFlag(flag);
@@ -122,7 +122,7 @@ namespace RC_SpeechToText.Controllers
             return Ok(file.File);
         }
         
-        [HttpGet("[action]/{fileId}/{reviewerEmail}")]
+        [HttpGet("{fileId}/{reviewerEmail}")]
         public async Task<IActionResult> AddReviewer(Guid fileId, string reviewerEmail)
         {
             var emailClaim = HttpContext.User.Claims;

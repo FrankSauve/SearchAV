@@ -32,7 +32,7 @@ namespace RC_SpeechToText.Tests
 
             //Act
             var controller = new FileController(context);
-            var result = await controller.Index();
+            var result = await controller.GetAllFiles();
                 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
