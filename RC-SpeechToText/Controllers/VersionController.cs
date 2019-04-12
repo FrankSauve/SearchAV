@@ -26,10 +26,10 @@ namespace RC_SpeechToText.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("[action]")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetAllVersions()
         {
 
-            return Ok(await _versionService.Index());
+            return Ok(await _versionService.GetAllVersions());
 
         }
 

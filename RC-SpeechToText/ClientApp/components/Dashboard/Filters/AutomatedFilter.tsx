@@ -33,7 +33,7 @@ export default class AutomatedFilter extends React.Component<any, State> {
             },
         };
 
-        axios.get('/api/file/getAllFilesByFlag/Automatise', config)
+        axios.get('/api/file/Automatise', config)
             .then(res => {
                 console.log(res);
                 this.setState({ 'files': res.data.files });

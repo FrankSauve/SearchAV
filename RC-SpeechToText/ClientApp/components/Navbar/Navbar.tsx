@@ -97,6 +97,11 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
         var is_root = (location.pathname == "/");
         return is_root;
     }
+
+    save() {
+        document.getElementById('saveTranscriptButton')!.click();
+    }
+
     public renderFileViewNav = () => {
         return (
             <nav className="navbar has-background-white-smoke container" role="navigation" aria-label="main navigation">
@@ -113,7 +118,7 @@ export default class Navbar extends React.Component<RouteComponentProps<{}>, Sta
 
                             <a className="button is-rounded mg-top-10 mg-left-400" onClick={this.showReviewModal}><i className="far fa-envelope mg-right-5 is-link"></i><p className="nav-button is-link"> DEMANDER UNE REVISION</p></a>
                             <a className="button is-rounded mg-top-10 mg-left-10 " onClick={this.showExportModal}><i className="fas fa-file-export mg-right-5 is-link"></i><p className="nav-button is-link"> EXPORTER</p></a>
-                            <a className="button is-rounded is-link mg-top-10 mg-left-10"><i className="far fa-save mg-right-5"></i> <p className="nav-button"> ENREGISTRER</p></a>
+                            <a className="button is-rounded is-link mg-top-10 mg-left-10" onClick={this.save}><i className="far fa-save mg-right-5"></i> <p className="nav-button"> ENREGISTRER</p></a>
                         </div>
 
                         <ExportModal

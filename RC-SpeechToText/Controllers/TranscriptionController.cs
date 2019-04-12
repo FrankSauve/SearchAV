@@ -7,6 +7,7 @@ using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
 using System.Linq;
 using RC_SpeechToText.Exceptions;
+using RC_SpeechToText.Models.DTO.Outgoing;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -27,7 +28,7 @@ namespace RC_SpeechToText.Controllers
             _exportTranscriptionService = new ExportTranscriptionService(context);
         }
 
-        [HttpPost("[action]/{versionId}")]
+        [HttpPost("{versionId}")]
         public async Task<IActionResult> SaveTranscript(Guid versionId, string newTranscript)
         {
             var emailClaim = HttpContext.User.Claims;
@@ -36,23 +37,6 @@ namespace RC_SpeechToText.Controllers
             var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
 			           
             return Ok(saveResult.Version);
-        }
-        
-        /// <summary>
-        /// Returns all versions
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                return Ok(await _transcriptionService.Index());
-            }
-            catch
-            {
-                return BadRequest("Get all versions failed.");
-            }
         }
 
 
@@ -65,7 +49,8 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{versionId}/{searchTerms}")]
         public async Task<IActionResult> SearchTranscript(Guid versionId, string searchTerms)
         {
-            return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
+            var outDTO = new OutSearchTranscriptDTO { VersionId = versionId, SearchTerms = searchTerms };
+            return Ok(await _transcriptionService.SearchTranscript(outDTO));
         }
 
         /// <summary>
@@ -77,7 +62,8 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}/{documentType}")]
         public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
-            var result = await _transcriptionService.PrepareDownload(documentType, fileId);
+            var outDTO = new OutDownloadTranscriptDTO { FileId = fileId, DocumentType = documentType };
+            var result = await _transcriptionService.PrepareDownload(outDTO);
 
             if (result != null)
             {
