@@ -22,8 +22,8 @@ namespace RC_SpeechToText.Controllers
 
 		public ConverterController(SearchAVContext context, IOptions<AppSettings> settings)
 		{
-			_fileService = new FileService(context);
 			_appSettings = settings.Value;
+			_fileService = new FileService(context, _appSettings);
 			_convertionService = new ConvertionService(context, _appSettings);
 		}
 

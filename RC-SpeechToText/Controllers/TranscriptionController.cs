@@ -25,7 +25,7 @@ namespace RC_SpeechToText.Controllers
 		public TranscriptionController(SearchAVContext context, IOptions<AppSettings> settings)
         {
 			_appSettings = settings.Value;
-			_transcriptionService = new TranscriptionService(context);
+			_transcriptionService = new TranscriptionService(context, _appSettings);
             _fileService = new FileService(context, _appSettings);
             _exportTranscriptionService = new ExportTranscriptionService(context, _appSettings);
         }
