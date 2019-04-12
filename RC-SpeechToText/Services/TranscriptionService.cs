@@ -14,11 +14,13 @@ using System.Threading.Tasks;
 namespace RC_SpeechToText.Services {
     public class TranscriptionService {
         private readonly SearchAVContext _context;
+		private readonly AppSettings _appSettings;
 
-        public TranscriptionService(SearchAVContext context)
+		public TranscriptionService(SearchAVContext context, AppSettings appSettings)
         {
             _context = context;
-        }
+			_appSettings = appSettings;
+		}
 
         public async Task<List<Models.Version>> Index()
         {
@@ -103,7 +105,7 @@ namespace RC_SpeechToText.Services {
 					if (words.Count > 0)
 
                     {
-						var exportTranscriptionService = new ExportTranscriptionService(_context);
+						var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
 						return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
 					}
 					else
@@ -114,7 +116,7 @@ namespace RC_SpeechToText.Services {
 					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
 					if (words.Count > 0)
 					{
-						var exportTranscriptionService = new ExportTranscriptionService(_context);
+						var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
 						return await exportTranscriptionService.ExportVideo(fileTitle, documentType, transcript, words);
 					}
 					else

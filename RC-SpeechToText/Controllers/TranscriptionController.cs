@@ -7,6 +7,7 @@ using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
 using System.Linq;
 using RC_SpeechToText.Exceptions;
+using Microsoft.Extensions.Options;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -19,12 +20,14 @@ namespace RC_SpeechToText.Controllers
 		private readonly TranscriptionService _transcriptionService;
         private readonly FileService _fileService;
         private readonly ExportTranscriptionService _exportTranscriptionService;
+		private AppSettings _appSettings { get; set; }
 
-        public TranscriptionController(SearchAVContext context)
+		public TranscriptionController(SearchAVContext context, IOptions<AppSettings> settings)
         {
+			_appSettings = settings.Value;
 			_transcriptionService = new TranscriptionService(context);
-            _fileService = new FileService(context);
-            _exportTranscriptionService = new ExportTranscriptionService(context);
+            _fileService = new FileService(context, _appSettings);
+            _exportTranscriptionService = new ExportTranscriptionService(context, _appSettings);
         }
 
         [HttpPost("[action]/{versionId}")]
