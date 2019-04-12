@@ -9,5 +9,6 @@ namespace RC_SpeechToText.Models
 	{
 		public string AudioPath { get; set; }
 		public string FfmpegPath { get; set; }
+		public string ThumbnailPath { get; set; }
 	}
 }

@@ -17,10 +17,13 @@ namespace RC_SpeechToText.Services
 
 		private readonly SearchAVContext _context;
 		private readonly string _bucketName = "rc-retd-stt-dev";
+		private readonly AppSettings _appSettings;
 
-        public ConvertionService(SearchAVContext context)
+
+		public ConvertionService(SearchAVContext context, AppSettings appSettings)
 		{
 			_context = context;
+			_appSettings = appSettings;
 		}
 
 		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile, string title)
@@ -35,7 +38,7 @@ namespace RC_SpeechToText.Services
 
 			var streamIO = new IOInfrastructure();
 
-			var filePath = streamIO.CopyAudioToStream(audioFile, @"\wwwroot\assets\Audio\");
+			var filePath = streamIO.CopyAudioToStream(audioFile, _appSettings.AudioPath);
             string ext = System.IO.Path.GetExtension(filePath);
 
             // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
@@ -47,7 +50,7 @@ namespace RC_SpeechToText.Services
             }
 
 			// Create thumbnail
-			var thumbnailPath = streamIO.GetPathAndCreateDirectory(@"\wwwroot\assets\Thumbnails\");
+			var thumbnailPath = streamIO.GetPathAndCreateDirectory(_appSettings.ThumbnailPath);
 			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg", 1000);
 
 			if (thumbnailImage == null)
@@ -83,13 +86,13 @@ namespace RC_SpeechToText.Services
             var file = new File
 			{
                 Title = (title == "" ? audioFile.FileName : title + ext),
-				FilePath = @"\assets\Audio\" + (title == "" ? audioFile.FileName : title + ext),
+				FilePath = _appSettings.AudioPath + (title == "" ? audioFile.FileName : title + ext),
 				FileFlag = FileFlag.Automatise,
                 Description = descriptionFile, 
                 UserId = user.Id,
 				DateAdded = DateTime.Now,
 				Type = fileType,
-				ThumbnailPath = @"\assets\Thumbnails\" + (title == "" ? audioFile.FileName : title) + ".jpg",
+				ThumbnailPath = _appSettings.ThumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg",
                 Duration = duration
             };
 			await _context.File.AddAsync(file);

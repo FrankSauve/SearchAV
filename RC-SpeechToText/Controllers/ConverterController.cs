@@ -6,22 +6,25 @@ using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
+using Microsoft.Extensions.Options;
 
 namespace RC_SpeechToText.Controllers
 {
-    [ServiceFilter(typeof(ControllerExceptionFilter))]
-    [ServiceFilter(typeof(LoggingActionFilter))]
-    [Authorize]
+	[ServiceFilter(typeof(ControllerExceptionFilter))]
+	[ServiceFilter(typeof(LoggingActionFilter))]
+	[Authorize]
 	[Route("api/[controller]")]
 	public class ConverterController : Controller
 	{
 		private readonly ConvertionService _convertionService;
-        private readonly FileService _fileService;
+		private readonly FileService _fileService;
+		private AppSettings _appSettings { get; set; }
 
-		public ConverterController(SearchAVContext context)
+		public ConverterController(SearchAVContext context, IOptions<AppSettings> settings)
 		{
-			_convertionService = new ConvertionService(context);
-            _fileService = new FileService(context);
+			_convertionService = new ConvertionService(context, _appSettings);
+			_fileService = new FileService(context);
+			_appSettings = settings.Value;
 		}
 
 		/// <summary>
@@ -32,14 +35,14 @@ namespace RC_SpeechToText.Controllers
 		[HttpPost("[action]")]
 		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string description, string title)
 		{
-                var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, description, title);
-                if (version == null)
-                {
-                    throw new ControllerExceptions("Une erreur s'est produite lors de la transcription");
-                }
+			var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, description, title);
+			if (version == null)
+			{
+				throw new ControllerExceptions("Une erreur s'est produite lors de la transcription");
+			}
 
-                return Ok(version);
-            }
-			
+			return Ok(version);
 		}
+
+	}
 }
