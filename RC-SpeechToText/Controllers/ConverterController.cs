@@ -32,18 +32,15 @@ namespace RC_SpeechToText.Controllers
 		/// <returns>GoogleResult</returns>
 		[HttpPost("[action]")]
         [RequestSizeLimit(100_000_000)]
-        public async Task<IActionResult> ConvertAndTranscribe(List<IFormFile> audioFile, string userEmail, string description, string title)
+        public async Task<IActionResult> ConvertAndTranscribe(List<IFormFile> files, string userEmail, string description, string title)
 		{
-            var version = new Version();
-            foreach (var file in audioFile)
-            {
-                version = await _convertionService.ConvertAndTranscribe(file, userEmail, description, file.FileName);
-                if (version == null)
+           
+                var count = await _convertionService.ProcessFiles(files, userEmail, description, title);
+                if (count > 0)
                 {
-                    throw new ControllerExceptions("Une erreur s'est produite lors de la transcription");
+                    throw new ControllerExceptions(count + " Videos on échoué la transcription");
                 }
-            }
-                return Ok(version);
+                return Ok();
 
             }
 			

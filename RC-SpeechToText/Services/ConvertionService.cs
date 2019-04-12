@@ -172,5 +172,22 @@ namespace RC_SpeechToText.Services
 
 			return words;
 		}
-	}
+
+        public async Task<int> ProcessFiles(List<IFormFile> files, string userEmail, string description, string title)
+        {
+            var count = 0;
+            foreach (var file in files)
+            {
+                var version = await ConvertAndTranscribe(file, userEmail, description, file.FileName);
+                if (version == null)
+                {
+                    count++;
+                    continue;
+                }
+            }
+            return count;
+
+        }
+
+    }
 }
