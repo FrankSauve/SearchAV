@@ -1,13 +1,14 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using RC_SpeechToText.Utils;
-using RC_SpeechToText.Models;
-using System.Threading.Tasks;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using RC_SpeechToText.Infrastructure;
 using Microsoft.WindowsAPICodePack.Shell;
+using RC_SpeechToText.Infrastructure;
+using RC_SpeechToText.Models;
+using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace RC_SpeechToText.Services
@@ -26,10 +27,10 @@ namespace RC_SpeechToText.Services
 			_appSettings = appSettings;
 		}
 
-		public async Task<Models.Version> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string descriptionFile, string title)
+		public async Task<Models.Version> ConvertAndTranscribe(ConvertionDTO convertionDTO)
 		{
 			// Get user id by email
-			var user = await _context.User.Where(u => u.Email == userEmail).FirstOrDefaultAsync();
+			var user = await _context.User.Where(u => u.Email == convertionDTO.UserEmail).FirstOrDefaultAsync();
 
 			if (user == null)
 			{
@@ -38,99 +39,120 @@ namespace RC_SpeechToText.Services
 
 			var streamIO = new IOInfrastructure();
 
-			var filePath = streamIO.CopyAudioToStream(audioFile, _appSettings.AudioPath);
-            string ext = System.IO.Path.GetExtension(filePath);
+			var converter = new Converter();
 
-            // Once we get the file path(of the uploaded file) from the server, we use it to call the converter
-            Converter converter = new Converter();
-            if (title != "")
-            {
-                var newFilePath = converter.RenamFile(filePath, title);
-                filePath = newFilePath;
-            }
+			var filePath = GetFilePath(convertionDTO, converter, streamIO);
 
-			// Create thumbnail
-			var thumbnailPath = streamIO.GetPathAndCreateDirectory(_appSettings.ThumbnailPath);
-			var thumbnailImage = converter.CreateThumbnail(filePath, thumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg", 1000);
+			CreateThumbnail(convertionDTO, streamIO, filePath, converter);
 
-			if (thumbnailImage == null)
-			{
-				return null;
-			}
-
-			// Call converter to convert the file to mono and bring back its file path. 
-			var convertedFileLocation = converter.FileToWav(filePath);
-
-			var words = await CreateWords(convertedFileLocation);
-
-            //Get the duration of the file
-            var duration = GetFileDuration(filePath); 
-
-            // Delete the converted file
-            streamIO.DeleteFile(convertedFileLocation);
+			var words = await CreateWords(streamIO, filePath, converter);
 
 			if (words == null)
 			{
 				return null;
 			}
 
-			//Gets type of file (audio or video)
+			var duration = GetFileDuration(filePath);
+
 			var fileType = converter.GetFileType(filePath);
 
-			//Create transcription out of the words and capitalizing the first letter
 			var transcription = CreateTranscription(words);
-            transcription = transcription.First().ToString().ToUpper() + transcription.Substring(1);
 
+			var ext = System.IO.Path.GetExtension(filePath);
 
-            // Create file
-            var file = new File
-			{
-                Title = (title == "" ? audioFile.FileName : title + ext),
-				FilePath = _appSettings.AudioPath + (title == "" ? audioFile.FileName : title + ext),
-				FileFlag = FileFlag.Automatise,
-                Description = descriptionFile, 
-                UserId = user.Id,
-				DateAdded = DateTime.Now,
-				Type = fileType,
-				ThumbnailPath = _appSettings.ThumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg",
-                Duration = duration
-            };
-			await _context.File.AddAsync(file);
-			await _context.SaveChangesAsync();
+			var file = await CreateFile(convertionDTO, user, duration, fileType, ext);
 
-			// Create version
+			var version = await CreateVersion(user, transcription, words, file);
+
+			// Send email to user that the transcription is done
+			var emailService = new EmailInfrastructure();
+			emailService.SendTranscriptionDoneEmail(convertionDTO.UserEmail, file);
+
+			// Return the version
+			return version;
+		}
+
+		private async Task<Models.Version> CreateVersion(User user, string transcription, List<Word> words, File file)
+		{
 			var version = new Models.Version
 			{
 				UserId = user.Id,
 				FileId = file.Id,
-                HistoryTitle = "CRÉATION DU FICHIER",
-                Transcription = transcription,
+				HistoryTitle = "CRÉATION DU FICHIER",
+				Transcription = transcription,
 				DateModified = DateTime.Now,
 				Active = true
 			};
 			await _context.Version.AddAsync(version);
 			await _context.SaveChangesAsync();
 
-            //Adding all words and their timestamps to the Word table
-            int i = 0;
-			words.ForEach(async x => {
+			//Adding all words and their timestamps to the Word table
+			int i = 0;
+			words.ForEach(async x =>
+			{
 				x.VersionId = version.Id;
-                x.Position = i;
+				x.Position = i;
 				await _context.Word.AddAsync(x);
-                i++;
+				i++;
 			});
 			await _context.SaveChangesAsync();
 
-			// Send email to user that the transcription is done
-			var emailService = new EmailInfrastructure();
-			emailService.SendTranscriptionDoneEmail(userEmail, file);
-
-			// Return the transcription
 			return version;
 		}
 
-        //this method gets the duration of the file and formats it to hh:mm:ss. 
-        private string GetFileDuration(string fileName)
+		private async Task<File> CreateFile(ConvertionDTO convertionDTO, User user, string duration, string fileType, string ext)
+		{
+			var file = new File
+			{
+				Title = (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title + ext),
+				FilePath = _appSettings.AudioPath + (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title + ext),
+				FileFlag = FileFlag.Automatise,
+				Description = convertionDTO.Description,
+				UserId = user.Id,
+				DateAdded = DateTime.Now,
+				Type = fileType,
+				ThumbnailPath = _appSettings.ThumbnailPath + (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title) + ".jpg",
+				Duration = duration
+			};
+			await _context.File.AddAsync(file);
+			await _context.SaveChangesAsync();
+			return file;
+		}
+
+		private void CreateThumbnail(ConvertionDTO convertionDTO, IOInfrastructure streamIO, string filePath, Converter converter)
+		{
+			var thumbnailPath = streamIO.GetPathAndCreateDirectory(_appSettings.ThumbnailPath);
+			var thumbnailImage = converter.CreateThumbnail(
+				filePath, 
+				thumbnailPath + (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title) + ".jpg", 1000);
+		}
+
+		private async Task<List<Word>> CreateWords(IOInfrastructure streamIO, string filePath, Converter converter)
+		{
+			// Call converter to convert the file to mono and bring back its file path. 
+			var convertedFileLocation = converter.FileToWav(filePath);
+
+			var words = await CreateWords(convertedFileLocation);
+
+			// Delete the converted file
+			streamIO.DeleteFile(convertedFileLocation);
+			return words;
+		}
+
+		private string GetFilePath(ConvertionDTO convertionDTO, Converter converter, IOInfrastructure streamIO)
+		{
+			var filePath = streamIO.CopyAudioToStream(convertionDTO.AudioFile, _appSettings.AudioPath);
+			if (convertionDTO.Title != "")
+			{
+				var newFilePath = converter.RenameFile(filePath, convertionDTO.Title);
+				filePath = newFilePath;
+			}
+
+			return filePath;
+		}
+
+		//this method gets the duration of the file and formats it to hh:mm:ss. 
+		private string GetFileDuration(string fileName)
         {
             ShellFile so = ShellFile.FromFilePath(fileName);
             double.TryParse(so.Properties.System.Media.Duration.Value.ToString(), out double nanoseconds);
@@ -149,6 +171,7 @@ namespace RC_SpeechToText.Services
 				transcription += word.Term + " ";
 			}
 
+			transcription = transcription.First().ToString().ToUpper() + transcription.Substring(1);
 			return transcription;
 		}
 
