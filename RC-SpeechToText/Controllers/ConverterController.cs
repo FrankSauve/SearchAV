@@ -22,9 +22,9 @@ namespace RC_SpeechToText.Controllers
 
 		public ConverterController(SearchAVContext context, IOptions<AppSettings> settings)
 		{
-			_convertionService = new ConvertionService(context, _appSettings);
 			_fileService = new FileService(context);
 			_appSettings = settings.Value;
+			_convertionService = new ConvertionService(context, _appSettings);
 		}
 
 		/// <summary>

@@ -9,6 +9,7 @@ using System.Linq;
 using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
 using RC_SpeechToText.Models.DTO.Outgoing;
+using Microsoft.Extensions.Options;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -19,11 +20,13 @@ namespace RC_SpeechToText.Controllers
     public class FileController : Controller
     {
         private readonly FileService _fileService;
+		private AppSettings _appSettings { get; set; }
 
-        public FileController(SearchAVContext context)
+		public FileController(SearchAVContext context, IOptions<AppSettings> settings)
         {
-            _fileService = new FileService(context);
-        }
+			_appSettings = settings.Value;
+			_fileService = new FileService(context, _appSettings);	
+		}
 
         [HttpGet("[action]")]
         public async Task<IActionResult> Index()
