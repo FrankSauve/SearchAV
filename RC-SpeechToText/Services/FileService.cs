@@ -34,7 +34,7 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetAllWithUsernames()
         {
-            var files = await _context.File.Include(q => q.User).ToListAsync();
+            var files = await _context.File.Include(q => q.User).OrderByDescending(q => q.DateAdded).ToListAsync();
             files = FormatTitles(files);
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
