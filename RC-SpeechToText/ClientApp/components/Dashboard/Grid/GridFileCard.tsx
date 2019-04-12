@@ -57,7 +57,6 @@ export class GridFileCard extends React.Component<any, State> {
     public render() {
         return (
             <div className="column is-3">
-              <Link className="info" to={`/FileView/${this.props.file.id}`}>
                 <div className="card fileCard">
                     <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}><b>{this.state.flag.toUpperCase()}</b></span> 
                     <header className="card-header">
@@ -102,7 +101,6 @@ export class GridFileCard extends React.Component<any, State> {
                         </div>
                     </div>
                 </div>
-              </Link>
             </div>
         );
     }
