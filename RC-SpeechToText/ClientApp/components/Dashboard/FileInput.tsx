@@ -86,15 +86,18 @@ export default class FileInput extends React.Component<any, State> {
     }
 
     public getGoogleSample = () => { 
-        this.hideAddTitleDescriptionModal(); 
+        //this.hideAddTitleDescriptionModal(); 
         this.toggleLoad();
-
         const formData = new FormData();
-        formData.append('audioFile', this.state.file);
-        formData.append('userEmail', auth.getEmail()!);
-        formData.append('description', this.state.description); 
-        formData.append('title', this.state.title.split(".")[0]); 
-
+        
+        for (var i = 0; i < this.state.file.length; i++)
+        {
+            formData.append('audioFile', this.state.file[i]);
+            formData.append('userEmail', auth.getEmail()!);
+            formData.append('description', this.state.description);
+            formData.append('title', this.state.file[i].name.split(".")[0]); 
+        }
+      
         const config = {
             headers: {
                 'Authorization': 'Bearer ' + auth.getAuthToken(),
@@ -161,7 +164,7 @@ export default class FileInput extends React.Component<any, State> {
 
     onDrop = (e: any) => {
         e.preventDefault();
-        this.setState({ file: e.dataTransfer.files[0] })
+        this.setState({ file: e.dataTransfer.files})
         this.setState({ title: e.dataTransfer.files[0].name.split(".")[0] }) // Name of the file without the extension
         this.setState({ showAddTitleDescriptionModal: true });
     }

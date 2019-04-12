@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
+using System.Collections.Generic;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -30,15 +31,20 @@ namespace RC_SpeechToText.Controllers
 		/// </summary>
 		/// <returns>GoogleResult</returns>
 		[HttpPost("[action]")]
-		public async Task<IActionResult> ConvertAndTranscribe(IFormFile audioFile, string userEmail, string description, string title)
+        [RequestSizeLimit(100_000_000)]
+        public async Task<IActionResult> ConvertAndTranscribe(List<IFormFile> audioFile, string userEmail, string description, string title)
 		{
-                var version = await _convertionService.ConvertAndTranscribe(audioFile, userEmail, description, title);
+            var version = new Version();
+            foreach (var file in audioFile)
+            {
+                version = await _convertionService.ConvertAndTranscribe(file, userEmail, description, file.FileName);
                 if (version == null)
                 {
                     throw new ControllerExceptions("Une erreur s'est produite lors de la transcription");
                 }
-
+            }
                 return Ok(version);
+
             }
 			
 		}
