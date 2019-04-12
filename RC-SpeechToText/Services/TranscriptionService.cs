@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Models.DTO.Outgoing;
 using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
@@ -69,35 +70,35 @@ namespace RC_SpeechToText.Services {
             return new VersionDTO { Version = newVersion, Error = null };
 		}
 
-        public async Task<string> SearchTranscript(Guid versionId, string searchTerms)
+        public async Task<string> SearchTranscript(OutSearchTranscriptDTO outSearchTranscriptDTO)
 		{
 			//Ordered by Id to get the words in the same order as transcript
-			var words = await _context.Word.Where(w => Guid.Equals(w.VersionId,versionId)).OrderBy(w => w.Position).ToListAsync();
+			var words = await _context.Word.Where(w => Guid.Equals(w.VersionId, outSearchTranscriptDTO.VersionId)).OrderBy(w => w.Position).ToListAsync();
 			var searchService = new SearchService();
-			return searchService.PerformSearch(searchTerms, words);
+			return searchService.PerformSearch(outSearchTranscriptDTO.SearchTerms, words);
 		}
 
-		public async Task<string> PrepareDownload(string documentType, Guid fileId)
+		public async Task<string> PrepareDownload(OutDownloadTranscriptDTO outDownloadTranscriptDTO)
 		{
-			var fileTitle = _context.File.Where(x => x.Id == fileId).Select(x => x.Title).SingleOrDefault();
-			var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
+			var fileTitle = _context.File.Where(x => x.Id == outDownloadTranscriptDTO.FileId).Select(x => x.Title).SingleOrDefault();
+			var version = _context.Version.Where(v => v.FileId == outDownloadTranscriptDTO.FileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
 			var rawTranscript = version.Transcription;
 			var transcript = rawTranscript.Replace("<br>", "\n ");
 
             var exportResult = await Task.Run(async () =>
             {
 
-				if (documentType == "doc")
+				if (outDownloadTranscriptDTO.DocumentType == "doc")
 				{
 					var wordRepository = new WordRepository();
 					return wordRepository.CreateWordDocument(transcript);
 				}
-				else if (documentType == "googleDoc")
+				else if (outDownloadTranscriptDTO.DocumentType == "googleDoc")
 				{
 					var googleDocRepository = new GoogleDocumentRepository();
 					return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
 				}
-				else if (documentType == "srt")
+				else if (outDownloadTranscriptDTO.DocumentType == "srt")
 				{
 					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
 					if (words.Count > 0)
@@ -109,13 +110,13 @@ namespace RC_SpeechToText.Services {
 					else
 						return false;
 				}
-				else if(documentType.Contains("video"))
+				else if(outDownloadTranscriptDTO.DocumentType.Contains("video"))
 				{
 					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
 					if (words.Count > 0)
 					{
 						var exportTranscriptionService = new ExportTranscriptionService(_context);
-						return await exportTranscriptionService.ExportVideo(fileTitle, documentType, transcript, words);
+						return await exportTranscriptionService.ExportVideo(fileTitle, outDownloadTranscriptDTO.DocumentType, transcript, words);
 					}
 					else
 						return false;
