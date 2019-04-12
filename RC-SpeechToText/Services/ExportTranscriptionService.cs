@@ -137,7 +137,7 @@ namespace RC_SpeechToText.Services
 			}
 
 			var splitFileTitle = fileTitle.Split(".");
-			streamIO.GenerateSRTFile(para, timestamps, splitFileTitle[0]);
+			streamIO.GenerateSRTFile(para, timestamps, splitFileTitle[0], _appSettings);
 
 			return true;
 		}
