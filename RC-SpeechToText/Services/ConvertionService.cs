@@ -86,13 +86,13 @@ namespace RC_SpeechToText.Services
             var file = new File
 			{
                 Title = (title == "" ? audioFile.FileName : title + ext),
-				FilePath = _appSettings.AudioPath + (title == "" ? audioFile.FileName : title + ext),
+				FilePath = _appSettings.AudioPathNoRoot + (title == "" ? audioFile.FileName : title + ext),
 				FileFlag = FileFlag.Automatise,
                 Description = descriptionFile, 
                 UserId = user.Id,
 				DateAdded = DateTime.Now,
 				Type = fileType,
-				ThumbnailPath = _appSettings.ThumbnailPath + (title == "" ? audioFile.FileName : title) + ".jpg",
+				ThumbnailPath = _appSettings.ThumbnailPathNoRoot + (title == "" ? audioFile.FileName : title) + ".jpg",
                 Duration = duration
             };
 			await _context.File.AddAsync(file);

@@ -212,7 +212,7 @@ namespace RC_SpeechToText.Services
                 string newPath = streamIO.GetPathFromDirectory(_appSettings.ThumbnailPath + newName + ".jpg");
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
-                return _appSettings.ThumbnailPath + newName + ".jpg";
+                return _appSettings.ThumbnailPathNoRoot + newName + ".jpg";
             }
             else
                 return "NULL";
@@ -229,7 +229,7 @@ namespace RC_SpeechToText.Services
                 string newPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath + newName + ext);
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
-                return _appSettings.AudioPath + newName + ext;
+                return _appSettings.AudioPathNoRoot + newName + ext;
             }
             else
                 return "NULL";

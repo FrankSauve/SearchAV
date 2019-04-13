@@ -11,5 +11,7 @@ namespace RC_SpeechToText.Models
 		public string FfmpegPath { get; set; }
 		public string ThumbnailPath { get; set; }
 		public string Root { get; set; }
+		public string AudioPathNoRoot { get; set; }
+		public string ThumbnailPathNoRoot { get; set; }
 	}
 }
