@@ -8,6 +8,7 @@ using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
 using System.Collections.Generic;
 using System;
+using RC_SpeechToText.Infrastructure;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -19,12 +20,14 @@ namespace RC_SpeechToText.Controllers
 	{
 		private readonly ConvertionService _convertionService;
         private readonly FileService _fileService;
+        private readonly EmailInfrastructure _emailService;
 
 		public ConverterController(SearchAVContext context)
 		{
 			_convertionService = new ConvertionService(context);
             _fileService = new FileService(context);
-		}
+            _emailService = new EmailInfrastructure();
+        }
 
 		/// <summary>
 		/// Generates an automatic transcript using google cloud.
@@ -39,7 +42,8 @@ namespace RC_SpeechToText.Controllers
                 var count = await _convertionService.ProcessFiles(files, userEmail, description, title);
                 if (count.Count > 0)
                 {
-                    throw new ControllerExceptions(count.Title);
+                _emailService.SendTranscriptionErrorEmail(userEmail, count.BadTitle);
+                throw new ControllerExceptions(count.BadTitle);
                 }
                 return Ok();
 

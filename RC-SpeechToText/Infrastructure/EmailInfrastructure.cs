@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -95,7 +96,34 @@ namespace RC_SpeechToText.Infrastructure
 				return false;
 		}
 
-		private MailMessage GetMailer()
+        public bool SendTranscriptionErrorEmail(string email, string title)
+        {
+            if (IsValid(email))
+            {
+                try
+                {
+                    var body = new StringBuilder();
+                    var mail = GetMailer();
+                    var smtp = GetSmtpClient();
+
+                    mail.To.Add(new MailAddress(email));
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Erreurs de Transcriptions";
+                    mail.Body = title.ToString();
+                    smtp.Send(mail);
+                    smtp.Dispose();
+                }
+                catch
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private MailMessage GetMailer()
 		{
 			var mail = new MailMessage
 			{

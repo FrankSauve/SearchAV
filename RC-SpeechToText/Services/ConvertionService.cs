@@ -123,12 +123,12 @@ namespace RC_SpeechToText.Services
 			});
 			await _context.SaveChangesAsync();
 
-			// Send email to user that the transcription is done
-			var emailService = new EmailInfrastructure();
-			emailService.SendTranscriptionDoneEmail(userEmail, file);
+            // Send email to user that the transcription is done
+            var emailService = new EmailInfrastructure();
+            emailService.SendTranscriptionDoneEmail(userEmail, file);
 
-			// Return the transcription
-			return version;
+            // Return the transcription
+            return version;
 		}
 
         //this method gets the duration of the file and formats it to hh:mm:ss. 
@@ -182,27 +182,36 @@ namespace RC_SpeechToText.Services
         {
             var converter = new Converter();
             var count = 0;
-            var titles = new StringBuilder();
+            var badTitles = new StringBuilder();
+            var goodTitles = new StringBuilder();
             foreach (var file in files)
             {
                 if (converter.GetFileType(file.FileName) == "N/A")
                 {
                     count++;
-                    titles.AppendLine(System.IO.Path.GetFileNameWithoutExtension(file.FileName));
-                    titles.AppendLine(",");
+                    badTitles.AppendLine(System.IO.Path.GetFileNameWithoutExtension(file.FileName));
+                    badTitles.AppendLine(",");
                     continue;
                 }
                 else
                 {
-                    var version = await ConvertAndTranscribe(file, userEmail, description, file.FileName);
+                    var version = await ConvertAndTranscribe(file, userEmail, description, System.IO.Path.GetFileNameWithoutExtension(file.FileName));
                     if (version == null)
                     {
                         count++;
                         continue;
                     }
+                    else
+                    {
+
+                        goodTitles.AppendLine(file.FileName);
+                    }
                 }
             }
-            return new OutProcessFileDTO { Count = count, Title = count + (count > 1 ? " fichiers ont échoué la transcription: " : " fichier a échoué la transcription: ")  + titles.ToString()};
+            return new OutProcessFileDTO { Count = count,
+                                           BadTitle = count + (count > 1 ? " fichiers ont échoué la transcription: " :
+                                                                           " fichier a échoué la transcription: ")  + 
+                                                                           badTitles.ToString()};
 
         }
 

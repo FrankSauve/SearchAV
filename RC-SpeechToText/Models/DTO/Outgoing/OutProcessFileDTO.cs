@@ -8,6 +8,6 @@ namespace RC_SpeechToText.Models.DTO.Outgoing
     public class OutProcessFileDTO
     {
 		public int Count { get; set; }
-		public string Title { get; set; }
+		public string BadTitle { get; set; }
 	}
 }
