@@ -436,12 +436,19 @@ export default class Dashboard extends React.Component<any, State> {
                             <div className="field is-horizontal mg-top-10">
                                 <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
                                 <div className="right-side">
+                                    <span className="search-checkbox">
+                                        <label className="is-cadet-grey">
+                                            <input
+                                                className="checkbox mg-right-5"
+                                                name="isGoing"
+                                                type="checkbox"
+                                                checked={this.state.allFilesSearch}
+                                                onChange={this.handleAllFilesSearch} 
+                                            />
+                                            Rechercher dans la transcription
+                                        </label>
+                                    </span>
                                     <div className="search-field">
-                                        <input
-                                            name="isGoing"
-                                            type="checkbox"
-                                            checked={this.state.allFilesSearch}
-                                            onChange={this.handleAllFilesSearch} />
                                         <p className="control has-icons-right">
                                             <input className="input is-rounded search-input" type="search" onChange={this.handleSearch}/>
                                             <span className="icon is-small is-right">
