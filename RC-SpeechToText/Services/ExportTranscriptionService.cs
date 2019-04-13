@@ -22,35 +22,67 @@ namespace RC_SpeechToText.Services
 			_appSettings = appSettings;
 		}
 
+		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Word> words)
+		{
+			var command = await PrepareCommand(fileTitle, documentType, transcription, words);
 
-		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
+			var videoProcess = new ProcessStartInfo
+			{
+				CreateNoWindow = false,
+				UseShellExecute = false,
+				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(_appSettings.FfmpegPath), "ffmpeg.exe"),
+				Arguments = command,
+				RedirectStandardOutput = true
+			};
+
+			try
+			{
+				using (Process process = Process.Start(videoProcess))
+				{
+					while (!process.StandardOutput.EndOfStream)
+					{
+						var line = process.StandardOutput.ReadLine();
+						Console.WriteLine(line);
+					}
+
+					process.WaitForExit();
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
+
+		private async Task<string> PrepareCommand(string fileTitle, string documentType, string transcription, List<Word> words)
 		{
 			var splitFileTitle = fileTitle.Split(".");
 			var videoPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath);
 			var subtitlePath = GetFfmpegSubtitlePath();
 			string command;
 
-			if(!streamIO.FileExist(videoPath + splitFileTitle[0] + ".srt"))
+			if (!streamIO.FileExist(videoPath + splitFileTitle[0] + ".srt"))
 			{
 				await Task.Run(() => CreateSRTDocument(transcription, words, fileTitle));
 			}
 
 			if (documentType.Contains("burn"))
 			{
-				if(streamIO.FileExist(videoPath + splitFileTitle[0] + "Burn.mp4"))
+				if (streamIO.FileExist(videoPath + splitFileTitle[0] + "Burn.mp4"))
 					streamIO.DeleteFile(videoPath + splitFileTitle[0] + "Burn.mp4");
 
 				command =
 					"-i " +
 					"\"" +
-					videoPath + 
+					videoPath +
 					splitFileTitle[0] +
 					".mp4\"" +
-					" -vf subtitles=\'" + 
+					" -vf subtitles=\'" +
 					"\"" +
 					subtitlePath +
 					splitFileTitle[0] +
-					".srt\'" + 
+					".srt\'" +
 					"\"" +
 					" -max_muxing_queue_size 1024 " +
 					"\"" +
@@ -80,35 +112,8 @@ namespace RC_SpeechToText.Services
 					"\"";
 			}
 
-			var videoProcess = new ProcessStartInfo
-			{
-				CreateNoWindow = false,
-				UseShellExecute = false,
-				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(_appSettings.FfmpegPath), "ffmpeg.exe"),
-				Arguments = command,
-				RedirectStandardOutput = true
-			};
-
-			try
-			{
-				using (Process process = Process.Start(videoProcess))
-				{
-					while (!process.StandardOutput.EndOfStream)
-					{
-						string line = process.StandardOutput.ReadLine();
-						Console.WriteLine(line);
-					}
-
-					process.WaitForExit();
-					return true;
-				}
-			}
-			catch (Exception ex)
-			{
-				return false;
-			}
+			return command;
 		}
-
 
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words, string fileTitle)
 		{
@@ -132,7 +137,7 @@ namespace RC_SpeechToText.Services
 			}
 
 			var splitFileTitle = fileTitle.Split(".");
-			streamIO.GenerateSRTFile(para, timestamps, splitFileTitle[0]);
+			streamIO.GenerateSRTFile(para, timestamps, splitFileTitle[0], _appSettings);
 
 			return true;
 		}

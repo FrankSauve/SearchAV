@@ -24,88 +24,91 @@ namespace RC_SpeechToText.Services
         }
 
         private CommonSubsequence CommonWords(string oldTranscript, string newTranscript)
-        {
+		{
 
-            var oldTransList = oldTranscript
-                .Replace("<br>", " ")
-                .Replace(".", " ")
-                .Replace(",", " ")
-                .Split(" ")
-                .Select(str => str.Trim())
-                .Where(x => !string.IsNullOrEmpty(x))
-                .ToList();
+			var oldTransList = CleanTranscription(oldTranscript);
 
-            var newTransList = newTranscript
-               .Replace("<br>", " ")
-               .Replace(".", " ")
-               .Replace(",", " ")
-               .Split(" ")
-               .Select(str => str.Trim())
-               .Where(x => !string.IsNullOrEmpty(x))
-               .ToList();
+			var newTransList = CleanTranscription(newTranscript);
 
+			int[,] subSeqTable = CreateSubSequentTable(oldTransList, newTransList);
 
-            var subSeqTable = new int[oldTransList.Count + 1, newTransList.Count + 1];
+			return GetCommonSubsequence(oldTransList, newTransList, subSeqTable);
+		}
 
-            //Filling up the longest subsequence table.
-            for (int i = 0; i <= oldTransList.Count; i++)
-            {
-                for (int j = 0; j <= newTransList.Count; j++)
-                {
-                    if (i == 0 || j == 0)
-                        subSeqTable[i, j] = 0;
-                    else if (oldTransList[i - 1].Equals(newTransList[j - 1], StringComparison.InvariantCultureIgnoreCase))
-                        subSeqTable[i, j] = subSeqTable[i - 1, j - 1] + 1;
-                    else
-                        subSeqTable[i, j] = Math.Max(subSeqTable[i - 1, j], subSeqTable[i, j - 1]);
-                }
-            }
+		private static CommonSubsequence GetCommonSubsequence(List<string> oldTransList, List<string> newTransList, int[,] subSeqTable)
+		{
+			//Saving the positions as well as the words to match them to old timestamps
+			var longestCommonSub = new List<string>();
+			var commonSubPosition1 = new List<int>();
+			var commonSubPosition2 = new List<int>();
 
+			var c1 = oldTransList.Count;
+			var c2 = newTransList.Count;
+			//Going through the table and saving words/positions
+			while (c1 > 0 && c2 > 0)
+			{
+				if (oldTransList[c1 - 1].Equals(newTransList[c2 - 1], StringComparison.InvariantCultureIgnoreCase))
+				{
+					longestCommonSub.Add(oldTransList[c1 - 1]);
+					commonSubPosition1.Add(c1 - 1);
+					commonSubPosition2.Add(c2 - 1);
+					c1--;
+					c2--;
+				}
+				// If not same, then find the larger of two and 
+				// go in the direction of larger value 
+				else if (subSeqTable[c1 - 1, c2] > subSeqTable[c1, c2 - 1])
+					c1--;
+				else
+					c2--;
+			}
+			//Have to reverse the lists since we are going from bottom up.
+			longestCommonSub.Reverse();
+			commonSubPosition1.Reverse();
+			commonSubPosition2.Reverse();
+			return new CommonSubsequence
+			{
+				longestCommonSub = longestCommonSub,
+				oldTransPositions = commonSubPosition1,
+				newTransPosition = commonSubPosition2,
+				newTranscriptionTerms = newTransList
+			};
+		}
 
-            //Saving the positions as well as the words to match them to old timestamps
-            var longestCommonSub = new List<string>();
-            var commonSubPosition1 = new List<int>();
-            var commonSubPosition2 = new List<int>();
+		private static int[,] CreateSubSequentTable(List<string> oldTransList, List<string> newTransList)
+		{
+			var subSeqTable = new int[oldTransList.Count + 1, newTransList.Count + 1];
 
-            var c1 = oldTransList.Count;
-            var c2 = newTransList.Count;
+			//Filling up the longest subsequence table.
+			for (int i = 0; i <= oldTransList.Count; i++)
+			{
+				for (int j = 0; j <= newTransList.Count; j++)
+				{
+					if (i == 0 || j == 0)
+						subSeqTable[i, j] = 0;
+					else if (oldTransList[i - 1].Equals(newTransList[j - 1], StringComparison.InvariantCultureIgnoreCase))
+						subSeqTable[i, j] = subSeqTable[i - 1, j - 1] + 1;
+					else
+						subSeqTable[i, j] = Math.Max(subSeqTable[i - 1, j], subSeqTable[i, j - 1]);
+				}
+			}
 
-            //Going through the table and saving words/positions
-            while (c1 > 0 && c2 > 0)
-            {
-                if (oldTransList[c1 - 1].Equals(newTransList[c2 - 1], StringComparison.InvariantCultureIgnoreCase))
-                {
-                    longestCommonSub.Add(oldTransList[c1 - 1]);
-                    commonSubPosition1.Add(c1 - 1);
-                    commonSubPosition2.Add(c2 - 1);
-                    c1--;
-                    c2--;
-                }
+			return subSeqTable;
+		}
 
-                // If not same, then find the larger of two and 
-                // go in the direction of larger value 
-                else if (subSeqTable[c1 - 1, c2] > subSeqTable[c1, c2 - 1])
-                    c1--;
-                else
-                    c2--;
+		private static List<string> CleanTranscription(string newTranscript)
+		{
+			return newTranscript
+			   .Replace("<br>", " ")
+			   .Replace(".", " ")
+			   .Replace(",", " ")
+			   .Split(" ")
+			   .Select(str => str.Trim())
+			   .Where(x => !string.IsNullOrEmpty(x))
+			   .ToList();
+		}
 
-            }
-
-            //Have to reverse the lists since we are going from bottom up.
-            longestCommonSub.Reverse();
-            commonSubPosition1.Reverse();
-            commonSubPosition2.Reverse();
-
-            var commonSubsequenceInfo = new CommonSubsequence {
-                longestCommonSub = longestCommonSub,
-                oldTransPositions = commonSubPosition1,
-                newTransPosition = commonSubPosition2,
-                newTranscriptionTerms = newTransList
-            };
-            return commonSubsequenceInfo;
-        }
-
-        private List<Word> CreateNewWords(List<Word> oldWords, List<string> newTransTerms, List<int> newTransPos, List<int> oldTransPos, Guid newVersionId)
+		private List<Word> CreateNewWords(List<Word> oldWords, List<string> newTransTerms, List<int> newTransPos, List<int> oldTransPos, Guid newVersionId)
         {
             List<Word> newWords = new List<Word>();
             var counter = 0;
@@ -156,7 +159,6 @@ namespace RC_SpeechToText.Services
                 }
 
             }
-
             return newWords;
         }
 
@@ -164,19 +166,15 @@ namespace RC_SpeechToText.Services
         {
             //Will save each span of words that need to be estimated
             var positions = new List<List<int>>();
-            positions = getSpanPositions(newWords);
-            return GenerateTimeStamps(newWords,positions, duration);
-                       
+            positions = GetSpanPositions(newWords);
+            return GenerateTimeStamps(newWords,positions, duration);      
         }
 
-        private List<List<int>> getSpanPositions(List<Word> newWords)
+        private List<List<int>> GetSpanPositions(List<Word> newWords)
         {
-
             var positions = new List<List<int>>();
-
             var inSpan = false;
             var spanCounter = 0;
-
             //Taking all words with "estime" since we have to re-estimate old words to keep it consistent
             for (int i = 0; i < newWords.Count; i++)
             {
@@ -195,16 +193,13 @@ namespace RC_SpeechToText.Services
                     if (inSpan)
                         spanCounter++;
                     inSpan = false;
-                   
                 }
             }
-
             return positions;
         }
 
         private List<Word> GenerateTimeStamps(List<Word> newWords, List<List<int>> positions, string duration)
         {
-            
             for (int i = 0; i < positions.Count; i++)
             {
                 double timeStart;
@@ -216,7 +211,7 @@ namespace RC_SpeechToText.Services
                 }
                 else
                 {
-                    timeStart = timeStringToDouble(newWords[positions[i][0] - 1].Timestamp);
+                    timeStart = TimeStringToDouble(newWords[positions[i][0] - 1].Timestamp);
                 }
                 //Getting end time to estimate
                 if (positions[i][positions[i].Count - 1] == newWords.Count - 1)
@@ -226,7 +221,7 @@ namespace RC_SpeechToText.Services
                 }
                 else
                 {
-                    timeEnd = timeStringToDouble(newWords[positions[i][positions[i].Count - 1] + 1].Timestamp);
+                    timeEnd = TimeStringToDouble(newWords[positions[i][positions[i].Count - 1] + 1].Timestamp);
                 }
 
                 var timeFrame = (timeEnd - timeStart)/(positions[i].Count + 1);
@@ -242,11 +237,10 @@ namespace RC_SpeechToText.Services
                     newWords[positions[i][j]].Timestamp = timestampString;
                 }
             }
-
-                return newWords;
+            return newWords;
         }
 
-        private Double timeStringToDouble(string time)
+        private double TimeStringToDouble(string time)
         {
             Regex regex = new Regex(@"([\d.]+)");
             var matchTimeString = regex.Match(time).ToString();
@@ -254,6 +248,5 @@ namespace RC_SpeechToText.Services
 
             return timeDouble;
         }
-        
     }
 }

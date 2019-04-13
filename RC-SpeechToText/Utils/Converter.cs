@@ -110,7 +110,7 @@ namespace RC_SpeechToText.Utils
             return type;
         }
 
-        public string RenamFile(string inputFilePath, string title)
+        public string RenameFile(string inputFilePath, string title)
         {
             var streamIO = new IOInfrastructure();
             string ext = Path.GetExtension(inputFilePath);
