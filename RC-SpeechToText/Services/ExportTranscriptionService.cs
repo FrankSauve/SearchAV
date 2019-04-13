@@ -14,17 +14,19 @@ namespace RC_SpeechToText.Services
 	{
         private readonly SearchAVContext _context;
         private IOInfrastructure streamIO = new IOInfrastructure();
+		private readonly AppSettings _appSettings;
 
-        public ExportTranscriptionService(SearchAVContext context)
+		public ExportTranscriptionService(SearchAVContext context, AppSettings appSettings)
         {
             _context = context;
-        }
+			_appSettings = appSettings;
+		}
 
 
 		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
 		{
 			var splitFileTitle = fileTitle.Split(".");
-			var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
+			var videoPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath);
 			var subtitlePath = GetFfmpegSubtitlePath();
 			string command;
 
@@ -82,7 +84,7 @@ namespace RC_SpeechToText.Services
 			{
 				CreateNoWindow = false,
 				UseShellExecute = false,
-				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(@"\ffmpeg\bin"), "ffmpeg.exe"),
+				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(_appSettings.FfmpegPath), "ffmpeg.exe"),
 				Arguments = command,
 				RedirectStandardOutput = true
 			};
@@ -145,7 +147,7 @@ namespace RC_SpeechToText.Services
         {
             var net = new System.Net.WebClient();
             var splitFileTitle = file.Title.Split(".")[0];
-            var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
+            var videoPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath);
             byte[] fileBytes = null;
 
             switch (docType)
@@ -196,7 +198,7 @@ namespace RC_SpeechToText.Services
 
 		private string GetFfmpegSubtitlePath()
 		{
-			var subtitlePath = streamIO.GetPathFromDirectory("\\wwwroot\\assets\\Audio\\");
+			var subtitlePath = streamIO.GetPathFromDirectory(_appSettings.AudioPath);
 			var subtitlePathForwardSlash = subtitlePath.Replace("\\", "/");
 			var colonIndex = subtitlePathForwardSlash.IndexOf(":");
 			return subtitlePathForwardSlash.Insert(colonIndex, "\\");

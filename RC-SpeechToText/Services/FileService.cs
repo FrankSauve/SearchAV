@@ -16,11 +16,13 @@ namespace RC_SpeechToText.Services
     public class FileService
     {
         private readonly SearchAVContext _context;
+		private readonly AppSettings _appSettings;
 
-        public FileService(SearchAVContext context)
+		public FileService(SearchAVContext context, AppSettings appSettings)
         {
             _context = context;
-        }
+			_appSettings = appSettings;
+		}
 
         public async Task<List<File>> GetAllFiles()
         {
@@ -172,8 +174,8 @@ namespace RC_SpeechToText.Services
 			{
 				var streamIO = new IOInfrastructure();
 				
-				var filePath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + file.Title);
-				var thumbnailPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + file.Title.Split(".")[0] + ".jpg");
+				var filePath = streamIO.GetPathFromDirectory(_appSettings.AudioPath + file.Title);
+				var thumbnailPath = streamIO.GetPathFromDirectory(_appSettings.ThumbnailPath + file.Title.Split(".")[0] + ".jpg");
 
 				streamIO.DeleteFile(thumbnailPath);
 
@@ -204,13 +206,13 @@ namespace RC_SpeechToText.Services
         {
             var streamIO = new IOInfrastructure();
             //Verifies if file exists in the current directory
-            if (streamIO.VerifyPathExistInDirectory(@"\wwwroot\assets\Thumbnails\" + oldName + ".jpg"))
+            if (streamIO.VerifyPathExistInDirectory(_appSettings.ThumbnailPath + oldName + ".jpg"))
             {
-                string oldPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + oldName + ".jpg");
-                string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Thumbnails\" + newName + ".jpg");
+                string oldPath = streamIO.GetPathFromDirectory(_appSettings.ThumbnailPath + oldName + ".jpg");
+                string newPath = streamIO.GetPathFromDirectory(_appSettings.ThumbnailPath + newName + ".jpg");
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
-                return @"\assets\Thumbnails\" + newName + ".jpg";
+                return _appSettings.ThumbnailPathNoRoot + newName + ".jpg";
             }
             else
                 return "NULL";
@@ -221,13 +223,13 @@ namespace RC_SpeechToText.Services
             string ext = System.IO.Path.GetExtension(filePath);
             var streamIO = new IOInfrastructure();
             //Verifies if file exists in the current directory
-            if (streamIO.VerifyPathExistInDirectory(@"\wwwroot\assets\Audio\" + oldName))
+            if (streamIO.VerifyPathExistInDirectory(_appSettings.AudioPath + oldName))
             {
-                string oldPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + oldName);
-                string newPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\" + newName + ext);
+                string oldPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath + oldName);
+                string newPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath + newName + ext);
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
-                return @"\assets\Audio\" + newName + ext;
+                return _appSettings.AudioPathNoRoot + newName + ext;
             }
             else
                 return "NULL";
@@ -253,8 +255,8 @@ namespace RC_SpeechToText.Services
         public void RemoveFiles(string filePath, string thumbnailPath)
         {
             var streamIO = new IOInfrastructure();
-            var video = streamIO.GetPathFromDirectory(@"\wwwroot" + filePath);
-            var thumbnail = streamIO.GetPathFromDirectory(@"\wwwroot" + thumbnailPath);
+            var video = streamIO.GetPathFromDirectory(_appSettings.Root + filePath);
+            var thumbnail = streamIO.GetPathFromDirectory(_appSettings.Root + thumbnailPath);
             streamIO.DeleteFile(video);
             streamIO.DeleteFile(thumbnail);
         }

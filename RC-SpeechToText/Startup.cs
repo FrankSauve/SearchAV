@@ -30,7 +30,9 @@ namespace RC_SpeechToText
             services.AddDbContext<SearchAVContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddHttpClient();
+			services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+			services.AddHttpClient();
 
             services.AddMvc();
  
