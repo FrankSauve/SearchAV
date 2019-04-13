@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using RC_SpeechToText.Exceptions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace RC_SpeechToText.Tests
 {
@@ -63,8 +65,15 @@ namespace RC_SpeechToText.Tests
             string editTranscription = "Test Edit Transcription";
             string reviewTranscription = "Test Review Transcription";
 
-            var controller = new TranscriptionController(context);
-            controller.ControllerContext = new ControllerContext()
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new TranscriptionController(context, config);
+			controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
             };
@@ -160,9 +169,16 @@ namespace RC_SpeechToText.Tests
             }
 
             string addWordsTranscription = "Un Deux DeuxDeux Trois Quatre Cinq Six Sept Huit";// Added DeuxDeux and Huit
-            
-            var controller = new TranscriptionController(context);
-            controller.ControllerContext = new ControllerContext()
+
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new TranscriptionController(context, config);
+			controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
             };
@@ -229,9 +245,16 @@ namespace RC_SpeechToText.Tests
 
             string addWordsTranscription = "Deux Trois Quatre Six";// Removed word Un/Cinq/Sept
 
-            var controller = new TranscriptionController(context);
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
 
-            controller.ControllerContext = new ControllerContext()
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new TranscriptionController(context, config);
+
+			controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
             };
@@ -299,8 +322,15 @@ namespace RC_SpeechToText.Tests
 
             string addWordsTranscription = "Uno Deux Trois Quatre Cinqo Six Seven";// Modified word Un/Cinq/Sept
 
-            var controller = new TranscriptionController(context);
-            controller.ControllerContext = new ControllerContext()
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new TranscriptionController(context, config);
+			controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
             };
@@ -345,7 +375,14 @@ namespace RC_SpeechToText.Tests
 
 			var documentType = "fake type";
 
-			var controller = new TranscriptionController(context);
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new TranscriptionController(context, config);
 
             await Assert.ThrowsAsync<ControllerExceptions>(() => controller.DownloadTranscript(documentType, fileId));
             

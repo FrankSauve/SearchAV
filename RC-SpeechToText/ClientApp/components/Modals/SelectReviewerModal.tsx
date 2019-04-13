@@ -59,7 +59,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                     'content-type': 'application/json'
                 }
             };
-            axios.get('/api/file/AddReviewer/' + fileId + '/' + reviewerEmail, config)
+            axios.get('/api/file/' + fileId + '/' + reviewerEmail, config)
                 .then(() => {
                     this.setState({ loading: false });
                     this.showSuccessModal();
@@ -141,7 +141,7 @@ export class SelectReviewerModal extends React.Component<any, State> {
                             <section className="modalBody">
                                 <div className="field">
                                     <div className="control">
-                                        <input className="input is-medium" type="email" placeholder="Courriel" onChange={this.handleChange} />
+                                        <input className="input is-primary" type="email" placeholder="Courriel" onChange={this.handleChange} />
                                     </div>
                                 </div>
                             </section>

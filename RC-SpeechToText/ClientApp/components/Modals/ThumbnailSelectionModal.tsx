@@ -106,7 +106,7 @@ export class ThumbnailSelectionModal extends React.Component<any, State> {
                             <button className="delete closeModal" aria-label="close" onClick={this.props.hideModal}></button>
                         </header>
                         <section className="modalBody-Thumbnail">
-                            {this.props.file ? <VideoPlayer path={this.props.file.title} controle={false} seekTime={this.state.seekTime} /> : null}
+                            {this.props.file ? <VideoPlayer path={this.props.file.filePath} controle={false} seekTime={this.state.seekTime} /> : null}
                                 <input type="range" step="1" min="0" max="this.state.duration" value={this.state.inputTime} onChange={this.changeThumbnail} />
                         </section>
                         <footer className="modalFooter-Thumbnail">

@@ -14,25 +14,35 @@ using RC_SpeechToText.Models.DTO.Incoming;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace RC_SpeechToText.Tests
 {
     public class FileTest
     {
-        /// <summary>
-        /// Test fetching all the files
-        /// </summary>
-        [Fact]
+		/// <summary>
+		/// Test fetching all the files
+		/// </summary>
+		[Fact]
         public async Task TestGetAllVideos()
         {
-            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+			var configuration = new ConfigurationBuilder()
+			   .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+			   .AddJsonFile("appsettings.json", false)
+			   .Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+			var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             await context.File.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t }));
             await context.SaveChangesAsync();
 
-            //Act
-            var controller = new FileController(context);
-            var result = await controller.Index();
+			//Act
+			var someOptions = Options.Create(new AppSettings());
+			var controller = new FileController(context, config);
+            var result = await controller.GetAllFiles();
                 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -46,7 +56,14 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestGetAllWithUsernames()
         {
-            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+			var configuration = new ConfigurationBuilder()
+			   .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+			   .AddJsonFile("appsettings.json", false)
+			   .Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+			var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             var user = new User { Email = "test@email.com", Name = "testUser" };
            
@@ -65,7 +82,7 @@ namespace RC_SpeechToText.Tests
             await context.SaveChangesAsync();
 
             // Act
-            var controller = new FileController(context);
+            var controller = new FileController(context, config);
            
             var result = await controller.GetAllWithUsernames();
 
@@ -118,8 +135,15 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context);
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+			// Act
+			var controller = new FileController(context, config);
             controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
@@ -161,8 +185,15 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context);
+
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new FileController(context, config);
             var result = await controller.Details(file.Id);
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -202,9 +233,15 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context);
-            controller.ControllerContext = new ControllerContext()
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new FileController(context, config);
+			controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext() { User = userPrincipal }
             };

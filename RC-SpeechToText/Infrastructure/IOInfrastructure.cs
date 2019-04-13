@@ -59,9 +59,9 @@ namespace RC_SpeechToText.Infrastructure
 				File.Delete(path);
 		}
 
-        public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle)
+        public void GenerateSRTFile(List<string> paragraph, List<string> timestamps, string fileTitle, Models.AppSettings appSettings)
 		{
-			TextWriter tw = new StreamWriter(GetPathFromDirectory(@"\wwwroot\assets\Audio\" + fileTitle + ".srt"));
+			TextWriter tw = new StreamWriter(GetPathFromDirectory(appSettings.AudioPath + fileTitle + ".srt"));
 
 			//Write each line as follow:
 			//1 (the paragraph count)

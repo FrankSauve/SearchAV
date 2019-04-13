@@ -14,41 +14,75 @@ namespace RC_SpeechToText.Services
 	{
         private readonly SearchAVContext _context;
         private IOInfrastructure streamIO = new IOInfrastructure();
+		private readonly AppSettings _appSettings;
 
-        public ExportTranscriptionService(SearchAVContext context)
+		public ExportTranscriptionService(SearchAVContext context, AppSettings appSettings)
         {
             _context = context;
-        }
+			_appSettings = appSettings;
+		}
 
+		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Word> words)
+		{
+			var command = await PrepareCommand(fileTitle, documentType, transcription, words);
 
-		public async Task<bool> ExportVideo(string fileTitle, string documentType, string transcription, List<Models.Word> words)
+			var videoProcess = new ProcessStartInfo
+			{
+				CreateNoWindow = false,
+				UseShellExecute = false,
+				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(_appSettings.FfmpegPath), "ffmpeg.exe"),
+				Arguments = command,
+				RedirectStandardOutput = true
+			};
+
+			try
+			{
+				using (Process process = Process.Start(videoProcess))
+				{
+					while (!process.StandardOutput.EndOfStream)
+					{
+						var line = process.StandardOutput.ReadLine();
+						Console.WriteLine(line);
+					}
+
+					process.WaitForExit();
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
+
+		private async Task<string> PrepareCommand(string fileTitle, string documentType, string transcription, List<Word> words)
 		{
 			var splitFileTitle = fileTitle.Split(".");
-			var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
+			var videoPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath);
 			var subtitlePath = GetFfmpegSubtitlePath();
 			string command;
 
-			if(!streamIO.FileExist(videoPath + splitFileTitle[0] + ".srt"))
+			if (!streamIO.FileExist(videoPath + splitFileTitle[0] + ".srt"))
 			{
 				await Task.Run(() => CreateSRTDocument(transcription, words, fileTitle));
 			}
 
 			if (documentType.Contains("burn"))
 			{
-				if(streamIO.FileExist(videoPath + splitFileTitle[0] + "Burn.mp4"))
+				if (streamIO.FileExist(videoPath + splitFileTitle[0] + "Burn.mp4"))
 					streamIO.DeleteFile(videoPath + splitFileTitle[0] + "Burn.mp4");
 
 				command =
 					"-i " +
 					"\"" +
-					videoPath + 
+					videoPath +
 					splitFileTitle[0] +
 					".mp4\"" +
-					" -vf subtitles=\'" + 
+					" -vf subtitles=\'" +
 					"\"" +
 					subtitlePath +
 					splitFileTitle[0] +
-					".srt\'" + 
+					".srt\'" +
 					"\"" +
 					" -max_muxing_queue_size 1024 " +
 					"\"" +
@@ -78,35 +112,8 @@ namespace RC_SpeechToText.Services
 					"\"";
 			}
 
-			var videoProcess = new ProcessStartInfo
-			{
-				CreateNoWindow = false,
-				UseShellExecute = false,
-				FileName = streamIO.CombinePath(streamIO.GetPathFromDirectory(@"\ffmpeg\bin"), "ffmpeg.exe"),
-				Arguments = command,
-				RedirectStandardOutput = true
-			};
-
-			try
-			{
-				using (Process process = Process.Start(videoProcess))
-				{
-					while (!process.StandardOutput.EndOfStream)
-					{
-						string line = process.StandardOutput.ReadLine();
-						Console.WriteLine(line);
-					}
-
-					process.WaitForExit();
-					return true;
-				}
-			}
-			catch (Exception ex)
-			{
-				return false;
-			}
+			return command;
 		}
-
 
 		public bool CreateSRTDocument(string transcription, List<Models.Word> words, string fileTitle)
 		{
@@ -130,7 +137,7 @@ namespace RC_SpeechToText.Services
 			}
 
 			var splitFileTitle = fileTitle.Split(".");
-			streamIO.GenerateSRTFile(para, timestamps, splitFileTitle[0]);
+			streamIO.GenerateSRTFile(para, timestamps, splitFileTitle[0], _appSettings);
 
 			return true;
 		}
@@ -145,7 +152,7 @@ namespace RC_SpeechToText.Services
         {
             var net = new System.Net.WebClient();
             var splitFileTitle = file.Title.Split(".")[0];
-            var videoPath = streamIO.GetPathFromDirectory(@"\wwwroot\assets\Audio\");
+            var videoPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath);
             byte[] fileBytes = null;
 
             switch (docType)
@@ -167,7 +174,7 @@ namespace RC_SpeechToText.Services
         private List<string> GetParagraphTimestamp(List<string> paragraph, List<Word> words)
 		{
 			//Look for the first instance where the paragraph word match & the word db match
-			var firstWord = words.Find(x => x.Term == paragraph.First());
+			var firstWord = words.Find(x => x.Term.ToLower() == paragraph.First().ToLower());
 			//Same but for the last word
 			var lastWord = words.Find(x => x.Term == paragraph.Last().RemovePunctuation());
 			return new List<string>
@@ -196,7 +203,7 @@ namespace RC_SpeechToText.Services
 
 		private string GetFfmpegSubtitlePath()
 		{
-			var subtitlePath = streamIO.GetPathFromDirectory("\\wwwroot\\assets\\Audio\\");
+			var subtitlePath = streamIO.GetPathFromDirectory(_appSettings.AudioPath);
 			var subtitlePathForwardSlash = subtitlePath.Replace("\\", "/");
 			var colonIndex = subtitlePathForwardSlash.IndexOf(":");
 			return subtitlePathForwardSlash.Insert(colonIndex, "\\");

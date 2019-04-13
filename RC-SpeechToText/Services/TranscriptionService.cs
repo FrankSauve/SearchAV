@@ -1,129 +1,65 @@
-﻿using MediaToolkit;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RC_SpeechToText.Infrastructure;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Models.DTO.Outgoing;
 using RC_SpeechToText.Utils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Services {
     public class TranscriptionService {
         private readonly SearchAVContext _context;
+		private readonly AppSettings _appSettings;
 
-        public TranscriptionService(SearchAVContext context)
+		public TranscriptionService(SearchAVContext context, AppSettings appSettings)
         {
             _context = context;
-        }
-
-        public async Task<List<Models.Version>> Index()
-        {
-            return await _context.Version.ToListAsync();
-        }
-
-        public async Task<VersionDTO> SaveTranscript(string userEmail, Guid versionId, string newTranscript)
-        {
-            var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
-
-            //Find duration of file
-            var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync(); 
-
-            //Calling this method will handle saving the new words in the databse
-            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript, duration);
-            if (resultSaveWords != null)
-            {
-                return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
-            }
-
-            //Find corresponding file and update its flag 
-            Models.File file;
-            file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
-
-            FileFlag flag;
-            if (file != null)
-                flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? FileFlag.Revise : FileFlag.Edite); //If user is reviewer of file, flag = "Révisé"
-            else
-            {
-                file = await _context.File.Where(q => q.Id == newVersion.FileId).FirstOrDefaultAsync();
-				flag = FileFlag.Edite;
-            }
-
-			file.FileFlag = flag;
-            
-            //Send email to user who uploaded file stating that review is done
-            if (flag == FileFlag.Revise)
-            {
-                var uploader = await _context.User.FindAsync(file.UserId);
-                var reviewer = await _context.User.FindAsync(file.ReviewerId);
-                var emailService = new EmailInfrastructure();
-                emailService.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
-                newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
-            }
-
-            await _context.SaveChangesAsync();
-
-            return new VersionDTO { Version = newVersion, Error = null };
+			_appSettings = appSettings;
 		}
 
-        public async Task<string> SearchTranscript(Guid versionId, string searchTerms)
+        public async Task<VersionDTO> SaveTranscript(SaveTranscriptDTO saveTranscriptDTO)
+		{
+			var newVersion = await CreateNewVersion(saveTranscriptDTO.VersionId, saveTranscriptDTO.NewTranscript, saveTranscriptDTO.UserEmail);
+			var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync();
+			var resultSaveWords = await SaveWords(saveTranscriptDTO.VersionId, newVersion.Id, saveTranscriptDTO.NewTranscript, duration);
+
+			if (resultSaveWords != null)
+			{
+				return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
+			}
+
+			var file = await UpdateFileFlag(saveTranscriptDTO.UserEmail, newVersion);
+
+			if (file.FileFlag == FileFlag.Revise)
+			{
+				await EmailReviewer(file);
+				newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
+			}
+
+			return new VersionDTO { Version = newVersion, Error = null };
+		}
+
+		public async Task<string> SearchTranscript(OutSearchTranscriptDTO outSearchTranscriptDTO)
 		{
 			//Ordered by Id to get the words in the same order as transcript
-			var words = await _context.Word.Where(w => Guid.Equals(w.VersionId,versionId)).OrderBy(w => w.Position).ToListAsync();
+			var words = await _context.Word.Where(w => Guid.Equals(w.VersionId, outSearchTranscriptDTO.VersionId)).OrderBy(w => w.Position).ToListAsync();
 			var searchService = new SearchService();
-			return searchService.PerformSearch(searchTerms, words);
+			return searchService.PerformSearch(outSearchTranscriptDTO.SearchTerms, words);
 		}
 
-		public async Task<string> PrepareDownload(string documentType, Guid fileId)
+		public async Task<string> PrepareDownload(OutDownloadTranscriptDTO outDownloadTranscriptDTO)
 		{
-			var fileTitle = _context.File.Where(x => x.Id == fileId).Select(x => x.Title).SingleOrDefault();
-			var version = _context.Version.Where(v => v.FileId == fileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
+			var fileTitle = _context.File.Where(x => x.Id == outDownloadTranscriptDTO.FileId).Select(x => x.Title).SingleOrDefault();
+			var version = _context.Version.Where(v => v.FileId == outDownloadTranscriptDTO.FileId).Where(v => v.Active == true).SingleOrDefault(); //Gets the active version (last version of transcription)
 			var rawTranscript = version.Transcription;
 			var transcript = rawTranscript.Replace("<br>", "\n ");
 
             var exportResult = await Task.Run(async () =>
-            {
-
-				if (documentType == "doc")
-				{
-					var wordRepository = new WordRepository();
-					return wordRepository.CreateWordDocument(transcript);
-				}
-				else if (documentType == "googleDoc")
-				{
-					var googleDocRepository = new GoogleDocumentRepository();
-					return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
-				}
-				else if (documentType == "srt")
-				{
-					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
-					if (words.Count > 0)
-
-                    {
-						var exportTranscriptionService = new ExportTranscriptionService(_context);
-						return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
-					}
-					else
-						return false;
-				}
-				else if(documentType.Contains("video"))
-				{
-					var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
-					if (words.Count > 0)
-					{
-						var exportTranscriptionService = new ExportTranscriptionService(_context);
-						return await exportTranscriptionService.ExportVideo(fileTitle, documentType, transcript, words);
-					}
-					else
-						return false;
-				}
-				else
-				{
-					return false;
-				}
+			{
+				return await GenerateDocument(outDownloadTranscriptDTO, fileTitle, version, transcript);
 			});
 
             if (exportResult)
@@ -136,11 +72,101 @@ namespace RC_SpeechToText.Services {
             }
         }
 
-        /// <summary>
-        /// Private method that handles saving new words in the database when SaveTranscript is called
-        /// This makes the transcript still searchable after adding new words
-        /// </summary>
-        private async Task<string> SaveWords(Guid versionId, Guid newVersionId, string newTranscript, string duration)
+		private async Task<bool> GenerateDocument(OutDownloadTranscriptDTO outDownloadTranscriptDTO, string fileTitle, Models.Version version, string transcript)
+		{
+			if (outDownloadTranscriptDTO.DocumentType == "doc")
+			{
+				return GenerateWordDoucment(transcript);
+			}
+			else if (outDownloadTranscriptDTO.DocumentType == "googleDoc")
+			{
+				return GenerateGoogleDocument(fileTitle, transcript);
+			}
+			else if (outDownloadTranscriptDTO.DocumentType == "srt")
+			{
+				return await GenerateSRTDocument(fileTitle, version, transcript);
+			}
+			else if (outDownloadTranscriptDTO.DocumentType.Contains("video"))
+			{
+				return await GenerateVideoWithSubtitle(outDownloadTranscriptDTO, fileTitle, version, transcript);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		private async Task<bool> GenerateVideoWithSubtitle(OutDownloadTranscriptDTO outDownloadTranscriptDTO, string fileTitle, Models.Version version, string transcript)
+		{
+			var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
+			if (words.Count > 0)
+			{
+				var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
+				return await exportTranscriptionService.ExportVideo(fileTitle, outDownloadTranscriptDTO.DocumentType, transcript, words);
+			}
+			else
+				return false;
+		}
+
+		private async Task<bool> GenerateSRTDocument(string fileTitle, Models.Version version, string transcript)
+		{
+			var words = await _context.Word.Where(v => Guid.Equals(v.VersionId, version.Id)).OrderBy(v => v.Position).ToListAsync();
+			if (words.Count > 0)
+
+			{
+				var exportTranscriptionService = new ExportTranscriptionService(_context, _appSettings);
+				return exportTranscriptionService.CreateSRTDocument(transcript, words, fileTitle);
+			}
+			else
+				return false;
+		}
+
+		private static bool GenerateGoogleDocument(string fileTitle, string transcript)
+		{
+			var googleDocRepository = new GoogleDocumentRepository();
+			return googleDocRepository.CreateGoogleDocument(transcript, fileTitle);
+		}
+
+		private static bool GenerateWordDoucment(string transcript)
+		{
+			var wordRepository = new WordRepository();
+			return wordRepository.CreateWordDocument(transcript);
+		}
+
+		private async Task EmailReviewer(File file)
+		{
+			var uploader = await _context.User.FindAsync(file.UserId);
+			var reviewer = await _context.User.FindAsync(file.ReviewerId);
+			var emailService = new EmailInfrastructure();
+			emailService.SendReviewDoneEmail(uploader.Email, file, reviewer.Name);
+		}
+
+		private async Task<File> UpdateFileFlag(string userEmail, Models.Version newVersion)
+		{
+			//Find corresponding file and update its flag 
+			var file = await _context.File.Include(q => q.Reviewer).FirstOrDefaultAsync(q => q.Id == newVersion.FileId);
+
+			FileFlag flag;
+			if (file != null)
+				flag = (file.Reviewer.Email.Equals(userEmail, StringComparison.InvariantCultureIgnoreCase) ? FileFlag.Revise : FileFlag.Edite); //If user is reviewer of file, flag = "Révisé"
+			else
+			{
+				file = await _context.File.Where(q => q.Id == newVersion.FileId).FirstOrDefaultAsync();
+				flag = FileFlag.Edite;
+			}
+
+			file.FileFlag = flag;
+
+			await _context.SaveChangesAsync();
+
+			return file;
+		}
+
+		/// <summary>
+		/// Private method that handles saving new words in the database when SaveTranscript is called
+		/// This makes the transcript still searchable after adding new words
+		/// </summary>
+		private async Task<string> SaveWords(Guid versionId, Guid newVersionId, string newTranscript, string duration)
         {
             //Have to explicitly instantiate variable to be able to keep the words.
             List<Word> oldWords = new List<Word>();

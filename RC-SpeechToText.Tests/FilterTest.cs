@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models.DTO.Incoming;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace RC_SpeechToText.Tests
 {
@@ -36,10 +38,16 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file2);
             await context.File.AddAsync(file3); //No flag for testing purposes
             await context.SaveChangesAsync();
-			
-            // Act
-            var controller = new FileController(context);
-            var result = await controller.GetAllFilesByFlag("Automatise");
+
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new FileController(context, config);
+			var result = await controller.GetAllFilesByFlag("Automatise");
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -83,9 +91,15 @@ namespace RC_SpeechToText.Tests
 			await context.File.AddAsync(file3); //No flag for testing purposes
 			await context.SaveChangesAsync();
 
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
 			// Act
-			var controller = new FileController(context);
-            var result = await controller.GetAllFilesByFlag("Edite");
+			var controller = new FileController(context, config);
+			var result = await controller.GetAllFilesByFlag("Edite");
 
 			// Assert
 			var okResult = Assert.IsType<OkObjectResult>(result);
@@ -129,9 +143,15 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context);
-            var result = await controller.GetAllFilesByFlag("Revise");
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new FileController(context, config);
+			var result = await controller.GetAllFilesByFlag("Revise");
 ;
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

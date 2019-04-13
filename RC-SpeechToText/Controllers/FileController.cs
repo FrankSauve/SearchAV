@@ -9,6 +9,7 @@ using System.Linq;
 using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
 using RC_SpeechToText.Models.DTO.Outgoing;
+using Microsoft.Extensions.Options;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -19,14 +20,16 @@ namespace RC_SpeechToText.Controllers
     public class FileController : Controller
     {
         private readonly FileService _fileService;
+		private AppSettings _appSettings { get; set; }
 
-        public FileController(SearchAVContext context)
+		public FileController(SearchAVContext context, IOptions<AppSettings> settings)
         {
-            _fileService = new FileService(context);
-        }
+			_appSettings = settings.Value;
+			_fileService = new FileService(context, _appSettings);	
+		}
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetAllFiles()
         {
 
             var files = await _fileService.GetAllFiles();
@@ -43,6 +46,7 @@ namespace RC_SpeechToText.Controllers
             return Ok(filesUsernames);
         }
 
+        
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllWithUsernameAndVersions()
         {
@@ -51,7 +55,7 @@ namespace RC_SpeechToText.Controllers
             return Ok(filesUsernames);
         }
 
-        [HttpGet("[action]/{flag}")]
+        [HttpGet("{flag}")]
         public async Task<IActionResult> GetAllFilesByFlag(string flag)
         {
             var filesUsernames = await _fileService.GetAllFilesByFlag(flag);
@@ -127,7 +131,7 @@ namespace RC_SpeechToText.Controllers
             return Ok(file.File);
         }
         
-        [HttpGet("[action]/{fileId}/{reviewerEmail}")]
+        [HttpGet("{fileId}/{reviewerEmail}")]
         public async Task<IActionResult> AddReviewer(Guid fileId, string reviewerEmail)
         {
             var emailClaim = HttpContext.User.Claims;
