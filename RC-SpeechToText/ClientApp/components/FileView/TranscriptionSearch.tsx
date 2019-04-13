@@ -45,7 +45,7 @@ export class TranscriptionSearch extends React.Component<any,State> {
                     <div className="right-side">
                         <div className="search-field-file-view">
                             <p className="control has-icons-right">
-                                <input className="input is-rounded search-input" type="text" onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
+                                <input className="input is-rounded search-input" type="search" onChange={this.handleChange} onKeyPress={this.handleKeyPress} />
                                 <span className="icon is-small is-right">
                                     <a onClick={this.handleSearch}><i className="fas fa-search is-cadet-grey"></i></a>
                                 </span>

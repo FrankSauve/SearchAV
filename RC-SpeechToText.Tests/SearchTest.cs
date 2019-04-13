@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
@@ -35,12 +37,19 @@ namespace RC_SpeechToText.Tests
             //AddAsync File to database
             await context.File.AddRangeAsync(files);
             await context.SaveChangesAsync();
-			
-            var controller = new FileController(context);
-			
-            //Searching for title1
 
-            IActionResult awaitResult = await controller.GetFilesByDescriptionAndTitle("title1");
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			// Act
+			var controller = new FileController(context, config);
+
+			//Searching for title1
+
+			IActionResult awaitResult = await controller.GetFilesByDescriptionAndTitle("title1");
             var okResult = awaitResult as OkObjectResult;
             Assert.NotNull(okResult);
 

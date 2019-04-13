@@ -36,7 +36,7 @@ namespace RC_SpeechToText.Services
 
         public async Task<FileUsernameDTO> GetAllWithUsernames()
         {
-            var files = await _context.File.Include(q => q.User).ToListAsync();
+            var files = await _context.File.Include(q => q.User).OrderByDescending(q => q.DateAdded).ToListAsync();
             files = FormatTitles(files);
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
@@ -212,7 +212,7 @@ namespace RC_SpeechToText.Services
                 string newPath = streamIO.GetPathFromDirectory(_appSettings.ThumbnailPath + newName + ".jpg");
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
-                return _appSettings.ThumbnailPath + newName + ".jpg";
+                return _appSettings.ThumbnailPathNoRoot + newName + ".jpg";
             }
             else
                 return "NULL";
@@ -229,7 +229,7 @@ namespace RC_SpeechToText.Services
                 string newPath = streamIO.GetPathFromDirectory(_appSettings.AudioPath + newName + ext);
                 //Rename file in current directory to new title
                 streamIO.MoveFilePath(oldPath, newPath);
-                return _appSettings.AudioPath + newName + ext;
+                return _appSettings.AudioPathNoRoot + newName + ext;
             }
             else
                 return "NULL";

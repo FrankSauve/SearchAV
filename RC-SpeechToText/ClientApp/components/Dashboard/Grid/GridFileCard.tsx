@@ -58,11 +58,16 @@ export class GridFileCard extends React.Component<any, State> {
         return (
             <div className="column is-3">
                 <div className="card fileCard">
-                    <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}><b>{this.state.flag.toUpperCase()}</b></span> 
+                    <Link className="info" to={`/FileView/${this.props.file.id}`}>
+                        <span className={`tag is-rounded flag ${this.state.flag.indexOf("A") == 0 ? "is-danger" : this.state.flag.indexOf("R") == 0 ? "is-success has-text-black" : "is-info has-text-black"}`}><b>{this.state.flag.toUpperCase()}</b></span> 
+                    </Link>
                     <header className="card-header">
                         <p className="card-header-title fileTitle">
-                            {this.state.title ? (this.state.title.length < 35 ? this.state.title : this.state.title.substring(0, 35) + " ..." ) : null}</p>
-                        
+                            <Link className="info" to={`/FileView/${this.props.file.id}`}>
+                                {this.state.title ? (this.state.title.length < 35 ? this.state.title : this.state.title.substring(0, 35) + " ...") : null}
+                            </Link>
+                        </p>
+
                          <DropdownButton
                             fileId={this.props.file.id}
                             title={this.props.file.title}
@@ -76,7 +81,9 @@ export class GridFileCard extends React.Component<any, State> {
                             updateDescription={this.updateDescription}
                           />
 
-                    </header>
+                        </header>
+
+                    <Link className="info" to={`/FileView/${this.props.file.id}`}>
                     <div className="card-image">
                         <div className="hovereffect">
                             <figure className="image is-16by9">
@@ -100,6 +107,7 @@ export class GridFileCard extends React.Component<any, State> {
                             <time className="font-size-12" dateTime={this.props.date}>{this.formatTime(this.props.date)}</time>
                         </div>
                     </div>
+                    </Link>
                 </div>
             </div>
         );

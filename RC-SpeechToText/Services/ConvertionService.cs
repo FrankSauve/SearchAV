@@ -105,13 +105,13 @@ namespace RC_SpeechToText.Services
 			var file = new File
 			{
 				Title = (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title + ext),
-				FilePath = _appSettings.AudioPath + (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title + ext),
+				FilePath = _appSettings.AudioPathNoRoot + (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title + ext),
 				FileFlag = FileFlag.Automatise,
 				Description = convertionDTO.Description,
 				UserId = user.Id,
 				DateAdded = DateTime.Now,
 				Type = fileType,
-				ThumbnailPath = _appSettings.ThumbnailPath + (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title) + ".jpg",
+				ThumbnailPath = _appSettings.ThumbnailPathNoRoot + (convertionDTO.Title == "" ? convertionDTO.AudioFile.FileName : convertionDTO.Title) + ".jpg",
 				Duration = duration
 			};
 			await _context.File.AddAsync(file);
