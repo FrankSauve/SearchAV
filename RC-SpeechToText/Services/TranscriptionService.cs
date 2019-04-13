@@ -20,18 +20,18 @@ namespace RC_SpeechToText.Services {
 			_appSettings = appSettings;
 		}
 
-        public async Task<VersionDTO> SaveTranscript(string userEmail, Guid versionId, string newTranscript)
+        public async Task<VersionDTO> SaveTranscript(SaveTranscriptDTO saveTranscriptDTO)
 		{
-			var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
+			var newVersion = await CreateNewVersion(saveTranscriptDTO.VersionId, saveTranscriptDTO.NewTranscript, saveTranscriptDTO.UserEmail);
 			var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync();
-			var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript, duration);
+			var resultSaveWords = await SaveWords(saveTranscriptDTO.VersionId, newVersion.Id, saveTranscriptDTO.NewTranscript, duration);
 
 			if (resultSaveWords != null)
 			{
 				return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
 			}
 
-			var file = await UpdateFileFlag(userEmail, newVersion);
+			var file = await UpdateFileFlag(saveTranscriptDTO.UserEmail, newVersion);
 
 			if (file.FileFlag == FileFlag.Revise)
 			{
