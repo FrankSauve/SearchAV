@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using RC_SpeechToText.Infrastructure;
 using Microsoft.WindowsAPICodePack.Shell;
 using RC_SpeechToText.Exceptions;
+using RC_SpeechToText.Models.DTO.Outgoing;
+using System.Text;
 
 namespace RC_SpeechToText.Services
 {
@@ -176,15 +178,18 @@ namespace RC_SpeechToText.Services
 			return words;
 		}
 
-        public async Task<int> ProcessFiles(List<IFormFile> files, string userEmail, string description, string title)
+        public async Task<OutProcessFileDTO> ProcessFiles(List<IFormFile> files, string userEmail, string description, string title)
         {
             var converter = new Converter();
             var count = 0;
+            var titles = new StringBuilder();
             foreach (var file in files)
             {
                 if (converter.GetFileType(file.FileName) == "N/A")
                 {
                     count++;
+                    titles.AppendLine(System.IO.Path.GetFileNameWithoutExtension(file.FileName));
+                    titles.AppendLine(",");
                     continue;
                 }
                 else
@@ -197,7 +202,7 @@ namespace RC_SpeechToText.Services
                     }
                 }
             }
-            return count;
+            return new OutProcessFileDTO { Count = count, Title = count + (count > 1 ? " fichiers ont échoué la transcription: " : " fichier a échoué la transcription: ")  + titles.ToString()};
 
         }
 

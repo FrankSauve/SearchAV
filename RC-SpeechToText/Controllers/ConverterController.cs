@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using RC_SpeechToText.Filters;
 using RC_SpeechToText.Exceptions;
 using System.Collections.Generic;
+using System;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -36,9 +37,9 @@ namespace RC_SpeechToText.Controllers
 		{
            
                 var count = await _convertionService.ProcessFiles(files, userEmail, description, title);
-                if (count > 0)
+                if (count.Count > 0)
                 {
-                    throw new ControllerExceptions(count + " Videos on échoué la transcription");
+                    throw new ControllerExceptions(count.Title);
                 }
                 return Ok();
 
