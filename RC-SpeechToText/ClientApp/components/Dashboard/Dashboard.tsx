@@ -16,6 +16,7 @@ interface State {
     loggedUser: any;
     files: any[],
     allFiles: any[],
+    versions: any[],
     currentFilterFiles: any[],
     usernames: string[],
     userId: any,
@@ -27,6 +28,7 @@ interface State {
     isFilesToReviewFilterActive: boolean,
     listView: boolean,
     loading: boolean,
+    allFilesSearch: boolean,
     unauthorized: boolean
 }
 
@@ -39,6 +41,7 @@ export default class Dashboard extends React.Component<any, State> {
             loggedUser: null,
             files: [],
             allFiles: [],
+            versions:[],
             currentFilterFiles: [],
             usernames: [],
             userId: "",
@@ -50,6 +53,7 @@ export default class Dashboard extends React.Component<any, State> {
             listView: false,
             searchTerms: '',
             loading: false,
+            allFilesSearch: false,
             unauthorized: false
         }
     }
@@ -116,15 +120,15 @@ export default class Dashboard extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/file/GetAllWithUsernames', config)
+        axios.get('/api/file/GetAllWithUsernameAndVersions', config)
             .then(res => {
                 console.log(res.data);
-                this.setState({ 'files': res.data.files });
                 this.setState({ 'allFiles': res.data.files });
-				this.setState(
-					{ 'currentFilterFiles': res.data.files },
-					this.searchDescription
+                this.setState(
+					{ 'versions': res.data.versions},
+					this.matchVersionToFile
 				);
+				
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 console.log(this.state.loading);
@@ -301,34 +305,58 @@ export default class Dashboard extends React.Component<any, State> {
             </div>
         )
     }
-    public searchDescription = () => {
+	public matchVersionToFile = () => {
+		this.state.allFiles.map((file) => {
+            this.state.versions.map((version) =>{
+				 if (version.fileId == file.id) {
+					 file.transcription = version.transcription;
+				 }
+			})
+        })
+		this.setState({ 'files': this.state.allFiles });
+		this.setState(
+			{ 'currentFilterFiles': this.state.allFiles},
+			this.searchDescription
+		);
 
+	}
+
+    public searchDescription = () => {
         var searchTerms = this.state.searchTerms;
-        var fileAdded = false;
+        var fileAddedTitle = false;
+        var fileAddedDescription = false;
         var counter = 0;
         var results = Array(this.state.allFiles.length);
         var resultsUsernames = Array(this.state.allFiles.length);
 
+        console.log(this.state.versions);
         if (searchTerms == "") {
             this.setState({ 'files': this.state.currentFilterFiles });
         } else {
             this.state.currentFilterFiles.map((file) => {
-                fileAdded = false;
-
+                fileAddedTitle = false;
                 if (file.description != null) {
                     if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
                         results[counter] = file;
 						resultsUsernames[counter] = file.user.name;
 						
                         //If file is added here we do not want to add it again if it has a title match too
-                        fileAdded = true;
+                        fileAddedTitle = true;
                         counter++;
                     }
                 }
-                if (file.title != null && !fileAdded) {
+                if (file.title != null && !fileAddedTitle) {
                     if (file.title.toLowerCase().includes(searchTerms.toLowerCase())) {
                         results[counter] = file;
 						resultsUsernames[counter] = file.user.name;
+                        counter++;
+                        fileAddedDescription = true;
+                    }
+                }
+                if (this.state.allFilesSearch && !fileAddedTitle && !fileAddedDescription) {
+                    if (file.transcription.toLowerCase().includes(searchTerms.toLowerCase()) && file.transcription != null) {
+                        results[counter] = file;
+                        resultsUsernames[counter] = file.user.name;
                         counter++;
                     }
                 }
@@ -338,8 +366,13 @@ export default class Dashboard extends React.Component<any, State> {
         }
         
     }
-
-
+    
+    public handleAllFilesSearch = (e: any) => {
+        this.setState(
+            { 'allFilesSearch': e.target.checked },
+            this.searchDescription
+        );
+    }
     public handleSearch = (e: any) => {
         this.setState(
             { 'searchTerms': e.target.value.trim() },
@@ -404,6 +437,18 @@ export default class Dashboard extends React.Component<any, State> {
                             <div className="field is-horizontal mg-top-10">
                                 <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
                                 <div className="right-side">
+                                    <span className="search-checkbox">
+                                        <label className="is-cadet-grey">
+                                            <input
+                                                className="checkbox mg-right-5"
+                                                name="isGoing"
+                                                type="checkbox"
+                                                checked={this.state.allFilesSearch}
+                                                onChange={this.handleAllFilesSearch} 
+                                            />
+                                            Rechercher dans la transcription
+                                        </label>
+                                    </span>
                                     <div className="search-field">
                                         <p className="control has-icons-right">
                                             <input className="input is-rounded search-input" type="search" onChange={this.handleSearch}/>
