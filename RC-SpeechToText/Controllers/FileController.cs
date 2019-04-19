@@ -68,7 +68,7 @@ namespace RC_SpeechToText.Controllers
             var emailClaim = HttpContext.User.Claims;
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
-            var filesUsernames = await _fileService.GetAllFilesById(emailString);
+            var filesUsernames = await _fileService.GetAllFilesByEmail(emailString);
 
             return Ok(filesUsernames);
 
