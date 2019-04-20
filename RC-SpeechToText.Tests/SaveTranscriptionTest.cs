@@ -1,18 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Xunit;
-using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
+using RC_SpeechToText.Services;
 using System.Threading.Tasks;
 using System;
 using Version = RC_SpeechToText.Models.Version;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using RC_SpeechToText.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using RC_SpeechToText.Models.DTO.Incoming;
+using RC_SpeechToText.Models.DTO.Outgoing;
 
 namespace RC_SpeechToText.Tests
 {
@@ -22,7 +20,7 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestSaveEditedTranscript()
         {
-
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             string transcript = "Transcription";
@@ -34,20 +32,11 @@ namespace RC_SpeechToText.Tests
             var user = new User {Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
             var reviewer = new User {Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
             var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:30"};
-
-            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("email", user.Email)
-            }));
-            var reviewerPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("email", reviewer.Email)
-            }));
+            
             //AddAsync File to database
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
             
-
             var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
             
             //AddAsync Version to database
@@ -71,14 +60,14 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
 			// Act
-			var controller = new TranscriptionController(context, config);
-			controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = userPrincipal }
-            };
-            //Editing file
-            await controller.SaveTranscript( version.Id, editTranscription);
+            var transcriptionService = new TranscriptionService(context, config.Value);
+
+            var saveEditDTO = new SaveTranscriptDTO(user.Email, version.Id, editTranscription);
+            await transcriptionService.SaveTranscript(saveEditDTO);
+
+            // Assert
             Assert.NotEqual(version.Transcription, editTranscription);
 
             //Checking edited version
@@ -87,17 +76,11 @@ namespace RC_SpeechToText.Tests
             Assert.Equal(editedVersion.FileId, file.Id);
             Assert.True(editedVersion.Active);
 
-            //Checking corresponding file
-            //file = context.File.Find(file.Id);
-            //Assert.Equal(editedFlag, file.Flag); //Failing but should be working
-
             //----------------------------------------------------------------------------------------------------------------
             //Review file
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = reviewerPrincipal }
-            };
-            await controller.SaveTranscript(editedVersion.Id, reviewTranscription);
+            var saveReviewDTO = new SaveTranscriptDTO(reviewer.Email, editedVersion.Id, reviewTranscription);
+            await transcriptionService.SaveTranscript(saveReviewDTO);
+
             Assert.NotEqual(editedVersion.Transcription, reviewTranscription);
 
             //Checking new version
@@ -107,10 +90,6 @@ namespace RC_SpeechToText.Tests
             Assert.True(reviewedVersion.Active);
             Assert.False(editedVersion.Active);
 
-            //Checking corresponding file
-            //file = context.File.Find(file.Id);
-            //Assert.Equal(reviewedFlag, file.Flag); //Failing but should be working
-
             //-----------------------------------------------------------------------------------------------------------------
             //Checking old version
             version = context.Version.Find(version.Id);
@@ -118,13 +97,12 @@ namespace RC_SpeechToText.Tests
             Assert.Equal(version.FileId, editedVersion.FileId);
             Assert.Equal(version.FileId, reviewedVersion.FileId);
             Assert.False(version.Active);
-
         }
 
         [Fact]
         public async Task TestAddWordsTimeStamps()
         {
-
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             string transcript = "Un Deux Trois Quatre Cinq Six Sept";
@@ -135,15 +113,9 @@ namespace RC_SpeechToText.Tests
             var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
             var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:09" };
 
-            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("email", user.Email)
-            }));
-
             //AddAsync File to database
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
-
 
             var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
 
@@ -176,30 +148,27 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
-			// Act
-			var controller = new TranscriptionController(context, config);
-			controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = userPrincipal }
-            };
-            //Editing file to add Words
-            await controller.SaveTranscript( version.Id, addWordsTranscription);
+			
+            // Act
+            var transcriptionService = new TranscriptionService(context, config.Value);
+            var addWordsDTO = new SaveTranscriptDTO(user.Email, version.Id, addWordsTranscription);
+            await transcriptionService.SaveTranscript(addWordsDTO);
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
             List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Position).ToListAsync();
 
+            // Assert
             //Check if each words related to new transcription has right timestamp 
             //(They should have the timestamp of the word that precedes them
             Assert.Equal("\"2.500s\"", addedWords[2].Timestamp);
             Assert.Equal("\"8.000s\"", addedWords[8].Timestamp);
-            
-           
         }
 
         [Fact]
         public async Task TestDeleteWordsTimeStamps()
         {
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             string transcript = "Un Deux Trois Quatre Cinq Six Sept";
@@ -210,15 +179,9 @@ namespace RC_SpeechToText.Tests
             var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
             var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:08" };
 
-            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("email", user.Email)
-            }));
-
             //AddAsync File to database
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
-
 
             var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
 
@@ -251,32 +214,29 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
-			// Act
-			var controller = new TranscriptionController(context, config);
 
-			controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = userPrincipal }
-            };
-            //Editing file to delete words
-            await controller.SaveTranscript( version.Id, addWordsTranscription);
+            // Act
+            var transcriptionService = new TranscriptionService(context, config.Value);
+            var addWordsDTO = new SaveTranscriptDTO(user.Email, version.Id, addWordsTranscription);
+            await transcriptionService.SaveTranscript(addWordsDTO);
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
             List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Position).ToListAsync();
 
+            // Assert
             //Check if each words related to new transcription has right timestamp 
             //(They should have the same timestamps with the removed words gone)
             Assert.Equal("\"2.000s\"", addedWords[0].Timestamp);
             Assert.Equal("\"3.000s\"", addedWords[1].Timestamp);
             Assert.Equal("\"4.000s\"", addedWords[2].Timestamp);
             Assert.Equal("\"6.000s\"", addedWords[3].Timestamp);
-          
         }
 
         [Fact]
         public async Task TestModifyWordsTimeStamps()
         {
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             string transcript = "Un Deux Trois Quatre Cinq Six Sept";
@@ -287,15 +247,9 @@ namespace RC_SpeechToText.Tests
             var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
             var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:08" };
 
-            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-           {
-                new Claim("email", user.Email)
-           }));
-
             //AddAsync File to database
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
-
 
             var version = new Version { FileId = file.Id, Active = true, Transcription = transcript };
 
@@ -328,19 +282,17 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
-			// Act
-			var controller = new TranscriptionController(context, config);
-			controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = userPrincipal }
-            };
-            //Editing file to modify words
-            await controller.SaveTranscript( version.Id, addWordsTranscription);
+
+            // Act
+            var transcriptionService = new TranscriptionService(context, config.Value);
+            var addWordsDTO = new SaveTranscriptDTO(user.Email, version.Id, addWordsTranscription);
+            await transcriptionService.SaveTranscript(addWordsDTO);
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
             List<Word> addedWords = await context.Word.Where(w => w.VersionId == newVersion.Id).OrderBy(w => w.Position).ToListAsync();
 
+            // Assert
             //Check if each words related to new transcription has right timestamp 
             //(They should have the same timestamps with the modified words keeping their)
             Assert.Equal("\"1.000s\"", addedWords[0].Timestamp);
@@ -351,6 +303,7 @@ namespace RC_SpeechToText.Tests
         [Fact]
 		public async void DownloadTranscriptTest()
 		{
+            // Arrange
 			var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
 			var versionMock = new List<Version>
@@ -381,12 +334,13 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
-			// Act
-			var controller = new TranscriptionController(context, config);
-
-            await Assert.ThrowsAsync<ControllerExceptions>(() => controller.DownloadTranscript(documentType, fileId));
-            
-		}
+			
+            // Act
+            var transcriptionService = new TranscriptionService(context, config.Value);
+            var outDTO = new OutDownloadTranscriptDTO { FileId = fileId, DocumentType = documentType };
+            var errMsg = await transcriptionService.PrepareDownload(outDTO);
+            Assert.Equal("Error while trying to download transcription", errMsg);
+        }
 
 	}
 }

@@ -72,7 +72,7 @@ namespace RC_SpeechToText.Services
             return new FileUsernameDTO { Files = files, Usernames = files.Select(x => x.User.Name).ToList() };
         }
 
-        public async Task<FileUsernameDTO> GetAllFilesById(string email)
+        public async Task<FileUsernameDTO> GetAllFilesByEmail(string email)
         {
             var files = await _context.File.Where(f => f.User.Email == email).Include(q => q.User).ToListAsync();
             files = FormatTitles(files);

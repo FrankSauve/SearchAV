@@ -1,18 +1,16 @@
 ﻿
-using RC_SpeechToText.Controllers;
+using RC_SpeechToText.Services;
 using RC_SpeechToText.Models;
 using Xunit;
-using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using RC_SpeechToText.Models.DTO.Incoming;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace RC_SpeechToText.Tests
 {
-    public class FiterTest
+    public class FilterTest
     {
         /// <summary>
         /// Test fetching all the automated files 
@@ -45,13 +43,13 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
 			// Act
-			var controller = new FileController(context, config);
-			var result = await controller.GetAllFilesByFlag("Automatise");
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.GetAllFilesByFlag("Automatise");
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
+            Assert.IsType<FileUsernameDTO>(result);
 
 			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2 }, Usernames = new List<string> { user.Name } };
 
@@ -97,13 +95,13 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
 			// Act
-			var controller = new FileController(context, config);
-			var result = await controller.GetAllFilesByFlag("Edite");
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.GetAllFilesByFlag("Edite");
 
 			// Assert
-			var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
+            Assert.IsType<FileUsernameDTO>(result);
 
 			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2 }, Usernames = new List<string> { user.Name } };
 
@@ -149,13 +147,13 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
 			// Act
-			var controller = new FileController(context, config);
-			var result = await controller.GetAllFilesByFlag("Revise");
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.GetAllFilesByFlag("Revise");
 ;
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
+            Assert.IsType<FileUsernameDTO>(result);
 
 			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2 }, Usernames = new List<string> { user.Name } };
 
