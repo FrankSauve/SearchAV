@@ -30,7 +30,8 @@ interface State {
     loading: boolean,
     allFilesSearch: boolean,
     unauthorized: boolean,
-    filesPerPage: number
+    filesPerPage: number,
+    currentPage: number
 }
 
 export default class Dashboard extends React.Component<any, State> {
@@ -56,7 +57,8 @@ export default class Dashboard extends React.Component<any, State> {
             loading: false,
             allFilesSearch: false,
             unauthorized: false,
-            filesPerPage: 8
+            filesPerPage: 2,
+            currentPage: 1
         }
     }
 
@@ -299,16 +301,32 @@ export default class Dashboard extends React.Component<any, State> {
 
     public showButton = () => {
         if (this.state.allFiles.length > this.state.filesPerPage)
-            return (
-                <div>
-                    <br />
-                    <a className="button is-danger">Previous</a>
-                    &nbsp;
-                    &nbsp;
-                    <a className="button is-danger">Next</a>
-                </div>
-                )
+            return(
+                    <div>
+                        <br />
+                        <a className="button is-danger" disabled={this.state.currentPage == 1 ? true : false}
+                           onClick={this.previousButtonOnClick}>Previous</a>
+                        &nbsp;
+                        &nbsp;
+                        <a className="button is-danger" onClick={this.nextButtonOnClick}>Next</a>
+                    </div>
+            )
     }
+
+    public nextButtonOnClick = () => {
+        this.setState({ 'currentPage': this.state.currentPage + 1 });
+        this.getAllFiles();
+    }
+
+    public previousButtonOnClick = () => {
+        if (this.state.currentPage != 1) {
+            this.setState({ 'currentPage': this.state.currentPage - 1 });
+            this.getAllFiles();
+        }
+    }
+
+
+
     public renderListView = () => {
         return (
             <div>
