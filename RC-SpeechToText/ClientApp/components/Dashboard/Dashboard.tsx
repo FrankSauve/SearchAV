@@ -29,7 +29,8 @@ interface State {
     listView: boolean,
     loading: boolean,
     allFilesSearch: boolean,
-    unauthorized: boolean
+    unauthorized: boolean,
+    filesPerPage: number
 }
 
 export default class Dashboard extends React.Component<any, State> {
@@ -54,7 +55,8 @@ export default class Dashboard extends React.Component<any, State> {
             searchTerms: '',
             loading: false,
             allFilesSearch: false,
-            unauthorized: false
+            unauthorized: false,
+            filesPerPage: 8
         }
     }
 
@@ -285,13 +287,27 @@ export default class Dashboard extends React.Component<any, State> {
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
                                 getAllFiles={this.getAllFiles}
-                        /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                {this.showButton()}
            </div>
         )
     }
 
     public showListView = () => {
         this.setState({ 'listView': true });
+    }
+
+    public showButton = () => {
+        if (this.state.allFiles.length > this.state.filesPerPage)
+            return (
+                <div>
+                    <br />
+                    <a className="button is-danger">Previous</a>
+                    &nbsp;
+                    &nbsp;
+                    <a className="button is-danger">Next</a>
+                </div>
+                )
     }
     public renderListView = () => {
         return (
@@ -301,7 +317,8 @@ export default class Dashboard extends React.Component<any, State> {
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
                     getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                {this.showButton()}
             </div>
         )
     }
@@ -470,7 +487,6 @@ export default class Dashboard extends React.Component<any, State> {
                                 this.state.listView ? this.renderListView() : this.renderFileTable()}
                         </div>
                     </section>
-
                 </div>
             </div>
         )
