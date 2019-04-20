@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Moq;
-using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
+using RC_SpeechToText.Services;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,7 +14,7 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestSearchByDescriptionAndTitle()
         {
-
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
@@ -44,39 +40,30 @@ namespace RC_SpeechToText.Tests
 				.Build();
 
 			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
-			// Act
-			var controller = new FileController(context, config);
+			
+            // Act
+            //Searching for title1
+            var filesTitle1 = SearchService.SearchDescriptionAndTitle(files, "title1");
+            Assert.NotNull(filesTitle1);
 
-			//Searching for title1
-
-			IActionResult awaitResult = await controller.GetFilesByDescriptionAndTitle("title1");
-            var okResult = awaitResult as OkObjectResult;
-            Assert.NotNull(okResult);
-
-            List<File> filesTitle1 = okResult.Value as List<File>; 
             //Checking if only file returned was the one with title : title1
             Assert.Equal("title1", filesTitle1[0].Title);
             Assert.Single(filesTitle1);
 
             //Searching for btgjsp in description
-            awaitResult = await controller.GetFilesByDescriptionAndTitle("btgjsp");
-            okResult = awaitResult as OkObjectResult;
-            Assert.NotNull(okResult);
+            var filesBtgjsp = SearchService.SearchDescriptionAndTitle(files, "btgjsp");
+            Assert.NotNull(filesBtgjsp);
 
-            List<File> filesBtgjsp = okResult.Value as List<File>;
             //Checking if only file returned was the one with title : title1
             Assert.Equal("title3", filesBtgjsp[0].Title);
             Assert.Single(filesBtgjsp);
 
             //Searching for descriptions containing word "Description"
-            awaitResult = await controller.GetFilesByDescriptionAndTitle("description");
-            okResult = awaitResult as OkObjectResult;
-            Assert.NotNull(okResult);
+            var filesDescription = SearchService.SearchDescriptionAndTitle(files, "description");
+            Assert.NotNull(filesDescription);
 
-            List<File> filesDescription = okResult.Value as List<File>;
             //Checking if all files are returned since they all contain keyword description
             Assert.Equal(5 , filesDescription.Count);
-            
         }
     }
 }

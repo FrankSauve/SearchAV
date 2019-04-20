@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Xunit;
-using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
 using RC_SpeechToText.Services;
 using System.Threading.Tasks;
@@ -8,10 +7,6 @@ using System;
 using Version = RC_SpeechToText.Models.Version;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using RC_SpeechToText.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using RC_SpeechToText.Models.DTO.Incoming;
