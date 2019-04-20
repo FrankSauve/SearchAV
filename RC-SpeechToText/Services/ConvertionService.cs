@@ -84,7 +84,6 @@ namespace RC_SpeechToText.Services
 				Active = true
 			};
 			await _context.Version.AddAsync(version);
-			await _context.SaveChangesAsync();
 
 			//Adding all words and their timestamps to the Word table
 			int i = 0;
