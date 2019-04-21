@@ -313,11 +313,11 @@ export default class Dashboard extends React.Component<any, State> {
             return(
                     <div>
                         <br />
-                        <a className="button is-danger" disabled={this.state.currentPage == 1 ? true : false}
-                        onClick={this.previousButtonOnClick}>Precedent</a>
+                        <a className="button is-link" disabled={this.state.currentPage == 1 ? true : false}
+                        onClick={this.previousButtonOnClick}>Précédent</a>
                         &nbsp;
                     &nbsp;
-                        <a className="button is-danger" onClick={this.nextButtonOnClick} disabled={this.state.currentPage == this.state.maxPages ? true : false}>Suivant</a>
+                        <a className="button is-link" onClick={this.nextButtonOnClick} disabled={this.state.currentPage == this.state.maxPages ? true : false}>Suivant</a>
                     </div>
             )
     }
