@@ -309,15 +309,15 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public showButton = () => {
-        if (this.state.allFiles.length > this.state.filesPerPage)
+        if (this.state.files.length > this.state.filesPerPage && this.state.allFiles.length > 0)
             return(
                     <div>
                         <br />
                         <a className="button is-danger" disabled={this.state.currentPage == 1 ? true : false}
-                           onClick={this.previousButtonOnClick}>Previous</a>
+                        onClick={this.previousButtonOnClick}>Precedent</a>
                         &nbsp;
-                &nbsp;
-                        <a className="button is-danger" onClick={this.nextButtonOnClick} disabled={this.state.currentPage == this.state.maxPages ? true : false}>Next</a>
+                    &nbsp;
+                        <a className="button is-danger" onClick={this.nextButtonOnClick} disabled={this.state.currentPage == this.state.maxPages ? true : false}>Suivant</a>
                     </div>
             )
     }
