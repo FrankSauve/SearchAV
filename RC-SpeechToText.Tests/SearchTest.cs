@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using RC_SpeechToText.Models;
+using RC_SpeechToText.Models.DTO.Outgoing;
 using RC_SpeechToText.Services;
 using System;
 using System.Collections.Generic;
@@ -64,6 +65,78 @@ namespace RC_SpeechToText.Tests
 
             //Checking if all files are returned since they all contain keyword description
             Assert.Equal(5 , filesDescription.Count);
+        }
+
+        [Fact]
+        public async Task TimeStampsOfWordsSearchInTranscript()
+        {
+            // Arrange
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+
+            string transcript = "Un Deux Trois Quatre Cinq Six Sept";
+
+            var automatedFlag = Enum.GetName(typeof(FileFlag), 0);
+
+            var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
+            var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:09" };
+
+            //AddAsync File to database
+            await context.File.AddAsync(file);
+            await context.SaveChangesAsync();
+
+            var version = new Models.Version { FileId = file.Id, Active = true, Transcription = transcript };
+
+            //AddAsync Version to database
+            await context.Version.AddAsync(version);
+            await context.SaveChangesAsync();
+
+            //Creating words and their timestamps for the original transcript
+            List<Word> words = new List<Word>();
+            words.Add(new Word { Term = "Un", Timestamp = "\"1.000s\"", VersionId = version.Id, Position = 0 });
+            words.Add(new Word { Term = "Deux", Timestamp = "\"2.000s\"", VersionId = version.Id, Position = 1 });
+            words.Add(new Word { Term = "Trois", Timestamp = "\"3.000s\"", VersionId = version.Id, Position = 2 });
+            words.Add(new Word { Term = "Quatre", Timestamp = "\"4.000s\"", VersionId = version.Id, Position = 3 });
+            words.Add(new Word { Term = "Cinq", Timestamp = "\"5.000s\"", VersionId = version.Id, Position = 4 });
+            words.Add(new Word { Term = "Six", Timestamp = "\"6.000s\"", VersionId = version.Id, Position = 5 });
+            words.Add(new Word { Term = "Six", Timestamp = "\"7.000s\"", VersionId = version.Id, Position = 6 });
+            words.Add(new Word { Term = "Sept", Timestamp = "\"8.000s\"", VersionId = version.Id, Position = 7 });
+
+            //Adding the words and their timestamps in the database
+            foreach (var word in words)
+            {
+                await context.Word.AddAsync(word);
+                await context.SaveChangesAsync();
+            }
+
+            
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", false)
+                .Build();
+
+            var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+            var outSearchDTOExisting = new OutSearchTranscriptDTO { VersionId = version.Id , SearchTerms = "Quatre Cinq Six"};
+            var outSearchDTODuplicate = new OutSearchTranscriptDTO { VersionId = version.Id , SearchTerms = "Six"};
+            var outSearchDTONonExisting = new OutSearchTranscriptDTO { VersionId = version.Id, SearchTerms = "Seven" };
+
+
+            // Act
+            var transcriptionService = new TranscriptionService(context, config.Value);
+            var resultTimestampsExisting = await transcriptionService.SearchTranscript(outSearchDTOExisting);
+            var resultTimestampsDuplicate = await transcriptionService.SearchTranscript(outSearchDTODuplicate);
+            var resultTimestampsNonExisting = await transcriptionService.SearchTranscript(outSearchDTONonExisting);
+
+            // Assert
+            //Checking if it returns the right timeframe for the searched terms
+            Assert.Equal("0:00:04-0:00:06", resultTimestampsExisting);
+            Assert.Equal("0:00:06-0:00:06, 0:00:07-0:00:07", resultTimestampsDuplicate);
+            Assert.Equal("", resultTimestampsNonExisting);
+
+           
+
         }
     }
 }
