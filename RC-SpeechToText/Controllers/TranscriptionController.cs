@@ -9,7 +9,6 @@ using System.Linq;
 using RC_SpeechToText.Exceptions;
 using Microsoft.Extensions.Options;
 using RC_SpeechToText.Models.DTO.Outgoing;
-using RC_SpeechToText.Models.DTO.Incoming;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -38,8 +37,8 @@ namespace RC_SpeechToText.Controllers
             var emailClaim = HttpContext.User.Claims;
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
-            var saveResult = await _transcriptionService.SaveTranscript(new SaveTranscriptDTO(emailString, versionId, newTranscript));
-			           
+            var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
+
             return Ok(saveResult.Version);
         }
 

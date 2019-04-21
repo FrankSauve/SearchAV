@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using RC_SpeechToText.Utils;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using RC_SpeechToText.Utils;
+using Xunit;
 
 namespace RC_SpeechToText.Tests
 {
-    [TestClass]
     public class FileTypeTest
-{
-        [TestMethod]
+    {
+        [Fact]
         public void TestGetFileType()
         {
             // Arrange
@@ -30,12 +26,12 @@ namespace RC_SpeechToText.Tests
             string type6 = converter.GetFileType(inputFile6);
 
             //Assert
-            Assert.AreEqual(type1, "Video");
-            Assert.AreEqual(type2, "Video");
-            Assert.AreEqual(type3, "Audio");
-            Assert.AreEqual(type4, "Audio");
-            Assert.AreEqual(type5, "Audio");
-            Assert.AreEqual(type6, "N/A");
+            Assert.Equal("Video", type1);
+            Assert.Equal("Video", type2);
+            Assert.Equal("Audio", type3);
+            Assert.Equal("Audio", type4);
+            Assert.Equal("Audio", type5);
+            Assert.Equal("N/A", type6);
         }
     }
 }

@@ -13,7 +13,7 @@ Concordia Students that are working on the project:
 
 Team members          | Email                         | Student Id   |Github Usernames
 ------------          | --------------------          | ------------ |----------------
-Sarbeng Frimpong      | sarbeng4@hotmail.com          | 29344039     | jiggy357
+Sarbeng Frimpong      | sarbeng4@hotmail.com          | 29344039     | Sarb-F
 Raphaelle Giraud      | Raph1105@hotmail.com          | 27514204     | Raph1105
 William Leclerc       | w.dfj.leclerc@gmail.com       | 27424973     | LeCleric
 Francois Crispo-Sauve | francoiscrisposauve@gmail.com | 27454139     | franksauve

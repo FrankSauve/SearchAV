@@ -20,20 +20,20 @@ namespace RC_SpeechToText.Services {
 			_appSettings = appSettings;
 		}
 
-        public async Task<VersionDTO> SaveTranscript(SaveTranscriptDTO saveTranscriptDTO)
-		{
-			var newVersion = await CreateNewVersion(saveTranscriptDTO.VersionId, saveTranscriptDTO.NewTranscript, saveTranscriptDTO.UserEmail);
-			var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync();
-			var resultSaveWords = await SaveWords(saveTranscriptDTO.VersionId, newVersion.Id, saveTranscriptDTO.NewTranscript, duration);
+        public async Task<VersionDTO> SaveTranscript(string userEmail, Guid versionId, string newTranscript)
+        {
+            var newVersion = await CreateNewVersion(versionId, newTranscript, userEmail);
+            var duration = await _context.File.Where(f => f.Id == newVersion.FileId).Select(f => f.Duration).FirstOrDefaultAsync();
+            var resultSaveWords = await SaveWords(versionId, newVersion.Id, newTranscript, duration);
 
-			if (resultSaveWords != null)
+            if (resultSaveWords != null)
 			{
 				return new VersionDTO { Version = null, Error = "Error updating new version with id: " + newVersion.Id };
 			}
 
-			var file = await UpdateFileFlag(saveTranscriptDTO.UserEmail, newVersion);
+            var file = await UpdateFileFlag(userEmail, newVersion);
 
-			if (file.FileFlag == FileFlag.Revise)
+            if (file.FileFlag == FileFlag.Revise)
 			{
 				await EmailReviewer(file);
 				newVersion.HistoryTitle = "FICHIER RÉVISÉ"; //If user is reviewer of file, historyTitle = "FICHIER REVISE"
