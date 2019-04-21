@@ -5,6 +5,7 @@ import Loading from '../Loading';
 import { ErrorModal } from '../Modals/ErrorModal';
 import { SuccessModal } from '../Modals/SuccessModal';
 import { AddTitleDescriptionModal } from '../Modals/AddTitleDescriptionModal';
+import { AddMultipleFilesModal } from '../Modals/AddMultipleFilesModal';
 
 
 interface State {
@@ -17,7 +18,9 @@ interface State {
     showSuccessTranscribe: boolean,
     showErrorModal: boolean,
     modalTitle: string,
-    errorMessage: string
+    errorMessage: string,
+    showAddMultipleFilesModal: boolean,
+    count: number
 }
 
 export default class FileInput extends React.Component<any, State> {
@@ -34,7 +37,9 @@ export default class FileInput extends React.Component<any, State> {
             showSuccessTranscribe: false,
             showErrorModal: false,
             modalTitle: "",
-            errorMessage: ""
+            errorMessage: "",
+            showAddMultipleFilesModal: false,
+            count: 0
         }
 
     }
@@ -85,8 +90,18 @@ export default class FileInput extends React.Component<any, State> {
         this.setState({ errorMessage: "" });
     }
 
+    public hideAddMultipleFilesModal = () => {
+        this.setState({ showAddMultipleFilesModal: false });
+        window.location.reload();
+    }
+
+
+    public hideAddMultipleFileModal = () => {
+        this.setState({ showAddMultipleFilesModal: false });
+    }
+
     public getGoogleSample = () => { 
-        //this.hideAddTitleDescriptionModal(); 
+        this.hideAddMultipleFileModal(); 
         this.toggleLoad();
         const formData = new FormData();
         
@@ -167,11 +182,17 @@ export default class FileInput extends React.Component<any, State> {
         e.preventDefault();
         this.setState({ file: e.dataTransfer.files})
         this.setState({ title: e.dataTransfer.files[0].name.split(".")[0] }) // Name of the file without the extension
-        this.setState({ showAddTitleDescriptionModal: true });
+        this.setState({ count: e.dataTransfer.files.length })
+        if (e.dataTransfer.files.length > 1) {
+            this.setState({ showAddMultipleFilesModal: true });
+        }
+        else
+        {
+            this.setState({ showAddTitleDescriptionModal: true });
+        }
     }
 
     public render() {
-        
         return (
             <div className="column mg-top-30 no-padding">
                 <AddTitleDescriptionModal
@@ -181,9 +202,14 @@ export default class FileInput extends React.Component<any, State> {
                 handleTitleChange={this.handleTitleChange}
                 title={this.state.title}
                 onSubmit={this.verifyIfTitleExists}
-            />
+                />
 
-                
+                <AddMultipleFilesModal
+                    showModal={this.state.showAddMultipleFilesModal}
+                    hideModal={this.hideAddMultipleFilesModal}
+                    count={this.state.count}
+                    onSubmit={this.getGoogleSample}
+                />
 
                 <ErrorModal
                     showModal={this.state.showErrorModal}
