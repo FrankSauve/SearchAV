@@ -99,8 +99,8 @@ namespace RC_SpeechToText.Tests
             words.Add(new Word { Term = "Quatre", Timestamp = "\"4.000s\"", VersionId = version.Id, Position = 3 });
             words.Add(new Word { Term = "Cinq", Timestamp = "\"5.000s\"", VersionId = version.Id, Position = 4 });
             words.Add(new Word { Term = "Six", Timestamp = "\"6.000s\"", VersionId = version.Id, Position = 5 });
-            words.Add(new Word { Term = "Six", Timestamp = "\"7.000s\"", VersionId = version.Id, Position = 5 });
-            words.Add(new Word { Term = "Sept", Timestamp = "\"8.000s\"", VersionId = version.Id, Position = 6 });
+            words.Add(new Word { Term = "Six", Timestamp = "\"7.000s\"", VersionId = version.Id, Position = 6 });
+            words.Add(new Word { Term = "Sept", Timestamp = "\"8.000s\"", VersionId = version.Id, Position = 7 });
 
             //Adding the words and their timestamps in the database
             foreach (var word in words)
