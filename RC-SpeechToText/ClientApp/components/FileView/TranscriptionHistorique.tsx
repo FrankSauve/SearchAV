@@ -1,6 +1,8 @@
 import * as React from 'react';
 import auth from '../../Utils/auth';
 import axios from 'axios';
+import { HistoriqueListItem } from './HistoriqueListItem.tsx';
+
 
 interface State {
     loading: boolean,
@@ -49,11 +51,11 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                     <div>
                         {this.props.versions.map((version: any) => {
                             const listVersions = (
-                                <div className="historique-content">
-                                    <p> {version.historyTitle} </p>
-                                    <p> {this.formatTime(version.dateModified)} </p>
-                                    <p className="historique-username"> <b>{this.props.usernames[i]}</b></p>
-                                </div>
+                                <HistoriqueListItem
+                                    version={version}
+                                    username={this.props.usernames[i]}
+                                    key={version.id}
+                                />
                             )
                             i++;
                             return listVersions;
