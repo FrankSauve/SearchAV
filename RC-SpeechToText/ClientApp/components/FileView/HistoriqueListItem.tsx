@@ -4,7 +4,6 @@ import axios from 'axios';
 
 interface State {
     version: any,
-    versionToDiff: any,
     unauthorized: boolean
 }
 
@@ -15,14 +14,13 @@ export class HistoriqueListItem extends React.Component<any, State> {
 
         this.state = {
             version: this.props.version,
-            versionToDiff:this.props.versionToDiff,
             unauthorized: false
         }
     }
 
     // Called when the component is rendered
     public componentDidMount() {
-        this.setState({ 'versionToDiff': this.props.versionToDiff});
+
     }
 
     public formatTime = (dateModified: string) => {
@@ -40,7 +38,11 @@ export class HistoriqueListItem extends React.Component<any, State> {
     }
 
     public handleOnClickComponent = () => {
-        this.props.updateDiff(this.state.version);
+        if (this.props.versionToDiff != null && this.props.versionToDiff.id == this.state.version.id) {
+            this.props.updateDiff(null);
+        } else {
+            this.props.updateDiff(this.state.version);
+        }
     }
 
     public render() {

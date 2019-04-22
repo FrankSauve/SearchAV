@@ -168,14 +168,27 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
     public render() {
-        return (
-            <div>
-                <div 
-                    id="transcription" 
-                    className="highlight-text" 
-                    contentEditable={true}
-                    dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
-            </div>
-        );
+        if (this.props.versionToDiff) {
+            return (
+                <div>
+                    <div
+                        id="transcription"
+                        className="highlight-text"
+                        contentEditable={true}
+                        dangerouslySetInnerHTML={{ __html: this.props.versionToDiff.transcription }} />
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <div
+                        id="transcription"
+                        className="highlight-text"
+                        contentEditable={true}
+                        dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} />
+                </div>
+            );
+        }
+        
     }
 }
