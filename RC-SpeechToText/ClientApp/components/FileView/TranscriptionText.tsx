@@ -3,6 +3,7 @@ import * as React from 'react';
 interface State {
     version: any,
     displayText: string,
+    displayDiff: string,
     rawText: string,
     errorMessage: string
 }
@@ -14,6 +15,7 @@ export class TranscriptionText extends React.Component<any, State> {
         this.state = {
             version: this.props.version,
             displayText: this.rawToHtml(this.props.version.transcription),
+            displayDiff: "",
             rawText: this.props.version.transcription,
             errorMessage: ""
         }
@@ -52,6 +54,13 @@ export class TranscriptionText extends React.Component<any, State> {
             this.highlightWords();
             this.props.handleTextSearch(false);
         }
+        if (this.props.versionToDiff && (prevProps.versionToDiff !== this.props.versionToDiff)) {
+            this.diffOfTranscription();
+        }
+    }
+
+    diffOfTranscription = () => {
+        this.setState({ 'displayDiff': this.props.versionToDiff.transcription });
     }
     
     // remove all span tags from the page
@@ -175,7 +184,7 @@ export class TranscriptionText extends React.Component<any, State> {
                         id="transcription"
                         className="highlight-text"
                         contentEditable={true}
-                        dangerouslySetInnerHTML={{ __html: this.props.versionToDiff.transcription }} />
+                        dangerouslySetInnerHTML={{ __html: this.state.displayDiff }} />
                 </div>
             );
         } else {
