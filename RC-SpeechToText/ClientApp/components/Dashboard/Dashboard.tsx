@@ -435,7 +435,7 @@ export default class Dashboard extends React.Component<any, State> {
                     <section className="section column tile-container">
                         <div className="search-div">
                             <div className="field is-horizontal mg-top-10">
-                                <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
+                                <p className={`is-cadet-grey search-title ${fileType || this.state.isMyFilesFilterActive ? "mg-top-5" : "mg-top-15"}`}>{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
                                 <div className="right-side">
                                     <span className="search-checkbox">
                                         <label className="is-cadet-grey">
