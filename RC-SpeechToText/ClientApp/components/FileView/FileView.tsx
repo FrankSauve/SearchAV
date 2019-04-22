@@ -39,6 +39,7 @@ interface State {
     versions: any[],
     usernames: string[], 
     textSearch: boolean,
+    versionToDiff: any;
     path: string
 }
 
@@ -72,6 +73,7 @@ export default class FileView extends React.Component<any, State> {
             versions: [],
             usernames: [], 
             textSearch: false,
+            versionToDiff: null,
             path: ""
         }
     }
@@ -176,6 +178,9 @@ export default class FileView extends React.Component<any, State> {
                 }
             });
     };
+    public updateDiff = (e: any) => {
+        this.setState({'versionToDiff' : e});
+    }
 
     public saveDescription = () => {
         this.hideConfirmDescriptionModal();
@@ -311,7 +316,6 @@ export default class FileView extends React.Component<any, State> {
 
     render() {
         var modalTitle = (this.state.description && this.state.description != "" ? "Modifier la description" : "Ajouter une description");
-
         return (
             <div className="container">
 
@@ -363,6 +367,7 @@ export default class FileView extends React.Component<any, State> {
                                     <TranscriptionText
                                         text={this.state.version.transcription}
                                         version={this.state.version}
+                                        versionToDiff={this.state.versionToDiff}
                                         handleTranscriptChange={this.handleTranscriptChange}
                                         handleSeekTime={this.handleSeekTime}
                                         selection={this.state.selection}
@@ -388,6 +393,8 @@ export default class FileView extends React.Component<any, State> {
                             fileId={this.state.fileId}
                             versions={this.state.versions}
                             usernames={this.state.usernames}
+                            versionToDiff={this.state.versionToDiff}
+                            updateDiff={this.updateDiff}
                         />
                     </div>
 
