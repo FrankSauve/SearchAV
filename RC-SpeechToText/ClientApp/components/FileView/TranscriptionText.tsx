@@ -1,4 +1,6 @@
 import * as React from 'react';
+import axios from 'axios';
+import auth from '../../Utils/auth';
 
 interface State {
     version: any,

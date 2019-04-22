@@ -134,9 +134,48 @@ namespace RC_SpeechToText.Tests
             Assert.Equal("0:00:04-0:00:06", resultTimestampsExisting);
             Assert.Equal("0:00:06-0:00:06, 0:00:07-0:00:07", resultTimestampsDuplicate);
             Assert.Equal("", resultTimestampsNonExisting);
+        }
+        
+        [Fact]
+        public async Task TimeStampsOfTranscript()
+        {
+            // Arrange
+            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
-           
+            string transcript = "This is timestamp";
 
+            var automatedFlag = Enum.GetName(typeof(FileFlag), 0);
+
+            var user = new User { Id = Guid.NewGuid(), Email = "user@email.com", Name = "testUser" };
+            var reviewer = new User { Id = Guid.NewGuid(), Email = "reviewer@email.com", Name = "testReviewer" };
+            var file = new File { Title = "title", DateAdded = DateTime.Now, Flag = automatedFlag, UserId = user.Id, ReviewerId = reviewer.Id, Duration = "00:00:09" };
+
+            //AddAsync File to database
+            await context.File.AddAsync(file);
+            await context.SaveChangesAsync();
+
+            var version = new Models.Version { FileId = file.Id, Active = true, Transcription = transcript };
+
+            //AddAsync Version to database
+            await context.Version.AddAsync(version);
+            await context.SaveChangesAsync();
+            
+            
+            //Creating words and their timestamps for the original transcript
+            List<Word> words = new List<Word>();
+            words.Add(new Word { Term = "This", Timestamp = "\"1.000s\"", VersionId = version.Id, Position = 0 });
+            words.Add(new Word { Term = "is", Timestamp = "\"2.000s\"", VersionId = version.Id, Position = 1 });
+            words.Add(new Word { Term = "timestamp", Timestamp = "\"3.000s\"", VersionId = version.Id, Position = 2 });
+
+            // Act
+            var searchService = new SearchService();
+            var resultTimestamps = searchService.GetTimestamps(words);
+
+            // Assert
+            //Checking if it returns the right timestamps for the given list of words
+            Assert.NotNull(resultTimestamps);
+            Assert.Equal("0:00:01, 0:00:02, 0:00:03", resultTimestamps);
+            Assert.NotEqual("0:00:03, 0:00:02, 0:00:01", resultTimestamps);
         }
     }
 }
