@@ -64,8 +64,7 @@ namespace RC_SpeechToText.Tests
 			// Act
             var transcriptionService = new TranscriptionService(context, config.Value);
 
-            var saveEditDTO = new SaveTranscriptDTO(user.Email, version.Id, editTranscription);
-            await transcriptionService.SaveTranscript(saveEditDTO);
+            await transcriptionService.SaveTranscript(user.Email, version.Id, editTranscription);
 
             // Assert
             Assert.NotEqual(version.Transcription, editTranscription);
@@ -78,8 +77,7 @@ namespace RC_SpeechToText.Tests
 
             //----------------------------------------------------------------------------------------------------------------
             //Review file
-            var saveReviewDTO = new SaveTranscriptDTO(reviewer.Email, editedVersion.Id, reviewTranscription);
-            await transcriptionService.SaveTranscript(saveReviewDTO);
+            await transcriptionService.SaveTranscript(reviewer.Email, editedVersion.Id, reviewTranscription);
 
             Assert.NotEqual(editedVersion.Transcription, reviewTranscription);
 
@@ -151,8 +149,7 @@ namespace RC_SpeechToText.Tests
 			
             // Act
             var transcriptionService = new TranscriptionService(context, config.Value);
-            var addWordsDTO = new SaveTranscriptDTO(user.Email, version.Id, addWordsTranscription);
-            await transcriptionService.SaveTranscript(addWordsDTO);
+            await transcriptionService.SaveTranscript(user.Email, version.Id, addWordsTranscription);
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
@@ -217,8 +214,7 @@ namespace RC_SpeechToText.Tests
 
             // Act
             var transcriptionService = new TranscriptionService(context, config.Value);
-            var addWordsDTO = new SaveTranscriptDTO(user.Email, version.Id, addWordsTranscription);
-            await transcriptionService.SaveTranscript(addWordsDTO);
+            await transcriptionService.SaveTranscript(user.Email, version.Id, addWordsTranscription);
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
@@ -285,8 +281,7 @@ namespace RC_SpeechToText.Tests
 
             // Act
             var transcriptionService = new TranscriptionService(context, config.Value);
-            var addWordsDTO = new SaveTranscriptDTO(user.Email, version.Id, addWordsTranscription);
-            await transcriptionService.SaveTranscript(addWordsDTO);
+            await transcriptionService.SaveTranscript(user.Email, version.Id, addWordsTranscription);
 
             //Get the words for new version
             Version newVersion = await context.Version.Where(v => v.FileId == file.Id).LastAsync();
