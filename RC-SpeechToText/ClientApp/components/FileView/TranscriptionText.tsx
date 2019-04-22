@@ -54,7 +54,7 @@ export class TranscriptionText extends React.Component<any, State> {
             this.highlightWords();
             this.props.handleTextSearch(false);
         }
-        if (this.props.versionToDiff && (prevProps.versionToDiff !== this.props.versionToDiff)) {
+        if (this.props.versionToDiff && (prevProps.versionToDiff !== this.props.versionToDiff) && this.props.versionToDiff.id!=this.state.version.id) {
             this.diffOfTranscription();
         }
     }
@@ -130,8 +130,8 @@ export class TranscriptionText extends React.Component<any, State> {
         commonSubPosition2 = commonSubPosition2.reverse();
 
         console.log(longestCommonSub);
-        console.log(longestCommonSub);
-        console.log(longestCommonSub);
+        console.log(commonSubPosition1);
+        console.log(commonSubPosition2);
 
     };
 
@@ -255,7 +255,7 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
     public render() {
-        if (this.props.versionToDiff) {
+        if (this.props.versionToDiff && this.props.versionToDiff.id != this.state.version.id) {
             return (
                 <div>
                     <div
