@@ -29,7 +29,10 @@ interface State {
     listView: boolean,
     loading: boolean,
     allFilesSearch: boolean,
-    unauthorized: boolean
+    unauthorized: boolean,
+    filesPerPage: number,
+    currentPage: number,
+    maxPages: number
 }
 
 export default class Dashboard extends React.Component<any, State> {
@@ -54,7 +57,10 @@ export default class Dashboard extends React.Component<any, State> {
             searchTerms: '',
             loading: false,
             allFilesSearch: false,
-            unauthorized: false
+            unauthorized: false,
+            filesPerPage: 8,
+            currentPage: 1,
+            maxPages: 0
         }
     }
 
@@ -124,6 +130,7 @@ export default class Dashboard extends React.Component<any, State> {
             .then(res => {
                 console.log(res.data);
                 this.setState({ 'allFiles': res.data.files });
+                this.setState({ 'maxPages': Math.ceil(res.data.files.length/this.state.filesPerPage) });
                 this.setState(
 					{ 'versions': res.data.versions},
 					this.matchVersionToFile
@@ -277,15 +284,22 @@ export default class Dashboard extends React.Component<any, State> {
         this.setState({ 'listView': false });
     }
     
-    public renderFileTable = () => {        
+    public renderFileTable = () => {
+        const { allFiles, currentPage, filesPerPage } = this.state;
+
+        // Logic for displaying current files
+        const indexOfLastFile = currentPage * filesPerPage;
+        const indexOfFirstFile = indexOfLastFile - filesPerPage;
+        const currentFiles = allFiles.slice(indexOfFirstFile, indexOfLastFile);
         return (
             <div>
                 {this.state.files.length > 0 ? <GridFileTable
-                                files={this.state.files}
-                                usernames={this.state.usernames}
+                                files={currentFiles}
+                                usernames={this.state.usernames.slice(indexOfFirstFile, indexOfLastFile)}
                                 loading={this.state.loading}
                                 getAllFiles={this.getAllFiles}
-                        /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                {this.showButton()}
            </div>
         )
     }
@@ -293,15 +307,51 @@ export default class Dashboard extends React.Component<any, State> {
     public showListView = () => {
         this.setState({ 'listView': true });
     }
+
+    public showButton = () => {
+        if (this.state.files.length > this.state.filesPerPage && this.state.allFiles.length > 0)
+            return(
+                    <div>
+                        <br />
+                        <a className="button is-link" disabled={this.state.currentPage == 1 ? true : false}
+                        onClick={this.previousButtonOnClick}>Précédent</a>
+                        &nbsp;
+                    &nbsp;
+                        <a className="button is-link" onClick={this.nextButtonOnClick} disabled={this.state.currentPage == this.state.maxPages ? true : false}>Suivant</a>
+                    </div>
+            )
+    }
+
+    public nextButtonOnClick = () => {
+        if (this.state.currentPage != this.state.maxPages) {
+            this.setState({ 'currentPage': this.state.currentPage + 1 });
+            this.getAllFiles();
+        }
+    }
+
+    public previousButtonOnClick = () => {
+        if (this.state.currentPage != 1) {
+            this.setState({ 'currentPage': this.state.currentPage - 1 });
+            this.getAllFiles();
+        }
+    }
+
     public renderListView = () => {
+        const { allFiles, currentPage, filesPerPage } = this.state;
+
+        // Logic for displaying current files
+        const indexOfLastFile = currentPage * filesPerPage;
+        const indexOfFirstFile = indexOfLastFile - filesPerPage;
+        const currentFiles = allFiles.slice(indexOfFirstFile, indexOfLastFile);
         return (
             <div>
                 {this.state.files.length > 0 ? <ListTable
-                                files={this.state.files}
-                                usernames={this.state.usernames}
+                                files={currentFiles}
+                                usernames={this.state.usernames.slice(indexOfFirstFile, indexOfLastFile)}
                                 loading={this.state.loading}
-                    getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                                getAllFiles={this.getAllFiles}
+                /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
+                {this.showButton()}
             </div>
         )
     }
@@ -435,7 +485,7 @@ export default class Dashboard extends React.Component<any, State> {
                     <section className="section column tile-container">
                         <div className="search-div">
                             <div className="field is-horizontal mg-top-10">
-                                <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
+                                <p className={`is-cadet-grey search-title ${fileType || this.state.isMyFilesFilterActive ? "mg-top-5" : "mg-top-15"}`}>{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
                                 <div className="right-side">
                                     <span className="search-checkbox">
                                         <label className="is-cadet-grey">
@@ -470,7 +520,6 @@ export default class Dashboard extends React.Component<any, State> {
                                 this.state.listView ? this.renderListView() : this.renderFileTable()}
                         </div>
                     </section>
-
                 </div>
             </div>
         )
