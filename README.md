@@ -13,7 +13,7 @@ Concordia Students that are working on the project:
 
 Team members          | Email                         | Student Id   |Github Usernames
 ------------          | --------------------          | ------------ |----------------
-Sarbeng Frimpong      | sarbeng4@hotmail.com          | 29344039     | jiggy357
+Sarbeng Frimpong      | sarbeng4@hotmail.com          | 29344039     | Sarb-F
 Raphaelle Giraud      | Raph1105@hotmail.com          | 27514204     | Raph1105
 William Leclerc       | w.dfj.leclerc@gmail.com       | 27424973     | LeCleric
 Francois Crispo-Sauve | francoiscrisposauve@gmail.com | 27454139     | franksauve
@@ -24,3 +24,34 @@ Philippe Kuret        | philippekuret@gmail.com       | 27392680     | philippek
 
 
 This project is currently being prepared as part of our course, SOEN 490: Capstone Software Engineering Design Project. 
+
+## Technology stack
+Purpose            | Technology
+------------       | -------------------- 
+Client side        | React with TypeScript
+Styling            | Bulma
+Server side        | ASP.NET Core (C#)
+Testing            | Xunit
+Continuous integration | Azure Pipelines
+Containerization   | Docker
+
+## Installing the required packages
+Install npm packages
+```
+cd RC-SpeechToText
+npm install
+```
+Install nuget packages
+```
+nuget restore
+```
+
+## Running the solution in Visual Studio
+Open the RC-SpeechToText.sln file in Visual Studio
+Run the solution with IIS Express.
+The server will run on localhost at the port designated in launchSettings.json
+
+## Using the application
+- You must sign in with a google account
+- You can upload new mp3 or mp4 files by clicking "Parcourir" or drag and dropping a file in the upload box.
+- Once the transcription is done, you can click on the file in the dashboard to view the video player and edit the transcription.

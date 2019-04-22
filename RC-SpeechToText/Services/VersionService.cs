@@ -17,7 +17,7 @@ namespace RC_SpeechToText.Services
 			_context = context;
 		}
 
-		public async Task<List<Models.Version>> Index()
+		public async Task<List<Models.Version>> GetAllVersions()
 		{
 			return await _context.Version.ToListAsync();
 		}

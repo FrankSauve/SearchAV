@@ -1,90 +1,77 @@
 ﻿using RC_SpeechToText.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace RC_SpeechToText.Services
 {
-    public class SearchService
+	public class SearchService
     {
-
-        //Performs the search on the terms
         public string PerformSearch(string searchTerms, List<Word> wordInfo)
-        {
+		{
+			if (string.IsNullOrEmpty(searchTerms))
+				return "";
 
-            //Check if the search terms are in the transcript
-            var timeStampOfTerms = new List<string>(); // Saves all instances of words timestamps
-            searchTerms = searchTerms.Trim();
+			searchTerms = searchTerms.Trim();
+			string[] arrayTerms = searchTerms.Split(' ');
+			Words[] words = StringToWordList(wordInfo);
 
-            string[] arrayTerms;
+			var timeStampOfTerms = GenerateTimeStampTerms(arrayTerms, words);
 
-            //Make sure the user did not pass an empty string
-            if (!string.IsNullOrEmpty(searchTerms))
-            {
-                arrayTerms = searchTerms.Split(' '); // Having an array of search terms to help when searching for timestamps  
-            }
-            else
-            {
-                return "";
-            }
+			if (timeStampOfTerms.Count < 1)
+				return ""; 
+			else
+				return TimeStampToString(timeStampOfTerms);
+		}
 
-            Words[] words = StringToWordList(wordInfo); // For clearer code instead of calling the full variable
+		private string TimeStampToString(List<string> timeStampOfTerms)
+		{
+			var temp = new List<string>();
+			for (var i = 0; i < timeStampOfTerms.Count; i += 2)
+			{
+				string s = (timeStampOfTerms[i] + "-" + timeStampOfTerms[i + 1]);
+				temp.Add(s);
+			}
 
-            //For each words check if it is what we were looking for.
-            for (var i = 0; i < words.Length; i++)
-            {
-                //If first word of search term is equal to this current word, check if consecutive terms are equal.
-                if (words[i].Word.Equals(arrayTerms[0], StringComparison.InvariantCultureIgnoreCase))
-                {
-                    for (var j = 0; j < arrayTerms.Length; j++)
-                    {
-                        //Make sure j doesn't go out of words range
-                        if (j < words.Length)
-                        {
-                            // If the next words in the sequence aren't the same: break
-                            if (!words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                break;
-                            }
-                            //If the last words of the search terms we are looking for are equal, add this timestamp to our current list and increment i by j.
-                            else if (words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase) && j == arrayTerms.Length - 1)
-                            {
-                                //Adding the timestamp in the appropriate format
-                                timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"g"));
-                                timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i+j].StartTime.Seconds).ToString(@"g"));
-                                i = i + j;
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
+			var result = String.Join(", ", temp.ToArray());
+			return result;
+		}
 
-            //Getting all timestamps and converting them to string to make it easier when passing to frontend
-            if (timeStampOfTerms.Count > 0)
-            {
-                var temp = new List<string>();
-                for (var i = 0; i < timeStampOfTerms.Count; i += 2)
-                {
-                    string s = (timeStampOfTerms[i] + "-" + timeStampOfTerms[i + 1]);
-                    temp.Add(s);
-                }
-                
-                var result = String.Join(", ", temp.ToArray());
-                return result;
-            }
-            else
-            {
-                return "";
-            }
-        }
+		private List<string> GenerateTimeStampTerms(string[] arrayTerms, Words[] words)
+		{
+			var timeStampOfTerms = new List<string>();
+			for (var i = 0; i < words.Length; i++)
+			{
+				if (words[i].Word.Equals(arrayTerms[0], StringComparison.InvariantCultureIgnoreCase))
+				{
+					for (var j = 0; j < arrayTerms.Length; j++)
+					{
+						if (j < words.Length)
+						{
+							// If the next words in the sequence aren't the same: break
+							if (!words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase))
+							{
+								break;
+							}
+							//If the last words of the search terms we are looking for are equal, add this timestamp to our current list and increment i by j.
+							else if (words[i + j].Word.Equals(arrayTerms[j], StringComparison.InvariantCultureIgnoreCase) && j == arrayTerms.Length - 1)
+							{
+								timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i].StartTime.Seconds).ToString(@"g"));
+								timeStampOfTerms.Add(TimeSpan.FromSeconds(words[i + j].StartTime.Seconds).ToString(@"g"));
+								i = i + j;
+							}
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
+			}
+			return timeStampOfTerms;
+		}
 
-        static public List<File> SearchDescriptionAndTitle(List<File> files, string search)
+		static public List<File> SearchDescriptionAndTitle(List<File> files, string search)
         {
             search = search.Trim();
 

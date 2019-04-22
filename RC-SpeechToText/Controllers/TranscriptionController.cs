@@ -7,6 +7,8 @@ using RC_SpeechToText.Services;
 using RC_SpeechToText.Filters;
 using System.Linq;
 using RC_SpeechToText.Exceptions;
+using Microsoft.Extensions.Options;
+using RC_SpeechToText.Models.DTO.Outgoing;
 
 namespace RC_SpeechToText.Controllers
 {
@@ -19,40 +21,25 @@ namespace RC_SpeechToText.Controllers
 		private readonly TranscriptionService _transcriptionService;
         private readonly FileService _fileService;
         private readonly ExportTranscriptionService _exportTranscriptionService;
+		private AppSettings _appSettings { get; set; }
 
-        public TranscriptionController(SearchAVContext context)
+		public TranscriptionController(SearchAVContext context, IOptions<AppSettings> settings)
         {
-			_transcriptionService = new TranscriptionService(context);
-            _fileService = new FileService(context);
-            _exportTranscriptionService = new ExportTranscriptionService(context);
+			_appSettings = settings.Value;
+			_transcriptionService = new TranscriptionService(context, _appSettings);
+            _fileService = new FileService(context, _appSettings);
+            _exportTranscriptionService = new ExportTranscriptionService(context, _appSettings);
         }
 
-        [HttpPost("[action]/{versionId}")]
+        [HttpPost("{versionId}")]
         public async Task<IActionResult> SaveTranscript(Guid versionId, string newTranscript)
         {
             var emailClaim = HttpContext.User.Claims;
             var emailString = emailClaim.FirstOrDefault(c => c.Type == "email").Value;
 
             var saveResult = await _transcriptionService.SaveTranscript(emailString, versionId, newTranscript);
-			           
+
             return Ok(saveResult.Version);
-        }
-        
-        /// <summary>
-        /// Returns all versions
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                return Ok(await _transcriptionService.Index());
-            }
-            catch
-            {
-                return BadRequest("Get all versions failed.");
-            }
         }
 
 
@@ -65,7 +52,8 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{versionId}/{searchTerms}")]
         public async Task<IActionResult> SearchTranscript(Guid versionId, string searchTerms)
         {
-            return Ok(await _transcriptionService.SearchTranscript(versionId, searchTerms));
+            var outDTO = new OutSearchTranscriptDTO { VersionId = versionId, SearchTerms = searchTerms };
+            return Ok(await _transcriptionService.SearchTranscript(outDTO));
         }
         
         /// <summary>
@@ -88,7 +76,8 @@ namespace RC_SpeechToText.Controllers
         [HttpGet("[action]/{fileId}/{documentType}")]
         public async Task<IActionResult> DownloadTranscript(string documentType, Guid fileId)
         {
-            var result = await _transcriptionService.PrepareDownload(documentType, fileId);
+            var outDTO = new OutDownloadTranscriptDTO { FileId = fileId, DocumentType = documentType };
+            var result = await _transcriptionService.PrepareDownload(outDTO);
 
             if (result != null)
             {

@@ -3,12 +3,11 @@ using System.IO;
 using MediaToolkit;
 using MediaToolkit.Model;
 using MediaToolkit.Options;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using RC_SpeechToText.Utils;
 
 namespace RC_SpeechToText.Tests
 {
-    [TestClass]
     public class MediaToolkitTest
     {
 
@@ -79,47 +78,47 @@ namespace RC_SpeechToText.Tests
             var outputFileMetadata = GetMetadata(outputFile);
 
             
-            Assert.IsNotNull(convertedFile);
-            Assert.AreEqual(outputFileMetadata.AudioData.SampleRate, "22050 Hz");
-            Assert.AreEqual(outputFileMetadata.AudioData.Format,
-                outputType != "wav" ? outputType : "pcm_s16le ([1][0][0][0] / 0x0001)");
-            Assert.AreEqual(outputFileMetadata.AudioData.SampleRate, inputFileMetadata.AudioData.SampleRate);
+            Assert.NotNull(convertedFile);
+            Assert.Equal("22050 Hz", outputFileMetadata.AudioData.SampleRate);
+            Assert.Equal(outputType != "wav" ? outputType : "pcm_s16le ([1][0][0][0] / 0x0001)",
+                outputFileMetadata.AudioData.Format);
+            Assert.Equal(outputFileMetadata.AudioData.SampleRate, inputFileMetadata.AudioData.SampleRate);
         }
         
-        [TestMethod]
+        [Fact]
         public void TestFlacToMp3()
         {
             GenericConversionTester("flac","mp3");
         }
-        [TestMethod]
+        [Fact]
         public void TestFlacToWav()
         {
             GenericConversionTester("flac", "wav");
         }
         
-        [TestMethod]
+        [Fact]
         public void TestMp3ToWav()
         {
             GenericConversionTester("mp3","wav");
         }
-        [TestMethod]
+        [Fact]
         public void TestMp3ToFlac()
         {
             GenericConversionTester("mp3", "flac");
         }
         
-        [TestMethod]
+        [Fact]
         public void TestWavToFlac()
         {
             GenericConversionTester("wav", "flac");
         }
-        [TestMethod]
+        [Fact]
         public void TestWavToMp3()
         {
             GenericConversionTester("wav","mp3");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCreateThumbnail()
         {
             // Arrange
@@ -133,7 +132,7 @@ namespace RC_SpeechToText.Tests
             var thumbnailPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), outputFile));
             
             // Assert
-            Assert.IsTrue(File.Exists(thumbnailPath));
+            Assert.True(File.Exists(thumbnailPath));
 
             // Delete the thumbnail
             File.Delete(thumbnailPath);

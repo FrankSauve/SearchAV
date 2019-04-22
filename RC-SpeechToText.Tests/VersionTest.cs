@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Moq;
-using RC_SpeechToText.Controllers;
-using RC_SpeechToText.Models;
+﻿using RC_SpeechToText.Models;
+using RC_SpeechToText.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,12 +24,12 @@ namespace RC_SpeechToText.Tests
             await context.SaveChangesAsync();
 			
             //Act
-            var controller = new VersionController(context);
-            var result = await controller.Index();
+            var versionService = new VersionService(context);
+            var result = await versionService.GetAllVersions();
+
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<Models.Version>>(okResult.Value);
-            Assert.Equal(20, returnValue.Count());
+            Assert.IsType<List<Models.Version>>(result);
+            Assert.Equal(20, result.Count());
         }
 
         /// <summary>
@@ -53,12 +48,12 @@ namespace RC_SpeechToText.Tests
             await context.SaveChangesAsync();
 			
             // Act
-            var controller = new VersionController(context);
-            var result = await controller.GetbyFileId(version.FileId);
+            var versionService = new VersionService(context);
+            var result = await versionService.GetVersionByFileId(version.FileId);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<Models.Version>>(okResult.Value);
+            Assert.IsType<List<Models.Version>>(result);
+            Assert.Single(result);
         }
     }
 }

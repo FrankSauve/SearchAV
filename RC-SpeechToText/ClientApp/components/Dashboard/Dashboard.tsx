@@ -13,7 +13,11 @@ import FilesToReviewFilter from './filters/FilesToReviewFilter';
 import ListTable from './list/ListTable';
 
 interface State {
+    loggedUser: any;
     files: any[],
+    allFiles: any[],
+    versions: any[],
+    currentFilterFiles: any[],
     usernames: string[],
     userId: any,
     isMyFilesFilterActive: boolean,
@@ -24,6 +28,7 @@ interface State {
     isFilesToReviewFilterActive: boolean,
     listView: boolean,
     loading: boolean,
+    allFilesSearch: boolean,
     unauthorized: boolean
 }
 
@@ -33,7 +38,11 @@ export default class Dashboard extends React.Component<any, State> {
         super(props);
 
         this.state = {
+            loggedUser: null,
             files: [],
+            allFiles: [],
+            versions:[],
+            currentFilterFiles: [],
             usernames: [],
             userId: "",
             isMyFilesFilterActive: false,
@@ -44,6 +53,7 @@ export default class Dashboard extends React.Component<any, State> {
             listView: false,
             searchTerms: '',
             loading: false,
+            allFilesSearch: false,
             unauthorized: false
         }
     }
@@ -51,9 +61,55 @@ export default class Dashboard extends React.Component<any, State> {
     // Called when the component gets rendered
     public componentDidMount() {
         this.getAllFiles();
+        this.getUserInfo();
     }
 
+    public getUserInfo = () => {
+        this.setState({ loading: true });
+
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        }
+        axios.get('/api/user/GetUserByEmail/' + auth.getEmail(), config)
+            .then(res => {
+                console.log(res.data);
+                this.setState({ 'loggedUser': res.data})
+                this.setState({ 'loading': false });
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response.status == 401) {
+                    // Logs out if the user's JWT is expired
+                    auth.removeAuthToken();
+                    this.setState({ 'unauthorized': true });
+                }
+            });
+    }
+    public getAllFilesLoaded = () => {
+        this.deactivateFilters();
+
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
+
+        this.state.allFiles.map((file) => {
+                usernames[counter] = file.user.name;
+                counter++;
+        })
+
+        this.setState({ 'files': this.state.allFiles });
+        this.setState(
+			{ 'currentFilterFiles': this.state.allFiles },
+			this.searchDescription
+		);
+        this.setState({ 'usernames': usernames });
+
+    }
     public getAllFiles = () => {
+        //Keeping this method to update files once a new file is uploaded.
+        console.log("GET ALL FILES")
         this.setState({ loading: true });
         this.deactivateFilters();
 
@@ -64,10 +120,15 @@ export default class Dashboard extends React.Component<any, State> {
                 'content-type': 'application/json'
             }
         }
-        axios.get('/api/file/GetAllWithUsernames', config)
+        axios.get('/api/file/GetAllWithUsernameAndVersions', config)
             .then(res => {
                 console.log(res.data);
-                this.setState({ 'files': res.data.files });
+                this.setState({ 'allFiles': res.data.files });
+                this.setState(
+					{ 'versions': res.data.versions},
+					this.matchVersionToFile
+				);
+				
                 this.setState({ 'usernames': res.data.usernames })
                 this.setState({ 'loading': false });
                 console.log(this.state.loading);
@@ -83,133 +144,133 @@ export default class Dashboard extends React.Component<any, State> {
     };
 
     public getUserFiles = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByUser/', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isMyFilesFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.user.id == this.state.loggedUser.id) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+		console.log(userFiles);
+        this.setState({ 'files': userFiles.filter(n => n) });
+        this.setState(
+			{ 'currentFilterFiles': userFiles.filter(n => n) },
+			this.searchDescription
+			);
+        this.setState({ 'usernames': usernames.filter(n => n) });
+        this.setState({ 'isMyFilesFilterActive': true });
+		console.log(this.state.files);
+
     }
 
     public getUserFilesToReview = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
+        
+        this.state.allFiles.map((file) => {
+            if (file.reviewerId == this.state.loggedUser.id && file.flag.localeCompare("Revise", 'en', { sensitivity: 'base' }) != 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
 
-        axios.get('/api/file/getUserFilesToReview/', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ loading: false });
-                this.setState({ 'isFilesToReviewFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.setState({ 'files': userFiles.filter(n => n) });
+		 this.setState(
+			{ 'currentFilterFiles': userFiles.filter(n => n) },
+			this.searchDescription
+			);
+        this.setState({ 'usernames': usernames.filter(n => n) });
+        this.setState({ 'isFilesToReviewFilterActive': true });
+
     }
 
     public getAutomatedFiles = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByFlag/Automatise', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isAutomatedFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.flag.localeCompare("Automatise", 'en', { sensitivity: 'base' }) == 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+
+        this.setState({ 'files': userFiles.filter(n => n) });
+		this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
+        this.setState({ 'usernames': usernames.filter(n => n) });
+
+        this.setState({ 'isAutomatedFilterActive': true });
+
     }
 
     public getEditedFiles = () => {
-        this.setState({ loading: true });
+
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByFlag/Edite', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isEditedFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.flag.localeCompare("Edite", 'en', { sensitivity: 'base' }) == 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+
+        this.setState({ 'files': userFiles.filter(n => n) });
+		this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
+        this.setState({ 'usernames': usernames.filter(n => n) });
+
+        this.setState({ 'isEditedFilterActive': true });
+
     }
 
     public getReviewedFiles = () => {
-        this.setState({ loading: true });
         this.deactivateFilters();
 
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            },
-        };
+        var userFiles = Array(this.state.allFiles.length);
+        var usernames = Array(this.state.allFiles.length);
+        var counter = 0;
 
-        axios.get('/api/file/getAllFilesByFlag/Revise', config)
-            .then(res => {
-                console.log(res);
-                this.setState({ 'files': res.data.files })
-                this.setState({ 'usernames': res.data.usernames })
-                this.setState({ 'loading': false });
-                this.setState({ 'isReviewedFilterActive': true });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
-                }
-            });
+        this.state.allFiles.map((file) => {
+            if (file.flag.localeCompare("Revise", 'en', { sensitivity: 'base' }) == 0) {
+                userFiles[counter] = file;
+                usernames[counter] = file.user.name;
+                counter++;
+            }
+        })
+
+        this.setState({ 'files': userFiles.filter(n => n) });
+		this.setState(
+			{ 'currentFilterFiles': userFiles },
+			this.searchDescription
+			);
+        this.setState({ 'usernames': usernames.filter(n => n) });
+
+        this.setState({ 'isReviewedFilterActive': true });
+
     }
 
     public showFileTable = () => {
@@ -224,7 +285,7 @@ export default class Dashboard extends React.Component<any, State> {
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
                                 getAllFiles={this.getAllFiles}
-                        /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
+                        /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
            </div>
         )
     }
@@ -239,39 +300,84 @@ export default class Dashboard extends React.Component<any, State> {
                                 files={this.state.files}
                                 usernames={this.state.usernames}
                                 loading={this.state.loading}
-                                getAllFiles={this.getAllFiles}
-                            /> : <h1 className="title no-files">AUCUN FICHIERS</h1>}
+                    getAllFiles={this.getAllFiles}
+                            /> : <h1 className="title no-files">AUCUNS FICHIERS</h1>}
             </div>
         )
     }
+	public matchVersionToFile = () => {
+		this.state.allFiles.map((file) => {
+            this.state.versions.map((version) =>{
+				 if (version.fileId == file.id) {
+					 file.transcription = version.transcription;
+				 }
+			})
+        })
+		this.setState({ 'files': this.state.allFiles });
+		this.setState(
+			{ 'currentFilterFiles': this.state.allFiles},
+			this.searchDescription
+		);
+
+	}
 
     public searchDescription = () => {
-        const config = {
-            headers: {
-                'Authorization': 'Bearer ' + auth.getAuthToken(),
-                'content-type': 'application/json'
-            }
-        }
-        axios.get('/api/file/getFilesByDescriptionAndTitle/' + this.state.searchTerms, config)
-            .then(res => {
-                this.deactivateFilters();
-                this.setState({ files: res.data });
-            })
-            .catch(err => {
-                if (err.response.status == 401) {
-                    this.setState({ 'unauthorized': true });
+        var searchTerms = this.state.searchTerms;
+        var fileAddedTitle = false;
+        var fileAddedDescription = false;
+        var counter = 0;
+        var results = Array(this.state.allFiles.length);
+        var resultsUsernames = Array(this.state.allFiles.length);
+
+        console.log(this.state.versions);
+        if (searchTerms == "") {
+            this.setState({ 'files': this.state.currentFilterFiles });
+        } else {
+            this.state.currentFilterFiles.map((file) => {
+                fileAddedTitle = false;
+                if (file.description != null) {
+                    if (file.description.toLowerCase().includes(searchTerms.toLowerCase())) {
+                        results[counter] = file;
+						resultsUsernames[counter] = file.user.name;
+						
+                        //If file is added here we do not want to add it again if it has a title match too
+                        fileAddedTitle = true;
+                        counter++;
+                    }
                 }
-            });
-    }
-
-    public handleKeyPress = (e: any) => {
-        if (e.key === 'Enter') {
-            this.searchDescription();
+                if (file.title != null && !fileAddedTitle) {
+                    if (file.title.toLowerCase().includes(searchTerms.toLowerCase())) {
+                        results[counter] = file;
+						resultsUsernames[counter] = file.user.name;
+                        counter++;
+                        fileAddedDescription = true;
+                    }
+                }
+                if (this.state.allFilesSearch && !fileAddedTitle && !fileAddedDescription) {
+                    if (file.transcription.toLowerCase().includes(searchTerms.toLowerCase()) && file.transcription != null) {
+                        results[counter] = file;
+                        resultsUsernames[counter] = file.user.name;
+                        counter++;
+                    }
+                }
+            })
+            this.setState({ 'files': results.filter(n => n) });
+            this.setState({ 'usernames': resultsUsernames.filter(n => n) });
         }
+        
     }
-
+    
+    public handleAllFilesSearch = (e: any) => {
+        this.setState(
+            { 'allFilesSearch': e.target.checked },
+            this.searchDescription
+        );
+    }
     public handleSearch = (e: any) => {
-        this.setState({ searchTerms: e.target.value })
+        this.setState(
+            { 'searchTerms': e.target.value.trim() },
+            this.searchDescription
+        );
     }
 
     public deactivateFilters = () => {
@@ -295,31 +401,31 @@ export default class Dashboard extends React.Component<any, State> {
                             getAllFiles={this.getAllFiles}
                         />
 
-                        <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFiles}>
+                        <a onClick={!this.state.isFilesToReviewFilterActive ? this.getUserFilesToReview : this.getAllFilesLoaded}>
                             <FilesToReviewFilter
                                 isActive={this.state.isFilesToReviewFilterActive}
                             />
                         </a>
                         
-                        <a onClick={!this.state.isAutomatedFilterActive ? this.getAutomatedFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isAutomatedFilterActive ? this.getAutomatedFiles : this.getAllFilesLoaded}>
                             <AutomatedFilter
                                 isActive={this.state.isAutomatedFilterActive}
                             />
                         </a>
 
-                        <a onClick={!this.state.isEditedFilterActive ? this.getEditedFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isEditedFilterActive ? this.getEditedFiles : this.getAllFilesLoaded}>
                             <EditedFilter
                                 isActive={this.state.isEditedFilterActive}
                             />
                         </a>
 
-                        <a onClick={!this.state.isReviewedFilterActive ? this.getReviewedFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isReviewedFilterActive ? this.getReviewedFiles : this.getAllFilesLoaded}>
                             <ReviewedFilter
                                 isActive={this.state.isReviewedFilterActive}
                             />
                         </a>
 
-                        <a onClick={!this.state.isMyFilesFilterActive ? this.getUserFiles : this.getAllFiles}>
+                        <a onClick={!this.state.isMyFilesFilterActive ? this.getUserFiles : this.getAllFilesLoaded}>
                             <MyFilesFilter
                                 isActive={this.state.isMyFilesFilterActive}
                             />
@@ -329,13 +435,25 @@ export default class Dashboard extends React.Component<any, State> {
                     <section className="section column tile-container">
                         <div className="search-div">
                             <div className="field is-horizontal mg-top-10">
-                                <p className="is-cadet-grey search-title">{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
+                                <p className={`is-cadet-grey search-title ${fileType || this.state.isMyFilesFilterActive ? "mg-top-5" : "mg-top-15"}`}>{this.state.isMyFilesFilterActive ? "MES " : ""} FICHIERS {fileType}</p>
                                 <div className="right-side">
+                                    <span className="search-checkbox">
+                                        <label className="is-cadet-grey">
+                                            <input
+                                                className="checkbox mg-right-5"
+                                                name="isGoing"
+                                                type="checkbox"
+                                                checked={this.state.allFilesSearch}
+                                                onChange={this.handleAllFilesSearch} 
+                                            />
+                                            Rechercher dans la transcription
+                                        </label>
+                                    </span>
                                     <div className="search-field">
                                         <p className="control has-icons-right">
-                                            <input className="input is-rounded search-input" type="text" onChange={this.handleSearch} onKeyPress={this.handleKeyPress}/>
+                                            <input className="input is-rounded search-input" type="search" onChange={this.handleSearch}/>
                                             <span className="icon is-small is-right">
-                                                <a onClick={this.searchDescription}><i className="fas fa-search is-cadet-grey"></i></a>
+                                                <i className="fas fa-search is-cadet-grey"></i>
                                             </span>
                                         </p>
                                     </div>

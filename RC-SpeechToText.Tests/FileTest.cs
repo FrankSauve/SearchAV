@@ -1,43 +1,46 @@
 ﻿
-using RC_SpeechToText.Controllers;
 using RC_SpeechToText.Models;
+using RC_SpeechToText.Services;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using RC_SpeechToText.Models.DTO.Incoming;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 using System;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace RC_SpeechToText.Tests
 {
     public class FileTest
     {
-        /// <summary>
-        /// Test fetching all the files
-        /// </summary>
-        [Fact]
+		/// <summary>
+		/// Test fetching all the files
+		/// </summary>
+		[Fact]
         public async Task TestGetAllVideos()
         {
-            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+            // Arrange
+			var configuration = new ConfigurationBuilder()
+			   .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+			   .AddJsonFile("appsettings.json", false)
+			   .Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+			var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             await context.File.AddRangeAsync(Enumerable.Range(1, 20).Select(t => new File { Title = "Video " + t, FilePath = "vPath " + t }));
             await context.SaveChangesAsync();
 
-            //Act
-            var controller = new FileController(context);
-            var result = await controller.Index();
+			//Act
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.GetAllFiles();
                 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<List<File>>(okResult.Value);
-            Assert.Equal(20, returnValue.Count()); 
+            Assert.IsType<List<File>>(result);
+            Assert.Equal(20, result.Count()); 
         }
 
         /// <summary>
@@ -46,7 +49,14 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestGetAllWithUsernames()
         {
-            var context = new SearchAVContext(DbContext.CreateNewContextOptions());
+            // Arrange
+			var configuration = new ConfigurationBuilder()
+			   .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+			   .AddJsonFile("appsettings.json", false)
+			   .Build();
+
+            var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+			var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             var user = new User { Email = "test@email.com", Name = "testUser" };
            
@@ -55,9 +65,9 @@ namespace RC_SpeechToText.Tests
             await context.SaveChangesAsync();
 
             // Remove all files in DB
-            var files = await context.File.ToListAsync();
-            context.File.RemoveRange(files);
-            await context.SaveChangesAsync();
+            //var files = await context.File.ToListAsync();
+            //context.File.RemoveRange(files);
+            //await context.SaveChangesAsync();
 
 			// Add file with title testFile
 			var newFile = new File { Title = "testFile", UserId = user.Id };
@@ -65,13 +75,11 @@ namespace RC_SpeechToText.Tests
             await context.SaveChangesAsync();
 
             // Act
-            var controller = new FileController(context);
-           
-            var result = await controller.GetAllWithUsernames();
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.GetAllWithUsernames();
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
+            Assert.IsType<FileUsernameDTO>(result);
 
 			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { newFile }, Usernames = new List<string> { user.Name } };
 
@@ -90,14 +98,11 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestGetUserFiles()
         {
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             var user = new User { Email = "test@email.com", Name = "testUser" };
 
-            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("email", user.Email)
-            }));
             // Add user with username testUser
             await context.AddAsync(user);
             await context.SaveChangesAsync();
@@ -118,17 +123,19 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file3);
             await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context);
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = userPrincipal }
-            };
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
 
-            var result = await controller.GetAllFilesByUser();
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+            // Act
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.GetAllFilesByEmail(user.Email);
+
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<FileUsernameDTO>(okResult.Value);
+            Assert.IsType<FileUsernameDTO>(result);
 
 			var mockFileUsernameDTO = new FileUsernameDTO { Files = new List<File> { file1, file2, file3 }, Usernames = new List<string> { user.Name } };
 
@@ -153,6 +160,7 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestDetails()
         {
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
             
             var file = new File { Title = "testFile" };
@@ -161,12 +169,19 @@ namespace RC_SpeechToText.Tests
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context);
-            var result = await controller.Details(file.Id);
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
+
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+			// Act
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.GetFileById(file.Id);
+
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<File>(okResult.Value);
+            Assert.IsType<File>(result);
         }
 
         /// <summary>
@@ -175,15 +190,11 @@ namespace RC_SpeechToText.Tests
         [Fact]
         public async Task TestAskReview()
         {
+            // Arrange
             var context = new SearchAVContext(DbContext.CreateNewContextOptions());
 
             var user = new User { Email = "user@email.com", Name = "testUser" };
             var reviewer = new User { Email = "reviewer@email.com", Name = "testReviewer" };
-
-            var userPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("email", user.Email)
-            }));
 
             // Add user and reviewer with username testUser and testReviewer
             await context.AddAsync(user);
@@ -195,25 +206,25 @@ namespace RC_SpeechToText.Tests
             context.File.RemoveRange(files);
             await context.SaveChangesAsync();
 
-
             var file = new File { Title = "testFile1", UserId = user.Id };
 
             // Add files using userId
             await context.File.AddAsync(file);
             await context.SaveChangesAsync();
 
-            // Act
-            var controller = new FileController(context);
-            controller.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext() { User = userPrincipal }
-            };
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json", false)
+				.Build();
 
-            var result = await controller.AddReviewer(file.Id, "reviewer@email.com");
+			var config = Options.Create(configuration.GetSection("someService").Get<AppSettings>());
+
+			// Act
+            var fileService = new FileService(context, config.Value);
+            var result = await fileService.AddReviewer(file.Id, user.Email, reviewer.Email);
             
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<File>(okResult.Value);
+            Assert.IsType<FileDTO>(result);
 
             //Assert that reviewer has been added to the file
             Assert.Equal(file.ReviewerId, reviewer.Id);
