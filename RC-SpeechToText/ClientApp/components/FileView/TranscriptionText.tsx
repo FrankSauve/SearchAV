@@ -65,6 +65,8 @@ export class TranscriptionText extends React.Component<any, State> {
         let transToDiff = this.props.versionToDiff.transcription;
         let commonWordsTable = this.createCommonTable(activeTranscript, transToDiff);
         let commonWordsInfo = this.getWordsInCommon(activeTranscript, transToDiff, commonWordsTable);
+
+        return commonWordsInfo;
     }
 
     createCommonTable = (activeTranscription: string, transToDiff: string) => {
@@ -101,8 +103,8 @@ export class TranscriptionText extends React.Component<any, State> {
 
         //Saving the positions as well as the words to match them together
         let longestCommonSub = new Array();
-        let commonSubPosition1 = new Array();
-        let commonSubPosition2 = new Array();
+        let activePositions = new Array();
+        let toDiffPositions = new Array();
 
         let c1 = activeArray.length;
         let c2 = toDiffArray.length;
@@ -110,8 +112,8 @@ export class TranscriptionText extends React.Component<any, State> {
         while (c1 > 0 && c2 > 0) {
             if (activeArray[c1 - 1] == toDiffArray[c2 - 1]) {
                 longestCommonSub.push(activeArray[c1 - 1]);
-                commonSubPosition1.push(c1 - 1);
-                commonSubPosition2.push(c2 - 1);
+                activePositions.push(c1 - 1);
+                toDiffPositions.push(c2 - 1);
                 c1--;
                 c2--;
             }
@@ -126,18 +128,19 @@ export class TranscriptionText extends React.Component<any, State> {
 
         //Have to reverse the lists since we are going from bottom up.
         longestCommonSub = longestCommonSub.reverse();
-        commonSubPosition1 = commonSubPosition1.reverse();
-        commonSubPosition2 = commonSubPosition2.reverse();
+        activePositions = activePositions.reverse();
+        toDiffPositions = toDiffPositions.reverse();
 
-        console.log(longestCommonSub);
-        console.log(commonSubPosition1);
-        console.log(commonSubPosition2);
 
+        return { longestCommonSub: longestCommonSub, activePositions: activePositions, toDiffPositions: toDiffPositions };
     };
 
     diffOfTranscription = () => {
         this.setState({ 'displayDiff': this.props.versionToDiff.transcription });
-        this.findCommonWords();
+
+        let commonWords = this.findCommonWords();
+
+        console.log(commonWords);
 
     };
     
@@ -263,7 +266,20 @@ export class TranscriptionText extends React.Component<any, State> {
                         className="highlight-text"
                         contentEditable={true}
                         dangerouslySetInnerHTML={{ __html: this.state.displayDiff }} />
+
+                    <div>
+                        <div
+                            id="transcription"
+                            className="highlight-text"
+                            contentEditable={true}
+                            dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} /> <div
+                            id="transcription"
+                            className="highlight-text"
+                            contentEditable={true}
+                            dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} />
+                    </div>
                 </div>
+
             );
         } else {
             return (
