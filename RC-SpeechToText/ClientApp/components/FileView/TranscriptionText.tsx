@@ -1,10 +1,15 @@
 import * as React from 'react';
+import axios from 'axios';
+import auth from '../../Utils/auth';
 
 interface State {
     version: any,
     displayText: string,
     rawText: string,
-    errorMessage: string
+    errorMessage: string,
+    timestamps: string,
+    intervalID: any,
+    highlightPos: number
 }
 
 export class TranscriptionText extends React.Component<any, State> {
@@ -15,12 +20,16 @@ export class TranscriptionText extends React.Component<any, State> {
             version: this.props.version,
             displayText: this.rawToHtml(this.props.version.transcription),
             rawText: this.props.version.transcription,
-            errorMessage: ""
+            errorMessage: "",
+            timestamps: "0:00:00.00",
+            intervalID: null,
+            highlightPos: 0
         }
     }
     
     // Called when the component renders
     componentDidMount() {
+        
         document.addEventListener('mousedown', this.clearHighlights);
 
         // Add onBlur and onInput to the contentEditable div
@@ -43,6 +52,9 @@ export class TranscriptionText extends React.Component<any, State> {
             transcription.removeEventListener('input', this.handleChange);
             transcription.removeEventListener('blur', this.handleBlur);
         }
+        if(this.state.intervalID!=null){
+            clearInterval(this.state.intervalID);
+        }
     }
 
     componentDidUpdate(prevProps : any, prevState : any) {
@@ -52,11 +64,48 @@ export class TranscriptionText extends React.Component<any, State> {
             this.highlightWords();
             this.props.handleTextSearch(false);
         }
+        // check if the feature toggle for #75 was activated
+        if (this.props.highlightPosition != null && (prevProps.highlightPosition !== this.props.highlightPosition)) {
+            console.log("ACTIVATE 491 FEATURE TranscriptionText.componentDidUpdate");
+            this.setState({highlightPos:this.props.highlightPosition},()=>{
+                this.getTimestamps();
+            });
+        }
+        // check if the feature toggle for #75 was deactivated
+        else if (this.props.highlightPosition == null && (prevProps.highlightPosition !== this.props.highlightPosition)){
+            console.log("DE-ACTIVATE 491 FEATURE TranscriptionText.componentDidUpdate");
+            this.clearPositionHighlights();
+        }
     }
+
+    // retrieves all the timestamps from the transcript
+    public getTimestamps = () => {
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + auth.getAuthToken(),
+                'content-type': 'application/json'
+            }
+        };
+        axios.get('/api/Transcription/GetTimestamps/' + this.state.version.id, config)
+            .then(res => {
+                this.setState({displayText:this.rawToUnhighlightedPosHtml(this.state.displayText),timestamps: res.data}, () =>{
+                    this.highlightPosition();
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+    
     
     // remove all span tags from the page
     public clearHighlights = () =>{
         this.setState({displayText:this.rawToUnhighlightedHtml(this.state.displayText)});
+    };
+    // remove only span tags dedicated to showing the current position of the video in the transcript
+    public clearPositionHighlights=()=>{
+        clearInterval(this.state.intervalID);
+        this.setState({displayText:this.rawToUnhighlightedPosHtml(this.state.displayText), intervalID: null});
     };
     
     // Highlights occurences of a string sel by inserting span tags into the displayText
@@ -105,6 +154,81 @@ export class TranscriptionText extends React.Component<any, State> {
             this.setState({displayText: highlightedText});
         }
     };
+    
+    public highlightPosition=()=> {
+
+        let intervalSpeed = 100; // update every intervalSpeed/1000 seconds
+        
+        // 0) get displayText in array form (var wordList[] string array of words)
+        let wordList = this.state.displayText.split(" ");
+        // 1) get list of all timestamps in array form (var timeList[] timestamps converted to seconds)
+        let rawTimeList = (this.state.timestamps).split(", ");
+        let timeList:number[] = [];
+        for(let i=0; i<rawTimeList.length; i++){
+            let a = rawTimeList[i].split(':');
+            timeList[i] = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (parseFloat(a[2]));
+        }
+
+        // 2) inject tags around the word currently being said in the video
+        let hTextArray:string[] = [];
+        let injected = false;
+        let startIndex = 0;
+        for(let i=0;i<wordList.length;i++){
+            //find first word above currentTime (starting from second)
+            if(!injected && timeList[i] >= this.state.highlightPos){
+                hTextArray.push("<span style='background-color: #DCDCDC'>");
+                injected = true;
+                startIndex = i;
+            }
+            if(wordList[i] !=" " && wordList[i]!="" && wordList[i]!="</span>"){
+                hTextArray.push(wordList[i]);
+            }
+            
+            // initial position of the end span should be one ahead from the start span
+            if(injected && i == (startIndex+1)){
+                hTextArray.push("</span>");
+            }
+        }
+        
+        // If the interval process isn't already running...
+        if(this.state.intervalID == null){
+            // 3) call endTag injection method at a given interval
+            let interval = setInterval(() => {this.replaceHighlightPosEnd(hTextArray, wordList, timeList, intervalSpeed);}, intervalSpeed);
+            this.setState({intervalID:interval});
+        }
+    };
+    
+    replaceHighlightPosEnd(hTextArray:string[], wordList:string[], timeList:number[], intervalSpeed:number) {
+        
+        //if there is nothing left to highlight, clear the highlight and end the process
+        if(timeList[timeList.length-1] <=this.state.highlightPos){
+            this.clearPositionHighlights();
+        }
+        
+        if(this.props.isPlaying){
+            //Clearing away last div close tag
+            let spanIndex = hTextArray.indexOf("<span style='background-color: #DCDCDC'>");
+            for(let i=spanIndex;i<hTextArray.length;i++){
+
+                if(hTextArray[i] == "</span>"){
+                    hTextArray.splice(i,1);
+                    spanIndex = i;
+                    break;
+                }
+            }
+
+            //Adding new closing tag
+            for(let i=spanIndex;i<hTextArray.length;i++){
+
+                if(timeList[i] > this.state.highlightPos){
+                    hTextArray.splice(i,0,"</span>");
+                    break;
+                }
+            }
+            let str = hTextArray.join(" ");
+            this.setState({displayText: str, highlightPos: (this.state.highlightPos+(intervalSpeed/1000))});
+        }
+    }
 
     // Retrieves the words selected via mouse and calls FileView's searchTranscript method with them
     public getHighlightedWords = (event: any) => {
@@ -118,7 +242,15 @@ export class TranscriptionText extends React.Component<any, State> {
         }
         
     };
-
+    
+    // removes all div tags from a string
+    rawToUnhighlightedPosHtml(text: string) {
+        let a = text;
+        a = a.replace(/<span[^>]+\>/g,'');
+        a = a.replace(/<\/span>/g,'');
+        return a;
+    }
+    
     // removes all span and a tags from a string
     rawToUnhighlightedHtml(text: string) {
         let a = text;
@@ -150,9 +282,9 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
      setCursorPosition = (cursorPos: number) => {
-        var el = document.getElementById("transcription");
-        var range = document.createRange();
-        var sel = window.getSelection();
+        let el = document.getElementById("transcription");
+        let range = document.createRange();
+        let sel = window.getSelection();
         if(el) range.setStart(el.childNodes[0], cursorPos);
         range.collapse(true);
         sel.removeAllRanges();
@@ -160,9 +292,9 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
     getCursorPosition = () => {
-        var sel = document.getSelection();
+        let sel = document.getSelection();
         if(sel) {
-            var range = sel.getRangeAt(0);
+            let range = sel.getRangeAt(0);
             return range.startOffset;
         }
     };

@@ -19,6 +19,18 @@ export class VideoPlayer extends React.Component<any, State> {
 
     }
     
+    handleKeyDown = (event : any) => {
+
+        if(event.altKey) { // alt key
+            if(event.keyCode == 66){ // b key
+                this.props.handleHighlightPosition(this.state.player.getCurrentTime());
+            }
+            else if(event.keyCode == 78){ // n key
+                this.props.handleHighlightPosition(null);
+            }
+        }
+    };
+    
     localSeek = (n: any) =>{
         let seekVal = this.state.player.getCurrentTime()+n;
         if (seekVal < 0)
@@ -27,11 +39,22 @@ export class VideoPlayer extends React.Component<any, State> {
             seekVal = this.state.player.getDuration() - 1;
         this.state.player.seekTo(seekVal);
     };
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
     
     componentDidUpdate(prevProps : any, prevState : any) {
         // only call for the change in time if the data has changed
         if (prevProps.seekTime !== this.props.seekTime) {
             this.changeTime();
+        }
+        if(prevState.playing !== this.state.playing){
+            this.props.handleIsPlaying(this.state.playing);
         }
     }
 
@@ -44,14 +67,27 @@ export class VideoPlayer extends React.Component<any, State> {
     ref = (player: any) => {
         this.setState({player: player});
     };
+
+    onPlay = () => {
+        this.setState({ playing: true })
+    };
+
+    onPause = () => {
+        this.setState({ playing: false })
+    };
+    
     public render() {
+        const { playing, controls} = this.state;
+        
         return (
             <div className="video-player">
                 <ReactPlayer
                     ref={this.ref}
                     url={this.props.path}
-                    playing={this.state.playing}
-                    controls={this.state.controls}
+                    playing={playing}
+                    controls={controls}
+                    onPlay={this.onPlay}
+                    onPause={this.onPause}
                     width='100%'
                     height='100%'
                 />

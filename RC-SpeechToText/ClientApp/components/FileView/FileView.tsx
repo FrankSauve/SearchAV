@@ -36,10 +36,12 @@ interface State {
     seekTime: string,
     timestampInfo: string,
     selection: string,
+    highlightPosition: string,
     versions: any[],
     usernames: string[], 
     textSearch: boolean,
-    path: string
+    path: string,
+    isPlaying: boolean
 }
 
 export default class FileView extends React.Component<any, State> {
@@ -69,10 +71,12 @@ export default class FileView extends React.Component<any, State> {
             seekTime: '0:00:00.00',
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
+            highlightPosition: '0:00:00.00',
             versions: [],
             usernames: [], 
             textSearch: false,
-            path: ""
+            path: "",
+            isPlaying: false
         }
     }
 
@@ -248,12 +252,20 @@ export default class FileView extends React.Component<any, State> {
         }
     };
     
+    public handleIsPlaying = (b:boolean) =>{
+        this.setState({isPlaying:b});
+    };
+    
     public handleTextSearch = (b: boolean) =>{
         this.setState({textSearch: b});
     };
 
     public handleSeekTime = (time: string) => {
         this.setState({ seekTime: time });
+    };
+    
+    public handleHighlightPosition = (time: string) =>{
+        this.setState({highlightPosition: time});
     };
 
     public handleTranscriptChange = (text: string) => {
@@ -318,7 +330,13 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.filePath} seekTime={this.state.seekTime} controls={true}/> : null}
+                        {this.state.file ? 
+                            <VideoPlayer 
+                                path={this.state.file.filePath} 
+                                seekTime={this.state.seekTime} 
+                                handleHighlightPosition={this.handleHighlightPosition} 
+                                handleIsPlaying={this.handleIsPlaying} 
+                                controls={true}/> : null}
 
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>
@@ -364,12 +382,14 @@ export default class FileView extends React.Component<any, State> {
                                         text={this.state.version.transcription}
                                         version={this.state.version}
                                         handleTranscriptChange={this.handleTranscriptChange}
-                                        handleSeekTime={this.handleSeekTime}
                                         selection={this.state.selection}
                                         handleSelectionChange={this.handleSelectionChange}
                                         textSearch={this.state.textSearch}
                                         handleTextSearch={this.handleTextSearch}
-                                        timestampInfo={this.state.timestampInfo}/>
+                                        timestampInfo={this.state.timestampInfo}
+                                        highlightPosition={this.state.highlightPosition}
+                                        handleHighlightPosition={this.handleHighlightPosition}
+                                        isPlaying={this.state.isPlaying}/>
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}

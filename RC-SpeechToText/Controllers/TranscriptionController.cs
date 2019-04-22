@@ -55,6 +55,17 @@ namespace RC_SpeechToText.Controllers
             var outDTO = new OutSearchTranscriptDTO { VersionId = versionId, SearchTerms = searchTerms };
             return Ok(await _transcriptionService.SearchTranscript(outDTO));
         }
+        
+        /// <summary>
+        /// Returns all timestamps
+        /// </summary>
+        /// <param name="versionId"></param>
+        /// <returns></returns>
+        [HttpGet("[action]/{versionId}")]
+        public async Task<IActionResult> GetTimestamps(Guid versionId)
+        {
+            return Ok(await _transcriptionService.GetTimestamps(versionId));
+        }
 
         /// <summary>
         /// Downloads a file (mp4, srt, burned mp4)
