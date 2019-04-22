@@ -49,9 +49,15 @@ export default class FileInput extends React.Component<any, State> {
     };
 
     public showAddTitleDescriptionModal = (e: any) => {
-        this.setState({ file: e.target.files[0] });
+        this.setState({ file: e.target.files });
         this.setState({title: e.target.files[0].name.split(".")[0]}) // Name of the file without the extension
-        this.setState({ showAddTitleDescriptionModal: true });
+        this.setState({ count: e.target.files.length })
+        if (e.target.files.length > 1) {
+            this.setState({ showAddMultipleFilesModal: true });
+        }
+        else {
+            this.setState({ showAddTitleDescriptionModal: true });
+        }
     } 
 
     public hideAddTitleDescriptionModal = () => {
@@ -231,7 +237,7 @@ export default class FileInput extends React.Component<any, State> {
                     onDragOver={(e => this.onDragOver(e))}
                 >
                     <label className="file-label">
-                        <input className="file-input" type="file" name="File" onChange={this.showAddTitleDescriptionModal} />
+                        <input className="file-input" type="file" name="File" multiple onChange={this.showAddTitleDescriptionModal} />
                         <span className="file-cta no-border">
                             {this.state.loading ? <Loading /> :
                                 <span className="file-icon">
