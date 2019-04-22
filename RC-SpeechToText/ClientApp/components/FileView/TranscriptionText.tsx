@@ -59,9 +59,87 @@ export class TranscriptionText extends React.Component<any, State> {
         }
     }
 
+
+    findCommonWords = () => {
+        let activeTranscript = this.state.rawText;
+        let transToDiff = this.props.versionToDiff.transcription;
+        let commonWordsTable = this.createCommonTable(activeTranscript, transToDiff);
+        let commonWordsInfo = this.getWordsInCommon(activeTranscript, transToDiff, commonWordsTable);
+    }
+
+    createCommonTable = (activeTranscription: string, transToDiff: string) => {
+        let activeArray = activeTranscription.split(" ");
+        let toDiffArray = transToDiff.split(" ");
+
+        let subSeqTable = new Array(activeArray.length + 1);
+        for (var x = 0; x < subSeqTable.length; x++) {
+            subSeqTable[x] = new Array(toDiffArray.length + 1)
+        }
+
+        let i;
+        //Filling up the longest subsequence table.
+        for (i = 0; i <= activeArray.length; i++)
+        {
+            let j;
+            for (j = 0; j <= toDiffArray.length; j++)
+            {
+                if (i == 0 || j == 0)
+                    subSeqTable[i][j] = 0;
+                else if (activeArray[i - 1] == toDiffArray[j - 1])
+                    subSeqTable[i][j] = subSeqTable[i - 1][ j - 1] + 1;
+                else
+                    subSeqTable[i][j] = Math.max(subSeqTable[i - 1][j], subSeqTable[i][j - 1]);
+            }
+        }
+
+        return subSeqTable;
+    };
+
+    getWordsInCommon = (activeTranscription: string, transToDiff: string, commonWordsTable: any) => {
+        let activeArray = activeTranscription.split(" ");
+        let toDiffArray = transToDiff.split(" ");
+
+        //Saving the positions as well as the words to match them together
+        let longestCommonSub = new Array();
+        let commonSubPosition1 = new Array();
+        let commonSubPosition2 = new Array();
+
+        let c1 = activeArray.length;
+        let c2 = toDiffArray.length;
+
+        while (c1 > 0 && c2 > 0) {
+            if (activeArray[c1 - 1] == toDiffArray[c2 - 1]) {
+                longestCommonSub.push(activeArray[c1 - 1]);
+                commonSubPosition1.push(c1 - 1);
+                commonSubPosition2.push(c2 - 1);
+                c1--;
+                c2--;
+            }
+
+            // If not same, then find the larger of two and 
+            // go in the direction of larger value 
+            else if (commonWordsTable[c1 - 1][c2] > commonWordsTable[c1][c2 - 1])
+                c1--;
+            else
+                c2--;
+        }
+
+        //Have to reverse the lists since we are going from bottom up.
+        longestCommonSub = longestCommonSub.reverse();
+        commonSubPosition1 = commonSubPosition1.reverse();
+        commonSubPosition2 = commonSubPosition2.reverse();
+
+        console.log(longestCommonSub);
+        console.log(longestCommonSub);
+        console.log(longestCommonSub);
+
+    };
+
     diffOfTranscription = () => {
         this.setState({ 'displayDiff': this.props.versionToDiff.transcription });
-    }
+        this.findCommonWords();
+
+    };
     
     // remove all span tags from the page
     public clearHighlights = () =>{
