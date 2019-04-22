@@ -37,7 +37,7 @@ namespace RC_SpeechToText.Services
 
 			try
 			{
-				using (Process process = Process.Start(videoProcess))
+				using (var process = Process.Start(videoProcess))
 				{
 					while (!process.StandardOutput.EndOfStream)
 					{

@@ -74,19 +74,19 @@ namespace RC_SpeechToText.Services {
 
 		private async Task<bool> GenerateDocument(OutDownloadTranscriptDTO outDownloadTranscriptDTO, string fileTitle, Models.Version version, string transcript)
 		{
-			if (outDownloadTranscriptDTO.DocumentType == "doc")
+			if (outDownloadTranscriptDTO.DocumentType == DocumentType.Doc)
 			{
 				return GenerateWordDoucment(transcript);
 			}
-			else if (outDownloadTranscriptDTO.DocumentType == "googleDoc")
+			else if (outDownloadTranscriptDTO.DocumentType == DocumentType.GoogleDoc)
 			{
 				return GenerateGoogleDocument(fileTitle, transcript);
 			}
-			else if (outDownloadTranscriptDTO.DocumentType == "srt")
+			else if (outDownloadTranscriptDTO.DocumentType == DocumentType.Srt)
 			{
 				return await GenerateSRTDocument(fileTitle, version, transcript);
 			}
-			else if (outDownloadTranscriptDTO.DocumentType.Contains("video"))
+			else if (outDownloadTranscriptDTO.DocumentType.Contains(DocumentType.Video))
 			{
 				return await GenerateVideoWithSubtitle(outDownloadTranscriptDTO, fileTitle, version, transcript);
 			}
