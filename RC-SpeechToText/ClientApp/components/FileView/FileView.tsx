@@ -37,7 +37,7 @@ interface State {
     timestampInfo: string,
     selection: string,
     versions: any[],
-    usernames: string[], 
+    usernames: string[],
     textSearch: boolean,
     path: string
 }
@@ -70,7 +70,7 @@ export default class FileView extends React.Component<any, State> {
             timestampInfo: '0:00:00.00-0:00:00.00',
             selection: '',
             versions: [],
-            usernames: [], 
+            usernames: [],
             textSearch: false,
             path: ""
         }
@@ -82,7 +82,7 @@ export default class FileView extends React.Component<any, State> {
         this.getFile();
         this.getUser();
         this.getAllVersions();
-        this.setState({ description: this.state.description }); 
+        this.setState({ description: this.state.description });
         document.addEventListener('mouseup', this.hideDropdown);
     }
 
@@ -104,7 +104,7 @@ export default class FileView extends React.Component<any, State> {
                 console.log(res.data);
                 this.setState({ 'versions': res.data.versions });
                 this.setState({ 'usernames': res.data.usernames });
-                
+
             })
             .catch(err => {
                 console.log(err);
@@ -146,8 +146,8 @@ export default class FileView extends React.Component<any, State> {
         }
         axios.get('/api/file/details/' + this.state.fileId, config)
             .then(res => {
-                this.setState({ file: res.data }); 
-                this.setState({ description: this.state.file.description }); 
+                this.setState({ file: res.data });
+                this.setState({ description: this.state.file.description });
                 this.setState({ path: this.state.file.filePath });
             })
             .catch(err => {
@@ -229,27 +229,27 @@ export default class FileView extends React.Component<any, State> {
         // Search the entire selection for now
         // This will probably have to change by having words with timestamps in the frontend
         // But its an ok temporary solution
-        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.selection , config)
+        axios.get('/api/Transcription/SearchTranscript/' + this.state.version.id + '/' + this.state.selection, config)
             .then(res => {
                 this.handleSeekTime(res.data);
-                this.setState({timestampInfo: res.data});
+                this.setState({ timestampInfo: res.data });
                 this.handleTextSearch(true);
             })
             .catch(err => {
                 console.log(err);
             });
     };
-    
-    public handleSelectionChange = (sel : string) =>{
-        if(sel != null && sel != '' && sel != ' ') {
-            this.setState({selection: sel}, () =>{
+
+    public handleSelectionChange = (sel: string) => {
+        if (sel != null && sel != '' && sel != ' ') {
+            this.setState({ selection: sel }, () => {
                 this.searchTranscript();
             });
         }
     };
-    
-    public handleTextSearch = (b: boolean) =>{
-        this.setState({textSearch: b});
+
+    public handleTextSearch = (b: boolean) => {
+        this.setState({ textSearch: b });
     };
 
     public handleSeekTime = (time: string) => {
@@ -318,14 +318,14 @@ export default class FileView extends React.Component<any, State> {
                 <div className="columns">
                     <div className="column is-one-third file-view-info-section">
                         {/* Using title for now, this will have to be change to path eventually */}
-                        {this.state.file ? <VideoPlayer path={this.state.file.filePath} seekTime={this.state.seekTime} controls={true}/> : null}
+                        {this.state.file ? <VideoPlayer path={this.state.file.filePath} seekTime={this.state.seekTime} controls={true} /> : null}
 
                         {this.state.file ? <b className="file-view-header">Titre: </b> : null}
                         {this.state.file ? (this.state.file.title ? <div>
                             <div className="file-view-title">
                                 {this.removeExtension(this.state.file.title)}
                             </div> </div> : <div className="file-view-title"> Ce fichier n'a pas de titre </div>) : null}
-                        
+
                         <br />
 
                         {this.state.file ? <b className="file-view-header">Description: <a onClick={this.showConfirmDescriptionModal}><i className="fas fa-edit mg-left-5"></i></a></b> : null}
@@ -335,8 +335,8 @@ export default class FileView extends React.Component<any, State> {
                                     description={this.state.file.description ? this.state.file.description : "Ce fichier n'a aucune description."}
                                     handleDescriptionChange={this.handleDescriptionChange}
                                 />
-                        </div> : null}
-                        
+                            </div> : null}
+
                         <br />
 
                         <p>{this.state.file ? (this.state.version ?
@@ -350,10 +350,10 @@ export default class FileView extends React.Component<any, State> {
                     </div>
 
                     <div className="column is-half mg-top-30 editing-section">
-                        {this.state.version ? 
-                            <TranscriptionSearch 
-                                versionId={this.state.version.id} 
-                                handleSeekTime={this.handleSeekTime} 
+                        {this.state.version ?
+                            <TranscriptionSearch
+                                versionId={this.state.version.id}
+                                handleSeekTime={this.handleSeekTime}
                                 selection={this.state.selection}
                                 handleSelectionChange={this.handleSelectionChange} /> : null}
                         {this.state.loading ?
@@ -369,7 +369,7 @@ export default class FileView extends React.Component<any, State> {
                                         handleSelectionChange={this.handleSelectionChange}
                                         textSearch={this.state.textSearch}
                                         handleTextSearch={this.handleTextSearch}
-                                        timestampInfo={this.state.timestampInfo}/>
+                                        timestampInfo={this.state.timestampInfo} />
                                     <SaveTranscriptionButton
                                         version={this.state.version}
                                         updateVersion={this.updateVersion}
@@ -385,9 +385,11 @@ export default class FileView extends React.Component<any, State> {
 
                     <div className="column is-one-fifth historique_padding">
                         <TranscriptionHistorique
-                            fileId={this.state.fileId}
+                            file={this.state.file}
                             versions={this.state.versions}
                             usernames={this.state.usernames}
+                            activeVersion={this.state.version}
+                            currentTranscription={this.state.editedTranscript}
                         />
                     </div>
 

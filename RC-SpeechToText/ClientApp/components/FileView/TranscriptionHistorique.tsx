@@ -1,10 +1,13 @@
 import * as React from 'react';
 import auth from '../../Utils/auth';
 import axios from 'axios';
+import { TranscriptionHistoriqueItem } from '../FileView/TranscriptionHistoriqueItem'
 
 interface State {
     loading: boolean,
-    unauthorized: boolean
+    unauthorized: boolean, 
+    activeVersion: any, 
+    currentTranscription: any
 }
 
 
@@ -14,7 +17,9 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
         this.state = {
             loading: false,
-            unauthorized: false
+            unauthorized: false, 
+            activeVersion: this.props.activeVersion, 
+            currentTranscription: this.props.currentTranscription
         }
     }
 
@@ -39,7 +44,6 @@ export class TranscriptionHistorique extends React.Component<any, State> {
 
     public render() {
         var i = 0;
-
         return (
             <div>
                 <div className="box mg-top-30" id="historique-title-box">
@@ -48,19 +52,23 @@ export class TranscriptionHistorique extends React.Component<any, State> {
                 <div className="box" id="historique-content-box">
                     <div>
                         {this.props.versions.map((version: any) => {
-                            const listVersions = (
-                                <div className="historique-content">
-                                    <p> {version.historyTitle} </p>
-                                    <p> {this.formatTime(version.dateModified)} </p>
-                                    <p className="historique-username"> <b>{this.props.usernames[i]}</b></p>
-                                </div>
+                            const VersionComponent = (
+                                <TranscriptionHistoriqueItem
+                                    version={version}
+                                    historyTitle={version.historyTitle}
+                                    username={this.props.usernames[i]}
+                                    dateModified={this.formatTime(version.dateModified)}
+                                    transcription={version.transcription}
+                                    activeVersion={this.props.activeVersion}
+                                    currentTranscription={this.state.currentTranscription}
+                                    key={version.id}
+                                />
                             )
                             i++;
-                            return listVersions;
+                            return VersionComponent;
                         })}
                     </div>
                 </div>
-
             </div>
         );
     }
