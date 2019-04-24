@@ -32,7 +32,9 @@ interface State {
     unauthorized: boolean,
     filesPerPage: number,
     currentPage: number,
-    maxPages: number
+    maxPages: number,
+    currentFilterFilesCount: number,
+    allFilesCount: number
 }
 
 export default class Dashboard extends React.Component<any, State> {
@@ -58,9 +60,11 @@ export default class Dashboard extends React.Component<any, State> {
             loading: false,
             allFilesSearch: false,
             unauthorized: false,
-            filesPerPage: 2,
+            filesPerPage: 8,
             currentPage: 1,
-            maxPages: 0
+            maxPages: 0,
+            currentFilterFilesCount: 0,
+            allFilesCount: 0
         }
     }
 
@@ -133,6 +137,8 @@ export default class Dashboard extends React.Component<any, State> {
                 console.log(res.data);
                 this.setState({ 'allFiles': res.data.files });
                 this.setState({ 'maxPages': Math.ceil(res.data.files.length/this.state.filesPerPage) });
+                this.setState({ 'currentFilterFilesCount': res.data.files.length});
+                this.setState({ 'allFilesCount': res.data.files.length});
                 this.setState(
 					{ 'versions': res.data.versions},
 					this.matchVersionToFile
@@ -202,8 +208,13 @@ export default class Dashboard extends React.Component<any, State> {
 			);
         this.setState({ 'usernames': usernames.filter(n => n) });
         this.setState({ 'isFilesToReviewFilterActive': true });
-        this.setState({ 'currentPage': 1 });
-        this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        if (counter != 0) {
+            this.setState({ 'currentPage': 1 });
+            this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        }
+        else {
+            this.setState({ 'currentFilterFilesCount': 0 });
+        }
 
     }
 
@@ -230,8 +241,13 @@ export default class Dashboard extends React.Component<any, State> {
         this.setState({ 'usernames': usernames.filter(n => n) });
 
         this.setState({ 'isAutomatedFilterActive': true });
-        this.setState({ 'currentPage': 1 });
-        this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        if (counter != 0) {
+            this.setState({ 'currentPage': 1 });
+            this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        }
+        else {
+            this.setState({ 'currentFilterFilesCount': 0 });
+        }
 
     }
 
@@ -259,8 +275,14 @@ export default class Dashboard extends React.Component<any, State> {
         this.setState({ 'usernames': usernames.filter(n => n) });
 
         this.setState({ 'isEditedFilterActive': true });
-        this.setState({ 'currentPage': 1 });
-        this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        if (counter != 0) {
+            this.setState({ 'currentPage': 1 });
+            this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        }
+        else
+        {
+            this.setState({ 'currentFilterFilesCount': 0 });
+        }
 
     }
 
@@ -287,8 +309,13 @@ export default class Dashboard extends React.Component<any, State> {
         this.setState({ 'usernames': usernames.filter(n => n) });
 
         this.setState({ 'isReviewedFilterActive': true });
-        this.setState({ 'currentPage': 1 });
-        this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        if (counter != 0) {
+            this.setState({ 'currentPage': 1 });
+            this.setState({ 'maxPages': Math.ceil(counter / this.state.filesPerPage) });
+        }
+        else {
+            this.setState({ 'currentFilterFilesCount': 0 });
+        }
 
     }
 
@@ -321,7 +348,7 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public showButton = () => {
-        if (this.state.files.length > this.state.filesPerPage && this.state.allFiles.length > 0 )
+        if (this.state.files.length > this.state.filesPerPage && this.state.allFiles.length > 0 && this.state.currentFilterFilesCount > 0)
             return(
                     <div>
                         <br />
@@ -347,12 +374,12 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public renderListView = () => {
-        const { allFiles, currentPage, filesPerPage } = this.state;
+        const { files, currentPage, filesPerPage } = this.state;
 
         // Logic for displaying current files
         const indexOfLastFile = currentPage * filesPerPage;
         const indexOfFirstFile = indexOfLastFile - filesPerPage;
-        const currentFiles = allFiles.slice(indexOfFirstFile, indexOfLastFile);
+        const currentFiles = files.slice(indexOfFirstFile, indexOfLastFile);
         return (
             <div>
                 {this.state.files.length > 0 ? <ListTable
@@ -443,11 +470,13 @@ export default class Dashboard extends React.Component<any, State> {
     }
 
     public deactivateFilters = () => {
+        const count = this.state.allFilesCount;
         this.setState({ 'isMyFilesFilterActive': false });
         this.setState({ 'isAutomatedFilterActive': false });
         this.setState({ 'isEditedFilterActive': false });
         this.setState({ 'isReviewedFilterActive': false });
         this.setState({ 'isFilesToReviewFilterActive': false });
+        this.setState({ 'currentFilterFilesCount': count });
     }
 
     public render() {
