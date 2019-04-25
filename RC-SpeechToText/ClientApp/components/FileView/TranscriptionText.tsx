@@ -62,6 +62,7 @@ export class TranscriptionText extends React.Component<any, State> {
 
     findCommonWords = () => {
         let activeTranscript = this.state.rawText;
+        console.log("active transcript: " + activeTranscript);
         let transToDiff = this.props.versionToDiff.transcription;
         let commonWordsTable = this.createCommonTable(activeTranscript, transToDiff);
         let commonWordsInfo = this.getWordsInCommon(activeTranscript, transToDiff, commonWordsTable);
@@ -135,10 +136,71 @@ export class TranscriptionText extends React.Component<any, State> {
         return { longestCommonSub: longestCommonSub, activePositions: activePositions, toDiffPositions: toDiffPositions };
     };
 
+	addDiffHighlights = (commonWords: any) => {
+        let activeTranscript = this.state.rawText.split(" ");
+        let transToDiff = this.props.versionToDiff.transcription.split(" ");
+        let diffToDisplay = "";
+
+
+        for (let i = 0; i < commonWords.activePositions.length; i++) {
+            //If we did not reach reach the end of common words we can assume there is another term to check against
+            if (i != commonWords.activePositions.length - 1) {
+                diffToDisplay += (commonWords.longestCommonSub[i] + " ");
+
+                if ((commonWords.toDiffPositions[i] + 1) != commonWords.toDiffPositions[i + 1]) {
+
+                    diffToDisplay += "<mark class=highlight-red>";
+                    for (let j = (commonWords.toDiffPositions[i] + 1); j < (commonWords.toDiffPositions[i + 1]); j++) {
+                        diffToDisplay += (transToDiff[j] + " ");
+                    }
+                    diffToDisplay += "</mark>";
+
+                }
+                if ((commonWords.activePositions[i] + 1) != commonWords.activePositions[i + 1]) {
+
+                    diffToDisplay += "<mark class=highlight-green>";
+                    for (let j = (commonWords.activePositions[i] + 1); j < (commonWords.activePositions[i + 1]); j++) {
+                        diffToDisplay += (activeTranscript[j] + " ");
+                    }
+                    diffToDisplay += "</mark>";
+
+                }
+            } else {
+                diffToDisplay += (commonWords.longestCommonSub[i] + " ");
+
+                if ((commonWords.toDiffPositions[i] + 1) != transToDiff.length) {
+
+                    diffToDisplay += "<mark class=highlight-red>";
+                    for (let j = (commonWords.toDiffPositions[i] + 1); j < transToDiff.length; j++) {
+                        diffToDisplay += (transToDiff[j] + " ");
+                    }
+                    diffToDisplay += "</mark>";
+
+                }
+                if ((commonWords.activePositions[i] + 1) != activeTranscript.length) {
+
+                    diffToDisplay += "<mark class=highlight-green>";
+                    for (let j = (commonWords.activePositions[i] + 1); j < (activeTranscript.length); j++) {
+                        diffToDisplay += (activeTranscript[j] + " ");
+                    }
+                    diffToDisplay += "</mark>";
+
+                }
+
+            }
+
+        }
+
+        this.setState({ 'displayDiff': diffToDisplay });
+
+	};
+
     diffOfTranscription = () => {
         this.setState({ 'displayDiff': this.props.versionToDiff.transcription });
 
         let commonWords = this.findCommonWords();
+		console.log(commonWords);
+		this.addDiffHighlights(commonWords);
 
         console.log(commonWords);
 
@@ -258,6 +320,8 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
     public render() {
+        console.log(this.state.displayDiff);
+
         if (this.props.versionToDiff && this.props.versionToDiff.id != this.state.version.id) {
             return (
                 <div>

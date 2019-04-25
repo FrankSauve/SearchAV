@@ -56,8 +56,8 @@
 }
 
 .highlight-text:focus {
-    outline:none;
-} 
+    outline: none;
+}
 
 .highlight-text::selection {
     background: $light-blue;
@@ -97,6 +97,18 @@
     margin-top: -10px;
     margin-right: -12px;
     margin-left: -11px;
+}
+
+.highlight-red {
+    background-color: #ff6666;
+}
+
+.highlight-yellow {
+    background-color: #eff248;
+}
+
+.highlight-green {
+    background-color: #1cff54;
 }
 
 #transcription {
