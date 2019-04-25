@@ -3,6 +3,7 @@ import * as React from 'react';
 interface State {
     version: any,
     displayText: string,
+    displayDiff: string,
     rawText: string,
     errorMessage: string
 }
@@ -14,6 +15,7 @@ export class TranscriptionText extends React.Component<any, State> {
         this.state = {
             version: this.props.version,
             displayText: this.rawToHtml(this.props.version.transcription),
+            displayDiff: "",
             rawText: this.props.version.transcription,
             errorMessage: ""
         }
@@ -46,13 +48,198 @@ export class TranscriptionText extends React.Component<any, State> {
     }
 
     componentDidUpdate(prevProps : any, prevState : any) {
-        // check if the button on TranscriptionSearch was pressed
+        //Check if the button on TranscriptionSearch was pressed
         if (this.props.textSearch && (prevProps.textSearch !== this.props.textSearch)) {
             this.clearHighlights();
             this.highlightWords();
             this.props.handleTextSearch(false);
         }
+        if (this.props.versionToDiff && (prevProps.versionToDiff !== this.props.versionToDiff) && this.props.versionToDiff.id!=this.state.version.id) {
+            this.diffOfTranscription();
+        }
     }
+
+	diffOfTranscription = () => {
+        let commonWords = this.findCommonWords();
+		this.addDiffHighlights(commonWords);
+
+    };
+
+    findCommonWords = () => {
+        let activeTranscript = this.state.rawText;
+        let transToDiff = this.props.versionToDiff.transcription;
+        let commonWordsTable = this.createCommonTable(activeTranscript, transToDiff);
+        let commonWordsInfo = this.getWordsInCommon(activeTranscript, transToDiff, commonWordsTable);
+
+        return commonWordsInfo;
+    }
+
+    //This will create the dynamic table used by the algorithm that finds
+    //words in common between the 2 transcription we want to compare
+    createCommonTable = (activeTranscription: string, transToDiff: string) => {
+        //Transcription needed as list to be able to perform algorithm
+        let activeArray = activeTranscription.split(" ");
+        let toDiffArray = transToDiff.split(" ");
+
+        //Initializing the table with the right length
+        let subSeqTable = new Array(activeArray.length + 1);
+        for (var x = 0; x < subSeqTable.length; x++) {
+            subSeqTable[x] = new Array(toDiffArray.length + 1)
+        }
+
+        //Filling up the longest subsequence table.
+        for (let i = 0; i <= activeArray.length; i++)
+        {
+            let j;
+            for (j = 0; j <= toDiffArray.length; j++)
+            {
+                if (i == 0 || j == 0)
+                    subSeqTable[i][j] = 0;
+                else if (activeArray[i - 1] == toDiffArray[j - 1])
+                    subSeqTable[i][j] = subSeqTable[i - 1][ j - 1] + 1;
+                else
+                    subSeqTable[i][j] = Math.max(subSeqTable[i - 1][j], subSeqTable[i][j - 1]);
+            }
+        }
+
+        return subSeqTable;
+    };
+
+    //Uses the previously computed table in createCommonTable() and traverses it backward to find out which
+    //words are in common between both transcription.
+    getWordsInCommon = (activeTranscription: string, transToDiff: string, commonWordsTable: any) => {
+        let activeArray = activeTranscription.split(" ");
+        let toDiffArray = transToDiff.split(" ");
+
+        //Saving the positions as well as the words to match them together
+        let longestCommonSub = new Array();
+        let activePositions = new Array();
+        let toDiffPositions = new Array();
+
+        let c1 = activeArray.length;
+        let c2 = toDiffArray.length;
+
+        while (c1 > 0 && c2 > 0) {
+            if (activeArray[c1 - 1] == toDiffArray[c2 - 1]) {
+                longestCommonSub.push(activeArray[c1 - 1]);
+                activePositions.push(c1 - 1);
+                toDiffPositions.push(c2 - 1);
+                c1--;
+                c2--;
+            }
+
+            // If not same, then find the larger of two and 
+            // go in the direction of larger value 
+            else if (commonWordsTable[c1 - 1][c2] > commonWordsTable[c1][c2 - 1])
+                c1--;
+            else
+                c2--;
+        }
+
+        //Have to reverse the lists since we are going from bottom up.
+        longestCommonSub = longestCommonSub.reverse();
+        activePositions = activePositions.reverse();
+        toDiffPositions = toDiffPositions.reverse();
+
+
+        return { longestCommonSub: longestCommonSub, activePositions: activePositions, toDiffPositions: toDiffPositions };
+    };
+
+    //Uses the common words to know which words were added/deleted/edited from the transcript.
+	addDiffHighlights = (commonWords: any) => {
+        let activeTranscript = this.state.rawText.split(" ");
+        let transToDiff = this.props.versionToDiff.transcription.split(" ");
+        let diffToDisplay = "";
+
+        for (let i = 0; i < commonWords.activePositions.length; i++) {
+            //If we did not reach reach the end of common words we can assume there is another term to check against
+            if (i != commonWords.activePositions.length - 1) {
+
+                //Different edge cases to know which words were added/deleted/edited
+                //and highlighting them
+
+                diffToDisplay += (commonWords.longestCommonSub[i] + " ");
+
+                if ((commonWords.toDiffPositions[i] + 1) != commonWords.toDiffPositions[i + 1]) {
+
+                    diffToDisplay += "<mark class=highlight-red>";
+                    for (let j = (commonWords.toDiffPositions[i] + 1); j < (commonWords.toDiffPositions[i + 1]); j++) {
+                        diffToDisplay += (transToDiff[j] + " ");
+                    }
+                    diffToDisplay += "</mark>";
+
+                }
+
+                //If words have been modified we want to display them green.
+                if ((commonWords.toDiffPositions[i + 1] - commonWords.toDiffPositions[i]) == (commonWords.activePositions[i + 1] - commonWords.activePositions[i])) {
+
+                    diffToDisplay += "<mark class=highlight-yellow>";
+
+                    for (let j = (commonWords.activePositions[i] + 1); j < (commonWords.activePositions[i + 1]); j++) {
+                        diffToDisplay += (activeTranscript[j] + " ");
+                    }
+
+                    diffToDisplay += "</mark>";
+
+                } else if ((commonWords.activePositions[i] + 1) != commonWords.activePositions[i + 1]) {
+
+                    diffToDisplay += "<mark class=highlight-green>";
+
+                    for (let j = (commonWords.activePositions[i] + 1); j < (commonWords.activePositions[i + 1]); j++) {
+                        diffToDisplay += (activeTranscript[j] + " ");
+                    }
+
+                    diffToDisplay += "</mark>";
+
+                }
+            }
+            //If at end of file, algorithm has to do its computation using length of array
+            //instead of next position
+            else {
+                diffToDisplay += (commonWords.longestCommonSub[i] + " ");
+
+                if ((commonWords.toDiffPositions[i] + 1) != transToDiff.length) {
+
+                    diffToDisplay += "<mark class=highlight-red>";
+
+                    for (let j = (commonWords.toDiffPositions[i] + 1); j < transToDiff.length; j++) {
+                        diffToDisplay += (transToDiff[j] + " ");
+                    }
+
+                    diffToDisplay += "</mark>";
+
+                }
+                if ((transToDiff.length - commonWords.toDiffPositions[i]) == (activeTranscript.length - commonWords.activePositions[i])) {
+
+                    diffToDisplay += "<mark class=highlight-yellow>";
+
+                    for (let j = (commonWords.activePositions[i] + 1); j < (activeTranscript.length); j++) {
+                        diffToDisplay += (activeTranscript[j] + " ");
+                    }
+
+                    diffToDisplay += "</mark>";
+
+                } else if((commonWords.activePositions[i] + 1) != activeTranscript.length) {
+
+                    diffToDisplay += "<mark class=highlight-green>";
+
+                    for (let j = (commonWords.activePositions[i] + 1); j < (activeTranscript.length); j++) {
+                        diffToDisplay += (activeTranscript[j] + " ");
+                    }
+
+                    diffToDisplay += "</mark>";
+
+                }
+
+            }
+
+        }
+
+        this.setState({ 'displayDiff': diffToDisplay });
+
+	};
+
+
     
     // remove all span tags from the page
     public clearHighlights = () =>{
@@ -168,14 +355,49 @@ export class TranscriptionText extends React.Component<any, State> {
     };
 
     public render() {
-        return (
-            <div>
-                <div 
-                    id="transcription" 
-                    className="highlight-text" 
-                    contentEditable={true}
-                    dangerouslySetInnerHTML={{__html: this.state.displayText}}/>
-            </div>
-        );
+
+        if (this.props.versionToDiff && this.props.versionToDiff.id != this.state.version.id) {
+            return (
+                <div>
+                    <div
+                        id="transcription"
+                        className="highlight-text"
+                        contentEditable={true}
+                        dangerouslySetInnerHTML={{ __html: this.state.displayDiff }} />
+
+                    <div className="columns">
+                        <div className="column">
+                            <h2><u>Previous Version</u></h2>
+                            <div
+                                id="transcription"
+                                className="highlight-text"
+                                contentEditable={true}
+                                dangerouslySetInnerHTML={{ __html: this.props.versionToDiff.transcription }} />
+                        </div>
+
+                        <div className="column">
+                            <h2><u>Active Version</u></h2>
+                            <div
+                                id="transcription"
+                                className="highlight-text"
+                                contentEditable={true}
+                                dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} />
+                        </div>  
+                    </div>
+                </div>
+
+            );
+        } else {
+            return (
+                <div>
+                    <div
+                        id="transcription"
+                        className="highlight-text"
+                        contentEditable={true}
+                        dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} />
+                </div>
+            );
+        }
+        
     }
 }
