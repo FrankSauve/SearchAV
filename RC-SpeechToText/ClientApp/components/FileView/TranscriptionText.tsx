@@ -59,6 +59,11 @@ export class TranscriptionText extends React.Component<any, State> {
         }
     }
 
+	diffOfTranscription = () => {
+        let commonWords = this.findCommonWords();
+		this.addDiffHighlights(commonWords);
+
+    };
 
     findCommonWords = () => {
         let activeTranscript = this.state.rawText;
@@ -234,13 +239,7 @@ export class TranscriptionText extends React.Component<any, State> {
 
 	};
 
-    diffOfTranscription = () => {
-        this.setState({ 'displayDiff': this.props.versionToDiff.transcription });
 
-        let commonWords = this.findCommonWords();
-		this.addDiffHighlights(commonWords);
-
-    };
     
     // remove all span tags from the page
     public clearHighlights = () =>{
