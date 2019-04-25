@@ -62,7 +62,6 @@ export class TranscriptionText extends React.Component<any, State> {
 
     findCommonWords = () => {
         let activeTranscript = this.state.rawText;
-        console.log("active transcript: " + activeTranscript);
         let transToDiff = this.props.versionToDiff.transcription;
         let commonWordsTable = this.createCommonTable(activeTranscript, transToDiff);
         let commonWordsInfo = this.getWordsInCommon(activeTranscript, transToDiff, commonWordsTable);
@@ -338,16 +337,24 @@ export class TranscriptionText extends React.Component<any, State> {
                         contentEditable={true}
                         dangerouslySetInnerHTML={{ __html: this.state.displayDiff }} />
 
-                    <div>
-                        <div
-                            id="transcription"
-                            className="highlight-text"
-                            contentEditable={true}
-                            dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} /> <div
-                            id="transcription"
-                            className="highlight-text"
-                            contentEditable={true}
-                            dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} />
+                    <div className="columns">
+                        <div className="column">
+                            <h2><u>Previous Version</u></h2>
+                            <div
+                                id="transcription"
+                                className="highlight-text"
+                                contentEditable={true}
+                                dangerouslySetInnerHTML={{ __html: this.props.versionToDiff.transcription }} />
+                        </div>
+
+                        <div className="column">
+                            <h2><u>Active Version</u></h2>
+                            <div
+                                id="transcription"
+                                className="highlight-text"
+                                contentEditable={true}
+                                dangerouslySetInnerHTML={{ __html: this.state.version.transcription }} />
+                        </div>  
                     </div>
                 </div>
 
