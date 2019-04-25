@@ -146,7 +146,6 @@ export class TranscriptionText extends React.Component<any, State> {
             //If we did not reach reach the end of common words we can assume there is another term to check against
             if (i != commonWords.activePositions.length - 1) {
                 diffToDisplay += (commonWords.longestCommonSub[i] + " ");
-
                 if ((commonWords.toDiffPositions[i] + 1) != commonWords.toDiffPositions[i + 1]) {
 
                     diffToDisplay += "<mark class=highlight-red>";
@@ -156,7 +155,15 @@ export class TranscriptionText extends React.Component<any, State> {
                     diffToDisplay += "</mark>";
 
                 }
-                if ((commonWords.activePositions[i] + 1) != commonWords.activePositions[i + 1]) {
+
+                //If words have been modified we want to display them green.
+                if ((commonWords.toDiffPositions[i + 1] - commonWords.toDiffPositions[i]) == (commonWords.activePositions[i + 1] - commonWords.activePositions[i])) {
+                    diffToDisplay += "<mark class=highlight-yellow>";
+                    for (let j = (commonWords.activePositions[i] + 1); j < (commonWords.activePositions[i + 1]); j++) {
+                        diffToDisplay += (activeTranscript[j] + " ");
+                    }
+                    diffToDisplay += "</mark>";
+                } else if ((commonWords.activePositions[i] + 1) != commonWords.activePositions[i + 1]) {
 
                     diffToDisplay += "<mark class=highlight-green>";
                     for (let j = (commonWords.activePositions[i] + 1); j < (commonWords.activePositions[i + 1]); j++) {
