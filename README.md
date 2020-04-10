@@ -20,7 +20,8 @@ Francois Crispo-Sauve | francoiscrisposauve@gmail.com | 27454139     | franksauv
 William Kingbede      | williamkingbede@gmail.com     | 27324383     | williamkingbede
 Ayoube Akaouch        | ayoube.akaouch@gmail.com      | 27755341     | ayoubeakaouch
 Philippe Kuret        | philippekuret@gmail.com       | 27392680     | philippekuret
-~~Anania Yeghikian~~      | ~~anania.y@hotmail.com~~         | ~~27484526~~     | ~~anania-y~~
+Karim Abou-Khalil     | karim@birdsink.com            | 27412912     | karkarn1
+~~Anania Yeghikian~~  | ~~anania.y@hotmail.com~~      | ~~27484526~~ | ~~anania-y~~
 
 
 This project is currently being prepared as part of our course, SOEN 490: Capstone Software Engineering Design Project. 
